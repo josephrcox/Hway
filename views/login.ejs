@@ -1,20 +1,37 @@
 <h1>Login</h1>
+    <form id="reg-form">
+        <input type="text" autocomplete="off" id="username" name="name" placeholder="Name" />
+        <input type="password" autocomplete="off" id="password" name="password" placeholder="password" />
+        <input type="submit" value="Submit form"/>
+    </form>
 
-<form action="/login" method="POST">
+<a href="/register">Registration</a>
 
-    <div>
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" placeholder="Email" required autocomplete="off">
-    </div>
+<script>
 
-    <div>
-        <label for="Password">Password</label>
-        <input type="Password" id="Password" name="Password" placeholder="Password" required autocomplete="off">
-    </div>
+const form = document.getElementById("reg-form")
+form.addEventListener('submit', registerUser)
 
-    <div>
-        <button type="submit">Register</button>
-    </div>
-</form>
+async function registerUser(event) {
+    event.preventDefault()
+    name = document.getElementById("username").value
+    password = document.getElementById("password").value
 
-<a href="/register">Register</a>
+    bodyJSON = {
+        "name":name,
+        "password":password
+    }
+
+    const fetchResponse = await fetch('/login', {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(bodyJSON)
+    }); 
+
+    console.log(fetchResponse)
+}
+
+</script>
