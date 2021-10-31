@@ -7,6 +7,31 @@
     <title>Document</title>
 </head>
 <body>
+    <div id="currentUser">
+        
+    </div>
+    <br><br>
     <%- body %>
+    <br><br>
+    <button onclick="logout()">Logout</button>
+
+<script>
+
+async function logout() {
+    const fetchResponse = await fetch('/logout', {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: {}
+    });
+    alert("logged out")
+}
+
+
+
+
+</script>
 </body>
 </html>

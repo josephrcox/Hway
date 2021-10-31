@@ -4,15 +4,16 @@
         <input type="password" autocomplete="off" id="password" name="password" placeholder="password" />
         <input type="submit" value="Submit form"/>
     </form>
+    <div id='logs'></div>
 
-<a href="/register">Registration</a>
+<a href="/register">Register </a>
 
 <script>
 
 const form = document.getElementById("reg-form")
-form.addEventListener('submit', registerUser)
+form.addEventListener('submit', loginUser)
 
-async function registerUser(event) {
+async function loginUser(event) {
     event.preventDefault()
     name = document.getElementById("username").value
     password = document.getElementById("password").value
@@ -29,9 +30,32 @@ async function registerUser(event) {
             },
         method: 'POST',
         body: JSON.stringify(bodyJSON)
-    }); 
+    });
+    const data = await fetchResponse.json()
+    
+    if (data.code == 200) {
+        console.log("success: 200")
+        console.log(data.data)
+        window.location.href = "/"
+    } 
+    if (data.code == 400) {
+        document.getElementById("logs").innerHTML = data.error
+    }
 
-    console.log(fetchResponse)
+    if (fetchResponse.status != '200' || fetchResponse.status != 200) {
+        document.getElementById("logs").innerHTML = fetchResponse.error;
+    }
 }
+
+getUsername()
+
+async function getUsername() {
+    const response = await fetch('/api/get/currentuser')
+    const data = await response.json()
+
+    document.getElementById("currentUser").innerHTML = "Current user: <span style='color:blue'>"+data.name+"</span>"
+}
+
+
 
 </script>
