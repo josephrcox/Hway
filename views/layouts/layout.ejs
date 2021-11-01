@@ -8,7 +8,7 @@
     <title>hway a2.02</title>
     <div class="flex-container">
         <div class="header-title">
-           <div id="title" onclick="page_all()">HWay</div>
+           <div id="title" onclick="goHome()">HWay</div>
            <div id="page-number"></div> 
         </div>
      </div>
@@ -47,11 +47,15 @@ function topicdropdownclicked() {
             }
         }
     }
-}         
+}      
+
+async function goHome() {
+    const response = await fetch('/home')
+}
 
 async function logout() {
     const response = await fetch('/logout')
-    window.location.reload()
+    window.location.replace("/");
 }
 
 getUsername()
@@ -62,7 +66,7 @@ async function getUsername() {
     console.log(data)
 
     if (data.status != "error") {
-        document.getElementById("currentUser").innerHTML = "Current user: <span style='color:blue'>"+data.name+"</span>"
+        document.getElementById("currentUser").innerHTML = data.name
     } else {
         if (data.error.name == "TokenExpiredError") {
             document.getElementById("currentUser").innerHTML = "token expired"

@@ -348,8 +348,6 @@ const loadUsersFromServer = async () => {
     }
 }
 
-
-
 const loadSpecificPosts = async (postid) => {
     cID = postid
     const response = await fetch('/posts/'+postid)

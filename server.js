@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
 
 app.get('/logout', (req, res) => {
 	res.cookie('token', '', { maxAge: 1 })
-	res.redirect('/')
+	res.render('index.ejs')
 })
 
 app.get('/api/get/currentuser', function (req, res) {
@@ -87,7 +87,7 @@ app.get('/home', async(req, res) => {
 	if (valid) {
 		res.render('all.ejs')
 	} else {
-		res.json({ status:"error", code:400, error:"not logged in" })
+		res.render('login.ejs')
 	}
 })
 
@@ -291,74 +291,5 @@ app.put('/vote/:id/:y', function(req,res) {
 	} catch(err) {
 	}
 })
-
-
-// app.put('/vote/:id/:y', function(req,res) {
-//     id = (req.params.id).substring(13)
-//     change = req.params.y
-
-// 	try {
-// 		token = req.cookies.token
-// 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-// 		console.log(verified)
-// 		userID = verified.id
-// 		console.log("id:"+userID)
-// 	} catch (err) {
-// 		return res.json({ status:"error", code:400, error: err})
-// 	}
-
-// 	try {
-// 		Post.findOne({_id: id }, function (err, docs) {
-// 			curUp = parseInt(docs.upvotes)
-// 			curDown = parseInt(docs.downvotes)
-// 			console.log("users upvoted this:"+docs.users_upvoted)
-
-// 			if (change == 1 || change == "1") {
-				
-// 				Post.updateOne({ _id: id }, { $set: {upvotes: (curUp+1)} }, {}, function (err, numReplaced) {
-// 					Post.updateOne({ _id: id }, { $set: {upvotes: (curUp+1)} }, {}, function (err, numReplaced) {
-// 						Post.updateOne({ _id: id }, { $push: { users_upvoted: userID} }, {}, function (err, numReplaced) {
-// 							Post.updateOne({ _id: id }, { $set: {total_votes: ((curUp+1)-curDown)} }, {}, function (err, numReplaced) {
-// 								User.findById(userID, function (err, docs) {
-// 									pupvtd = docs.posts_upvoted
-// 									pupvtd.push(id)
-// 									uniqueArray = pupvtd.filter(function(elem, pos) {
-// 										return pupvtd.indexOf(elem) == pos;
-// 									})
-// 									User.updateOne({ _id: userID }, { $set: {posts_upvoted: uniqueArray} }, {}, function (err, numReplaced) {
-// 										// res.sendStatus(200)
-// 									})
-// 								})
-// 							})
-// 						})
-// 					});
-// 				});
-// 			}
-// 			if (change == -1 || change == "-1") {
-// 				Post.updateOne({ _id: id }, { $set: {downvotes: (curDown+1)} }, {}, function (err, numReplaced) {
-// 					Post.updateOne({ _id: id }, { $set: {total_votes: ((curDown+1)-curUp)} }, {}, function (err, numReplaced) {
-// 						User.findById(userID, function (err, docs) {
-// 							pupvtd = docs.posts_downvoted
-// 							pupvtd.push(id)
-// 							uniqueArray = pupvtd.filter(function(elem, pos) {
-// 								return pupvtd.indexOf(elem) == pos;
-// 							})
-							
-// 							User.updateOne({ _id: userID }, { $set: {posts_downvoted: uniqueArray} }, {}, function (err, numReplaced) {
-// 								// res.sendStatus(200)
-// 							})
-// 						})
-// 					});
-// 				});
-// 			}
-// 			Post.findOne({_id: id }, function (err, docs) {
-// 				res.send({ status:"ok", code:200, data:docs.total_votes})
-// 			})
-// 		});
-		
-// 	} catch(err) {
-// 		console.log(err)
-// 	}
-// })
 
 app.listen(process.env.PORT || 5000)

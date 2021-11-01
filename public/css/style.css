@@ -104,7 +104,6 @@ img {
 }
 
 #post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button {
-	padding-right:15px;
 	padding-inline: 5px;
 	text-align: center;
 	font-weight: 100;
@@ -115,7 +114,6 @@ img {
 	-ms-user-select: none;
 	user-select: none;
 	-o-user-select: none;
-	width:140px;
 }
 
 #topic-chooser {
@@ -374,4 +372,12 @@ label {
 
 .openPostButton {
 	margin-left:20px;
+}
+
+#currentUser {
+	padding-right:10px;
+	padding-left:10px;
+	margin-top:1px;
+	color:white;
+	font-weight: 900;
 }
