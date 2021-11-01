@@ -14,7 +14,7 @@ comment_count = []
 commentParentPair = []
 commentBodies = []
 var lastClick = 0;
-var delay = 200;
+var delay = 400;
 
 // Currents
 cPage = 1
