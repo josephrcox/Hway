@@ -2,21 +2,35 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 
+const cors = require('cors')
+
 const express = require('express')
 const app = express()
 const expressLayouts = require('express-ejs-layouts')
 const bcrypt = require('bcryptjs')
 const cookieParser = require('cookie-parser')
+const { response } = require('express');
+const { parse } = require('path');
+const words = require('random-words');
+const fs = require('fs');
+
 app.use(cookieParser())
 
 const users = []
+IDs = []
+topicArray = []
+topicCount = []
+postsonpage = []
+postsPerPage = 30;
 
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout')
+app.use(cors());
+app.use(express.json())
 app.use(expressLayouts)
-app.use(express.static('public'))
-
+app.use(express.static(__dirname + '/public'));
+app.use(express.static('public'));
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.DATEBASE_URL, {
@@ -29,6 +43,8 @@ connection.once("open", function() {
 });
 
 const User = require('./models/user')
+const Post = require('./models/post')
+const Comment = require('./models/comment')
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -38,19 +54,23 @@ app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-    res.render('index.ejs', { name: 'Joey'})
+    res.render('index.ejs')
 })
 
-app.post('/logout', (req, res) => {
-    token = req.cookies.token
-    res.clearCookie(token);
+app.get('/logout', (req, res) => {
+	res.cookie('token', '', { maxAge: 1 })
+	res.redirect('/')
 })
 
 app.get('/api/get/currentuser', function (req, res) {
-    token = req.cookies.token
-    const verified = jwt.verify(token, process.env.JWT_SECRET)
-    console.log(verified)
-    res.json(verified)
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		console.log(verified)
+		res.json(verified)
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
 })
 
 app.get('/login', (req, res) => {
@@ -61,8 +81,68 @@ app.get('/register', (req, res) => {
     res.render('register.ejs')
 })
 
-app.get('/home', (req, res) => {
+app.get('/home', async(req, res) => {
+	valid = await isloggedin(req)
+	console.log("valid:"+valid)
+	if (valid) {
+		res.render('all.ejs')
+	} else {
+		res.json({ status:"error", code:400, error:"not logged in" })
+	}
+})
 
+app.get('/api/get/all', async(req, res) => {	
+	Post.find({}, function(err, posts){
+        if(err){
+          console.log(err);
+        } else{
+			console.log(posts)
+            res.send(posts)
+        }
+    })
+})
+
+app.get('/api/get/users', async(req, res) => {	
+	User.find({}, function(err, users){
+        if(err){
+          console.log(err);
+        } else{
+			console.log(users)
+            res.send(users)
+        }
+    })
+})
+
+app.get('/api/get/topics', async(req, res) => {	
+	topicArray = []
+	topicCount = []
+	Post.find({}, function(err, posts){
+        if(err){
+          console.log(err);
+        } else{
+			
+			for (i=0;i<posts.length;i++) {
+				if (topicArray.includes(posts[i].topic)) {
+					index = topicArray.indexOf(posts[i].topic)
+					topicCount[index] = parseInt(topicCount[index]+1)
+				} else {
+					topicArray.push(posts[i].topic)
+					topicCount[i] = 1
+				}
+				if (topicCount[i] == null) {
+					topicCount[i] = 1
+				}
+			}
+			var joinedArray = topicArray.map(function (value, index){
+				return [value, topicCount[index]]
+			});
+			joinedArray.sort(function(a,b) {
+				return b[1] - a[1]
+			})
+			res.send(joinedArray)
+        }
+
+    })
 })
 
 app.post('/login', async(req, res) => {
@@ -74,8 +154,6 @@ app.post('/login', async(req, res) => {
 	}
 
 	if (await bcrypt.compare(password, user.password)) {
-		// the username, password combination is successful
-
 		const token = jwt.sign(
 			{
 				id: user._id,
@@ -119,8 +197,110 @@ app.post('/register', async(req, res) => {
 	}
 
 	res.json({ status: 'ok', code:200 })
+})
 
-    
+app.post('/api/post/post', async(req, res) => {
+	const {title, body, link, topic, type} = req.body
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		poster = verified.name
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	try {
+		const response = await Post.create({
+            title: title, 
+			body: body, 
+			poster: poster,
+			link: link,
+			topic: topic,
+			type: 1 // 1=text, using as temporary default
+		})
+		console.log('Post created successfully: ', response)
+		res.json({ status:"ok", code:200, data: response})
+	} catch (error) {
+		console.log(error)
+		res.json(error)
+	}
+})
+
+function isloggedin(req) {
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		console.log("verified:"+JSON.stringify(verified))
+		if (JSON.stringify(verified).status == "error") {
+			return false
+		} else {
+			return true
+		}
+	} catch(err) {
+		return false
+	}
+}
+
+
+
+app.put('/vote/:id/:y', function(req,res) {
+    id = (req.params.id).substring(13)
+    change = req.params.y
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		console.log(verified)
+		userID = verified.id
+		console.log("id:"+userID)
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	try {
+		Post.find({_id: id }, function (err, docs) {
+			curUp = parseInt(docs[0].upvotes)
+			curDown = parseInt(docs[0].downvotes)
+	
+			if (change == 1 || change == "1") {
+				Post.updateOne({ _id: id }, { $set: {upvotes: (curUp+1)} }, {}, function (err, numReplaced) {
+					Post.updateOne({ _id: id }, { $set: {total_votes: ((curUp+1)-curDown)} }, {}, function (err, numReplaced) {
+						User.findById(userID, function (err, docs) {
+							pupvtd = docs.posts_upvoted
+							pupvtd.push(id)
+							uniqueArray = pupvtd.filter(function(elem, pos) {
+								return pupvtd.indexOf(elem) == pos;
+							})
+							User.updateOne({ _id: userID }, { $set: {posts_upvoted: uniqueArray} }, {}, function (err, numReplaced) {
+								res.sendStatus(200)
+							})
+						})
+					
+					});
+				});
+			}
+			if (change == -1 || change == "-1") {
+				Post.updateOne({ _id: id }, { $set: {downvotes: (curDown+1)} }, {}, function (err, numReplaced) {
+					Post.updateOne({ _id: id }, { $set: {total_votes: ((curDown+1)-curUp)} }, {}, function (err, numReplaced) {
+						User.findById(userID, function (err, docs) {
+							pupvtd = docs.posts_upvoted
+							pupvtd.push(id)
+							uniqueArray = pupvtd.filter(function(elem, pos) {
+								return pupvtd.indexOf(elem) == pos;
+							})
+							
+							User.updateOne({ _id: userID }, { $set: {posts_downvoted: uniqueArray} }, {}, function (err, numReplaced) {
+								res.sendStatus(200)
+							})
+						})
+					});
+				});
+			}
+		});
+	} catch(err) {
+		console.log(err)
+	}
 })
 
 app.listen(process.env.PORT || 5000)

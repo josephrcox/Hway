@@ -4,32 +4,71 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <title>hway a2.01</title>
+    <div class="flex-container">
+        <div class="header-title">
+           <div id="title" onclick="page_all()">HWay</div>
+           <div id="page-number"></div> 
+        </div>
+     </div>
+
+     <div class="header-buttons">
+        <div id="currentUser">Not logged in </div>
+        <button onclick="logout()">Logout</button>
+        <div class="topic-dropdown-div">
+            <div onclick="topicdropdownclicked()" class="topic-dropdown-button">Top topics</div>
+            <div id="topic-dropdown" class="dropdown-content">
+               <!-- topics (handled by js) -->
+             </div>
+         </div>
+         <div id="post-button" onclick="page_post()">Create new post</div>
+    </div>   
 </head>
 <body>
-    <div id="currentUser">
-        
+    <div class='page-content'>
+        <%- body %>
     </div>
-    <br><br>
-    <%- body %>
-    <br><br>
-    <button onclick="logout()">Logout</button>
 
 <script>
 
-async function logout() {
-    const fetchResponse = await fetch('/logout', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: {}
-    });
-    alert("logged out")
+function topicdropdownclicked() {
+    document.getElementById("topic-dropdown").classList.toggle("show");
 }
 
+    window.onclick = function(event) {
+        if (!event.target.matches('.topic-dropdown-button')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+            }
+        }
+    }
+}         
 
+async function logout() {
+    const response = await fetch('/logout')
+    window.location.reload()
+}
+
+getUsername()
+
+async function getUsername() {
+    const response = await fetch('/api/get/currentuser')
+    const data = await response.json()
+    console.log(data)
+
+    if (data.status != "error") {
+        document.getElementById("currentUser").innerHTML = "Current user: <span style='color:blue'>"+data.name+"</span>"
+    } else {
+        if (data.error.name == "TokenExpiredError") {
+            document.getElementById("currentUser").innerHTML = "token expired"
+        }
+    }
+}
 
 
 </script>

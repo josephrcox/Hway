@@ -47,15 +47,4 @@ async function loginUser(event) {
     }
 }
 
-getUsername()
-
-async function getUsername() {
-    const response = await fetch('/api/get/currentuser')
-    const data = await response.json()
-
-    document.getElementById("currentUser").innerHTML = "Current user: <span style='color:blue'>"+data.name+"</span>"
-}
-
-
-
 </script>

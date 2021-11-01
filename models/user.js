@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema(
         post_count: { type: Number, default: 0},
         comment_count: { type: Number, default: 0},
         total_votes: { type: Number, default: 0},
-        account_active: { type: Boolean, default: true}
+        account_active: { type: Boolean, default: true}, 
+        posts_upvoted: { type: Array },
+        posts_downvoted: { type: Array }
     }, 
     { collection: 'users'}
 )
