@@ -92,7 +92,7 @@ app.get('/home', async(req, res) => {
 })
 
 app.get('/api/get/all', async(req, res) => {	
-	Post.find({}, function(err, posts){
+	Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
         if(err){
           console.log(err);
         } else{
@@ -242,11 +242,9 @@ function isloggedin(req) {
 	}
 }
 
-
-
 app.put('/vote/:id/:y', function(req,res) {
-    id = (req.params.id).substring(13)
-    change = req.params.y
+	id = (req.params.id).substring(13)
+	change = req.params.y
 
 	try {
 		token = req.cookies.token
@@ -259,48 +257,108 @@ app.put('/vote/:id/:y', function(req,res) {
 	}
 
 	try {
-		Post.find({_id: id }, function (err, docs) {
-			curUp = parseInt(docs[0].upvotes)
-			curDown = parseInt(docs[0].downvotes)
-	
-			if (change == 1 || change == "1") {
-				Post.updateOne({ _id: id }, { $set: {upvotes: (curUp+1)} }, {}, function (err, numReplaced) {
-					Post.updateOne({ _id: id }, { $set: {total_votes: ((curUp+1)-curDown)} }, {}, function (err, numReplaced) {
-						User.findById(userID, function (err, docs) {
-							pupvtd = docs.posts_upvoted
-							pupvtd.push(id)
-							uniqueArray = pupvtd.filter(function(elem, pos) {
-								return pupvtd.indexOf(elem) == pos;
-							})
-							User.updateOne({ _id: userID }, { $set: {posts_upvoted: uniqueArray} }, {}, function (err, numReplaced) {
-								res.sendStatus(200)
-							})
-						})
+		Post.findOne({_id: id }, function (err, docs) { 
+			oldtotal_votes = docs.total_votes
+			oldupvotes = parseInt(docs.upvotes)
+			olddownvotes = parseInt(docs.downvotes)
+
+			if (change == 1) { // upvoting
+				console.log(typeof(change))
+				Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (oldupvotes+1), total_votes: (oldtotal_votes+1)}, $push: {users_upvoted: userID}, $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+
+				})
+			}
+			if (change == -1) { // downvoting
+				console.log(typeof(change))
+				Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (olddownvotes+1), total_votes: (oldtotal_votes-1)}, $push: {users_downvoted: userID}, $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
 					
-					});
-				});
+				})
 			}
-			if (change == -1 || change == "-1") {
-				Post.updateOne({ _id: id }, { $set: {downvotes: (curDown+1)} }, {}, function (err, numReplaced) {
-					Post.updateOne({ _id: id }, { $set: {total_votes: ((curDown+1)-curUp)} }, {}, function (err, numReplaced) {
-						User.findById(userID, function (err, docs) {
-							pupvtd = docs.posts_upvoted
-							pupvtd.push(id)
-							uniqueArray = pupvtd.filter(function(elem, pos) {
-								return pupvtd.indexOf(elem) == pos;
-							})
-							
-							User.updateOne({ _id: userID }, { $set: {posts_downvoted: uniqueArray} }, {}, function (err, numReplaced) {
-								res.sendStatus(200)
-							})
-						})
-					});
-				});
-			}
-		});
+			Post.findOne({_id: id }, function (err, docs) { 
+				upArray = docs.users_upvoted
+				downArray = docs.users_downvoted
+				newUp = upArray.filter(function(item, pos) {
+					return upArray.indexOf(item) == pos;
+				})
+				newDown = downArray.filter(function(item, pos) {
+					return downArray.indexOf(item) == pos;
+				})
+				Post.findOneAndUpdate({ _id: id }, { $set: {users_upvoted: newUp, users_downvoted: newDown}}, {}, function (err, numReplaced) {
+					res.send({ status:"ok", code:200})
+				})
+			})
+		})
 	} catch(err) {
-		console.log(err)
 	}
 })
+
+
+// app.put('/vote/:id/:y', function(req,res) {
+//     id = (req.params.id).substring(13)
+//     change = req.params.y
+
+// 	try {
+// 		token = req.cookies.token
+// 		const verified = jwt.verify(token, process.env.JWT_SECRET)
+// 		console.log(verified)
+// 		userID = verified.id
+// 		console.log("id:"+userID)
+// 	} catch (err) {
+// 		return res.json({ status:"error", code:400, error: err})
+// 	}
+
+// 	try {
+// 		Post.findOne({_id: id }, function (err, docs) {
+// 			curUp = parseInt(docs.upvotes)
+// 			curDown = parseInt(docs.downvotes)
+// 			console.log("users upvoted this:"+docs.users_upvoted)
+
+// 			if (change == 1 || change == "1") {
+				
+// 				Post.updateOne({ _id: id }, { $set: {upvotes: (curUp+1)} }, {}, function (err, numReplaced) {
+// 					Post.updateOne({ _id: id }, { $set: {upvotes: (curUp+1)} }, {}, function (err, numReplaced) {
+// 						Post.updateOne({ _id: id }, { $push: { users_upvoted: userID} }, {}, function (err, numReplaced) {
+// 							Post.updateOne({ _id: id }, { $set: {total_votes: ((curUp+1)-curDown)} }, {}, function (err, numReplaced) {
+// 								User.findById(userID, function (err, docs) {
+// 									pupvtd = docs.posts_upvoted
+// 									pupvtd.push(id)
+// 									uniqueArray = pupvtd.filter(function(elem, pos) {
+// 										return pupvtd.indexOf(elem) == pos;
+// 									})
+// 									User.updateOne({ _id: userID }, { $set: {posts_upvoted: uniqueArray} }, {}, function (err, numReplaced) {
+// 										// res.sendStatus(200)
+// 									})
+// 								})
+// 							})
+// 						})
+// 					});
+// 				});
+// 			}
+// 			if (change == -1 || change == "-1") {
+// 				Post.updateOne({ _id: id }, { $set: {downvotes: (curDown+1)} }, {}, function (err, numReplaced) {
+// 					Post.updateOne({ _id: id }, { $set: {total_votes: ((curDown+1)-curUp)} }, {}, function (err, numReplaced) {
+// 						User.findById(userID, function (err, docs) {
+// 							pupvtd = docs.posts_downvoted
+// 							pupvtd.push(id)
+// 							uniqueArray = pupvtd.filter(function(elem, pos) {
+// 								return pupvtd.indexOf(elem) == pos;
+// 							})
+							
+// 							User.updateOne({ _id: userID }, { $set: {posts_downvoted: uniqueArray} }, {}, function (err, numReplaced) {
+// 								// res.sendStatus(200)
+// 							})
+// 						})
+// 					});
+// 				});
+// 			}
+// 			Post.findOne({_id: id }, function (err, docs) {
+// 				res.send({ status:"ok", code:200, data:docs.total_votes})
+// 			})
+// 		});
+		
+// 	} catch(err) {
+// 		console.log(err)
+// 	}
+// })
 
 app.listen(process.env.PORT || 5000)

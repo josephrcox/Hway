@@ -13,6 +13,8 @@ nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decorat
 comment_count = []
 commentParentPair = []
 commentBodies = []
+var lastClick = 0;
+var delay = 200;
 
 // Currents
 cPage = 1
@@ -255,22 +257,6 @@ const commentObject = {
 }
 
 const loadPosts = async (x, topic, page) => {
-    // document.getElementById("comment_countection").style.display = 'none'
-    // document.getElementById("post-button").innerHTML = "Create new post"
-    // if (topic == "" || topic == null) {
-    //     document.getElementById("title").innerHTML = "HWay"
-    //     const response = await fetch('/api/get/all)
-    //     var data = await response.json()
-    // } else {
-    //     topic.replace(" ","")
-    //     document.getElementById("title").innerHTML = "HWay - <span style='color:lightgreen'>"+topic+"</span>"
-    //     const response = await fetch('/t/'+topic+'/')
-    //     var data = await response.json()
-    // }
-    // if (data.length == 0) {
-    //     return prevPage()
-    // }
-
     const response = await fetch('/api/get/all')
     const data = await response.json()
     console.log(data)
@@ -459,6 +445,10 @@ const itemCounter = (item) => {
 }
 
 const vote = async (d, y) => { 
+    if (lastClick >= (Date.now() - delay)) {
+        return;
+    }
+    lastClick = Date.now();
     id = y
     change = d // 1 is upvote, -1 is downvote
     hasVoted = localStorage.getItem(id.substring(13)) // null if no, 1 if up, -1 if down
@@ -471,28 +461,35 @@ const vote = async (d, y) => {
         if (change == 1) {
         } else {
             if (id != null) {
-                const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
                 localStorage.removeItem(id.substring(13))
                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount-1
+                const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
+                
+                
             }
         }
     } else if (hasVoted == -1) { // has downvoted
         if (change == -1) {
         } else {
             if (id != null) {
-                const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
+                
                 localStorage.removeItem(id.substring(13))
                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+1
+                const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
+                const data = await fetchResponse.json()
+                console.log(data)
             }
         }
     } else if (hasVoted == null) { // has not voted
         if (id != null) {
-            const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
             localStorage.setItem(id.substring(13), change)
             oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
             document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+change
+            const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
+            const data = await fetchResponse.json()
+            console.log(data)
         }
     }
     
@@ -616,7 +613,7 @@ document.getElementById("newPost_submit_button").onclick = function() {
         case 1: // Text
             postDesc = document.getElementById("newPost_desc").value
             
-            if (postTitle == "" || postTitle == null) {
+            if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
                 document.getElementById("newPost_logs").innerHTML = "Please enter title"
             } else {
                 createNewPost()
@@ -685,6 +682,7 @@ document.getElementById("newPost_type_text").onclick = function() {
     document.getElementById("newPost_file_label").style.display = "none"
     document.getElementById("newPost_submit_button").style.display = "block"
 }
+
 document.getElementById("newPost_type_link").onclick = function() {
     newPost_type = 2;
     document.getElementById("newPost_type_text").style.backgroundColor = ""
@@ -699,6 +697,7 @@ document.getElementById("newPost_type_link").onclick = function() {
     document.getElementById("newPost_file_label").style.display = "none"
     document.getElementById("newPost_submit_button").style.display = "block"
 }
+
 document.getElementById("newPost_type_media").onclick = function() {
     newPost_type = 3;
     document.getElementById("newPost_type_text").style.backgroundColor = ""

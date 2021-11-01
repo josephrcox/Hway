@@ -11,9 +11,7 @@
 img {
 	width:50%;
 }
-a {
-	text-decoration: unset;
-}
+
 .newPost_link, .newPost_file {
 	display: none;
 }
@@ -147,6 +145,15 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
+a {
+	text-decoration: none;
+	color:white;
+}
+
+.page-content {
+	color:white;
+}
+
 tbody {
 	padding-left: 2px;
 	border-left: 1px solid black;
@@ -236,6 +243,7 @@ label {
 	background-color: azure;
 	margin-top: 8px;
 	border:1px solid black;
+	color:black;
 }
 
 .comFrame {
