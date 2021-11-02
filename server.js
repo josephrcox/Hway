@@ -203,6 +203,7 @@ app.get('/api/get/topics', async(req, res) => {
 			joinedArray.sort(function(a,b) {
 				return b[1] - a[1]
 			})
+			console.log(joinedArray)
 			res.send(joinedArray)
         }
 

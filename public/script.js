@@ -455,7 +455,7 @@ const storeAndDisplayTopics = async () => {
         var newTopic = document.createElement('a')
         href = data[j][0].replace(/^"(.*)"$/, '$1');
         //infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
-        newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"</a>"
+        newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"("+data[j][1]+")</a>"
         document.getElementById("topic-dropdown").appendChild(newTopic)
     }
 }
