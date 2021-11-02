@@ -58,12 +58,12 @@ app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-    res.render('index.ejs')
+    res.render('index.ejs', {topic:""})
 })
 
 app.get('/logout', (req, res) => {
 	res.cookie('token', '', { maxAge: 1 })
-	res.render('index.ejs')
+	res.render('index.ejs', {topic:""})
 })
 
 app.get('/api/get/currentuser', function (req, res) {
@@ -78,25 +78,25 @@ app.get('/api/get/currentuser', function (req, res) {
 })
 
 app.get('/login', (req, res) => {
-    res.render('login.ejs')
+    res.render('login.ejs', {topic:"- login"})
 })
 
 app.get('/register', (req, res) => {
-    res.render('register.ejs')
+    res.render('register.ejs', {topic:"- register"})
 })
 
 app.get('/home', async(req, res) => {
 	valid = await isloggedin(req)
 	
 	if (valid) {
-		res.render('home.ejs')
+		res.render('home.ejs', {topic: "- all"})
 	} else {
-		res.render('login.ejs')
+		res.render('login.ejs', {topic:"- login"})
 	}
 })
 
 app.get('/h/:topic', async(req,res) => {
-	res.render('home.ejs')
+	res.render('home.ejs', {topic:"- "+req.params.topic})
 })
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
