@@ -96,7 +96,7 @@ app.get('/home', async(req, res) => {
 })
 
 app.get('/h/:topic', async(req,res) => {
-	res.render(req.params.topic+'.ejs')
+	res.render('home.ejs')
 })
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
