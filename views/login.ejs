@@ -36,6 +36,7 @@ async function loginUser(event) {
     if (data.code == 200) {
         console.log("success: 200")
         console.log(data.data)
+        localStorage.clear()
         window.location.href = "/"
     } 
     if (data.code == 400) {

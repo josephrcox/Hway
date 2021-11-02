@@ -35,6 +35,9 @@ const postObject = {
     link: "",
     topic: "",
     comment_count:"",
+    current_user_upvoted: "",
+    current_user_downvoted: "",
+    current_user_admin: "",
 
     display() {
         var postContainer = document.createElement("div")
@@ -62,28 +65,14 @@ const postObject = {
         voteCount.setAttribute("class","voteCount")
         voteCount.innerHTML = this.total_votes
 
-        // var voteUpButton = document.createElement("BUTTON")
-        // voteUpButton.setAttribute("type","button")
-        // voteUpButton.setAttribute("id","voteUpButton_"+this.id)
-        // voteUpButton.setAttribute("class","voteUpButton")
-        // voteUpButton.innerHTML = "👍"
-        // voteUpButton.onclick = function() {
-        //     voteCom(1, this.id)
-        // }
-
-        // var voteDownButton = document.createElement("BUTTON")
-        // voteDownButton.setAttribute("id","voteDoButton_"+this.id)
-        // voteDownButton.setAttribute("class","voteDoButton")
-        // voteDownButton.onclick = function() {
-        //     voteCom(-1, this.id)
-        // }
-        
-        // voteDownButton.innerHTML = "👎"
-
         var voteUpButton = document.createElement("img")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
         voteUpButton.src = 'assets/up.gif'
+        if (this.current_user_upvoted && localStorage.getItem(this.id) == 1) {
+            voteUpButton.src = 'assets/up_selected.gif'
+        } 
+        
         voteUpButton.style.width = 'auto'
         voteUpButton.onclick = function() {
             vote(1, this.id)
@@ -93,6 +82,9 @@ const postObject = {
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
         voteDownButton.src = 'assets/down.gif'
+        if (this.current_user_downvoted && localStorage.getItem(this.id) == -1) {
+            voteDownButton.src = 'assets/down_selected.gif'
+        }
         voteDownButton.style.width = 'auto'
         voteDownButton.onclick = function() {
             vote(-1, this.id)
@@ -281,6 +273,10 @@ const loadPosts = async (x, topic, page) => {
         post.topic = data[i].topic
         post.comment_count = data[i].comment_count
 
+        post.current_user_upvoted = data[i].current_user_upvoted
+        post.current_user_downvoted = data[i].current_user_downvoted
+        post.current_user_admin = data[i].current_user_admin
+
         posts.push(post)
         post.display()
     }
@@ -457,27 +453,38 @@ const vote = async (d, y) => {
 
     if (hasVoted == 1) { // has upvoted
         if (change == 1) {
-        } else {
+        } else { // downvoting
             if (id != null) {
+                if (document.getElementById("voteUpButton_"+id.substring(13)).src.includes('assets/up_selected.gif')) {
+                    document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up.gif'
+                } else {
+                    document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down_selected.gif'
+                }
                 localStorage.removeItem(id.substring(13))
                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount-1
                 const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
+                
+
+                
                 
                 
             }
         }
     } else if (hasVoted == -1) { // has downvoted
         if (change == -1) {
-        } else {
+        } else { // upvoting
             if (id != null) {
-                
+                if (document.getElementById("voteDoButton_"+id.substring(13)).src.includes('assets/down_selected.gif')) {
+                    document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down.gif'
+                } else {
+                    document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up_selected.gif'
+                }
                 localStorage.removeItem(id.substring(13))
                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+1
                 const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
                 const data = await fetchResponse.json()
-                console.log(data)
             }
         }
     } else if (hasVoted == null) { // has not voted
@@ -488,6 +495,13 @@ const vote = async (d, y) => {
             const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
             const data = await fetchResponse.json()
             console.log(data)
+            if (change == 1) {
+                document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down.gif'
+                document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up_selected.gif'
+            } else {
+                document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down_selected.gif'
+                document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up.gif'
+            }
         }
     }
     

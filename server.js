@@ -23,6 +23,7 @@ topicCount = []
 postsonpage = []
 postsPerPage = 30;
 
+
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout')
@@ -83,7 +84,7 @@ app.get('/register', (req, res) => {
 
 app.get('/home', async(req, res) => {
 	valid = await isloggedin(req)
-	console.log("valid:"+valid)
+	
 	if (valid) {
 		res.render('all.ejs')
 	} else {
@@ -92,12 +93,39 @@ app.get('/home', async(req, res) => {
 })
 
 app.get('/api/get/all', async(req, res) => {	
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		console.log(verified)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
 	Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
         if(err){
           console.log(err);
         } else{
-			console.log(posts)
-            res.send(posts)
+			for (i=0;i<posts.length;i++) {
+				if (posts[i].posterID == userID) {
+					postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = true
+				} else {
+					postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = false
+				}
+				if (posts[i].users_upvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = true
+					postsonpage[i].current_user_downvoted = false
+				}
+				if (posts[i].users_downvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = false
+					postsonpage[i].current_user_downvoted = true
+				}
+
+			}
+			
+            res.send(postsonpage)
         }
     })
 })
@@ -107,7 +135,7 @@ app.get('/api/get/users', async(req, res) => {
         if(err){
           console.log(err);
         } else{
-			console.log(users)
+			
             res.send(users)
         }
     })
@@ -174,11 +202,7 @@ app.post('/login', async(req, res) => {
 
 app.post('/register', async(req, res) => {
     const { name, password: plainTextPassword} = req.body
-    console.log(name)
-    console.log(plainTextPassword)
-
     const password = await bcrypt.hash(plainTextPassword, 10)
-    console.log(password)
 
     try {
 		const response = await User.create({
@@ -205,6 +229,15 @@ app.post('/api/post/post', async(req, res) => {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		console.log(verified)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		poster = verified.name
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
@@ -217,7 +250,8 @@ app.post('/api/post/post', async(req, res) => {
 			poster: poster,
 			link: link,
 			topic: topic,
-			type: 1 // 1=text, using as temporary default
+			type: 1, // 1=text, using as temporary default
+			posterID: userID
 		})
 		console.log('Post created successfully: ', response)
 		res.json({ status:"ok", code:200, data: response})
@@ -260,16 +294,14 @@ app.put('/vote/:id/:y', function(req,res) {
 		Post.findOne({_id: id }, function (err, docs) { 
 			oldtotal_votes = docs.total_votes
 			oldupvotes = parseInt(docs.upvotes)
-			olddownvotes = parseInt(docs.downvotes)
+			olddownvotes = parseInt(docs.downvotes)	
 
 			if (change == 1) { // upvoting
-				console.log(typeof(change))
 				Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (oldupvotes+1), total_votes: (oldtotal_votes+1)}, $push: {users_upvoted: userID}, $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
 
 				})
 			}
 			if (change == -1) { // downvoting
-				console.log(typeof(change))
 				Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (olddownvotes+1), total_votes: (oldtotal_votes-1)}, $push: {users_downvoted: userID}, $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
 					
 				})
