@@ -146,11 +146,12 @@ body {
 
 a {
 	text-decoration: none;
-	color:white;
 }
 
-.page-content {
+.login-reg {
 	color:white;
+	background-color:white;
+	width:96vw;
 }
 
 tbody {

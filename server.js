@@ -10,9 +10,12 @@ const expressLayouts = require('express-ejs-layouts')
 const bcrypt = require('bcryptjs')
 const cookieParser = require('cookie-parser')
 const { response } = require('express');
-const { parse } = require('path');
+const path = require('path');
 const words = require('random-words');
 const fs = require('fs');
+
+
+
 
 app.use(cookieParser())
 
@@ -30,7 +33,7 @@ app.set('layout', 'layouts/layout')
 app.use(cors());
 app.use(express.json())
 app.use(expressLayouts)
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
 const mongoose = require('mongoose')
@@ -86,13 +89,19 @@ app.get('/home', async(req, res) => {
 	valid = await isloggedin(req)
 	
 	if (valid) {
-		res.render('all.ejs')
+		res.render('home.ejs')
 	} else {
 		res.render('login.ejs')
 	}
 })
 
-app.get('/api/get/all', async(req, res) => {	
+app.get('/h/:topic', async(req,res) => {
+	res.render(req.params.topic+'.ejs')
+})
+
+app.get('/api/get/:topic/:page', async(req, res) => {	
+	postsonpage = []
+
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -101,33 +110,60 @@ app.get('/api/get/all', async(req, res) => {
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
-
-	Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
-        if(err){
-          console.log(err);
-        } else{
-			for (i=0;i<posts.length;i++) {
-				if (posts[i].posterID == userID) {
-					postsonpage[i] = posts[i]
-					postsonpage[i].current_user_admin = true
-				} else {
-					postsonpage[i] = posts[i]
-					postsonpage[i].current_user_admin = false
+	
+	if (req.params.topic == "all") {
+		Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
+			if(err){
+			  console.log(err);
+			} else{
+				for (i=0;i<posts.length;i++) {
+					if (posts[i].posterID == userID) {
+						postsonpage[i] = posts[i]
+						postsonpage[i].current_user_admin = true
+					} else {
+						postsonpage[i] = posts[i]
+						postsonpage[i].current_user_admin = false
+					}
+					if (posts[i].users_upvoted.includes(userID)) {
+						postsonpage[i].current_user_upvoted = true
+						postsonpage[i].current_user_downvoted = false
+					}
+					if (posts[i].users_downvoted.includes(userID)) {
+						postsonpage[i].current_user_upvoted = false
+						postsonpage[i].current_user_downvoted = true
+					}
 				}
-				if (posts[i].users_upvoted.includes(userID)) {
-					postsonpage[i].current_user_upvoted = true
-					postsonpage[i].current_user_downvoted = false
-				}
-				if (posts[i].users_downvoted.includes(userID)) {
-					postsonpage[i].current_user_upvoted = false
-					postsonpage[i].current_user_downvoted = true
-				}
-
+				res.send(postsonpage)
 			}
-			
-            res.send(postsonpage)
-        }
-    })
+		})
+	} else {
+		Post.find({topic: req.params.topic}).sort({total_votes: -1}).exec(function(err, posts){
+			if(err){
+			  console.log(err);
+			} else{
+				for (i=0;i<posts.length;i++) {
+					if (posts[i].posterID == userID) {
+						postsonpage[i] = posts[i]
+						postsonpage[i].current_user_admin = true
+					} else {
+						postsonpage[i] = posts[i]
+						postsonpage[i].current_user_admin = false
+					}
+					if (posts[i].users_upvoted.includes(userID)) {
+						postsonpage[i].current_user_upvoted = true
+						postsonpage[i].current_user_downvoted = false
+					}
+					if (posts[i].users_downvoted.includes(userID)) {
+						postsonpage[i].current_user_upvoted = false
+						postsonpage[i].current_user_downvoted = true
+					}
+				}
+				res.send(postsonpage)
+			}
+		})
+	}
+
+	
 })
 
 app.get('/api/get/users', async(req, res) => {	
@@ -231,17 +267,44 @@ app.post('/api/post/post', async(req, res) => {
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		console.log(verified)
 		userID = verified.id
-	} catch (err) {
-		return res.json({ status:"error", code:400, error: err})
-	}
-
-	try {
-		token = req.cookies.token
-		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		poster = verified.name
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
+
+	const path = './views/'+topic+'.ejs'
+
+	fs.access(path, fs.F_OK, (err) => {
+		if (err) {
+			// topic file does not exist yet, let's make a new one
+			fs.copyFile('./views/home.ejs', './views/'+topic+'.ejs', (err) => {
+				if (err) throw err;
+				console.log("new file created: ./views/"+topic+'.ejs')
+			});
+		} else {	
+			// topic file exists, ignore request and move on
+		}
+	})
+
+	let post_datetime = new Date()
+	month = post_datetime.getMonth()+1
+	day = post_datetime.getDate()
+	year = post_datetime.getFullYear()
+	hour = post_datetime.getHours()
+	minute = post_datetime.getMinutes()
+	timestamp = Date.now()
+
+	if (hour > 12) {
+		ampm = "PM"
+		hour -= 12
+	} else {
+		ampm = "AM"
+	}
+	if (minute < 10) {
+		minute = "0"+minute
+	}
+
+	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm
 
 	try {
 		const response = await Post.create({
@@ -251,7 +314,9 @@ app.post('/api/post/post', async(req, res) => {
 			link: link,
 			topic: topic,
 			type: 1, // 1=text, using as temporary default
-			posterID: userID
+			posterID: userID,
+			date: fulldatetime,
+			timestamp:timestamp
 		})
 		console.log('Post created successfully: ', response)
 		res.json({ status:"ok", code:200, data: response})

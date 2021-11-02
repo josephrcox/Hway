@@ -68,9 +68,9 @@ const postObject = {
         var voteUpButton = document.createElement("img")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
-        voteUpButton.src = 'assets/up.gif'
+        voteUpButton.src = '../assets/up.gif'
         if (this.current_user_upvoted && localStorage.getItem(this.id) == 1) {
-            voteUpButton.src = 'assets/up_selected.gif'
+            voteUpButton.src = '../assets/up_selected.gif'
         } 
         
         voteUpButton.style.width = 'auto'
@@ -81,9 +81,9 @@ const postObject = {
         var voteDownButton = document.createElement("img")
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
-        voteDownButton.src = 'assets/down.gif'
+        voteDownButton.src = '../assets/down.gif'
         if (this.current_user_downvoted && localStorage.getItem(this.id) == -1) {
-            voteDownButton.src = 'assets/down_selected.gif'
+            voteDownButton.src = '../assets/down_selected.gif'
         }
         voteDownButton.style.width = 'auto'
         voteDownButton.onclick = function() {
@@ -101,9 +101,12 @@ const postObject = {
         infoCell.setAttribute("id", "info_"+this.id)
         infoCell.setAttribute("class", "infoCell")
 
+        //var topHref = "\""+this.topic+"\""
+        //topHref = "<a href='javascript:loadPosts(0,"+this.topic+",1);'>"
+        //infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='javascript:loadPosts(0,"+"\""+this.topic+"\""+",1);'>"+this.topic+"</a></span>  on " +this.date
         var topHref = "\""+this.topic+"\""
-        topHref = "<a href='javascript:loadPosts(0,"+this.topic+",1);'>"
-        infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='javascript:loadPosts(0,"+"\""+this.topic+"\""+",1);'>"+this.topic+"</a></span>  on " +this.date
+        href = this.topic.replace(/^"(.*)"$/, '$1');
+        infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -148,6 +151,8 @@ const postObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
     }
 }
+
+
 
 const commentObject = {
     body: "",
@@ -224,7 +229,7 @@ const commentObject = {
         var voteUpButton = document.createElement("img")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
-        voteUpButton.src = 'assets/up.gif'
+        voteUpButton.src = '../assets/up.gif'
         voteUpButton.style.width = 'auto'
         voteUpButton.onclick = function() {
             vote(1, this.id)
@@ -233,9 +238,9 @@ const commentObject = {
         var voteDownButton = document.createElement("img")
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
-        voteDownButton.src = 'assets/down.gif'
+        voteDownButton.src = '../assets/down.gif'
         voteDownButton.style.width = 'auto'
-        // voteDownButton.innerHTML = "<img src='assets/down.gif' style='height:30%'>"
+        // voteDownButton.innerHTML = "<img src='../assets/down.gif' style='height:30%'>"
         voteDownButton.onclick = function() {
             vote(-1, this.id)
         }
@@ -249,11 +254,21 @@ const commentObject = {
 }
 
 const loadPosts = async (x, topic, page) => {
-    const response = await fetch('/api/get/all')
+    if (window.location.href.indexOf("/h/") != -1) {
+        console.log("topic page")
+        url = window.location.href
+        topic = url.split('/h/')[1]
+        console.log(topic)
+    } 
+    if (topic == null || topic == "") {
+        topic = "all"
+    }
+    const response = await fetch('/api/get/'+topic+'/'+page)
     const data = await response.json()
     console.log(data)
 
     document.getElementById("postsArray").innerHTML = ""
+
     for (i=0; i<data.length ; i++) {
         let post = Object.create(postObject)
         post.title = data[i].title
@@ -286,6 +301,19 @@ const loadPosts = async (x, topic, page) => {
     }
     topFunction()
     storeAndDisplayTopics()
+        
+}
+
+const loadTopic = async (topic) => {
+    const response = await fetch('/h/'+topic)
+    const data = await response.json()
+    
+}
+
+const topictest = async (x) => {
+    const response = await fetch('/admin/topicfilestest/'+x)
+    const data = await response.json()
+    console.log(data)
 }
 
 function expandDesc(x) {
@@ -425,7 +453,9 @@ const storeAndDisplayTopics = async () => {
     }
     for (j=0;j<topics;j++) {
         var newTopic = document.createElement('a')
-        newTopic.innerHTML = "<a href='javascript:loadPosts(0,"+"\""+data[j][0]+"\""+",1);'>"+data[j][0]+"("+data[j][1]+")</a>"
+        href = data[j][0].replace(/^"(.*)"$/, '$1');
+        //infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
+        newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"</a>"
         document.getElementById("topic-dropdown").appendChild(newTopic)
     }
 }
@@ -456,18 +486,14 @@ const vote = async (d, y) => {
         } else { // downvoting
             if (id != null) {
                 if (document.getElementById("voteUpButton_"+id.substring(13)).src.includes('assets/up_selected.gif')) {
-                    document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up.gif'
+                    document.getElementById("voteUpButton_"+id.substring(13)).src = '../assets/up.gif'
                 } else {
-                    document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down_selected.gif'
+                    document.getElementById("voteDoButton_"+id.substring(13)).src = '../assets/down_selected.gif'
                 }
                 localStorage.removeItem(id.substring(13))
                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount-1
                 const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
-                
-
-                
-                
                 
             }
         }
@@ -476,9 +502,9 @@ const vote = async (d, y) => {
         } else { // upvoting
             if (id != null) {
                 if (document.getElementById("voteDoButton_"+id.substring(13)).src.includes('assets/down_selected.gif')) {
-                    document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down.gif'
+                    document.getElementById("voteDoButton_"+id.substring(13)).src = '../assets/down.gif'
                 } else {
-                    document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up_selected.gif'
+                    document.getElementById("voteUpButton_"+id.substring(13)).src = '../assets/up_selected.gif'
                 }
                 localStorage.removeItem(id.substring(13))
                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
@@ -496,17 +522,14 @@ const vote = async (d, y) => {
             const data = await fetchResponse.json()
             console.log(data)
             if (change == 1) {
-                document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down.gif'
-                document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up_selected.gif'
+                document.getElementById("voteDoButton_"+id.substring(13)).src = '../assets/down.gif'
+                document.getElementById("voteUpButton_"+id.substring(13)).src = '../assets/up_selected.gif'
             } else {
-                document.getElementById("voteDoButton_"+id.substring(13)).src = 'assets/down_selected.gif'
-                document.getElementById("voteUpButton_"+id.substring(13)).src = 'assets/up.gif'
+                document.getElementById("voteDoButton_"+id.substring(13)).src = '../assets/down_selected.gif'
+                document.getElementById("voteUpButton_"+id.substring(13)).src = '../assets/up.gif'
             }
         }
     }
-    
-   
-    // loadPosts("titleCell_"+id.substring(13))
 }
 
 const voteCom = async (d, id) => { 
@@ -782,6 +805,9 @@ const createNewPost = async() => {
     title = document.getElementById("newPost_name").value
     body = document.getElementById("newPost_desc").value
     topic = document.getElementById("newPost_topic").value
+    if (topic == "" || topic == null) {
+        topic = "all"
+    }
 
     bodyJSON = {
         "title":title,

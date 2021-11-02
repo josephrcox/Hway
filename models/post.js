@@ -9,7 +9,8 @@ const postSchema = new mongoose.Schema(
         link: { type:String },
         topic: { type:String, default: "all"},
         type: { type:Number, required:true }, // 1=text, 2=link, 3=media
-        date: { type: Date, default: Date.now },
+        date: { type: String, default: Date.now },
+        timestamp: { type: String },
         comment_count: { type: Number, default: 0},
         total_votes: { type: Number, default: 0},
         upvotes: { type: Number, default: 0},
