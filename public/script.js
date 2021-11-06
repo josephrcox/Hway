@@ -189,7 +189,7 @@ const commentObject = {
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
-                console.log(id)
+                //console.log(id)
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (+)"
                 var x = document.getElementById("bodyCell_"+this.id.substring(10))
@@ -226,10 +226,10 @@ const commentObject = {
         }
 
         document.getElementById("comments").appendChild(comFrame)
-        document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
-        document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
-        document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
-        document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
+        // document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
+        // document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
+        // document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
+        // document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
     }
 }
 
@@ -238,10 +238,10 @@ const loadPosts = async (x, topic, page) => {
         topic = "all"
     }
     if (window.location.href.indexOf("/h/") != -1) {
-        console.log("topic page")
+        //console.log("topic page")
         url = window.location.href
         topic = url.split('/h/')[1]
-        console.log(topic)
+        //console.log(topic)
     } 
     if (window.location.href.indexOf("/posts/") != -1) { // on a specific post page, load only that one post & comments
         url = window.location.href
@@ -277,7 +277,7 @@ const loadPosts = async (x, topic, page) => {
         post.display()
 
         for (i=0;i<data.comments.length;i++) {
-            console.log(data.comments[i])
+            //console.log(data.comments[i])
             let com = Object.create(commentObject)
             com.body = data.comments[i].body
             com.id = data.comments[i]._id
@@ -302,7 +302,7 @@ const loadPosts = async (x, topic, page) => {
     } else {
         const response = await fetch('/api/get/'+topic+'/'+page)
         const data = await response.json()
-        console.log(data)
+        //console.log(data)
 
         document.getElementById("postsArray").innerHTML = ""
 
@@ -342,7 +342,7 @@ const loadPosts = async (x, topic, page) => {
     }
 
     cTopic = topic
-    console.log(cTopic)
+    //console.log(cTopic)
     
 }
 
@@ -452,7 +452,7 @@ const vote = async (d, y) => {
             document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+change
             const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
             const data = await fetchResponse.json()
-            console.log(data)
+            //console.log(data)
             if (change == 1) {
                 document.getElementById("voteDoButton_"+id.substring(13)).src = '../assets/down.gif'
                 document.getElementById("voteUpButton_"+id.substring(13)).src = '../assets/up_selected.gif'
@@ -727,7 +727,7 @@ const createNewPost = async() => {
     }); 
     const data = await fetchResponse.json()
 
-    console.log(data.code)
+    //console.log(data.code)
     document.getElementById("newPost_name").innerHTML = ""
     document.getElementById("newPost_desc").innerHTML = ""
     document.getElementById("newPost_topic").innerHTML = ""

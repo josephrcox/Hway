@@ -43,7 +43,7 @@ mongoose.connect(process.env.DATEBASE_URL, {
 const connection = mongoose.connection;
 
 connection.once("open", function() {
-  console.log("MongoDB database connection established successfully");
+  //console.log("MongoDB database connection established successfully");
 });
 
 const User = require('./models/user')
@@ -70,7 +70,7 @@ app.get('/api/get/currentuser', function (req, res) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		console.log(verified)
+		//console.log(verified)
 		res.json(verified)
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
@@ -115,7 +115,7 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		console.log(verified)
+		//console.log(verified)
 		userID = verified.id
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
@@ -124,7 +124,7 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	if (req.params.topic == "all") {
 		Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
 			if(err){
-			  console.log(err);
+			  //console.log(err);
 			} else{
 				for (i=0;i<posts.length;i++) {
 					if (posts[i].posterID == userID) {
@@ -149,7 +149,7 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	} else {
 		Post.find({topic: req.params.topic}).sort({total_votes: -1}).exec(function(err, posts){
 			if(err){
-			  console.log(err);
+			  //console.log(err);
 			} else{
 				for (i=0;i<posts.length;i++) {
 					if (posts[i].posterID == userID) {
@@ -179,7 +179,7 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 app.get('/api/get/users', async(req, res) => {	
 	User.find({}, function(err, users){
         if(err){
-          console.log(err);
+          //console.log(err);
         } else{
 			
             res.send(users)
@@ -192,7 +192,7 @@ app.get('/api/get/topics', async(req, res) => {
 	topicCount = []
 	Post.find({}, function(err, posts){
         if(err){
-          console.log(err);
+          //console.log(err);
         } else{
 			
 			for (i=0;i<posts.length;i++) {
@@ -213,7 +213,7 @@ app.get('/api/get/topics', async(req, res) => {
 			joinedArray.sort(function(a,b) {
 				return b[1] - a[1]
 			})
-			console.log(joinedArray)
+			//console.log(joinedArray)
 			res.send(joinedArray)
         }
 
@@ -256,7 +256,7 @@ app.post('/register', async(req, res) => {
             name: name,
             password: password
 		})
-		console.log('User created successfully: ', response)
+		//console.log('User created successfully: ', response)
 	} catch (error) {
 		if (error.code === 11000) {
 			// duplicate key
@@ -276,7 +276,7 @@ app.post('/api/post/post', async(req, res) => {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		console.log(verified)
+		//console.log(verified)
 		userID = verified.id
 		poster = verified.name
 	} catch (err) {
@@ -290,7 +290,7 @@ app.post('/api/post/post', async(req, res) => {
 			// topic file does not exist yet, let's make a new one
 			fs.copyFile('./views/home.ejs', './views/'+topic+'.ejs', (err) => {
 				if (err) throw err;
-				console.log("new file created: ./views/"+topic+'.ejs')
+				//console.log("new file created: ./views/"+topic+'.ejs')
 			});
 		} else {	
 			// topic file exists, ignore request and move on
@@ -329,10 +329,10 @@ app.post('/api/post/post', async(req, res) => {
 			date: fulldatetime,
 			timestamp:timestamp
 		})
-		console.log('Post created successfully: ', response)
+		//console.log('Post created successfully: ', response)
 		res.json({ status:"ok", code:200, data: response})
 	} catch (error) {
-		console.log(error)
+		//console.log(error)
 		res.json(error)
 	}
 })
@@ -344,7 +344,7 @@ app.post('/api/post/comment/', async(req, res) => {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		console.log(verified)
+		//console.log(verified)
 		userID = verified.id
 		
 		username = verified.name
@@ -407,10 +407,10 @@ app.post('/api/post/comment/', async(req, res) => {
 	// 		date: fulldatetime,
 	// 		timestamp:timestamp
 	// 	})
-	// 	console.log('Post created successfully: ', response)
+	// 	//console.log('Post created successfully: ', response)
 	// 	res.json({ status:"ok", code:200, data: response})
 	// } catch (error) {
-	// 	console.log(error)
+	// 	//console.log(error)
 	// 	res.json(error)
 	// }
 })
@@ -419,7 +419,7 @@ function isloggedin(req) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		console.log("verified:"+JSON.stringify(verified))
+		//console.log("verified:"+JSON.stringify(verified))
 		if (JSON.stringify(verified).status == "error") {
 			return false
 		} else {
@@ -437,9 +437,9 @@ app.put('/vote/:id/:y', function(req,res) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		console.log(verified)
+		//console.log(verified)
 		userID = verified.id
-		console.log("id:"+userID)
+		//console.log("id:"+userID)
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
