@@ -34,10 +34,11 @@ const postObject = {
     date: "",
     link: "",
     topic: "",
-    comment_count:"",
     current_user_upvoted: "",
     current_user_downvoted: "",
     current_user_admin: "",
+    comments: [],
+    comment_count: "",
 
     display() {
         var postContainer = document.createElement("div")
@@ -52,13 +53,16 @@ const postObject = {
         var voteDiv = document.createElement("div")
         voteDiv.setAttribute("id", "voteDiv_"+this.id)
         voteDiv.setAttribute("class", "voteDiv")
-        var openPostButton = document.createElement("BUTTON")
+
+        var openPostButton = document.createElement("img")
         openPostButton.setAttribute("id", "openPostButton_"+this.id)
         openPostButton.setAttribute("class", "openPostButton")
-        openPostButton.innerHTML = "Open"
+        openPostButton.innerHTML = "<a href='/posts/"+this.id+"'></a>"
+        openPostButton.src = '../assets/speech_bubble.png'
         openPostButton.onclick = function() {
-            loadSpecificPosts(this.id.substring(15))
-        }
+            window.location.href = '/posts/'+this.id.substring(15)
+        }   
+        openPostButton.style.width = 'auto'
 
         var voteCount = document.createElement("div")
         voteCount.setAttribute("id","voteCount_"+this.id)
@@ -157,10 +161,7 @@ const postObject = {
 const commentObject = {
     body: "",
     id: "",
-    pid: "",
     total_votes: "",
-    uptotal_votes: "",
-    downtotal_votes: "",
     poster: "",
     date: "",
 
@@ -245,7 +246,6 @@ const commentObject = {
             vote(-1, this.id)
         }
 
-        document.getElementById("comment_count").appendChild(comFrame)
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
@@ -254,53 +254,98 @@ const commentObject = {
 }
 
 const loadPosts = async (x, topic, page) => {
+    if (topic == null || topic == "") {
+        topic = "all"
+    }
     if (window.location.href.indexOf("/h/") != -1) {
         console.log("topic page")
         url = window.location.href
         topic = url.split('/h/')[1]
         console.log(topic)
     } 
-    if (topic == null || topic == "") {
-        topic = "all"
-    }
-    const response = await fetch('/api/get/'+topic+'/'+page)
-    const data = await response.json()
-    console.log(data)
+    if (window.location.href.indexOf("/posts/") != -1) { // on a specific post page, load only that one post & comments
+        url = window.location.href
+        postid = url.split('/posts/')[1]
+        const response = await fetch('/api/get/posts/'+postid)
+        const data = await response.json()
+        document.getElementById("postsArray").innerHTML = ""
 
-    document.getElementById("postsArray").innerHTML = ""
-
-    for (i=0; i<data.length ; i++) {
         let post = Object.create(postObject)
-        post.title = data[i].title
-        post.body = data[i].body
+        post.title = data.title
+        post.body = data.body
         if (post.body == "" || post.body == undefined || post.body == null) {
             post.body = "(empty)"
         }
-        post.total_votes = data[i].total_votes
-        post.upvotes = data[i].upvotes
-        post.downvotes = data[i].downvotes
-        post.id = data[i]._id
-        post.poster = data[i].poster
-        post.date = data[i].date
+        post.total_votes = data.total_votes
+        post.upvotes = data.upvotes
+        post.downvotes = data.downvotes
+        post.id = data._id
+        post.poster = data.poster
+        post.date = data.date
         post.descDisplayed = false
-        post.link = data[i].link
-        post.type = data[i].type // 1=text, 2=link, 3=media
-        post.topic = data[i].topic
-        post.comment_count = data[i].comment_count
+        post.link = data.link
+        post.type = data.type // 1=text, 2=link, 3=media
+        post.topic = data.topic
+        post.comment_count = data.comments.length
+        post.comments = data.comments
 
-        post.current_user_upvoted = data[i].current_user_upvoted
-        post.current_user_downvoted = data[i].current_user_downvoted
-        post.current_user_admin = data[i].current_user_admin
+        post.current_user_upvoted = data.current_user_upvoted
+        post.current_user_downvoted = data.current_user_downvoted
+        post.current_user_admin = data.current_user_admin
 
         posts.push(post)
         post.display()
-    }
+        
+        if (x != 0) {
+            expandDesc(x)
+        }
+        topFunction()
+        storeAndDisplayTopics()
+        document.getElementById("commentSection").style.display = 'block'
+        
+    } else {
+        const response = await fetch('/api/get/'+topic+'/'+page)
+        const data = await response.json()
+        console.log(data)
+
+        document.getElementById("postsArray").innerHTML = ""
+
+        for (i=0; i<data.length ; i++) {
+            let post = Object.create(postObject)
+            post.title = data[i].title
+            post.body = data[i].body
+            if (post.body == "" || post.body == undefined || post.body == null) {
+                post.body = "(empty)"
+            }
+            post.total_votes = data[i].total_votes
+            post.upvotes = data[i].upvotes
+            post.downvotes = data[i].downvotes
+            post.id = data[i]._id
+            post.poster = data[i].poster
+            post.date = data[i].date
+            post.descDisplayed = false
+            post.link = data[i].link
+            post.type = data[i].type // 1=text, 2=link, 3=media
+            post.topic = data[i].topic
+            post.comment_count = data[i].comments.length
+            post.comments = data[i].comments
+
+            post.current_user_upvoted = data[i].current_user_upvoted
+            post.current_user_downvoted = data[i].current_user_downvoted
+            post.current_user_admin = data[i].current_user_admin
+
+            posts.push(post)
+            post.display()
+        }
+        
+        if (x != 0) {
+            expandDesc(x)
+        }
+        topFunction()
+        storeAndDisplayTopics()
+        }
+
     
-    if (x != 0) {
-        expandDesc(x)
-    }
-    topFunction()
-    storeAndDisplayTopics()
         
 }
 
@@ -572,16 +617,14 @@ const voteCom = async (d, id) => {
     }
 }
 
-const comment = async (x, y, z, uvo) => { 
-    if (y != null && y != "") {
+const comment = async (postid, body) => { 
+    if (body != null && body != "") {
         bodyJSON = {
-            "id":x,
-            "body":y,
-            "poster":z,
-            "usernameValid":uvo
+            "id":postid,
+            "body":body,
         }
     
-        const fetchResponse = await fetch('/comment/', {
+        const fetchResponse = await fetch('/api/post/comment/', {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -602,8 +645,7 @@ const comment = async (x, y, z, uvo) => {
 
         comment_count.push(com.id)
         commentParentPair.push(com.pid)
-        storeUserID(false)
-        com.display()
+        // com.display()
     }
 }
 
@@ -751,25 +793,9 @@ document.getElementById("newPost_type_media").onclick = function() {
 document.getElementById("newCom_submit").onclick = function() {
 
     commentContent = document.getElementById("newCom_body").value
-    commentUsername = document.getElementById("newCom_user").value.replace(/[\. ,:-]+/g, "-")
-
-    if (commentContent == "" || commentContent == null) {
-        document.getElementById("newCom_logs").innerHTML = "Please enter comment"
-    } else {
-        if (usernameArray.includes(commentUsername)) {
-            index = usernameArray.indexOf(commentUsername)
-            if (localStorage.getItem(idArray[index]) == "true") {
-                comment(cID, commentContent, commentUsername, true)
-            } else {
-                comment(cID, commentContent, commentUsername, false)
-            }
-        } else {
-            comment(cID, commentContent, commentUsername, true)
-        }
-    }
+    comment(cID, commentContent)
 
     document.getElementById("newCom_body").value = ""
-    document.getElementById("newCom_user").value = ""
 }
 
 function postRandomly() {

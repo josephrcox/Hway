@@ -165,7 +165,7 @@ tbody {
 }
 .voteCount {
 	padding-right: 10px;
-	padding-left: 3px;
+	margin-left:10px;
 	color: white;
 	font-weight: 1000;
 	align-self: center;
@@ -260,6 +260,7 @@ label {
 	flex-direction: row;
 	background-color: #0b4457;
 	border-top:1px solid black;
+	border:1px solid black;
 }
 
 .comVoteDiv {
@@ -344,7 +345,12 @@ label {
 }
 
 #commentSection {
-	padding-top:20px;
+	margin-top:15px;
+	padding-top:5px;
+	padding-left: 5px;
+	background-color:gray;
+	width:96vw;
+	
 }
 
 #newCom_body {
@@ -373,8 +379,18 @@ label {
 }
 
 .openPostButton {
-	margin-left:20px;
+	padding-left:7px;
+	border-left:1px dotted black;
+	margin-top:0px;
+	text-decoration: unset;
+	color:white;
+	height:29px;
 }
+
+a:visited { 
+ text-decoration: none;
+}
+a:hover { text-decoration: none; color:red; }
 
 #currentUser {
 	padding-right:10px;

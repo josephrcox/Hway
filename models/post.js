@@ -11,7 +11,6 @@ const postSchema = new mongoose.Schema(
         type: { type:Number, required:true }, // 1=text, 2=link, 3=media
         date: { type: String, default: Date.now },
         timestamp: { type: String },
-        comment_count: { type: Number, default: 0},
         total_votes: { type: Number, default: 0},
         upvotes: { type: Number, default: 0},
         downvotes: { type: Number, default: 0},
@@ -20,6 +19,7 @@ const postSchema = new mongoose.Schema(
         current_user_upvoted: { type: Boolean},
         current_user_downvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
+        comments: { type:Array }
     }, 
     { collection: 'posts'}
 )

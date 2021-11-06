@@ -99,6 +99,16 @@ app.get('/h/:topic', async(req,res) => {
 	res.render('home.ejs', {topic:"- "+req.params.topic})
 })
 
+app.get('/posts/:postid', async(req,res) => {	
+	res.render('home.ejs', {topic:""})
+})
+
+app.get('/api/get/posts/:postid', async(req,res) => {	
+	Post.findById(req.params.postid, function (err, post) {
+		res.send(post)
+	})
+})
+
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
 
@@ -325,6 +335,83 @@ app.post('/api/post/post', async(req, res) => {
 		console.log(error)
 		res.json(error)
 	}
+})
+
+
+app.post('/api/post/comment/', async(req, res) => {
+	const {body:reqbody, postid} = req.body
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		console.log(verified)
+		userID = verified.id
+		
+		username = verified.name
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	let post_datetime = new Date()
+	month = post_datetime.getMonth()+1
+	day = post_datetime.getDate()
+	year = post_datetime.getFullYear()
+	hour = post_datetime.getHours()
+	minute = post_datetime.getMinutes()
+	timestamp = Date.now()
+
+	if (hour > 12) {
+		ampm = "PM"
+		hour -= 12
+	} else {
+		ampm = "AM"
+	}
+	if (minute < 10) {
+		minute = "0"+minute
+	}
+
+	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm
+
+	try {
+		Post.findOne({id: postid}, function(err, docs) {
+			commentArray = docs.comments
+			newComment = {
+				'body': reqbody,
+				'poster':username,
+				'posterID': userID,
+				'date': fulldatetime,
+				'timestamp':timestamp,
+				'total_votes':0
+			}
+			commentArray.push(newComment)
+			docs.comments = commentArray
+			docs.save()
+			res.sendStatus(200)
+		})
+	} catch(err) {
+		res.send(err)
+	}
+	
+        
+	
+	// try {
+	// 	const response = await Post.create({
+    //         title: title, 
+	// 		body: body, 
+	// 		poster: poster,
+	// 		link: link,
+	// 		topic: topic,
+	// 		type: 1, // 1=text, using as temporary default
+	// 		posterID: userID,
+	// 		date: fulldatetime,
+	// 		timestamp:timestamp
+	// 	})
+	// 	console.log('Post created successfully: ', response)
+	// 	res.json({ status:"ok", code:200, data: response})
+	// } catch (error) {
+	// 	console.log(error)
+	// 	res.json(error)
+	// }
 })
 
 function isloggedin(req) {
