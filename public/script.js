@@ -524,15 +524,14 @@ const comment = async (postid, body) => {
         let com = Object.create(commentObject)
         com.body = data.body
         com.id = data._id
-        com.pid = data.parent
         com.total_votes = data.total_votes
-        com.uptotal_votes = data.uptotal_votes
-        com.downtotal_votes = data.downtotal_votes
         com.poster = data.poster
-
+        com.posterID = data.posterID
+        com.date = data.date
+        com.display()
+        
         comment_count.push(com.id)
-        commentParentPair.push(com.pid)
-        // com.display()
+        commentBodies.push(com.body)
     }
 }
 

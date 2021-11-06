@@ -387,7 +387,7 @@ app.post('/api/post/comment/', async(req, res) => {
 			commentArray.push(newComment)
 			docs.comments = commentArray
 			docs.save()
-			res.sendStatus(200)
+			res.json(newComment)
 		})
 	} catch(err) {
 		res.send(err)
