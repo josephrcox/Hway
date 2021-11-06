@@ -1,13 +1,15 @@
 <div class="login-reg">
-    <h1 style='color:black'>Registration v2</h1>
+    <h1 style='color:black'>Sign up</h1>
         <form id="reg-form">
             <input type="text" autocomplete="off" id="username" name="name" placeholder="Name" />
             <input type="password" autocomplete="off" id="password" name="password" placeholder="password" />
-            <input type="submit" value="Submit form"/>
+            <input type="submit" value="Register"/>
         </form>
         <div id='logs'></div>
-
-    <a href="/login">Login</a>
+    
+    <br>
+    <br>
+    <a href="/login">Already signed up? <strong>Click here!</strong></a>
 </div>
 <script>
 
@@ -36,7 +38,38 @@ async function registerUser(event) {
     
     if (data.code == 200) {
         //console.log("success: 200")
-        window.location.href = '/login'
+        loginUser(name, password)
+    } 
+    if (data.code == 400) {
+        document.getElementById("logs").innerHTML = data.error
+    }
+
+    if (fetchResponse.status != '200' || fetchResponse.status != 200) {
+        document.getElementById("logs").innerHTML = fetchResponse.error;
+    }
+}
+
+async function loginUser(name, password) {
+    bodyJSON = {
+        "name":name,
+        "password":password
+    }
+
+    const fetchResponse = await fetch('/login', {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'POST',
+        body: JSON.stringify(bodyJSON)
+    });
+    const data = await fetchResponse.json()
+    
+    if (data.code == 200) {
+        //console.log("success: 200")
+        //console.log(data.data)
+        localStorage.clear()
+        window.location.href = "/home"
     } 
     if (data.code == 400) {
         document.getElementById("logs").innerHTML = data.error

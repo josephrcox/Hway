@@ -3,11 +3,12 @@
         <form id="reg-form">
             <input type="text" autocomplete="off" id="username" name="name" placeholder="Name" />
             <input type="password" autocomplete="off" id="password" name="password" placeholder="password" />
-            <input type="submit" value="Submit form"/>
+            <input type="submit" value="Login"/>
         </form>
         <div id='logs'></div>
-
-    <a href="/register">Register </a>
+    <br>
+    <br>
+    <a href="/register">Haven't signed up? <strong> Click here! </strong> </a>
 </div>
 <script>
 
@@ -38,7 +39,7 @@ async function loginUser(event) {
         //console.log("success: 200")
         //console.log(data.data)
         localStorage.clear()
-        window.location.href = "/"
+        window.location.href = "/home"
     } 
     if (data.code == 400) {
         document.getElementById("logs").innerHTML = data.error

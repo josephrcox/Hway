@@ -11,11 +11,7 @@ const bcrypt = require('bcryptjs')
 const cookieParser = require('cookie-parser')
 const { response } = require('express');
 const path = require('path');
-const words = require('random-words');
 const fs = require('fs');
-
-
-
 
 app.use(cookieParser())
 
@@ -283,20 +279,6 @@ app.post('/api/post/post', async(req, res) => {
 		return res.json({ status:"error", code:400, error: err})
 	}
 
-	const path = './views/'+topic+'.ejs'
-
-	fs.access(path, fs.F_OK, (err) => {
-		if (err) {
-			// topic file does not exist yet, let's make a new one
-			fs.copyFile('./views/home.ejs', './views/'+topic+'.ejs', (err) => {
-				if (err) throw err;
-				//console.log("new file created: ./views/"+topic+'.ejs')
-			});
-		} else {	
-			// topic file exists, ignore request and move on
-		}
-	})
-
 	let post_datetime = new Date()
 	month = post_datetime.getMonth()+1
 	day = post_datetime.getDate()
@@ -339,7 +321,8 @@ app.post('/api/post/post', async(req, res) => {
 
 
 app.post('/api/post/comment/', async(req, res) => {
-	const {body:reqbody, postid} = req.body
+	const {body:reqbody, id} = req.body
+	console.log(id)
 
 	try {
 		token = req.cookies.token
@@ -373,7 +356,8 @@ app.post('/api/post/comment/', async(req, res) => {
 	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm
 
 	try {
-		Post.findOne({id: postid}, function(err, docs) {
+		Post.findById(id, function(err, docs) {
+			console.log(docs)
 			commentArray = docs.comments
 			newComment = {
 				'body': reqbody,

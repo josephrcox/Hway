@@ -163,7 +163,6 @@ a {
 }
 
 .login-reg {
-	color:white;
 	background-color:white;
 	width:96vw;
 }
@@ -177,7 +176,7 @@ tbody {
 	font-size: smaller;
 	color: lightblue;
 }
-.voteCount {
+.voteCount, .commentCount {
 	padding-right: 10px;
 	margin-left:10px;
 	color: white;
@@ -368,6 +367,7 @@ label {
 
 .bodyCell {
 	width:96vw;
+	white-space:break-spaces;
 }
 
 #newCom_submit {
@@ -406,4 +406,16 @@ a:hover { text-decoration: none; color:red; }
 	color:blue;
 	font-variant:all-small-caps;
 	font-weight: 200;
+}
+
+.commentCount {
+	font-size:12px;
+}
+
+.index_item {
+	padding-bottom: 15px;
+	padding-top:15px;
+  font-size:24px;
+	text-align: center;
+	border:1px double gray;
 }

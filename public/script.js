@@ -64,6 +64,10 @@ const postObject = {
         }   
         openPostButton.style.width = 'auto'
 
+        var commentCount = document.createElement("div")
+        commentCount.innerHTML = "("+this.comments.length+")"
+        commentCount.setAttribute("class", "commentCount")
+
         var voteCount = document.createElement("div")
         voteCount.setAttribute("id","voteCount_"+this.id)
         voteCount.setAttribute("class","voteCount")
@@ -150,6 +154,7 @@ const postObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
         document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
+        document.getElementById("voteDiv_"+this.id).appendChild(commentCount)
     }
 }
 
@@ -234,6 +239,8 @@ const commentObject = {
 }
 
 const loadPosts = async (x, topic, page) => {
+    // user is logged in
+    document.getElementById("logout_button").style.display = 'block'
     if (topic == null || topic == "") {
         topic = "all"
     }
@@ -291,6 +298,7 @@ const loadPosts = async (x, topic, page) => {
             commentParentPair.push(com.pid)
             commentBodies.push(com.body)
         }
+        cID = post.id
         
         if (x != 0) {
             expandDesc(x)
@@ -505,6 +513,7 @@ const vote = async (d, y) => {
 // }
 
 const comment = async (postid, body) => { 
+    body = document.getElementById("newCom_body").value
     if (body != null && body != "") {
         bodyJSON = {
             "id":postid,
@@ -669,8 +678,8 @@ document.getElementById("newPost_type_media").onclick = function() {
 }
 
 document.getElementById("newCom_submit").onclick = function() {
-    commentContent = document.getElementById("newCom_body").value
-    comment(cID, commentContent)
+    
+    comment(cID, "x")
 
     document.getElementById("newCom_body").value = ""
 }
@@ -701,7 +710,7 @@ function postRandomly() {
 
     topicStr = englishWordsArrayForRandomization[Math.floor(Math.random() * 1000)]
 
-    postText(titleStr, bodyStr, posterStr, true, topicStr)
+    postText(titleStr, bodyStr, topicStr)
 }
 
 const createNewPost = async() => {
