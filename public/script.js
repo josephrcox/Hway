@@ -116,7 +116,7 @@ const postObject = {
 
         titleCell.innerHTML = this.title
 
-        if (this.type == "media") {
+        if (this.type == "3") {
             var photo = document.createElement("img")
             photo.src = './image.jpg'
             descCell.innerHTML = "<img src='"+this.mediaURL+"'>"
@@ -130,7 +130,7 @@ const postObject = {
             titleCell.innerHTML = this.title+"<span style='font-size:12px'>        (+)</span>"  
         } 
 
-        if (this.type == "link") {
+        if (this.type == "2") {
             let domain = (new URL(this.link));
             domain = domain.hostname.replace('www.','');
             titleCell.innerHTML = "🔗       <a href='" + this.link +"'>"+this.title+"</a> <span style='font-size: 10px'>("+domain+"...)</span>"
