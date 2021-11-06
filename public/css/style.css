@@ -344,12 +344,12 @@ label {
 	width:70vw;
 }
 
-#commentSection {
+.newComContainer {
 	margin-top:15px;
 	padding-top:5px;
 	padding-left: 5px;
 	background-color:gray;
-	width:96vw;
+	width:95vw;
 	
 }
 
@@ -395,7 +395,7 @@ a:hover { text-decoration: none; color:red; }
 #currentUser {
 	padding-right:10px;
 	padding-left:10px;
-	margin-top:1px;
+	margin-top:1px; 
 	color:blue;
 	font-variant:all-small-caps;
 	font-weight: 200;

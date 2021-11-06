@@ -156,13 +156,12 @@ const postObject = {
     }
 }
 
-
-
 const commentObject = {
     body: "",
     id: "",
     total_votes: "",
     poster: "",
+    posterID: "",
     date: "",
 
     display() {
@@ -192,7 +191,8 @@ const commentObject = {
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" says")[0]
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (-)"
-                body.innerHTML = getComment(id, "body")
+                body.innerHTML = getComment(id)
+                console.log(id)
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (+)"
                 collapseComment(this.id.substring(10))
@@ -209,24 +209,6 @@ const commentObject = {
         voteCount.setAttribute("class","comVoteCount")
         voteCount.innerHTML = this.total_votes
 
-        // var voteUpButton = document.createElement("BUTTON")
-        // voteUpButton.setAttribute("type","button")
-        // voteUpButton.setAttribute("id","voteUpButton_"+this.id)
-        // voteUpButton.setAttribute("class","voteUpButton")
-        // voteUpButton.innerHTML = "👍"
-        // voteUpButton.onclick = function() {
-        //     voteCom(1, this.id)
-        // }
-
-        // var voteDownButton = document.createElement("BUTTON")
-        // voteDownButton.setAttribute("id","voteDoButton_"+this.id)
-        // voteDownButton.setAttribute("class","voteDoButton")
-        // voteDownButton.onclick = function() {
-        //     voteCom(-1, this.id)
-        // }
-        
-        // voteDownButton.innerHTML = "👎"
-
         var voteUpButton = document.createElement("img")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
@@ -241,11 +223,11 @@ const commentObject = {
         voteDownButton.setAttribute("class","voteDoButton")
         voteDownButton.src = '../assets/down.gif'
         voteDownButton.style.width = 'auto'
-        // voteDownButton.innerHTML = "<img src='../assets/down.gif' style='height:30%'>"
         voteDownButton.onclick = function() {
             vote(-1, this.id)
         }
 
+        document.getElementById("comments").appendChild(comFrame)
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
@@ -295,6 +277,22 @@ const loadPosts = async (x, topic, page) => {
 
         posts.push(post)
         post.display()
+
+        for (i=0;i<data.comments.length;i++) {
+            console.log(data.comments[i])
+            let com = Object.create(commentObject)
+            com.body = data.comments[i].body
+            com.id = data.comments[i]._id
+            com.total_votes = data.comments[i].total_votes
+            com.poster = data.comments[i].poster
+            com.posterID = data.comments[i].posterID
+            com.date = data.comments[i].date
+            com.display()
+            
+            comment_count.push(com.id)
+            commentParentPair.push(com.pid)
+            commentBodies.push(com.body)
+        }
         
         if (x != 0) {
             expandDesc(x)
@@ -448,14 +446,19 @@ const loadSpecificPosts = async (postid) => {
         post.display()
     }
 
+    for (i=0;i<data.comments.length;i++) {
+        console.log('hello')
+        console.log(data.comments[i])
+    }
+
     loadcomment_count(postid)
 
     topFunction()
     document.getElementById("comment_countection").style.display = 'block'
 }
 
-function getComment(commentid, type) {
-    index = comment_count.indexOf(commentid)
+function getComment(commentid) {
+    index = comment_count.indexOf(parseInt(commentid))
     return commentBodies[index]
 }
 

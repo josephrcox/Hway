@@ -381,7 +381,8 @@ app.post('/api/post/comment/', async(req, res) => {
 				'posterID': userID,
 				'date': fulldatetime,
 				'timestamp':timestamp,
-				'total_votes':0
+				'total_votes':0,
+				'_id': Math.floor(Math.random() * Date.now()) // generates a random id
 			}
 			commentArray.push(newComment)
 			docs.comments = commentArray
@@ -477,4 +478,4 @@ app.put('/vote/:id/:y', function(req,res) {
 	}
 })
 
-app.listen(process.env.PORT || 5000)
+app.listen(process.env.PORT || 3000)
