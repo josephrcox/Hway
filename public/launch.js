@@ -46,7 +46,7 @@ var info={
 document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
 
 loadUsersFromServer()
-page_all()
+launch()
 
 var mybutton = document.getElementById("button_sendtotop");
 

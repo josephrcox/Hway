@@ -105,9 +105,6 @@ const postObject = {
         infoCell.setAttribute("id", "info_"+this.id)
         infoCell.setAttribute("class", "infoCell")
 
-        //var topHref = "\""+this.topic+"\""
-        //topHref = "<a href='javascript:loadPosts(0,"+this.topic+",1);'>"
-        //infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='javascript:loadPosts(0,"+"\""+this.topic+"\""+",1);'>"+this.topic+"</a></span>  on " +this.date
         var topHref = "\""+this.topic+"\""
         href = this.topic.replace(/^"(.*)"$/, '$1');
         infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
@@ -191,11 +188,12 @@ const commentObject = {
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" says")[0]
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (-)"
-                body.innerHTML = getComment(id)
+                body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
                 console.log(id)
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (+)"
-                collapseComment(this.id.substring(10))
+                var x = document.getElementById("bodyCell_"+this.id.substring(10))
+                x.innerHTML = ""
             }
             
         }
@@ -341,22 +339,11 @@ const loadPosts = async (x, topic, page) => {
         }
         topFunction()
         storeAndDisplayTopics()
-        }
+    }
 
+    cTopic = topic
+    console.log(cTopic)
     
-        
-}
-
-const loadTopic = async (topic) => {
-    const response = await fetch('/h/'+topic)
-    const data = await response.json()
-    
-}
-
-const topictest = async (x) => {
-    const response = await fetch('/admin/topicfilestest/'+x)
-    const data = await response.json()
-    console.log(data)
 }
 
 function expandDesc(x) {
@@ -373,26 +360,6 @@ function expandDesc(x) {
     }
 }
 
-const deletePost = async (x) => {
-    const settings = {
-        method: 'POST',
-    };
-    for (i=0;i<posts.length;i++) {
-        if (posts[i].id == x) {
-            if (posts[i].hasPW == "false" || posts[i].hasPW == false || posts[i].hasPW == null) {
-                const fetchResponse = await fetch('/deletepost/'+x, settings); 
-            } else {
-                pwEntered = prompt("What is the password to delete this?")
-                const fetchResponse = await fetch('/deletepost/pw/'+pwEntered+"/"+x, settings); 
-                if (fetchResponse.status == 403) {
-                    alert("Incorrect.")
-                }
-            }
-        }
-    }
-    loadPosts(0, "", 1)
-}
-
 const loadUsersFromServer = async () => {
     const response = await fetch('/api/get/users')
     const data = await response.json()
@@ -405,87 +372,13 @@ const loadUsersFromServer = async () => {
         localStorage.clear()
     }
 
-    brightness = 1
+    brightness = 2
     for (i=0;i<usernameArray.length;i++) {
         color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
         var rgb = [Math.random() * 256, Math.random() * 256, Math.random() * 256];
         var mix = [brightness*51, brightness*51, brightness*51]; //51 => 255/5
         var mixedrgb = [rgb[0] + mix[0], rgb[1] + mix[1], rgb[2] + mix[2]].map(function(x){ return Math.round(x/2.0)})
         usernameColorArray[i] = "rgb(" + mixedrgb.join(",") + ")";
-    }
-}
-
-const loadSpecificPosts = async (postid) => {
-    cID = postid
-    const response = await fetch('/posts/'+postid)
-    var data = await response.json()
-
-    document.getElementById("postsArray").innerHTML = ""
-    for (i=0; i<data.length ; i++) {
-        let post = Object.create(postObject)
-        post.title = data[i].title
-        post.body = data[i].body
-        if (post.body == "" || post.body == undefined || post.body == null) {
-            post.body = "(empty)"
-        }
-        post.uptotal_votes = data[i].uptotal_votes
-        post.downtotal_votes = data[i].downtotal_votes
-        post.total_votes = post.uptotal_votes - post.downtotal_votes
-        post.id = data[i]._id
-        post.poster = data[i].poster
-        post.date = data[i].date
-        post.descDisplayed = false
-        post.link = data[i].link
-        post.type = data[i].type
-        post.hasPW = data[i].haspw
-        post.mediaURL = data[i].src
-        post.topic = data[i].topic
-        post.comment_count = data[i].comment_count
-
-        posts.push(post)
-        post.display()
-    }
-
-    for (i=0;i<data.comments.length;i++) {
-        console.log('hello')
-        console.log(data.comments[i])
-    }
-
-    loadcomment_count(postid)
-
-    topFunction()
-    document.getElementById("comment_countection").style.display = 'block'
-}
-
-function getComment(commentid) {
-    index = comment_count.indexOf(parseInt(commentid))
-    return commentBodies[index]
-}
-
-const loadcomment_count = async (postid) => {
-    const response = await fetch('/posts/'+postid+'/comment_count')
-    var data = await response.json()
-    document.getElementById("comment_count").innerHTML = ""
-    for (i=0; i<data.length ; i++) {
-        if (data[i].body == null && data[i].body == "") {
-            return
-        } else {
-            let com = Object.create(commentObject)
-            com.body = data[i].body
-            com.id = data[i]._id
-            com.pid = data[i].parent
-            com.total_votes = data[i].total_votes
-            com.uptotal_votes = data[i].uptotal_votes
-            com.downtotal_votes = data[i].downtotal_votes
-            com.poster = data[i].poster
-            com.date = data[i].date
-
-            comment_count.push(com.id)
-            commentParentPair.push(com.pid)
-            commentBodies.push(com.body)
-
-            com.display()
-        }
     }
 }
 
@@ -502,18 +395,9 @@ const storeAndDisplayTopics = async () => {
     for (j=0;j<topics;j++) {
         var newTopic = document.createElement('a')
         href = data[j][0].replace(/^"(.*)"$/, '$1');
-        //infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
         newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"("+data[j][1]+")</a>"
         document.getElementById("topic-dropdown").appendChild(newTopic)
     }
-}
-
-const itemCounter = (item) => {
-    let counter = 1
-    topicNameArray.flat(Infinity).forEach(x => {
-      if(x == item){ counter++ }
-    });
-    return counter
 }
 
 const vote = async (d, y) => { 
@@ -580,45 +464,45 @@ const vote = async (d, y) => {
     }
 }
 
-const voteCom = async (d, id) => { 
-    change = d // 1 is upvote, -1 is downvote
-    hasVoted = localStorage.getItem(id.substring(13)) // null if no, 1 if up, -1 if down
+// const voteCom = async (d, id) => { 
+//     change = d // 1 is upvote, -1 is downvote
+//     hasVoted = localStorage.getItem(id.substring(13)) // null if no, 1 if up, -1 if down
     
-    index = comment_count.indexOf(id.substring(13))
-    pid = commentParentPair[index]
-    const settings = {
-        method: 'PUT',
-    };
+//     index = comment_count.indexOf(id.substring(13))
+//     pid = commentParentPair[index]
+//     const settings = {
+//         method: 'PUT',
+//     };
 
-    if (hasVoted == 1) { // has upvoted
-        if (change == 1) {
-        } else {
-            if (id != null) {
-                const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
-                localStorage.removeItem(id.substring(13))
-                oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
-                document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount-1
-            }
-        }
-    } else if (hasVoted == -1) { // has downvoted
-        if (change == -1) {
-        } else {
-            if (id != null) {
-                const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
-                localStorage.removeItem(id.substring(13))
-                oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
-                document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+1
-            }
-        }
-    } else if (hasVoted == null) { // has not voted
-        if (id != null) {
-            const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
-            localStorage.setItem(id.substring(13), change)
-            oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
-            document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+change
-        }
-    }
-}
+//     if (hasVoted == 1) { // has upvoted
+//         if (change == 1) {
+//         } else {
+//             if (id != null) {
+//                 const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
+//                 localStorage.removeItem(id.substring(13))
+//                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
+//                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount-1
+//             }
+//         }
+//     } else if (hasVoted == -1) { // has downvoted
+//         if (change == -1) {
+//         } else {
+//             if (id != null) {
+//                 const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
+//                 localStorage.removeItem(id.substring(13))
+//                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
+//                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+1
+//             }
+//         }
+//     } else if (hasVoted == null) { // has not voted
+//         if (id != null) {
+//             const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
+//             localStorage.setItem(id.substring(13), change)
+//             oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
+//             document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+change
+//         }
+//     }
+// }
 
 const comment = async (postid, body) => { 
     if (body != null && body != "") {
@@ -652,27 +536,20 @@ const comment = async (postid, body) => {
     }
 }
 
-function collapseComment(id) {
-    // var x = document.getElementById("comFrame_"+id)
-    // x.style.display = 'none'
-    // document.getElementById("showButton_"+id).style.display = 'block'
-    var x = document.getElementById("bodyCell_"+id)
-    x.innerHTML = ""
-    // document.getElementById("showButton_"+id).style.display = 'block'
-}
-
-function page_post() {
+function ui_newPost() {
     if (document.getElementById("newPost_div").style.display == 'block') {
         document.getElementById("newPost_div").style.display = 'none'
         document.getElementById("post-button").innerHTML = "Create new post"
         document.getElementById("newPost_logs").innerHTML = ""
+        document.getElementById("newPost_topic").value = cTopic
     } else {
         document.getElementById("newPost_div").style.display = 'block'
         document.getElementById("post-button").innerHTML = "Collapse"
+        document.getElementById("newPost_topic").value = cTopic
     }
 }
 
-function page_all() {
+function launch() { 
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     cPage = 1
@@ -682,7 +559,6 @@ function page_all() {
 }
 
 document.getElementById("newPost_submit_button").onclick = function() {
-
     topic = (document.getElementById("newPost_topic").value).replace(" ","")
     postTitle = document.getElementById("newPost_name").value
     if (topic == "" || topic == null || topic == undefined) {
@@ -794,7 +670,6 @@ document.getElementById("newPost_type_media").onclick = function() {
 }
 
 document.getElementById("newCom_submit").onclick = function() {
-
     commentContent = document.getElementById("newCom_body").value
     comment(cID, commentContent)
 
@@ -973,17 +848,6 @@ const postMedia = async (x, z, usernameValid, topic) => {
     }
 }
 
-const storeUserID = async (x) => {
-    const response = await fetch('/saveuser/')
-    const data = await response.json()
-    localStorage.setItem(data._id, true)
-    if (x == true) {
-        window.location.replace('/index.html')
-    }
-    loadUsersFromServer()
-
-}
-
 document.getElementById('newPost_file').addEventListener("change", ev => {
     const formdata = new FormData()
     formdata.append("image", ev.target.files[0])
@@ -1004,43 +868,11 @@ const uploadImage = async (x) => {
     document.getElementById("newPost_logs").innerHTML = ""
 }
 
-function deviceType() {
-    const ua = navigator.userAgent;
-    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-        return "tablet"
-    }
-    else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-        return "mobile"
-    } else {
-        return "desktop"
-    }
-    
-};
-
-function togglePWVisibility() {
-    var x = document.getElementById("newPost_pw");
-    if (x.type === "password") {
-        x.type = "text";
-    } else {
-        x.type = "password";
-    }
-    var y = document.getElementById("newCom_pw");
-    if (y.type === "password") {
-        y.type = "text";
-    } else {
-        y.type = "password";
-    }
-}
-
 function getUserColor(x) {
     index = usernameArray.indexOf(x)
     randomColor = usernameColorArray[index] 
     return "<span style='color:"+ randomColor+"; font-weight: 900;'>"
 }
-
-function getRandomColor() {
-    return 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)';
-  }
 
 function scrollFunction() {
   if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
@@ -1053,6 +885,7 @@ function scrollFunction() {
 function topFunction() {
     window.scrollTo({top: 0, behavior: 'smooth'});  
 }
+
 function prevPage() {
     if (cPage == 1) {
         return 
@@ -1062,6 +895,7 @@ function prevPage() {
     loadPosts(0, cTopic, cPage)
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
 }
+
 function nextPage() {
     document.getElementById("page-number").innerHTML = ""
     cPage += 1
