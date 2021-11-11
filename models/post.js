@@ -19,11 +19,12 @@ const postSchema = new mongoose.Schema(
         current_user_upvoted: { type: Boolean},
         current_user_downvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
-        comments: { type:Array }
-    }, 
+        comments: { type: Array}
+    },
     { collection: 'posts'}
 )
 
 const model = mongoose.model('PostSchema', postSchema)
+
 
 module.exports = model

@@ -21,6 +21,14 @@ cPage = 1
 cTopic = ""
 cID = ""
 
+const getUser = async () => {
+    const response = await fetch('/api/get/currentuser/')
+    const data = await response.json()
+    currentUserID = data.id
+}
+
+getUser()
+
 const postObject = {
     type: "",
     title: "",
@@ -161,12 +169,21 @@ const postObject = {
 const commentObject = {
     body: "",
     id: "",
+    parentID:"",
     total_votes: "",
+    users_voted:[],
     poster: "",
     posterID: "",
     date: "",
+    current_user_voted: "",
+    current_user_admin: "",
 
     display() {
+        if (this.users_voted.includes(currentUserID)) {
+            console.log("this user has voted")
+            this.current_user_voted = "true"
+        }
+
         var comFrame = document.createElement("table")
         comFrame.setAttribute("class", "comFrame")
         comFrame.setAttribute("id", "comFrame_"+this.id)
@@ -212,29 +229,24 @@ const commentObject = {
         voteCount.setAttribute("class","comVoteCount")
         voteCount.innerHTML = this.total_votes
 
-        var voteUpButton = document.createElement("img")
-        voteUpButton.setAttribute("id","voteUpButton_"+this.id)
-        voteUpButton.setAttribute("class","voteUpButton")
-        voteUpButton.src = '../assets/up.gif'
-        voteUpButton.style.width = 'auto'
-        voteUpButton.onclick = function() {
-            vote(1, this.id)
+        var voteUp = document.createElement("img")
+        voteUp.setAttribute("id","voteComUp_"+this.id)
+        voteUp.setAttribute("class","voteUpButton")
+        if (this.current_user_voted == "true") {
+            voteUp.src = '../assets/up_selected.gif'
+        } else {
+            voteUp.src = '../assets/up.gif'
         }
-
-        var voteDownButton = document.createElement("img")
-        voteDownButton.setAttribute("id","voteDoButton_"+this.id)
-        voteDownButton.setAttribute("class","voteDoButton")
-        voteDownButton.src = '../assets/down.gif'
-        voteDownButton.style.width = 'auto'
-        voteDownButton.onclick = function() {
-            vote(-1, this.id)
+        
+        voteUp.style.width = 'auto'
+        voteUp.onclick = function() {
+            voteCom(this.id.substring(10), cID)
         }
-
+        
         document.getElementById("comments").appendChild(comFrame)
-        // document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
-        // document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
-        // document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
-        // document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
+        document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
+        document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
+        document.getElementById("voteDiv_"+this.id).appendChild(voteUp)
     }
 }
 
@@ -282,9 +294,9 @@ const loadPosts = async (x, topic, page) => {
 
         posts.push(post)
         post.display()
-
+        cID = post.id
+        console.log(data.comments)
         for (i=0;i<data.comments.length;i++) {
-            //console.log(data.comments[i])
             let com = Object.create(commentObject)
             com.body = data.comments[i].body
             com.id = data.comments[i]._id
@@ -292,13 +304,17 @@ const loadPosts = async (x, topic, page) => {
             com.poster = data.comments[i].poster
             com.posterID = data.comments[i].posterID
             com.date = data.comments[i].date
+            com.users_voted = data.comments[i].users_voted
+            com.parentID = cID
+
+            com.current_user_voted = data.comments[i].current_user_voted
             com.display()
             
             comment_count.push(com.id)
-            commentParentPair.push(com.pid)
+            commentParentPair.push(com.parentID)
             commentBodies.push(com.body)
         }
-        cID = post.id
+        
         
         if (x != 0) {
             expandDesc(x)
@@ -511,6 +527,26 @@ const vote = async (d, y) => {
 //         }
 //     }
 // }
+
+const voteCom = async (id, parentID) => { 
+    console.log(id)
+
+    const settings = {
+        method: 'PUT',
+    };
+
+    const fetchResponse = await fetch('/votecomment/'+parentID+'/'+id+'/', settings); 
+    const data = await fetchResponse.json()
+    console.log(data)
+
+    if (data.status == 'ok') {
+        document.getElementById('voteComUp_'+id).src = '../assets/up_selected.gif'
+        oldCount = parseInt(document.getElementById('voteCount_'+id).innerHTML)
+        newCount = oldCount+1
+        document.getElementById('voteCount_'+id).innerHTML = newCount
+    }
+}
+
 
 const comment = async (postid, body) => { 
     body = document.getElementById("newCom_body").value

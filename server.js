@@ -44,7 +44,6 @@ connection.once("open", function() {
 
 const User = require('./models/user')
 const Post = require('./models/post')
-const Comment = require('./models/comment')
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -366,6 +365,7 @@ app.post('/api/post/comment/', async(req, res) => {
 				'date': fulldatetime,
 				'timestamp':timestamp,
 				'total_votes':0,
+				'users_voted':[],
 				'_id': Math.floor(Math.random() * Date.now()) // generates a random id
 			}
 			commentArray.push(newComment)
@@ -377,27 +377,8 @@ app.post('/api/post/comment/', async(req, res) => {
 		res.send(err)
 	}
 	
-        
-	
-	// try {
-	// 	const response = await Post.create({
-    //         title: title, 
-	// 		body: body, 
-	// 		poster: poster,
-	// 		link: link,
-	// 		topic: topic,
-	// 		type: 1, // 1=text, using as temporary default
-	// 		posterID: userID,
-	// 		date: fulldatetime,
-	// 		timestamp:timestamp
-	// 	})
-	// 	//console.log('Post created successfully: ', response)
-	// 	res.json({ status:"ok", code:200, data: response})
-	// } catch (error) {
-	// 	//console.log(error)
-	// 	res.json(error)
-	// }
 })
+
 
 function isloggedin(req) {
 	try {
@@ -460,6 +441,51 @@ app.put('/vote/:id/:y', function(req,res) {
 		})
 	} catch(err) {
 	}
+})
+
+app.put('/voteComment/:parentid/:commentid', function(req,res) {
+	pID = req.params.parentid
+	id = req.params.commentid
+	console.log("id:"+id)
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+		console.log(userID)
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	try {
+		Post.findById(pID, function(err, docs) {
+			oldComArray = docs.comments
+
+			for (i=0;i<oldComArray.length;i++) {
+				if (oldComArray[i]._id == id) {
+					console.log("match:"+i)
+					index = i
+				}
+			}
+			oldVotes = oldComArray[index].total_votes
+			newVotes = oldVotes+1
+			
+			if (oldComArray[index].users_voted.includes(userID)) {
+				res.json({"failure, user already voted":404})
+			} else {
+				oldComArray[index].users_voted.push(userID)
+				oldComArray[index].total_votes = newVotes
+				console.log(oldComArray)
+				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+					docs.save()
+					res.json({"status":'ok'})
+				})
+			}
+		})
+		
+	} catch (err) {
+
+	}
+
 })
 
 app.listen(process.env.PORT || 3000)
