@@ -540,10 +540,13 @@ const voteCom = async (id, parentID) => {
     console.log(data)
 
     if (data.status == 'ok') {
-        document.getElementById('voteComUp_'+id).src = '../assets/up_selected.gif'
-        oldCount = parseInt(document.getElementById('voteCount_'+id).innerHTML)
-        newCount = oldCount+1
-        document.getElementById('voteCount_'+id).innerHTML = newCount
+        if (data.voted == 'yes') {
+            document.getElementById('voteComUp_'+id).src = '../assets/up_selected.gif'
+        }
+        if (data.voted == 'no') {
+            document.getElementById('voteComUp_'+id).src = '../assets/up.gif'
+        }
+        document.getElementById('voteCount_'+id).innerHTML = data.newcount
     }
 }
 

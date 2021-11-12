@@ -468,16 +468,26 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 			}
 			oldVotes = oldComArray[index].total_votes
 			newVotes = oldVotes+1
+			newVotesDown = oldVotes-1
+			
 			
 			if (oldComArray[index].users_voted.includes(userID)) {
-				res.json({"failure, user already voted":404})
+				userIDinArray = oldComArray[index].users_voted.indexOf(userID)
+				oldComArray[index].users_voted.splice(userIDinArray, 1)
+				oldComArray[index].total_votes = newVotesDown
+				console.log(oldComArray)
+				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+					docs.save()
+					res.json({"status":'ok', "newcount":oldComArray[index].total_votes, 'voted':'no'})
+				})
+				
 			} else {
 				oldComArray[index].users_voted.push(userID)
 				oldComArray[index].total_votes = newVotes
 				console.log(oldComArray)
 				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
 					docs.save()
-					res.json({"status":'ok'})
+					res.json({"status":'ok', 'newcount':oldComArray[index].total_votes, 'voted':'yes'})
 				})
 			}
 		})
