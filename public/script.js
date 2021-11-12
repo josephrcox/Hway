@@ -488,46 +488,6 @@ const vote = async (d, y) => {
     }
 }
 
-// const voteCom = async (d, id) => { 
-//     change = d // 1 is upvote, -1 is downvote
-//     hasVoted = localStorage.getItem(id.substring(13)) // null if no, 1 if up, -1 if down
-    
-//     index = comment_count.indexOf(id.substring(13))
-//     pid = commentParentPair[index]
-//     const settings = {
-//         method: 'PUT',
-//     };
-
-//     if (hasVoted == 1) { // has upvoted
-//         if (change == 1) {
-//         } else {
-//             if (id != null) {
-//                 const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
-//                 localStorage.removeItem(id.substring(13))
-//                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
-//                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount-1
-//             }
-//         }
-//     } else if (hasVoted == -1) { // has downvoted
-//         if (change == -1) {
-//         } else {
-//             if (id != null) {
-//                 const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
-//                 localStorage.removeItem(id.substring(13))
-//                 oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
-//                 document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+1
-//             }
-//         }
-//     } else if (hasVoted == null) { // has not voted
-//         if (id != null) {
-//             const fetchResponse = await fetch('/voteCom/'+id+'/'+pid+'/'+change, settings); 
-//             localStorage.setItem(id.substring(13), change)
-//             oldCount = parseInt(document.getElementById("voteCount_"+id.substring(13)).innerHTML)
-//             document.getElementById("voteCount_"+id.substring(13)).innerHTML = oldCount+change
-//         }
-//     }
-// }
-
 const voteCom = async (id, parentID) => { 
     console.log(id)
 
