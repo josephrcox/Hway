@@ -85,7 +85,7 @@ const postObject = {
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
         voteUpButton.src = '../assets/up.gif'
-        if (this.current_user_upvoted && localStorage.getItem(this.id) == 1) {
+        if (this.current_user_upvoted) {
             voteUpButton.src = '../assets/up_selected.gif'
         } 
         
@@ -98,7 +98,7 @@ const postObject = {
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
         voteDownButton.src = '../assets/down.gif'
-        if (this.current_user_downvoted && localStorage.getItem(this.id) == -1) {
+        if (this.current_user_downvoted) {
             voteDownButton.src = '../assets/down_selected.gif'
         }
         voteDownButton.style.width = 'auto'
@@ -499,15 +499,22 @@ const vote = async (change, id) => {
     };
 
     const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
-    const data = fetchResponse.json()
+    const data = await fetchResponse.json()
 
     if (data.status == 'ok') {
-        if (change == 1) {
-
+        console.log('ok,'+data.gif)
+        document.getElementById('voteCount_'+id.substring(13)).innerHTML = data.newtotal
+        if (data.gif == 'none') {
+            document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up.gif'
+            document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down.gif'
         }
-
-        if (change == -1) {
-
+        if (data.gif == 'up') {
+            document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up_selected.gif'
+            document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down.gif'
+        }
+        if (data.gif == 'down') {
+            document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up.gif'
+            document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down_selected.gif'
         }
     }
 }

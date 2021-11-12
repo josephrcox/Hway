@@ -99,7 +99,33 @@ app.get('/posts/:postid', async(req,res) => {
 })
 
 app.get('/api/get/posts/:postid', async(req,res) => {	
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		//console.log(verified)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+	postModified = []
 	Post.findById(req.params.postid, function (err, post) {
+		if (post.posterID == userID) {
+			postModified = post
+			postModified.current_user_admin = true
+		} else {
+			postModified = post
+			postModified.current_user_admin = false
+		}
+		if (post.users_upvoted.includes(userID)) {
+			postModified.current_user_upvoted = true
+			postModified.current_user_downvoted = false
+		}
+		if (post.users_downvoted.includes(userID)) {
+			postModified.current_user_upvoted = false
+			postModified.current_user_downvoted = true
+		}
+
+		console.log(postModified)
 		res.send(post)
 	})
 })
@@ -426,13 +452,13 @@ app.put('/vote/:id/:y', function(req,res) {
 				if (user_already_downvoted) {
 					// remove the downvote, total_votes+1
 					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes-1), total_votes: (total_votes+1)},  $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
-						return res.json({"status":'ok'})
+						return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'none'})
 					})
 				}
 				if (!user_already_downvoted && !user_already_upvoted) {
 					// vote up
 					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes+1), total_votes: (total_votes+1)},  $push: {users_upvoted: userID} }, {}, function (err, numReplaced) {
-						return res.json({"status":'ok'})
+						return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'up'})
 					})
 				}
 			}
@@ -444,13 +470,13 @@ app.put('/vote/:id/:y', function(req,res) {
 				if (user_already_upvoted) {
 					// remove the upvote, total_votes-1
 					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes-1), total_votes: (total_votes-1)},  $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
-						return res.json({"status":'ok'})
+						return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'none'})
 					})
 				}
 				if (!user_already_downvoted && !user_already_upvoted) {
 					// vote down
 					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes+1), total_votes: (total_votes-1)},  $push: {users_downvoted: userID} }, {}, function (err, numReplaced) {
-						return res.json({"status":'ok'})
+						return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'down'})
 					})
 				}
 			}
