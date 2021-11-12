@@ -402,44 +402,63 @@ app.put('/vote/:id/:y', function(req,res) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
 		userID = verified.id
-		//console.log("id:"+userID)
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
 
 	try {
 		Post.findOne({_id: id }, function (err, docs) { 
-			oldtotal_votes = docs.total_votes
-			oldupvotes = parseInt(docs.upvotes)
-			olddownvotes = parseInt(docs.downvotes)	
+			upvotes = docs.upvotes
+			downvotes = docs.downvotes
+			total_votes = docs.total_votes
+			users_upvoted = docs.users_upvoted
+			users_downvoted = docs.users_downvoted
 
-			if (change == 1) { // upvoting
-				Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (oldupvotes+1), total_votes: (oldtotal_votes+1)}, $push: {users_upvoted: userID}, $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+			user_already_upvoted = users_upvoted.includes(userID)
+			user_already_downvoted = users_downvoted.includes(userID)
 
-				})
+
+			if (change == 1) {
+				if (user_already_upvoted) {
+					// do nothing
+				}
+				if (user_already_downvoted) {
+					// remove the downvote, total_votes+1
+					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes-1), total_votes: (total_votes+1)},  $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+						return res.json({"status":'ok'})
+					})
+				}
+				if (!user_already_downvoted && !user_already_upvoted) {
+					// vote up
+					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes+1), total_votes: (total_votes+1)},  $push: {users_upvoted: userID} }, {}, function (err, numReplaced) {
+						return res.json({"status":'ok'})
+					})
+				}
 			}
-			if (change == -1) { // downvoting
-				Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (olddownvotes+1), total_votes: (oldtotal_votes-1)}, $push: {users_downvoted: userID}, $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
-					
-				})
+
+			if (change == -1) {
+				if (user_already_downvoted) {
+					// do nothing
+				}
+				if (user_already_upvoted) {
+					// remove the upvote, total_votes-1
+					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes-1), total_votes: (total_votes-1)},  $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
+						return res.json({"status":'ok'})
+					})
+				}
+				if (!user_already_downvoted && !user_already_upvoted) {
+					// vote down
+					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes+1), total_votes: (total_votes-1)},  $push: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+						return res.json({"status":'ok'})
+					})
+				}
 			}
-			Post.findOne({_id: id }, function (err, docs) { 
-				upArray = docs.users_upvoted
-				downArray = docs.users_downvoted
-				newUp = upArray.filter(function(item, pos) {
-					return upArray.indexOf(item) == pos;
-				})
-				newDown = downArray.filter(function(item, pos) {
-					return downArray.indexOf(item) == pos;
-				})
-				Post.findOneAndUpdate({ _id: id }, { $set: {users_upvoted: newUp, users_downvoted: newDown}}, {}, function (err, numReplaced) {
-					res.send({ status:"ok", code:200})
-				})
-			})
+		
 		})
+
 	} catch(err) {
+		res.json({'status':'error'})
 	}
 })
 
