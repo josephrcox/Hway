@@ -756,7 +756,6 @@ const uploadImage = async (x) => {
     const data = await fetchResponse.json();
     const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
 
-    temporaryimages.push(data)
     uploadedImageUrls.push(url)
     console.log(uploadedImageUrls)
     
