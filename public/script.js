@@ -15,7 +15,6 @@ commentParentPair = []
 commentBodies = []
 var lastClick = 0;
 var delay = 400;
-temporaryimages = []
 
 // Currents
 cPage = 1
@@ -738,80 +737,6 @@ const postText = async (x, y, z, usernameValid, topic) => {
         
         document.getElementById("newPost_name").value = ""
         document.getElementById("newPost_desc").value = ""
-        document.getElementById("newPost_logs").innerHTML = ""
-    }
-}
-
-const postLink = async (x, y, z, usernameValid, topic) => { 
-    if (z == null || z == "") {
-        z = "zzdj"
-    }
-
-    password = document.getElementById("newPost_pw").value
-
-    bodyJSON = {
-        "title":x,
-        "link":y,
-        "poster":z,
-        "usernameValid":usernameValid,
-        "password":password,
-        "topic":topic
-    }
-
-    const fetchResponse = await fetch('/post/link', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    }); 
-
-    if (fetchResponse.status == '406') {
-        document.getElementById("newPost_logs").innerHTML = "Name taken by other user."
-    } else {
-        storeUserID(true)
-        
-        document.getElementById("newPost_name").value = ""
-        document.getElementById("newPost_desc").value = ""
-        document.getElementById("newPost_logs").innerHTML = ""
-    }
-}
-
-const postMedia = async (x, z, usernameValid, topic) => { 
-    if (z == null || z == "") {
-        z = "zzdj"
-    }
-    url = uploadedImageUrls.pop()
-
-    password = document.getElementById("newPost_pw").value
-
-    bodyJSON = {
-        "title":x,
-        "poster":z,
-        "usernameValid":usernameValid,
-        "password":password,
-        "src":url,
-        "topic":topic
-    }
-
-    const fetchResponse = await fetch('/post/media', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    }); 
-
-    if (fetchResponse.status == '406') {
-        document.getElementById("newPost_logs").innerHTML = "Name taken by other user."
-    } else {
-        storeUserID(true)
-        
-        document.getElementById("newPost_name").value = ""
-        document.getElementById("newPost_desc").value = ""
-        document.getElementById("newPost_file").value = ""
         document.getElementById("newPost_logs").innerHTML = ""
     }
 }
