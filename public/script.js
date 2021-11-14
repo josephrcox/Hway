@@ -15,6 +15,7 @@ commentParentPair = []
 commentBodies = []
 var lastClick = 0;
 var delay = 400;
+temporaryimages = []
 
 // Currents
 cPage = 1
@@ -129,9 +130,8 @@ const postObject = {
         titleCell.innerHTML = this.title
 
         if (this.type == "3") {
-            var photo = document.createElement("img")
-            photo.src = './image.jpg'
-            descCell.innerHTML = "<img src='"+this.mediaURL+"'>"
+            descCell.innerHTML = "<img src='"+this.link+"' class='"+"postPhoto' id='postPhoto_"+this.id+"' width='100%'>"
+            descCell.style.width = '99%'
             descCell.style.display = 'none'
             titleCell.innerHTML = "🖼        "+this.title+"<span style='font-size:12px'>        (+)</span>"
         }
@@ -477,7 +477,6 @@ const voteCom = async (id, parentID) => {
     }
 }
 
-
 const comment = async (postid, body) => { 
     body = document.getElementById("newCom_body").value
     if (body != null && body != "") {
@@ -533,64 +532,36 @@ function launch() {
 }
 
 document.getElementById("newPost_submit_button").onclick = function() {
-    topic = (document.getElementById("newPost_topic").value).replace(" ","")
     postTitle = document.getElementById("newPost_name").value
-    if (topic == "" || topic == null || topic == undefined) {
+    if ((document.getElementById("newPost_topic").value).replace(" ","") == "" || (document.getElementById("newPost_topic").value).replace(" ","") == null || (document.getElementById("newPost_topic").value).replace(" ","") == undefined) {
         topic = "all"
     }
 
     switch (newPost_type) {
         case 1: // Text
-            postDesc = document.getElementById("newPost_desc").value
-            
             if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
                 document.getElementById("newPost_logs").innerHTML = "Please enter title"
             } else {
-                createNewPost()
+                createNewPost(1)
             }
             break;
         case 2: // Link
-            postHref = document.getElementById("newPost_link").value
-
             if (postTitle == "" || postTitle == null) {
                 document.getElementById("newPost_logs").innerHTML = "Please enter title"
             } else {
-                if (postHref.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
-                    if (usernameArray.includes(poster)) {
-                        index = usernameArray.indexOf(poster)
-                        if (localStorage.getItem(idArray[index]) == "true") {
-                            postLink(postTitle, postHref, poster, true, topic)
-                        } else {
-                            postLink(postTitle, postHref, poster, false, topic)
-                        }
-                    } else {
-                        postLink(postTitle, postHref, poster, true, topic)
-                    }
+                if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
+                    console.log("link is valid")
+                    createNewPost(2)
                 } else {
                     document.getElementById("newPost_logs").innerHTML = "Please enter valid URL"
                 }
             }
             break;
         case 3: // Media
-            poster = document.getElementById("newPost_user").value
-
             if (postTitle == "" || postTitle == null) {
                 document.getElementById("newPost_logs").innerHTML = "Please enter title"
             } else {
-                if (usernameArray.includes(poster)) {
-                    index = usernameArray.indexOf(poster)
-                    if (document.getElementById("newPost_file").value == "" ) { // no file uploaded
-                        document.getElementById("newPost_logs").innerHTML = "Please upload file"
-                    } else {
-                        if (localStorage.getItem(idArray[index]) == "true") {
-                            postMedia(postTitle, poster, true, topic)
-                        } else {
-                            postMedia(postTitle, poster, false, topic)
-                        }
-                    }
-                } else {
-                    postMedia(postTitle, poster, true, topic)
-                }
+               createNewPost(3)
             }
             break;
 
@@ -679,19 +650,41 @@ function postRandomly() {
     postText(titleStr, bodyStr, topicStr)
 }
 
-const createNewPost = async() => {
+const createNewPost = async(posttype) => { 
     title = document.getElementById("newPost_name").value
     body = document.getElementById("newPost_desc").value
     topic = document.getElementById("newPost_topic").value
+    link = document.getElementById("newPost_link").value
+
     if (topic == "" || topic == null) {
         topic = "all"
     }
 
-    bodyJSON = {
-        "title":title,
-        "body":body,
-        "topic":topic
+    if (posttype == 1) { // text
+        bodyJSON = {
+            "title":title,
+            "body":body,
+            "topic":topic,
+            "type":posttype
+        }
     }
+    if (posttype == 2) { // link
+        bodyJSON = {
+            "title":title,
+            "link":link,
+            "topic":topic,
+            "type":posttype
+        }
+    }
+    if (posttype == 3) { // media
+        bodyJSON = {
+            "title":title,
+            "link":uploadedImageUrls.pop(),
+            "topic":topic,
+            "type":posttype
+        }
+    }
+
     const fetchResponse = await fetch('/api/post/post', {
         headers: {
             'Accept': 'application/json',
@@ -706,6 +699,7 @@ const createNewPost = async() => {
     document.getElementById("newPost_name").innerHTML = ""
     document.getElementById("newPost_desc").innerHTML = ""
     document.getElementById("newPost_topic").innerHTML = ""
+    document.getElementById("newPost_link").innerHTML = ""
     if (data.code == 200) {
         window.location.reload()
     }
@@ -835,8 +829,11 @@ const uploadImage = async (x) => {
         body: x
     })
     const data = await fetchResponse.json();
-    const url = (JSON.stringify(data.data.display_url)).replace(/["]+/g, '')
+    const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
+
+    temporaryimages.push(data)
     uploadedImageUrls.push(url)
+    console.log(uploadedImageUrls)
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""

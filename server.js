@@ -331,7 +331,7 @@ app.post('/api/post/post', async(req, res) => {
 			poster: poster,
 			link: link,
 			topic: topic,
-			type: 1, // 1=text, using as temporary default
+			type: type, // 1=text, using as temporary default
 			posterID: userID,
 			date: fulldatetime,
 			timestamp:timestamp
@@ -397,6 +397,9 @@ app.post('/api/post/comment/', async(req, res) => {
 			commentArray.push(newComment)
 			docs.comments = commentArray
 			docs.save()
+			User.findById(userID, function(err, docs) {
+				console.log(docs)
+			})
 			res.json(newComment)
 		})
 	} catch(err) {

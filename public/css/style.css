@@ -8,17 +8,13 @@
   order:2;
 }
 
-img {
-	width:50%;
-}
-
 .newPost_link, .newPost_file {
 	display: none;
 }
 .newPost_types {
   height:35px;
 	color: black;
-	width: 100%;
+	width: 350px;
 	border: 1px dotted gray;
 }
 #newPost_pw {
@@ -29,6 +25,18 @@ img {
 	flex-direction: column;
 	padding-top: 10px;
 }
+
+#newPost_name {
+	font-size-adjust:ic-width 1.50;
+}
+#newPost_desc {
+	font-size-adjust:ic-width 1.2;
+}
+#newPost_topic {
+	font-size-adjust:ic-width 1.2;
+}
+
+
 .newPost_container {
 	display: flex;
 	flex-direction: row;
@@ -46,7 +54,7 @@ img {
 		background-color:gray;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 401px) {
 	#sitebody {
 		display: flex;
 		flex-direction: row;
@@ -63,7 +71,7 @@ img {
   }
 
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 400px) {
 	.newPost_container, #newPost_div {
 		display: flex;
 	}
@@ -376,9 +384,9 @@ label {
 }
 
 .comVoteDiv {
-	height:45px;
-	border-left:2px solid black;
-	border-bottom:2px solid black;
+	height:50px;
+	border-left:4px solid black;
+	border-bottom:4px solid black;
 }
 
 .comInfoCell {
