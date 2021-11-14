@@ -134,6 +134,11 @@ const postObject = {
             descCell.style.display = 'none'
             titleCell.innerHTML = "🖼        "+this.title+"<span style='font-size:12px'>        (+)</span>"
         }
+        if (this.link != null && this.link.includes("youtube.com")) {
+            console.log("link is a youtube link")
+            descCell.innerHTML = "<iframe width='420' height='345' src='https://www.youtube.com/embed/"+this.link.split("v=")[1]+"></iframe>"
+            descCell.style.display = 'block'
+        }
 
         if (this.body != "(empty)") {
             descCell.innerHTML = this.body
@@ -149,8 +154,17 @@ const postObject = {
         
         titleCell.onclick = function() {
             if (this.body != "(empty)") {
-                expandDesc(this.id)
+                expandDesc(this.id.split("_")[1])
             } 
+        }
+
+        var sharebutton = document.createElement("button")
+        sharebutton.innerText = "Share"
+        console.log(window.location)
+        sharebutton.setAttribute("id", "share_"+window.location.origin+"/posts/"+this.id)
+        sharebutton.onclick = function() {
+            console.log("cloicked")
+            copytoclipboard(this.id.split("_")[1])
         }
     
         document.getElementById("postsArray").appendChild(postContainer)
@@ -162,6 +176,7 @@ const postObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
         document.getElementById("voteDiv_"+this.id).appendChild(commentCount)
+        document.getElementById("voteDiv_"+this.id).appendChild(sharebutton)
     }
 }
 
@@ -249,6 +264,11 @@ const commentObject = {
     }
 }
 
+function copytoclipboard(x) {
+    console.log(x)
+    navigator.clipboard.writeText(x);
+}
+
 const loadPosts = async (x, topic, page) => {
     // user is logged in
     document.getElementById("logout_button").style.display = 'block'
@@ -286,6 +306,7 @@ const loadPosts = async (x, topic, page) => {
         post.topic = data.topic
         post.comment_count = data.comments.length
         post.comments = data.comments
+        
 
         post.current_user_upvoted = data.current_user_upvoted
         post.current_user_downvoted = data.current_user_downvoted
@@ -293,6 +314,7 @@ const loadPosts = async (x, topic, page) => {
 
         posts.push(post)
         post.display()
+        expandDesc(post.id)
         cID = post.id
         console.log(data.comments)
         for (i=0;i<data.comments.length;i++) {
@@ -370,15 +392,16 @@ const loadPosts = async (x, topic, page) => {
 }
 
 function expandDesc(x) {
-    y = "descCell"+x.substring(9)
-    title = document.getElementById(x).innerHTML.replace('<span style="font-size:12px">        (+)</span>', '').replace('<span style="font-size:12px">        (-)</span>','')
+    console.log(x)
+    y = "descCell_"+x
+    title = document.getElementById("titleCell_"+x).innerHTML.replace('<span style="font-size:12px">        (+)</span>', '').replace('<span style="font-size:12px">        (-)</span>','')
     if (document.getElementById(y).innerHTML != "" && document.getElementById(y).innerHTML != null) {
         if (document.getElementById(y).style.display == 'block') {
             document.getElementById(y).style.display = 'none'
-            document.getElementById(x).innerHTML = title + "<span style='font-size:12px'>        (+)</span>"
+            document.getElementById("titleCell_"+x).innerHTML = title + "<span style='font-size:12px'>        (+)</span>"
         } else {
             document.getElementById(y).style.display = 'block'
-            document.getElementById(x).innerHTML = title + "<span style='font-size:12px'>        (-)</span>"
+            document.getElementById("titleCell_"+x).innerHTML = title + "<span style='font-size:12px'>        (-)</span>"
         }
     }
 }

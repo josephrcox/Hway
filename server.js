@@ -101,12 +101,14 @@ app.get('/posts/:postid', async(req,res) => {
 app.get('/api/get/posts/:postid', async(req,res) => {	
 	try {
 		token = req.cookies.token
+		console.log(token)
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
 		userID = verified.id
 	} catch (err) {
-		return res.json({ status:"error", code:400, error: err})
+		console.log(err)
+		return res.json({ status:"error", code:400, error: "Not logged in"})
 	}
+
 	postModified = []
 	Post.findById(req.params.postid, function (err, post) {
 		if (post.posterID == userID) {
