@@ -162,6 +162,7 @@ const postObject = {
         sharebutton.innerText = "Share"
         console.log(window.location)
         sharebutton.setAttribute("id", "share_"+window.location.origin+"/posts/"+this.id)
+        sharebutton.setAttribute("class", "shareButton")
         sharebutton.onclick = function() {
             console.log("cloicked")
             copytoclipboard(this.id.split("_")[1])
@@ -267,6 +268,11 @@ const commentObject = {
 function copytoclipboard(x) {
     console.log(x)
     navigator.clipboard.writeText(x);
+    var items = document.getElementsByClassName("shareButton");
+    for (var i=0; i < items.length; i++) {
+        items[i].innerText = "Share"
+    }
+    document.getElementById('share_'+x).innerText = "Copied"
 }
 
 const loadPosts = async (x, topic, page) => {
