@@ -43,7 +43,7 @@ var info={
     timestamp(){return position.timestamp},
 };
 
-document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+//document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
 
 loadUsersFromServer()
 launch()

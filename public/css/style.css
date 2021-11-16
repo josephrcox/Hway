@@ -120,6 +120,7 @@
 .header-buttons {
 	display:flex;
 	flex-direction: row;
+	justify-content:space-between;
 	padding-bottom: 3px;
 	padding-top:3px;
 	border-top:1px solid black;
@@ -142,11 +143,6 @@
 	user-select: none;
 	-o-user-select: none;
 	margin-top:2px;
-}
-
-#topic-chooser {
-  border-right: 2px dotted black;
-
 }
 
 #goHomeButton {
@@ -327,7 +323,7 @@ label {
 .topic-dropdown-div {
 	position: relative;
 	display: inline-block;
-	border-right: 2px dotted black;
+	border-right: 2px solid black;
 }
   
 .dropdown-content {
@@ -400,7 +396,7 @@ label {
 
 .openPostButton {
 	padding-left:7px;
-	border-left:1px dotted black;
+
 	margin-top:0px;
 	text-decoration: unset;
 	color:white;
@@ -416,7 +412,7 @@ a:hover { text-decoration: none; color:red; }
 	padding-right:10px;
 	padding-left:10px;
 	margin-top:1px; 
-	color:blue;
+	color:white;
 	font-variant:all-small-caps;
 	font-weight: 200;
 }
@@ -431,4 +427,21 @@ a:hover { text-decoration: none; color:red; }
   font-size:24px;
 	text-align: center;
 	border:1px double gray;
+}
+
+#login_button, #logout_button, #reg_button {
+  margin-right:3px;
+}
+
+#currentUserInfo {
+	display:flex;
+}
+#misc_header_buttons {
+	display:flex;
+	padding-left:2px;
+	border-left:2px solid black;
+}
+
+#post-button {
+	margin-right:6px;
 }

@@ -25,7 +25,21 @@ const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
-    currentUserID = data.id
+    console.log(data)
+    
+    if (data.code == 400) {
+        document.getElementById("currentUser").innerHTML = "No user"
+        document.getElementById("logout_button").style.display = 'none'
+        document.getElementById("login_button").style.display = 'block'
+        document.getElementById("reg_button").style.display = 'block'
+    } else {
+        currentUserID = data.id
+        document.getElementById("logout_button").style.display = 'block'
+        document.getElementById("login_button").style.display = 'none'
+        document.getElementById("reg_button").style.display = 'none'
+    }
+    
+    
 }
 
 getUser()
@@ -550,8 +564,8 @@ function launch() {
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     cPage = 1
-    prevPage()
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+    //prevPage()
+    //document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
     loadPosts(0, "", 1)
 }
 
@@ -806,19 +820,19 @@ function topFunction() {
     window.scrollTo({top: 0, behavior: 'smooth'});  
 }
 
-function prevPage() {
-    if (cPage == 1) {
-        return 
-    }
-    document.getElementById("page-number").innerHTML = ""
-    cPage -= 1
-    loadPosts(0, cTopic, cPage)
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
-}
+// function prevPage() {
+//     if (cPage == 1) {
+//         return 
+//     }
+//     document.getElementById("page-number").innerHTML = ""
+//     cPage -= 1
+//     loadPosts(0, cTopic, cPage)
+//     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+// }
 
-function nextPage() {
-    document.getElementById("page-number").innerHTML = ""
-    cPage += 1
-    loadPosts(0, cTopic, cPage)
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
-}
+// function nextPage() {
+//     document.getElementById("page-number").innerHTML = ""
+//     cPage += 1
+//     loadPosts(0, cTopic, cPage)
+//     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+// }

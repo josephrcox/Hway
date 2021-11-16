@@ -52,6 +52,8 @@ const bp = require('body-parser')
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
+var allowUsersToBrowseAsGuests = true
+
 app.get('/', (req, res) => {
     res.render('index.ejs', {topic:""})
 })
@@ -85,7 +87,7 @@ app.get('/home', async(req, res) => {
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
 	
-	if (valid) {
+	if (valid || allowUsersToBrowseAsGuests) {
 		res.render('home.ejs', {topic: "- all"})
 	} else {
 		res.render('login.ejs', {topic:"- login"})
@@ -101,7 +103,6 @@ app.get('/posts/:postid', async(req,res) => {
 })
 
 app.get('/api/get/posts/:postid', async(req,res) => {
-	userID = null	
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
@@ -110,7 +111,11 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 		userID = verified.id
 	} catch (err) {
 		console.log(err)
-		return res.json({ status:"ok", code:400, error: "Not logged in"})
+		if (!allowUsersToBrowseAsGuests) {
+			return res.json({ status:"ok", code:400, error: "Not logged in"})
+		} else {
+			userID = null
+		}
 	}
 	
 
@@ -145,15 +150,19 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
-	userID = null
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
+		console.log(token)
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
 		userID = verified.id
 	} catch (err) {
-		return res.json({ status:"error", code:400, error: err})
+		console.log(err)
+		if (!allowUsersToBrowseAsGuests) {
+			return res.json({ status:"ok", code:400, error: "Not logged in"})
+		} else {
+			userID = null
+		}
 	}
 	
 	if (req.params.topic == "all") {

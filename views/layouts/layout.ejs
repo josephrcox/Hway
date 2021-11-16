@@ -14,15 +14,21 @@
      </div>
 
      <div class="header-buttons">
-        <div id="currentUser">Not logged in</div>
-        <button onclick="logout()" id="logout_button" style='display: none;'>Logout</button>
-        <div class="topic-dropdown-div">
-            <div onclick="topicdropdownclicked()" class="topic-dropdown-button">Top topics</div>
-            <div id="topic-dropdown" class="dropdown-content">
-               <!-- topics (handled by js) -->
-             </div>
-         </div>
-         <div id="post-button" onclick="ui_newPost()">Create new post</div>
+         <div id="currentUserInfo">
+            <div id="currentUser">Not logged in</div>
+            <button onclick="logout()" id="logout_button" style='display: none;'>Logout</button>
+            <button onclick="login()" id="login_button" style='display: none;'>Login</button>
+            <button onclick="register()" id="reg_button" style='display: none;'>Sign up</button>
+        </div>
+        <div id="misc_header_buttons">
+            <div class="topic-dropdown-div">
+                <div onclick="topicdropdownclicked()" class="topic-dropdown-button">Top topics</div>
+                <div id="topic-dropdown" class="dropdown-content">
+                <!-- topics (handled by js) -->
+                </div>
+            </div>
+            <div id="post-button" onclick="ui_newPost()">Create new post</div>
+        </div>
     </div>   
 </head>
 <body>
@@ -56,6 +62,12 @@ async function goHome() {
 async function logout() {
     const response = await fetch('/logout')
     window.location.replace("/");
+}
+async function login() {
+    window.location.replace("/login");
+}
+async function register() {
+    window.location.replace("/register");
 }
 
 getUsername()
