@@ -81,6 +81,8 @@ app.get('/register', (req, res) => {
 })
 
 app.get('/home', async(req, res) => {
+	valid = true
+	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
 	
 	if (valid) {
@@ -98,7 +100,9 @@ app.get('/posts/:postid', async(req,res) => {
 	res.render('home.ejs', {topic:""})
 })
 
-app.get('/api/get/posts/:postid', async(req,res) => {	
+app.get('/api/get/posts/:postid', async(req,res) => {
+	userID = null	
+	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
 		console.log(token)
@@ -106,8 +110,9 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 		userID = verified.id
 	} catch (err) {
 		console.log(err)
-		return res.json({ status:"error", code:400, error: "Not logged in"})
+		return res.json({ status:"ok", code:400, error: "Not logged in"})
 	}
+	
 
 	postModified = []
 	Post.findById(req.params.postid, function (err, post) {
@@ -126,6 +131,12 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 			postModified.current_user_upvoted = false
 			postModified.current_user_downvoted = true
 		}
+		for (i=0;i<post.comments.length;i++) {
+			com = post.comments[i]
+			if (com.users_voted.includes(userID)) {
+				postModified.comments[i].current_user_voted = true
+			}
+		}
 
 		console.log(postModified)
 		res.send(post)
@@ -134,7 +145,8 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
-
+	userID = null
+	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)

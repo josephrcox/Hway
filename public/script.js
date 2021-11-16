@@ -22,6 +22,7 @@ cTopic = ""
 cID = ""
 
 const getUser = async () => {
+    document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
     currentUserID = data.id
@@ -134,11 +135,6 @@ const postObject = {
             descCell.style.display = 'none'
             titleCell.innerHTML = "🖼        "+this.title+"<span style='font-size:12px'>        (+)</span>"
         }
-        if (this.link != null && this.link.includes("youtube.com")) {
-            console.log("link is a youtube link")
-            descCell.innerHTML = "<iframe width='420' height='345' src='https://www.youtube.com/embed/"+this.link.split("v=")[1]+"></iframe>"
-            descCell.style.display = 'block'
-        }
 
         if (this.body != "(empty)") {
             descCell.innerHTML = this.body
@@ -160,7 +156,6 @@ const postObject = {
 
         var sharebutton = document.createElement("button")
         sharebutton.innerText = "Share"
-        console.log(window.location)
         sharebutton.setAttribute("id", "share_"+window.location.origin+"/posts/"+this.id)
         sharebutton.setAttribute("class", "shareButton")
         sharebutton.onclick = function() {
@@ -194,10 +189,7 @@ const commentObject = {
     current_user_admin: "",
 
     display() {
-        if (this.users_voted.includes(currentUserID)) {
-            console.log("this user has voted")
-            this.current_user_voted = "true"
-        }
+        console.log(this.current_user_voted)
 
         var comFrame = document.createElement("table")
         comFrame.setAttribute("class", "comFrame")
@@ -247,7 +239,7 @@ const commentObject = {
         var voteUp = document.createElement("img")
         voteUp.setAttribute("id","voteComUp_"+this.id)
         voteUp.setAttribute("class","voteUpButton")
-        if (this.current_user_voted == "true") {
+        if (this.current_user_voted == true) {
             voteUp.src = '../assets/up_selected.gif'
         } else {
             voteUp.src = '../assets/up.gif'
@@ -292,6 +284,10 @@ const loadPosts = async (x, topic, page) => {
         postid = url.split('/posts/')[1]
         const response = await fetch('/api/get/posts/'+postid)
         const data = await response.json()
+        if (data.status == "error") {
+            console.log("error")
+            window.location.href = '/login'
+        }
         document.getElementById("postsArray").innerHTML = ""
 
         let post = Object.create(postObject)
