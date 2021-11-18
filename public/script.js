@@ -20,6 +20,7 @@ var delay = 400;
 cPage = 1
 cTopic = ""
 cID = ""
+isUserLoggedIn = false
 
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
@@ -28,12 +29,14 @@ const getUser = async () => {
     console.log(data)
     
     if (data.code == 400) {
+        isUserLoggedIn = false
         document.getElementById("currentUser").innerHTML = "No user"
         document.getElementById("logout_button").style.display = 'none'
         document.getElementById("login_button").style.display = 'block'
         document.getElementById("reg_button").style.display = 'block'
     } else {
         currentUserID = data.id
+        isUserLoggedIn = true
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
@@ -167,15 +170,16 @@ const postObject = {
                 expandDesc(this.id.split("_")[1])
             } 
         }
+        // // comnenting out as this does not work on mobile unfortunately
+        // var sharebutton = document.createElement("button") 
+        // sharebutton.innerText = "Share"
+        // sharebutton.setAttribute("id", "share_"+window.location.origin+"/posts/"+this.id)
+        // sharebutton.setAttribute("class", "shareButton")
+        // sharebutton.addEventListener('click', function() {
+        //     console.log("cloicked")
+        //     copytoclipboard(this.id.split("_")[1])
+        // })
 
-        var sharebutton = document.createElement("button")
-        sharebutton.innerText = "Share"
-        sharebutton.setAttribute("id", "share_"+window.location.origin+"/posts/"+this.id)
-        sharebutton.setAttribute("class", "shareButton")
-        sharebutton.onclick = function() {
-            console.log("cloicked")
-            copytoclipboard(this.id.split("_")[1])
-        }
     
         document.getElementById("postsArray").appendChild(postContainer)
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
@@ -186,7 +190,7 @@ const postObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
         document.getElementById("voteDiv_"+this.id).appendChild(commentCount)
-        document.getElementById("voteDiv_"+this.id).appendChild(sharebutton)
+        // document.getElementById("voteDiv_"+this.id).appendChild(sharebutton)
     }
 }
 
@@ -274,6 +278,9 @@ const commentObject = {
 function copytoclipboard(x) {
     console.log(x)
     navigator.clipboard.writeText(x);
+    var copyText = x
+    copyText.select()
+    document.execCommand("copy");
     var items = document.getElementsByClassName("shareButton");
     for (var i=0; i < items.length; i++) {
         items[i].innerText = "Share"
@@ -359,6 +366,16 @@ const loadPosts = async (x, topic, page) => {
         topFunction()
         storeAndDisplayTopics()
         document.getElementById("commentSection").style.display = 'block'
+        if (isUserLoggedIn) {
+            document.getElementById('commentSection_login_button').style.display = 'none'
+            document.getElementById('newCom_body').style.display = 'block'
+            document.getElementById('newCom_submit').style.display = 'block'
+        } else {
+            document.getElementById('commentSection_login_button').style.display = 'block'
+            document.getElementById('newCom_body').style.display = 'none'
+            document.getElementById('newCom_submit').style.display = 'none'
+        }
+        
         
     } else {
         const response = await fetch('/api/get/'+topic+'/'+page)
@@ -448,18 +465,27 @@ const storeAndDisplayTopics = async () => {
     document.getElementById("topic-dropdown").innerHTML = ""
     const response = await fetch('/api/get/topics/')
     var data = await response.json()
+    console.log('topicData'+data)
 
-    if (data.length > 10) {
-        topics = 10
+    if (data.length <= 1) {
+        document.getElementById('topic-dropdown-div').style.display = 'none'
     } else {
-        topics = data.length
+        document.getElementsByClassName('topic-dropdown-div').display = 'block'
+        if (data.length > 10) {
+            topics = 10
+        } else {
+            topics = data.length
+        }
+        for (j=0;j<topics;j++) {
+            var newTopic = document.createElement('a')
+            href = data[j][0].replace(/^"(.*)"$/, '$1');
+            newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"("+data[j][1]+")</a>"
+            document.getElementById("topic-dropdown").appendChild(newTopic)
+        }
     }
-    for (j=0;j<topics;j++) {
-        var newTopic = document.createElement('a')
-        href = data[j][0].replace(/^"(.*)"$/, '$1');
-        newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"("+data[j][1]+")</a>"
-        document.getElementById("topic-dropdown").appendChild(newTopic)
-    }
+
+    
+    
 }
 
 const vote = async (change, id) => { 
@@ -490,6 +516,10 @@ const vote = async (change, id) => {
             document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up.gif'
             document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down_selected.gif'
         }
+    } 
+
+    if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+        window.location.href = '/login'
     }
 }
 
@@ -512,6 +542,10 @@ const voteCom = async (id, parentID) => {
             document.getElementById('voteComUp_'+id).src = '../assets/up.gif'
         }
         document.getElementById('voteCount_'+id).innerHTML = data.newcount
+    }
+
+    if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+        window.location.href = '/login'
     }
 }
 

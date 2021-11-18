@@ -445,3 +445,11 @@ a:hover { text-decoration: none; color:red; }
 #post-button {
 	margin-right:6px;
 }
+
+#commentSection_login_button {
+	margin-top:5px;
+}
+
+.shareButton {
+	z-index: 10000;
+}
