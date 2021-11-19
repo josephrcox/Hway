@@ -121,30 +121,35 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 
 	postModified = []
 	Post.findById(req.params.postid, function (err, post) {
-		if (post.posterID == userID) {
-			postModified = post
-			postModified.current_user_admin = true
+		if (post == null) {
+			res.send({error:'No post found'})
 		} else {
-			postModified = post
-			postModified.current_user_admin = false
-		}
-		if (post.users_upvoted.includes(userID)) {
-			postModified.current_user_upvoted = true
-			postModified.current_user_downvoted = false
-		}
-		if (post.users_downvoted.includes(userID)) {
-			postModified.current_user_upvoted = false
-			postModified.current_user_downvoted = true
-		}
-		for (i=0;i<post.comments.length;i++) {
-			com = post.comments[i]
-			if (com.users_voted.includes(userID)) {
-				postModified.comments[i].current_user_voted = true
+			if (post.posterID == userID) {
+				postModified = post
+				postModified.current_user_admin = true
+			} else {
+				postModified = post
+				postModified.current_user_admin = false
 			}
+			if (post.users_upvoted.includes(userID)) {
+				postModified.current_user_upvoted = true
+				postModified.current_user_downvoted = false
+			}
+			if (post.users_downvoted.includes(userID)) {
+				postModified.current_user_upvoted = false
+				postModified.current_user_downvoted = true
+			}
+			for (i=0;i<post.comments.length;i++) {
+				com = post.comments[i]
+				if (com.users_voted.includes(userID)) {
+					postModified.comments[i].current_user_voted = true
+				}
+			}
+	
+			console.log(postModified)
+			res.send(post)
 		}
-
-		console.log(postModified)
-		res.send(post)
+		
 	})
 })
 

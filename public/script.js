@@ -307,85 +307,91 @@ const loadPosts = async (x, topic, page) => {
         postid = url.split('/posts/')[1]
         const response = await fetch('/api/get/posts/'+postid)
         const data = await response.json()
+        console.log(data)
         if (data.status == "error") {
             console.log("error")
             window.location.href = '/login'
         }
         document.getElementById("postsArray").innerHTML = ""
-
-        let post = Object.create(postObject)
-        post.title = data.title
-        post.body = data.body
-        if (post.body == "" || post.body == undefined || post.body == null) {
-            post.body = "(empty)"
-        }
-        post.total_votes = data.total_votes
-        post.upvotes = data.upvotes
-        post.downvotes = data.downvotes
-        post.id = data._id
-        post.poster = data.poster
-        post.date = data.date
-        post.descDisplayed = false
-        post.link = data.link
-        post.type = data.type // 1=text, 2=link, 3=media
-        post.topic = data.topic
-        post.comment_count = data.comments.length
-        post.comments = data.comments
-        
-
-        post.current_user_upvoted = data.current_user_upvoted
-        post.current_user_downvoted = data.current_user_downvoted
-        post.current_user_admin = data.current_user_admin
-
-        posts.push(post)
-        post.display()
-        expandDesc(post.id)
-        cID = post.id
-        console.log(data.comments)
-        for (i=0;i<data.comments.length;i++) {
-            let com = Object.create(commentObject)
-            com.body = data.comments[i].body
-            com.id = data.comments[i]._id
-            com.total_votes = data.comments[i].total_votes
-            com.poster = data.comments[i].poster
-            com.posterID = data.comments[i].posterID
-            com.date = data.comments[i].date
-            com.users_voted = data.comments[i].users_voted
-            com.parentID = cID
-
-            com.current_user_voted = data.comments[i].current_user_voted
-            com.display()
-            
-            comment_count.push(com.id)
-            commentParentPair.push(com.parentID)
-            commentBodies.push(com.body)
-        }
-        
-        
-        if (x != 0) {
-            expandDesc(x)
-        }
-        topFunction()
-        storeAndDisplayTopics()
-        document.getElementById("commentSection").style.display = 'block'
-        if (isUserLoggedIn) {
-            document.getElementById('commentSection_login_button').style.display = 'none'
-            document.getElementById('newCom_body').style.display = 'block'
-            document.getElementById('newCom_submit').style.display = 'block'
+        if (data.length == 0 || data.error == 'No post found') {
+            console.log("no posts found")
+            document.getElementById("postsArray").innerHTML = "<div style='color:white'>No post found. It may have been deleted. </div>"
         } else {
-            document.getElementById('commentSection_login_button').style.display = 'block'
-            document.getElementById('newCom_body').style.display = 'none'
-            document.getElementById('newCom_submit').style.display = 'none'
+            let post = Object.create(postObject)
+            post.title = data.title
+            post.body = data.body
+            if (post.body == "" || post.body == undefined || post.body == null) {
+                post.body = "(empty)"
+            }
+            post.total_votes = data.total_votes
+            post.upvotes = data.upvotes
+            post.downvotes = data.downvotes
+            post.id = data._id
+            post.poster = data.poster
+            post.date = data.date
+            post.descDisplayed = false
+            post.link = data.link
+            post.type = data.type // 1=text, 2=link, 3=media
+            post.topic = data.topic
+            post.comment_count = data.comments.length
+            post.comments = data.comments
+            
+
+            post.current_user_upvoted = data.current_user_upvoted
+            post.current_user_downvoted = data.current_user_downvoted
+            post.current_user_admin = data.current_user_admin
+
+            posts.push(post)
+            post.display()
+            expandDesc(post.id)
+            cID = post.id
+            console.log(data.comments)
+            for (i=0;i<data.comments.length;i++) {
+                let com = Object.create(commentObject)
+                com.body = data.comments[i].body
+                com.id = data.comments[i]._id
+                com.total_votes = data.comments[i].total_votes
+                com.poster = data.comments[i].poster
+                com.posterID = data.comments[i].posterID
+                com.date = data.comments[i].date
+                com.users_voted = data.comments[i].users_voted
+                com.parentID = cID
+
+                com.current_user_voted = data.comments[i].current_user_voted
+                com.display()
+                
+                comment_count.push(com.id)
+                commentParentPair.push(com.parentID)
+                commentBodies.push(com.body)
+            }
+            
+            
+            if (x != 0) {
+                expandDesc(x)
+            }
+            topFunction()
+            storeAndDisplayTopics()
+            document.getElementById("commentSection").style.display = 'block'
+            if (isUserLoggedIn) {
+                document.getElementById('commentSection_login_button').style.display = 'none'
+                document.getElementById('newCom_body').style.display = 'block'
+                document.getElementById('newCom_submit').style.display = 'block'
+            } else {
+                document.getElementById('commentSection_login_button').style.display = 'block'
+                document.getElementById('newCom_body').style.display = 'none'
+                document.getElementById('newCom_submit').style.display = 'none'
+            }
         }
-        
-        
     } else {
         const response = await fetch('/api/get/'+topic+'/'+page)
         const data = await response.json()
-        //console.log(data)
+        console.log(data)
 
         document.getElementById("postsArray").innerHTML = ""
-
+        if (data.length == 0) {
+            console.log("no posts found")
+            document.getElementById("postsArray").innerHTML = "<div style='color:white'>No posts... yet!</div>"
+        }
         for (i=0; i<data.length ; i++) {
             let post = Object.create(postObject)
             post.title = data[i].title
@@ -488,6 +494,7 @@ const storeAndDisplayTopics = async () => {
             document.getElementById("topic-dropdown").appendChild(newTopic)
         }
     }
+
     
 }
 
