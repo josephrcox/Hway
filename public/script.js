@@ -34,12 +34,14 @@ const getUser = async () => {
         document.getElementById("logout_button").style.display = 'none'
         document.getElementById("login_button").style.display = 'block'
         document.getElementById("reg_button").style.display = 'block'
+        document.getElementById("post-button").style.display = 'none'
     } else {
         currentUserID = data.id
         isUserLoggedIn = true
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
+        document.getElementById("post-button").style.display = 'block'
     }
     
     
@@ -469,8 +471,11 @@ const storeAndDisplayTopics = async () => {
 
     if (data.length <= 1) {
         document.getElementById('topic-dropdown-div').style.display = 'none'
+        document.getElementById('topic-dropdown-div').style.borderRight = '0px solid black'
     } else {
-        document.getElementsByClassName('topic-dropdown-div').display = 'block'
+        document.getElementById('topic-dropdown-div').style.display = 'block'
+        document.getElementById('topic-dropdown-button').style.display = 'block'
+        document.getElementById('topic-dropdown-div').style.borderRight = '2px solid black'
         if (data.length > 10) {
             topics = 10
         } else {
@@ -483,8 +488,6 @@ const storeAndDisplayTopics = async () => {
             document.getElementById("topic-dropdown").appendChild(newTopic)
         }
     }
-
-    
     
 }
 

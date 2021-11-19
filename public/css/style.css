@@ -322,12 +322,14 @@ label {
 	color: white;
 	border: none;
 	cursor: pointer;
+	display:none;
 }
   
 .topic-dropdown-div {
 	position: relative;
 	display: inline-block;
 	border-right: 2px solid black;
+	display:none;
 }
   
 .dropdown-content {
@@ -443,11 +445,12 @@ a:hover { text-decoration: none; color:red; }
 #misc_header_buttons {
 	display:flex;
 	padding-left:2px;
-	border-left:2px solid black;
+	
 }
 
 #post-button {
 	margin-right:6px;
+	display:none;
 }
 
 #commentSection_login_button {
