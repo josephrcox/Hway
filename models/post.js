@@ -2,13 +2,13 @@ const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema(
     {
+        type: { type:Number, required:true }, // 1=text, 2=link, 3=media
         title: { type:String, required:true },
         body: { type:String },
         poster: { type:String, required:true},
         posterID: { type:String },
-        link: { type:String },
+        link: { type:String }, // only if type=2 or type=3
         topic: { type:String, default: "all"},
-        type: { type:Number, required:true }, // 1=text, 2=link, 3=media
         date: { type: String, default: Date.now },
         timestamp: { type: String },
         total_votes: { type: Number, default: 0},
