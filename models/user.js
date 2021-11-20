@@ -4,8 +4,7 @@ const userSchema = new mongoose.Schema(
     {
         name: { type:String, unique:true },
         password: { type:String },
-        date: { type: Date, default: Date.now },
-        total_votes: { type: Number, default: 0},
+        
         statistics: {
             created_posts: { type:Number, default: 0 },
             created_comments: { type:Number, default: 0 },
@@ -13,8 +12,12 @@ const userSchema = new mongoose.Schema(
             viewed_comments: { type:Number, default: 0 },
             misc_logged_in: { type:Number, default: 0 },
             misc_logged_out: { type:Number, default: 0 },
-            voted_posts: { type:Number, default: 0 },
-            voted_comments: { type:Number, default: 0 },
+            misc_times_visited: { type:Number, default: 0},
+            misc_approximate_location: { type:String, default: ""},
+            topics_visited: { type:Array, default: []},
+            votedOn_posts: { type:Number, default: 0 },
+            votedOn_comments: { type:Number, default: 0 },
+            total_votes: { type: Number, default: 0},
             account_creation_date: { type:Date, default: Date.now() },
         }
     }, 

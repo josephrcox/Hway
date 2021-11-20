@@ -68,6 +68,7 @@ app.get('/api/get/currentuser', function (req, res) {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		//console.log(verified)
+		updateSchema()
 		res.json(verified)
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
@@ -365,6 +366,9 @@ app.post('/api/post/post', async(req, res) => {
 			timestamp:timestamp
 		})
 		//console.log('Post created successfully: ', response)
+		User.findById(userID, function(err, user) {
+			old = user.statistics.created
+		})
 		res.json({ status:"ok", code:200, data: response})
 	} catch (error) {
 		//console.log(error)
@@ -372,6 +376,40 @@ app.post('/api/post/post', async(req, res) => {
 	}
 })
 
+async function updateSchema() {
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		//console.log(verified)
+		userID = verified.id
+		poster = verified.name
+		User.findByIdAndUpdate(userID, 
+			{statistics: 
+				{
+					created_posts: 0,
+					created_comments: 0,
+					viewed_posts: 0,
+					viewed_comments: 0,
+					misc_logged_in: 0,
+					misc_logged_out: 0,
+					misc_times_visited: 0,
+					misc_approximate_location: "",
+					topics_visited: [],
+					votedOn_posts: 0,
+					votedOn_comments: 0,
+					total_votes: 0,
+					account_creation_date: Date.now()
+				}
+				
+		}, options, callback)
+		
+	} catch (err) {
+		
+	}
+	
+}
+
+updateSchema()
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
