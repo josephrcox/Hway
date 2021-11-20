@@ -38,9 +38,10 @@ mongoose.connect(process.env.DATEBASE_URL, {
 })
 const connection = mongoose.connection;
 
-connection.once("open", function() {
+connection.once("open", function(res) {
   //console.log("MongoDB database connection established successfully");
 });
+
 
 const User = require('./models/user')
 const Post = require('./models/post')
@@ -68,7 +69,6 @@ app.get('/api/get/currentuser', function (req, res) {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		//console.log(verified)
-		updateSchema()
 		res.json(verified)
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
@@ -376,40 +376,6 @@ app.post('/api/post/post', async(req, res) => {
 	}
 })
 
-async function updateSchema() {
-	try {
-		token = req.cookies.token
-		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
-		userID = verified.id
-		poster = verified.name
-		User.findByIdAndUpdate(userID, 
-			{statistics: 
-				{
-					created_posts: 0,
-					created_comments: 0,
-					viewed_posts: 0,
-					viewed_comments: 0,
-					misc_logged_in: 0,
-					misc_logged_out: 0,
-					misc_times_visited: 0,
-					misc_approximate_location: "",
-					topics_visited: [],
-					votedOn_posts: 0,
-					votedOn_comments: 0,
-					total_votes: 0,
-					account_creation_date: Date.now()
-				}
-				
-		}, options, callback)
-		
-	} catch (err) {
-		
-	}
-	
-}
-
-updateSchema()
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
@@ -611,5 +577,22 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 	}
 
 })
+
+function updateSchema() {
+	userID_array = []
+	user_array = []
+	User.find({}, function(err, docs) {
+		for (i=0;i<docs.length;i++) {
+			userID_array.push(docs[i].id)
+			user_array.push(docs[i])
+			docs[i].statistics.score = 1
+			docs[i].save()
+		}
+		console.log(userID_array)
+		console.log(user_array)
+	})
+}
+
+updateSchema()
 
 app.listen(process.env.PORT || 3000)
