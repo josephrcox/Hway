@@ -243,19 +243,24 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 		Post.find({topic: req.params.topic}).sort({total_votes: -1}).exec(function(err, posts){
 			if(err){
 			} else{
-				User.findById(userID, function(err, docs) {
-					if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
-						index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
-						currentCount = docs.statistics.topics.visited_array[index][2]
-						docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
-
-					} else {
-						docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
-						docs.statistics.topics.visited_num += 1
-					}
-					
-					docs.save()
-				})
+				try {
+					User.findById(userID, function(err, docs) {
+						if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+							index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
+							currentCount = docs.statistics.topics.visited_array[index][2]
+							docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
+	
+						} else {
+							docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
+							docs.statistics.topics.visited_num += 1
+						}
+						
+						docs.save()
+					})
+				} catch(err) {
+					console.log(err)
+				}
+				
 				
 				for (i=0;i<posts.length;i++) {
 					if (posts[i].posterID == userID) {

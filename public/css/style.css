@@ -1,3 +1,4 @@
+
 .descCell img {
 	max-height: 500px;
 	object-fit: scale-down;
@@ -6,7 +7,10 @@
 .flex-container {
 	display: flex;
 	flex-direction: column;
-	width:96vw;
+	width:98%;
+  	border-left: 3px solid black;
+	border-right:3px solid black; 
+	border-top:1px solid black;
 }
 
 .commentButton {
@@ -100,11 +104,10 @@
 }
 #sitebody {
 	padding-top:10px;
+	width: 100%;
 }
 
 #title {
-	border:1px solid black;
-	border-right:0px;
 	text-align: left;
 	padding-left:10px;
 	font-style: italic;
@@ -127,12 +130,12 @@
 	justify-content:space-between;
 	padding-bottom: 3px;
 	padding-top:3px;
+	border-bottom: 3px solid black;
+	border-right: 3px solid black;
+	border-left: 3px solid black;
 	border-top:1px solid black;
-	border-bottom: 2px solid black;
-	border-right: 1px solid black;
-	border-left: 1px solid black;
 	background-color: #327da8;
-	width:96vw;
+	width:98%;
 }
 
 #post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button {
@@ -167,7 +170,7 @@
 }
 
 body {
-	background-color: #00202f;
+	background-color: #001824;
 	font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -212,7 +215,7 @@ tbody {
 	-ms-user-select: none;
 	user-select: none;
 	-o-user-select: none;
-	font-size:18px;
+	font-size:larger;
 }
 .descCell {
 	white-space: pre-wrap;
@@ -260,7 +263,7 @@ label {
 .postContainer {
 	display:flex;
 	flex-direction:column;
-	width:96vw;
+	width:calc(100% + 6px);
 }
 
 .postFrame {
@@ -356,20 +359,15 @@ label {
 .header-title {
 	display:flex;
 	flex-direction: row;
-	width: 96vw;
-	border:1px solid black;
 }
 
 #page-number {
-	border-right: 1px solid black;
-	border-bottom: 1px solid black;
-	border-top: 1px solid black;
 	padding-top: 3px;
 	font-weight: 200;
 	font-size: 16px;
-	background-color: #003366;
+	background-color:#003366;
 	color:white;
-	width:70vw;
+	width:100%;
 }
 
 
@@ -419,8 +417,8 @@ a:hover { text-decoration: none; color:red; }
 	padding-left:10px;
 	margin-top:1px; 
 	color:white;
-	font-variant:all-small-caps;
 	font-weight: 200;
+	font-variant: all-petite-caps;
 }
 
 .commentCount {
@@ -455,4 +453,8 @@ a:hover { text-decoration: none; color:red; }
 
 #commentSection_login_button {
 	margin-top:5px;
+}
+
+#postsArray {
+	width:98%;
 }
