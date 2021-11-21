@@ -777,7 +777,7 @@ const createNewPost = async(posttype) => {
     }); 
     const data = await fetchResponse.json()
 
-    //console.log(data.code)
+    console.log(data)
     document.getElementById("newPost_name").innerHTML = ""
     document.getElementById("newPost_desc").innerHTML = ""
     document.getElementById("newPost_topic").innerHTML = ""

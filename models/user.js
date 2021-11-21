@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
             },
             comments: {
                 created_num: { type:Number, default: 0 },
+                created_array: { type:Array, default: []},
                 votedOn_num: { type:Number, default: 0 },
                 votedOn_array: { type:Array, default: []},
             },
@@ -28,8 +29,6 @@ const userSchema = new mongoose.Schema(
                 login_array: { type:Array, default: []},
                 logout_num: { type:Number, default: 0 },
                 logout_array: { type:Array, default: []},
-                visited_num: { type:Number, default: 0 },
-                visited_array: { type:Array, default: []},
                 approximate_location: { type:String, default:""},
                 account_creation_date: { type:Date, default: Date.now() },
             },

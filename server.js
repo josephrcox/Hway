@@ -39,7 +39,7 @@ mongoose.connect(process.env.DATEBASE_URL, {
 const connection = mongoose.connection;
 
 connection.once("open", function(res) {
-  //console.log("MongoDB database connection established successfully");
+  ////console.log"MongoDB database connection established successfully");
 });
 
 
@@ -60,6 +60,18 @@ app.get('/', (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+		User.findById(userID, function(err, docs) {
+			docs.statistics.misc.logout_num += 1
+			docs.statistics.misc.logout_array.push(Date.now())
+			docs.save()
+		})
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
 	res.cookie('token', '', { maxAge: 1 })
 	res.render('index.ejs', {topic:""})
 })
@@ -68,8 +80,9 @@ app.get('/api/get/currentuser', function (req, res) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
+		
 		res.json(verified)
+
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
@@ -107,11 +120,12 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
-		console.log(token)
+		////console.logtoken)
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
+		
 	} catch (err) {
-		console.log(err)
+		////console.logerr)
 		if (!allowUsersToBrowseAsGuests) {
 			return res.json({ status:"ok", code:400, error: "Not logged in"})
 		} else {
@@ -147,7 +161,16 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 				}
 			}
 	
-			console.log(postModified)
+			User.findById(userID, function(err, docs) {
+				viewed_num = docs.statistics.posts.viewed_num
+				viewed_array = docs.statistics.posts.viewed_array
+				viewed_array.push([post.title, post.topic, post.id])
+				docs.statistics.posts.viewed_num = (viewed_num+1)
+				docs.statistics.posts.viewed_array = viewed_array
+				docs.save()	
+			})
+	
+			//console.logpostModified)
 			res.send(post)
 		}
 		
@@ -159,11 +182,11 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
-		console.log(token)
+		//console.logtoken)
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
 	} catch (err) {
-		console.log(err)
+		//console.logerr)
 		if (!allowUsersToBrowseAsGuests) {
 			return res.json({ status:"ok", code:400, error: "Not logged in"})
 		} else {
@@ -174,7 +197,7 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	if (req.params.topic == "all") {
 		Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
 			if(err){
-			  //console.log(err);
+			  ////console.logerr);
 			} else{
 				for (i=0;i<posts.length;i++) {
 					if (posts[i].posterID == userID) {
@@ -199,8 +222,21 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	} else {
 		Post.find({topic: req.params.topic}).sort({total_votes: -1}).exec(function(err, posts){
 			if(err){
-			  //console.log(err);
 			} else{
+				User.findById(userID, function(err, docs) {
+					if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+						index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
+						currentCount = docs.statistics.topics.visited_array[index][2]
+						docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
+
+					} else {
+						docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
+						docs.statistics.topics.visited_num += 1
+					}
+					
+					docs.save()
+				})
+				
 				for (i=0;i<posts.length;i++) {
 					if (posts[i].posterID == userID) {
 						postsonpage[i] = posts[i]
@@ -229,7 +265,7 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 app.get('/api/get/users', async(req, res) => {	
 	User.find({}, function(err, users){
         if(err){
-          //console.log(err);
+          ////console.logerr);
         } else{
 			
             res.send(users)
@@ -242,7 +278,7 @@ app.get('/api/get/topics', async(req, res) => {
 	topicCount = []
 	Post.find({}, function(err, posts){
         if(err){
-          //console.log(err);
+          ////console.logerr);
         } else{
 			
 			for (i=0;i<posts.length;i++) {
@@ -263,7 +299,7 @@ app.get('/api/get/topics', async(req, res) => {
 			joinedArray.sort(function(a,b) {
 				return b[1] - a[1]
 			})
-			//console.log(joinedArray)
+			////console.logjoinedArray)
 			res.send(joinedArray)
         }
 
@@ -287,6 +323,13 @@ app.post('/login', async(req, res) => {
 			JWT_SECRET, { expiresIn: "30days"}
 		)
 
+		User.findById(user._id, function(err, docs) {
+			console.log("user:"+docs)
+			docs.statistics.misc.login_num += 1
+			docs.statistics.misc.login_array.push(Date.now())
+			docs.save()
+		})
+
         res.cookie("token", token, {
             httpOnly: true
         })
@@ -306,7 +349,7 @@ app.post('/register', async(req, res) => {
             name: name,
             password: password
 		})
-		//console.log('User created successfully: ', response)
+		////console.log'User created successfully: ', response)
 	} catch (error) {
 		if (error.code === 11000) {
 			// duplicate key
@@ -326,7 +369,7 @@ app.post('/api/post/post', async(req, res) => {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
+		////console.logverified)
 		userID = verified.id
 		poster = verified.name
 	} catch (err) {
@@ -365,13 +408,15 @@ app.post('/api/post/post', async(req, res) => {
 			date: fulldatetime,
 			timestamp:timestamp
 		})
-		//console.log('Post created successfully: ', response)
-		User.findById(userID, function(err, user) {
-			old = user.statistics.created
+		console.log(response)
+		User.findById(userID, function(err, docs) {
+			docs.statistics.posts.created_num += 1
+			docs.statistics.posts.created_array.push([title, topic, response.id])
+			docs.save()
 		})
 		res.json({ status:"ok", code:200, data: response})
 	} catch (error) {
-		//console.log(error)
+		console.log("ERROR:"+error)
 		res.json(error)
 	}
 })
@@ -379,12 +424,12 @@ app.post('/api/post/post', async(req, res) => {
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
-	console.log(id)
+	//console.logid)
 
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log(verified)
+		////console.logverified)
 		userID = verified.id
 		
 		username = verified.name
@@ -414,8 +459,9 @@ app.post('/api/post/comment/', async(req, res) => {
 
 	try {
 		Post.findById(id, function(err, docs) {
-			console.log(docs)
+			//console.logdocs)
 			commentArray = docs.comments
+			commentid = Math.floor(Math.random() * Date.now()) // generates a random id
 			newComment = {
 				'body': reqbody,
 				'poster':username,
@@ -424,13 +470,18 @@ app.post('/api/post/comment/', async(req, res) => {
 				'timestamp':timestamp,
 				'total_votes':0,
 				'users_voted':[],
-				'_id': Math.floor(Math.random() * Date.now()) // generates a random id
+				'_id': commentid
 			}
 			commentArray.push(newComment)
 			docs.comments = commentArray
 			docs.save()
 			User.findById(userID, function(err, docs) {
-				console.log(docs)
+				docs.statistics.comments.created_num += 1
+				docs.statistics.comments.created_array.push([reqbody, id, commentid])
+				docs.save()
+			})
+			User.findById(userID, function(err, docs) {
+				//console.logdocs)
 			})
 			res.json(newComment)
 		})
@@ -445,7 +496,7 @@ function isloggedin(req) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		//console.log("verified:"+JSON.stringify(verified))
+		////console.log"verified:"+JSON.stringify(verified))
 		if (JSON.stringify(verified).status == "error") {
 			return false
 		} else {
@@ -526,12 +577,12 @@ app.put('/vote/:id/:y', function(req,res) {
 app.put('/voteComment/:parentid/:commentid', function(req,res) {
 	pID = req.params.parentid
 	id = req.params.commentid
-	console.log("id:"+id)
+	//console.log"id:"+id)
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
-		console.log(userID)
+		//console.loguserID)
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
@@ -542,7 +593,7 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 
 			for (i=0;i<oldComArray.length;i++) {
 				if (oldComArray[i]._id == id) {
-					console.log("match:"+i)
+					//console.log"match:"+i)
 					index = i
 				}
 			}
@@ -555,7 +606,7 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 				userIDinArray = oldComArray[index].users_voted.indexOf(userID)
 				oldComArray[index].users_voted.splice(userIDinArray, 1)
 				oldComArray[index].total_votes = newVotesDown
-				console.log(oldComArray)
+				//console.logoldComArray)
 				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
 					docs.save()
 					res.json({"status":'ok', "newcount":oldComArray[index].total_votes, 'voted':'no'})
@@ -564,7 +615,7 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 			} else {
 				oldComArray[index].users_voted.push(userID)
 				oldComArray[index].total_votes = newVotes
-				console.log(oldComArray)
+				//console.logoldComArray)
 				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
 					docs.save()
 					res.json({"status":'ok', 'newcount':oldComArray[index].total_votes, 'voted':'yes'})
@@ -585,11 +636,8 @@ function updateSchema() {
 		for (i=0;i<docs.length;i++) {
 			userID_array.push(docs[i].id)
 			user_array.push(docs[i])
-			docs[i].statistics.score = 1
 			docs[i].save()
 		}
-		console.log(userID_array)
-		console.log(user_array)
 	})
 }
 
