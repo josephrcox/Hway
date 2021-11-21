@@ -162,9 +162,29 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 			}
 	
 			User.findById(userID, function(err, docs) {
+				let datetime = new Date()
+				month = datetime.getUTCMonth()+1
+				day = datetime.getUTCDate()
+				year = datetime.getUTCFullYear()
+				hour = datetime.getUTCHours()
+				minute = datetime.getUTCMinutes()
+				timestamp = Date.now()
+
+				if (hour > 12) {
+					ampm = "PM"
+					hour -= 12
+				} else {
+					ampm = "AM"
+				}
+				if (minute < 10) {
+					minute = "0"+minute
+				}
+
+				fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
+
 				viewed_num = docs.statistics.posts.viewed_num
 				viewed_array = docs.statistics.posts.viewed_array
-				viewed_array.push([post.title, post.topic, post.id])
+				viewed_array.push([post.title, post.topic, post.id, fulldatetime ])
 				docs.statistics.posts.viewed_num = (viewed_num+1)
 				docs.statistics.posts.viewed_array = viewed_array
 				docs.save()	
@@ -376,12 +396,12 @@ app.post('/api/post/post', async(req, res) => {
 		return res.json({ status:"error", code:400, error: err})
 	}
 
-	let post_datetime = new Date()
-	month = post_datetime.getMonth()+1
-	day = post_datetime.getDate()
-	year = post_datetime.getFullYear()
-	hour = post_datetime.getHours()
-	minute = post_datetime.getMinutes()
+	let datetime = new Date()
+	month = datetime.getUTCMonth()+1
+	day = datetime.getUTCDate()
+	year = datetime.getUTCFullYear()
+	hour = datetime.getUTCHours()
+	minute = datetime.getUTCMinutes()
 	timestamp = Date.now()
 
 	if (hour > 12) {
@@ -394,7 +414,7 @@ app.post('/api/post/post', async(req, res) => {
 		minute = "0"+minute
 	}
 
-	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm
+	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 
 	try {
 		const response = await Post.create({
@@ -411,7 +431,7 @@ app.post('/api/post/post', async(req, res) => {
 		console.log(response)
 		User.findById(userID, function(err, docs) {
 			docs.statistics.posts.created_num += 1
-			docs.statistics.posts.created_array.push([title, topic, response.id])
+			docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
 			docs.save()
 		})
 		res.json({ status:"ok", code:200, data: response})
@@ -437,12 +457,12 @@ app.post('/api/post/comment/', async(req, res) => {
 		return res.json({ status:"error", code:400, error: err})
 	}
 
-	let post_datetime = new Date()
-	month = post_datetime.getMonth()+1
-	day = post_datetime.getDate()
-	year = post_datetime.getFullYear()
-	hour = post_datetime.getHours()
-	minute = post_datetime.getMinutes()
+	let datetime = new Date()
+	month = datetime.getUTCMonth()+1
+	day = datetime.getUTCDate()
+	year = datetime.getUTCFullYear()
+	hour = datetime.getUTCHours()
+	minute = datetime.getUTCMinutes()
 	timestamp = Date.now()
 
 	if (hour > 12) {
@@ -455,7 +475,7 @@ app.post('/api/post/comment/', async(req, res) => {
 		minute = "0"+minute
 	}
 
-	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm
+	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 
 	try {
 		Post.findById(id, function(err, docs) {
