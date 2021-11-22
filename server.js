@@ -449,14 +449,11 @@ app.post('/api/post/post', async(req, res) => {
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
-	//console.logid)
 
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		////console.logverified)
 		userID = verified.id
-		
 		username = verified.name
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
@@ -495,6 +492,7 @@ app.post('/api/post/comment/', async(req, res) => {
 				'timestamp':timestamp,
 				'total_votes':0,
 				'users_voted':[],
+				'nested_comments':[],
 				'_id': commentid
 			}
 			commentArray.push(newComment)

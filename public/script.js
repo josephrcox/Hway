@@ -172,16 +172,6 @@ const postObject = {
                 expandDesc(this.id.split("_")[1])
             } 
         }
-        // // comnenting out as this does not work on mobile unfortunately
-        // var sharebutton = document.createElement("button") 
-        // sharebutton.innerText = "Share"
-        // sharebutton.setAttribute("id", "share_"+window.location.origin+"/posts/"+this.id)
-        // sharebutton.setAttribute("class", "shareButton")
-        // sharebutton.addEventListener('click', function() {
-        //     console.log("cloicked")
-        //     copytoclipboard(this.id.split("_")[1])
-        // })
-
     
         document.getElementById("postsArray").appendChild(postContainer)
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
@@ -192,13 +182,14 @@ const postObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
         document.getElementById("voteDiv_"+this.id).appendChild(commentCount)
-        // document.getElementById("voteDiv_"+this.id).appendChild(sharebutton)
     }
 }
 
 const commentObject = {
     body: "",
     id: "",
+    nested_comment: "", // true or false
+    nested_comment_parentID: "", 
     parentID:"",
     total_votes: "",
     users_voted:[],
@@ -218,10 +209,14 @@ const commentObject = {
         posterRow = comFrame.insertRow(0)
         posterRow.setAttribute("id", "posterRow_"+this.id)
         posterCell = posterRow.insertCell(0)
+
         infoRow = comFrame.insertRow(1)
         infoCell = infoRow.insertCell(0)
         infoCell.innerHTML = this.date
         infoCell.setAttribute("class","comInfoCell")
+        
+
+
         bodyRow = comFrame.insertRow(2)
         bodyCell = bodyRow.insertCell(0)
 
@@ -245,6 +240,15 @@ const commentObject = {
                 x.innerHTML = ""
             }
             
+        }
+        
+        var replyButton = document.createElement('button')
+        replyButton.innerHTML = "Reply"
+        replyButton.setAttribute("class","comReplyCell")
+        replyButton.setAttribute("id", "replyButton_"+this.id)
+        infoRow.appendChild(replyButton)
+        replyButton.onclick = function() {
+            comment(cID, "x", true, this.id.split('_')[1])
         }
 
         var voteDiv = document.createElement("div")
@@ -291,7 +295,7 @@ function copytoclipboard(x) {
 }
 
 const loadPosts = async (x, topic, page) => {
-    // user is logged in
+    getUser()
     document.getElementById("logout_button").style.display = 'block'
     if (topic == null || topic == "") {
         topic = "all"
@@ -372,6 +376,7 @@ const loadPosts = async (x, topic, page) => {
             topFunction()
             storeAndDisplayTopics()
             document.getElementById("commentSection").style.display = 'block'
+            
             if (isUserLoggedIn) {
                 document.getElementById('commentSection_login_button').style.display = 'none'
                 document.getElementById('newCom_body').style.display = 'block'
@@ -559,36 +564,72 @@ const voteCom = async (id, parentID) => {
     }
 }
 
-const comment = async (postid, body) => { 
+const comment = async (postid, body, nested, nestedparentid) => { 
     body = document.getElementById("newCom_body").value
-    if (body != null && body != "") {
-        bodyJSON = {
-            "id":postid,
-            "body":body,
-        }
-    
-        const fetchResponse = await fetch('/api/post/comment/', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-                },
-            method: 'POST',
-            body: JSON.stringify(bodyJSON)
-        }); 
-        var data = await fetchResponse.json()
-
-        let com = Object.create(commentObject)
-        com.body = data.body
-        com.id = data._id
-        com.total_votes = data.total_votes
-        com.poster = data.poster
-        com.posterID = data.posterID
-        com.date = data.date
-        com.display()
+    if (!nested) {
+        if (body != null && body != "") {
+            bodyJSON = {
+                "id":postid,
+                "body":body,
+            }
         
-        comment_count.push(com.id)
-        commentBodies.push(com.body)
+            const fetchResponse = await fetch('/api/post/comment/', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    },
+                method: 'POST',
+                body: JSON.stringify(bodyJSON)
+            }); 
+            var data = await fetchResponse.json()
+
+            let com = Object.create(commentObject)
+            com.body = data.body
+            com.id = data._id
+            com.total_votes = data.total_votes
+            com.poster = data.poster
+            com.posterID = data.posterID
+            com.date = data.date
+            com.display()
+            
+            comment_count.push(com.id)
+            commentBodies.push(com.body)
+        }
     }
+    if (nested) {
+        // if (body != null && body != "") {
+        //     bodyJSON = {
+        //         "id":postid,
+        //         "body":body,
+        //     }
+        
+        //     const fetchResponse = await fetch('/api/post/comment/nested', {
+        //         headers: {
+        //             'Accept': 'application/json',
+        //             'Content-Type': 'application/json'
+        //             },
+        //         method: 'POST',
+        //         body: JSON.stringify(bodyJSON)
+        //     }); 
+        //     var data = await fetchResponse.json()
+
+        //     let com = Object.create(commentObject)
+        //     com.body = data.body
+        //     com.id = data._id
+        //     com.total_votes = data.total_votes
+        //     com.poster = data.poster
+        //     com.posterID = data.posterID
+        //     com.date = data.date
+        //     com.nested_comment = true
+        //     com.nested_comment_parentID: 
+        //     com.display()
+            
+        //     comment_count.push(com.id)
+        //     commentBodies.push(com.body)
+        // }
+        console.log(postid, body, nested, nestedparentid)
+    }
+    
 }
 
 function ui_newPost() {
@@ -698,7 +739,7 @@ document.getElementById("newPost_type_media").onclick = function() {
 
 document.getElementById("newCom_submit").onclick = function() {
     
-    comment(cID, "x")
+    comment(cID, "x", false, "")
 
     document.getElementById("newCom_body").value = ""
 }
