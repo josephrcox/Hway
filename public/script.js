@@ -198,6 +198,7 @@ const commentObject = {
     date: "",
     current_user_voted: "",
     current_user_admin: "",
+    reply_button_shown: false,
 
     display() {
         console.log(this.current_user_voted)
@@ -241,14 +242,37 @@ const commentObject = {
             }
             
         }
+
+        var replyDiv = document.createElement("div")
+        replyDiv.setAttribute("class", "comreplyDiv")
+        replyDiv.setAttribute("id", "comreplyDiv_"+this.id)
+        replyDiv.style.display = 'none'
+        var replyBox = document.createElement("textarea")
+        replyBox.setAttribute("class", "comreplybox")
+        replyBox.setAttribute("id", "comreplybox_"+this.id)
+        replyBox.setAttribute("rows", "2")
+        replyBox.style.width = '75%'
+        replyBox.style.maxWidth = '500px'
+        var replySubmit = document.createElement("button")
+        replySubmit.setAttribute("class", "comreplySubmit")
+        replySubmit.setAttribute("id", "comreplySubmit_"+this.id)
+        replySubmit.innerText = "Submit reply"
         
         var replyButton = document.createElement('button')
         replyButton.innerHTML = "Reply"
-        replyButton.setAttribute("class","comReplyCell")
-        replyButton.setAttribute("id", "replyButton_"+this.id)
+        replyButton.setAttribute("class","comreplybutton")
+        replyButton.setAttribute("id", "comreplyButton_"+this.id)
         infoRow.appendChild(replyButton)
         replyButton.onclick = function() {
-            comment(cID, "x", true, this.id.split('_')[1])
+            //comment(cID, "x", true, this.id.split('_')[1])
+            if (this.reply_button_shown) {
+                document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'none'
+                this.reply_button_shown = false
+            } else {
+                document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'flex'
+                document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.flexDirection = 'row'
+                this.reply_button_shown = true
+            }
         }
 
         var voteDiv = document.createElement("div")
@@ -275,7 +299,11 @@ const commentObject = {
         }
         
         document.getElementById("comments").appendChild(comFrame)
+
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
+        document.getElementById("comments").appendChild(replyDiv)
+        document.getElementById("comreplyDiv_"+this.id).appendChild(replyBox)
+        document.getElementById("comreplyDiv_"+this.id).appendChild(replySubmit)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUp)
     }
@@ -375,7 +403,7 @@ const loadPosts = async (x, topic, page) => {
             }
             topFunction()
             storeAndDisplayTopics()
-            document.getElementById("commentSection").style.display = 'block'
+            document.getElementById("commentSection").style.display = 'inline'
             
             if (isUserLoggedIn) {
                 document.getElementById('commentSection_login_button').style.display = 'none'
