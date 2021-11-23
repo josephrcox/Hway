@@ -22,7 +22,6 @@ topicCount = []
 postsonpage = []
 postsPerPage = 30;
 
-
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.set('layout', 'layouts/layout')
@@ -56,7 +55,10 @@ app.use(bp.urlencoded({ extended: true }))
 var allowUsersToBrowseAsGuests = true
 
 app.get('/', (req, res) => {
+	var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
+	console.log(ip)
     res.render('index.ejs', {topic:""})
+	
 })
 
 app.get('/logout', (req, res) => {
@@ -84,6 +86,7 @@ app.get('/api/get/currentuser', function (req, res) {
 		res.json(verified)
 
 	} catch (err) {
+
 		return res.json({ status:"error", code:400, error: err})
 	}
 })
