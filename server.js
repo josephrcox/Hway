@@ -160,35 +160,42 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 					postModified.comments[i].current_user_voted = true
 				}
 			}
-	
-			User.findById(userID, function(err, docs) {
-				let datetime = new Date()
-				month = datetime.getUTCMonth()+1
-				day = datetime.getUTCDate()
-				year = datetime.getUTCFullYear()
-				hour = datetime.getUTCHours()
-				minute = datetime.getUTCMinutes()
-				timestamp = Date.now()
-
-				if (hour > 12) {
-					ampm = "PM"
-					hour -= 12
-				} else {
-					ampm = "AM"
-				}
-				if (minute < 10) {
-					minute = "0"+minute
-				}
-
-				fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
-
-				viewed_num = docs.statistics.posts.viewed_num
-				viewed_array = docs.statistics.posts.viewed_array
-				viewed_array.push([post.title, post.topic, post.id, fulldatetime ])
-				docs.statistics.posts.viewed_num = (viewed_num+1)
-				docs.statistics.posts.viewed_array = viewed_array
-				docs.save()	
-			})
+			try {
+				User.findById(userID, function(err, docs) {
+					if (docs != null) {
+						let datetime = new Date()
+						month = datetime.getUTCMonth()+1
+						day = datetime.getUTCDate()
+						year = datetime.getUTCFullYear()
+						hour = datetime.getUTCHours()
+						minute = datetime.getUTCMinutes()
+						timestamp = Date.now()
+		
+						if (hour > 12) {
+							ampm = "PM"
+							hour -= 12
+						} else {
+							ampm = "AM"
+						}
+						if (minute < 10) {
+							minute = "0"+minute
+						}
+		
+						fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
+		
+						viewed_num = docs.statistics.posts.viewed_num
+						viewed_array = docs.statistics.posts.viewed_array
+						viewed_array.push([post.title, post.topic, post.id, fulldatetime ])
+						docs.statistics.posts.viewed_num = (viewed_num+1)
+						docs.statistics.posts.viewed_array = viewed_array
+						docs.save()	
+					}
+					
+				})
+			} catch (err) {
+				console.log(err)
+			}
+			
 	
 			//console.logpostModified)
 			res.send(post)
