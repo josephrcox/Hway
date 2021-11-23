@@ -58,7 +58,7 @@
 }
 
 .newComContainer {
-		margin-top:15px;
+		margin-top:9px;
 		padding-top:5px;
 		padding-left: 5px;
 		background-color:gray;
@@ -77,7 +77,8 @@
 	}
 	
 	.newComContainer {
-		width:600px
+		width:435px;
+		margin-right: 5px;
   }
 	.newPost_container {
 		  width:200px;
@@ -247,6 +248,9 @@ textarea {
 }
 label {
 	margin-top: 10px;
+	color: whitesmoke;
+	font-weight: 500;
+	font-variant: all-small-caps;
 }
 
 .deleteButton {
@@ -263,7 +267,7 @@ label {
 .postContainer {
 	display:flex;
 	flex-direction:column;
-	width:calc(100% + 6px);
+	width:calc(98% + 6px);
 }
 
 .postFrame {
@@ -281,7 +285,7 @@ label {
 	background-color: azure;
 	margin-top: 8px;
 	border:1px solid black;
-	width:96vw;
+	width:calc(98% + 1px);
 }
 
 .voteDiv {
@@ -375,7 +379,6 @@ label {
 #newCom_body {
 	width:300px;
 	height:100px;
-	margin-bottom:10px;
 }
 
 .bodyCell {
@@ -384,7 +387,6 @@ label {
 }
 
 #newCom_submit {
-	margin-top:10px;
 	margin-bottom:5px;
 }
 
@@ -456,9 +458,12 @@ a:hover { text-decoration: none; color:red; }
 }
 
 #postsArray {
-	width:98%;
+	width:100%;
 }
 
-.comReplyCell {
-	padding-right:10px;
+.comreplyDiv {
+	background-color:gray;
+	width:98%;
+	margin-left:1px;
 }
+
