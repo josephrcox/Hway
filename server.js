@@ -82,7 +82,9 @@ app.get('/', async(req, res) => {
 			fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 			if (docs != null) {
 				docs.visited_num += 1
-				docs.visited_datetime_array.push(fulldatetime)
+				if (!docs.visited_datetime_array.includes(fulldatetime)) {
+					docs.visited_datetime_array.push(fulldatetime)
+				}
 				docs.save()
 			} else {
 				var geo = geoip.lookup(ip);
@@ -180,7 +182,9 @@ app.get('/api/get/currentuser', function (req, res) {
 				fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 				if (docs != null) {
 					docs.visited_num += 1
-					docs.visited_datetime_array.push(fulldatetime)
+					if (!docs.visited_datetime_array.includes(fulldatetime)) {
+						docs.visited_datetime_array.push(fulldatetime)
+					}
 					docs.save()
 				} else {
 					var geo = geoip.lookup(ip);
@@ -259,7 +263,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 				postModified.current_user_admin = true
 			} else {
 				postModified = post
-				postModified.current_user_admin = false
+				postModified.current_user_admin = falseisited
 			}
 			if (post.users_upvoted.includes(userID)) {
 				postModified.current_user_upvoted = true
