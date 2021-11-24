@@ -76,12 +76,12 @@ app.get('/', async(req, res) => {
 						approximate_location: geo
 					})
 				} catch(err) {
-
+					console.log(err)
 				}
 			}
 		})
 	} catch(err) {
-
+		console.log(err)
 	}
 	
     res.render('index.ejs', {topic:""})
