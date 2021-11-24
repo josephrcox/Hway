@@ -167,9 +167,8 @@ app.get('/api/get/currentuser', function (req, res) {
 						var guest = Guest.create({
 							ip_address: ip,
 							approximate_location: geo,
+							visited_datetime_array: [fulldatetime]
 						})
-						guest.visited_datetime_array.push(fulldatetime)
-						guest.save()
 					} catch(err) {
 						console.log(err)
 					}
