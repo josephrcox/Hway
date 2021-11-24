@@ -113,6 +113,8 @@ app.get('/api/get/currentuser', function (req, res) {
 
 	} catch (err) {
 		try {
+			var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
+			console.log(ip)
 			Guest.findOne({ip_address:ip}, function(err, docs) {
 				if (docs != null) {
 					docs.times_visited += 1
