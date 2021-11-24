@@ -4,7 +4,8 @@ const guestSchema = new mongoose.Schema(
     {
         ip_address: { type:String, required:true},
         approximate_location: { type:JSON, required:false},
-        times_visited: { type:Number, required:true, default:0}
+        visited_num: { type:Number, required:true, default:1},
+        visited_datetime_array: { type:Array, default:[]}
     }, 
     { collection: 'guests'}
 )
