@@ -61,24 +61,43 @@ app.get('/', async(req, res) => {
 	console.log(ip)
 	try {
 		Guest.findOne({ip_address:ip}, function(err, docs) {
+			let datetime = new Date()
+			month = datetime.getUTCMonth()+1
+			day = datetime.getUTCDate()
+			year = datetime.getUTCFullYear()
+			hour = datetime.getUTCHours()
+			minute = datetime.getUTCMinutes()
+			timestamp = Date.now()
+
+			if (hour > 12) {
+				ampm = "PM"
+				hour -= 12
+			} else {
+				ampm = "AM"
+			}
+			if (minute < 10) {
+				minute = "0"+minute
+			}
+
+			fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 			if (docs != null) {
 				docs.times_visited += 1
 				docs.save()
 			} else {
-				console.log("no guest found with this IP")
 				var geo = geoip.lookup(ip);
 				try {
-					
 					Guest.create({
 						ip_address: ip,
-						times_visited:0,
-						approximate_location: geo
+						approximate_location: geo,
+						visited_datetime_array: [fulldatetime]
 					})
 				} catch(err) {
 					console.log(err)
 				}
 			}
 		})
+
+		
 	} catch(err) {
 		console.log(err)
 	}
@@ -164,7 +183,7 @@ app.get('/api/get/currentuser', function (req, res) {
 				} else {
 					var geo = geoip.lookup(ip);
 					try {
-						var guest = Guest.create({
+						Guest.create({
 							ip_address: ip,
 							approximate_location: geo,
 							visited_datetime_array: [fulldatetime]
