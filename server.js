@@ -114,9 +114,30 @@ app.get('/logout', (req, res) => {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
+		
+		let datetime = new Date()
+		month = datetime.getUTCMonth()+1
+		day = datetime.getUTCDate()
+		year = datetime.getUTCFullYear()
+		hour = datetime.getUTCHours()
+		minute = datetime.getUTCMinutes()
+		timestamp = Date.now()
+
+		if (hour > 12) {
+			ampm = "PM"
+			hour -= 12
+		} else {
+			ampm = "AM"
+		}
+		if (minute < 10) {
+			minute = "0"+minute
+		}
+
+		fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
+
 		User.findById(userID, function(err, docs) {
 			docs.statistics.misc.logout_num += 1
-			docs.statistics.misc.logout_array.push(Date.now())
+			docs.statistics.misc.logout_array.push([fulldatetime, Date.now()])
 			docs.save()
 		})
 	} catch (err) {
@@ -473,11 +494,30 @@ app.post('/login', async(req, res) => {
 			},
 			JWT_SECRET, { expiresIn: "30days"}
 		)
+		let datetime = new Date()
+		month = datetime.getUTCMonth()+1
+		day = datetime.getUTCDate()
+		year = datetime.getUTCFullYear()
+		hour = datetime.getUTCHours()
+		minute = datetime.getUTCMinutes()
+		timestamp = Date.now()
+
+		if (hour > 12) {
+			ampm = "PM"
+			hour -= 12
+		} else {
+			ampm = "AM"
+		}
+		if (minute < 10) {
+			minute = "0"+minute
+		}
+
+		fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 
 		User.findById(user._id, function(err, docs) {
 			console.log("user:"+docs)
 			docs.statistics.misc.login_num += 1
-			docs.statistics.misc.login_array.push(Date.now())
+			docs.statistics.misc.login_array.push([fulldatetime, Date.now()])
 			docs.save()
 		})
 
