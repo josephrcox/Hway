@@ -949,3 +949,7 @@ function topFunction() {
 //     loadPosts(0, cTopic, cPage)
 //     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
 // }
+
+document.getElementById("users-page-button").onclick = function() { 
+    window.location.href = '/users'
+}

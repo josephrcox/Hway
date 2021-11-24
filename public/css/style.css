@@ -139,7 +139,7 @@
 	width:calc(98% + 3px);
 }
 
-#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button {
+#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button {
 	padding-inline: 5px;
 	text-align: center;
 	font-weight: 100;
@@ -151,6 +151,11 @@
 	user-select: none;
 	-o-user-select: none;
 	margin-top:2px;
+	text-decoration: unset;
+}
+
+.users-page-button {
+	text-decoration:unset;
 }
 
 #goHomeButton {
@@ -409,9 +414,7 @@ label {
 	height:29px;
 }
 
-a:visited { 
- text-decoration: none;
-}
+
 a:hover { text-decoration: none; color:red; }
 
 #currentUser {
@@ -467,3 +470,22 @@ a:hover { text-decoration: none; color:red; }
 	margin-left:1px;
 }
 
+a:visited { 
+ text-decoration: none;
+}
+
+.usersheet-table {
+	background-color:lightgray;
+	padding-inline: 10px;
+	padding-block: 10px;
+	text-align: inherit;
+}
+
+.usersheet-name, .usersheet-score, .usersheet-location, .usersheet-header {
+	text-align: center;
+	padding-inline: 20px;
+}
+
+.usersheet-header {
+	font-weight: 600;
+}

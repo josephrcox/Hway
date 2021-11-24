@@ -232,6 +232,10 @@ app.get('/login', (req, res) => {
     res.render('login.ejs', {topic:"- login"})
 })
 
+app.get('/users', (req, res) => {
+    res.render('users.ejs', {topic:"- users"})
+})
+
 app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
@@ -254,6 +258,33 @@ app.get('/h/:topic', async(req,res) => {
 
 app.get('/posts/:postid', async(req,res) => {	
 	res.render('home.ejs', {topic:""})
+})
+
+app.get('/api/get/all_users/', async(req, res) =>{
+	User.find({}, function(err, users) {
+		
+		usersArr = []
+		locationArr = ""
+		for (i=0;i<users.length;i++) {
+			try {
+				locationArr = users[i].statistics.misc.approximate_location[0]
+				console.log(JSON.stringify(locationArr.region, locationArr.country))
+				location = locationArr.region
+			} catch(err) {
+				console.log(err)
+				location = "unknown"
+			}
+			
+			usersArr.push({
+				'Name':users[i].name, 
+				'Score':users[i].statistics.score,
+				'Account_creation_date':users[i].statistics.misc.account_creation_date[0],
+				'Location':location
+			})
+		}
+		console.log(usersArr)
+		res.send(usersArr)
+	})
 })
 
 app.get('/api/get/posts/:postid', async(req,res) => {
