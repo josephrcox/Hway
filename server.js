@@ -276,7 +276,7 @@ app.get('/api/get/all_users/:sorting', async(req, res) =>{
 			try {
 				locationArr = users[i].statistics.misc.approximate_location[0]
 				console.log(JSON.stringify(locationArr.region, locationArr.country))
-				location = locationArr.region
+				location = locationArr.city
 			} catch(err) {
 				console.log(err)
 				location = "unknown"
