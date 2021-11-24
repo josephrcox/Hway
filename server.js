@@ -117,9 +117,12 @@ app.get('/api/get/currentuser', function (req, res) {
 					if (docs != null) {
 						var geo = geoip.lookup(ip);
 						try {
-							
-							docs.statistics.misc.ip_address.push(ip)
-							docs.statistics.misc.approximate_location.push(geo)
+							if (!docs.statistics.misc.ip_address.includes(ip)) {
+								docs.statistics.misc.ip_address.push(ip)
+							}
+							if (!docs.statistics.misc.approximate_location.includes(geo)) {
+								docs.statistics.misc.approximate_location.push(geo)
+							}
 							docs.save()
 						} catch(err) {
 							console.log(err)
@@ -136,19 +139,37 @@ app.get('/api/get/currentuser', function (req, res) {
 			var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 			console.log(ip)
 			Guest.findOne({ip_address:ip}, function(err, docs) {
+				let datetime = new Date()
+				month = datetime.getUTCMonth()+1
+				day = datetime.getUTCDate()
+				year = datetime.getUTCFullYear()
+				hour = datetime.getUTCHours()
+				minute = datetime.getUTCMinutes()
+				timestamp = Date.now()
+
+				if (hour > 12) {
+					ampm = "PM"
+					hour -= 12
+				} else {
+					ampm = "AM"
+				}
+				if (minute < 10) {
+					minute = "0"+minute
+				}
+
+				fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 				if (docs != null) {
 					docs.times_visited += 1
 					docs.save()
 				} else {
-					console.log("no guest found with this IP")
 					var geo = geoip.lookup(ip);
 					try {
-						
-						Guest.create({
+						var guest = Guest.create({
 							ip_address: ip,
-							times_visited:0,
-							approximate_location: geo
+							approximate_location: geo,
 						})
+						guest.visited_datetime_array.push(fulldatetime)
+						guest.save()
 					} catch(err) {
 						console.log(err)
 					}
