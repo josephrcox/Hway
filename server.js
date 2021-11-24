@@ -108,7 +108,27 @@ app.get('/api/get/currentuser', function (req, res) {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		
+		var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
+			console.log(ip)
+			if (ip.includes("ffff")) {
+				console.log("Local IP detected.")
+			} else {
+				User.findById(verified.id, function(err, docs) {
+					if (docs != null) {
+						var geo = geoip.lookup(ip);
+						try {
+							
+							docs.statistics.misc.ip_address.push(ip)
+							docs.statistics.misc.approximate_location.push(geo)
+							docs.save()
+						} catch(err) {
+							console.log(err)
+						}
+					}
+					
+				})
+			}
+			
 		res.json(verified)
 
 	} catch (err) {
