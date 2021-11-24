@@ -325,7 +325,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 				postModified.current_user_admin = true
 			} else {
 				postModified = post
-				postModified.current_user_admin = falseisited
+				postModified.current_user_admin = false
 			}
 			if (post.users_upvoted.includes(userID)) {
 				postModified.current_user_upvoted = true
