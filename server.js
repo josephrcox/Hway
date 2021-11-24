@@ -112,9 +112,32 @@ app.get('/api/get/currentuser', function (req, res) {
 		res.json(verified)
 
 	} catch (err) {
-
+		try {
+			Guest.findOne({ip_address:ip}, function(err, docs) {
+				if (docs != null) {
+					docs.times_visited += 1
+					docs.save()
+				} else {
+					console.log("no guest found with this IP")
+					var geo = geoip.lookup(ip);
+					try {
+						
+						Guest.create({
+							ip_address: ip,
+							times_visited:0,
+							approximate_location: geo
+						})
+					} catch(err) {
+						console.log(err)
+					}
+				}
+			})
+		} catch(err) {
+			console.log(err)
+		}
 		return res.json({ status:"error", code:400, error: err})
 	}
+
 })
 
 app.get('/login', (req, res) => {
