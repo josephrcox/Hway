@@ -718,6 +718,7 @@ app.put('/vote/:id/:y', function(req,res) {
 
 			user_already_upvoted = users_upvoted.includes(userID)
 			user_already_downvoted = users_downvoted.includes(userID)
+			posterid = docs.posterID
 
 
 			if (change == 1) {
@@ -727,12 +728,20 @@ app.put('/vote/:id/:y', function(req,res) {
 				if (user_already_downvoted) {
 					// remove the downvote, total_votes+1
 					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes-1), total_votes: (total_votes+1)},  $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+						User.findById(posterid, function(err, docs) {
+							docs.statistics.score += 1
+							docs.save()
+						})
 						return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'none'})
 					})
 				}
 				if (!user_already_downvoted && !user_already_upvoted) {
 					// vote up
 					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes+1), total_votes: (total_votes+1)},  $push: {users_upvoted: userID} }, {}, function (err, numReplaced) {
+						User.findById(posterid, function(err, docs) {
+							docs.statistics.score += 1
+							docs.save()
+						})
 						return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'up'})
 					})
 				}
@@ -745,12 +754,20 @@ app.put('/vote/:id/:y', function(req,res) {
 				if (user_already_upvoted) {
 					// remove the upvote, total_votes-1
 					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes-1), total_votes: (total_votes-1)},  $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
+						User.findById(posterid, function(err, docs) {
+							docs.statistics.score -= 1
+							docs.save()
+						})
 						return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'none'})
 					})
 				}
 				if (!user_already_downvoted && !user_already_upvoted) {
 					// vote down
 					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes+1), total_votes: (total_votes-1)},  $push: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+						User.findById(posterid, function(err, docs) {
+							docs.statistics.score -= 1
+							docs.save()
+						})
 						return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'down'})
 					})
 				}
@@ -789,14 +806,18 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 			oldVotes = oldComArray[index].total_votes
 			newVotes = oldVotes+1
 			newVotesDown = oldVotes-1
+			commentPosterID = oldComArray[index].posterID
 			
 			
 			if (oldComArray[index].users_voted.includes(userID)) {
 				userIDinArray = oldComArray[index].users_voted.indexOf(userID)
 				oldComArray[index].users_voted.splice(userIDinArray, 1)
 				oldComArray[index].total_votes = newVotesDown
-				//console.logoldComArray)
 				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+					User.findById(commentPosterID, function(err, docs) {
+						docs.statistics.score -= 1
+						docs.save()
+					})
 					docs.save()
 					res.json({"status":'ok', "newcount":oldComArray[index].total_votes, 'voted':'no'})
 				})
@@ -804,8 +825,11 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 			} else {
 				oldComArray[index].users_voted.push(userID)
 				oldComArray[index].total_votes = newVotes
-				//console.logoldComArray)
 				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+					User.findById(commentPosterID, function(err, docs) {
+						docs.statistics.score += 1
+						docs.save()
+					})
 					docs.save()
 					res.json({"status":'ok', 'newcount':oldComArray[index].total_votes, 'voted':'yes'})
 				})
