@@ -235,6 +235,9 @@ app.get('/login', (req, res) => {
 app.get('/users', (req, res) => {
     res.render('users.ejs', {topic:"- users"})
 })
+app.get('/user/:user', (req, res) => {
+    res.render('home.ejs', {topic:"- "+req.params.user})
+})
 
 app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
@@ -385,6 +388,8 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 	})
 })
 
+
+
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
 	// Commenting out this part below allows for users to view without being logged in
@@ -473,6 +478,67 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	}
 
 	
+})
+
+app.get('/api/get/posts/user/:user', async(req, res) => {	
+	postsonpage = []
+	// Commenting out this part below allows for users to view without being logged in
+	try {
+		token = req.cookies.token
+		//console.logtoken)
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		//console.logerr)
+		if (!allowUsersToBrowseAsGuests) {
+			return res.json({ status:"ok", code:400, error: "Not logged in"})
+		} else {
+			userID = null
+		}
+	}
+	
+	Post.find({poster:req.params.user}).sort({total_votes: -1}).exec(function(err, posts){
+		if(err){
+		} else{
+			try {
+				User.findById(userID, function(err, docs) {
+					if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+						index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
+						currentCount = docs.statistics.topics.visited_array[index][2]
+						docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
+
+					} else {
+						docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
+						docs.statistics.topics.visited_num += 1
+					}
+					
+					docs.save()
+				})
+			} catch(err) {
+				console.log(err)
+			}
+			
+			
+			for (i=0;i<posts.length;i++) {
+				if (posts[i].posterID == userID) {
+					postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = true
+				} else {
+					postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = false
+				}
+				if (posts[i].users_upvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = true
+					postsonpage[i].current_user_downvoted = false
+				}
+				if (posts[i].users_downvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = false
+					postsonpage[i].current_user_downvoted = true
+				}
+			}
+			res.send(postsonpage)
+		}
+	})
 })
 
 app.get('/api/get/users', async(req, res) => {	

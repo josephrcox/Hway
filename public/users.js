@@ -33,6 +33,11 @@ const getUserSheet = async () => {
         location.setAttribute('class','usersheet-location')
 
         name.innerHTML = data[i].Name
+        name.setAttribute('id','usersheet-name_'+data[i].Name)
+        name.onclick = function() {
+            console.log(this.id)
+            window.location.href = '/user/'+this.id.split('_')[1]
+        }
         score.innerHTML = data[i].Score
         location.innerHTML = data[i].Location
 

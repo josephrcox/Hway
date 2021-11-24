@@ -323,6 +323,11 @@ function copytoclipboard(x) {
 }
 
 const loadPosts = async (x, topic, page) => {
+    if (window.location.href.indexOf("/user/") != -1) {
+        console.log("on a user page,"+window.location.href+window.location.href.split('/'))
+        user = window.location.href.split('/').pop()
+        return loadUserPage(user)
+    }
     getUser()
     document.getElementById("logout_button").style.display = 'block'
     if (topic == null || topic == "") {
@@ -416,6 +421,7 @@ const loadPosts = async (x, topic, page) => {
             }
         }
     } else {
+
         const response = await fetch('/api/get/'+topic+'/'+page)
         const data = await response.json()
         console.log(data)
@@ -463,6 +469,52 @@ const loadPosts = async (x, topic, page) => {
     cTopic = topic
     //console.log(cTopic)
     
+}
+
+const loadUserPage = async(user) => {
+    console.log("loading user posts")
+    const response = await fetch('/api/get/posts/user/'+user)
+    const data = await response.json()
+    console.log(data)
+
+    document.getElementById("postsArray").innerHTML = ""
+    if (data.length == 0) {
+        console.log("no posts found")
+        document.getElementById("postsArray").innerHTML = "<div style='color:white'>No posts... yet!</div>"
+    }
+    for (i=0; i<data.length ; i++) {
+        let post = Object.create(postObject)
+        post.title = data[i].title
+        post.body = data[i].body
+        if (post.body == "" || post.body == undefined || post.body == null) {
+            post.body = "(empty)"
+        }
+        post.total_votes = data[i].total_votes
+        post.upvotes = data[i].upvotes
+        post.downvotes = data[i].downvotes
+        post.id = data[i]._id
+        post.poster = data[i].poster
+        post.date = data[i].date
+        post.descDisplayed = false
+        post.link = data[i].link
+        post.type = data[i].type // 1=text, 2=link, 3=media
+        post.topic = data[i].topic
+        post.comment_count = data[i].comments.length
+        post.comments = data[i].comments
+
+        post.current_user_upvoted = data[i].current_user_upvoted
+        post.current_user_downvoted = data[i].current_user_downvoted
+        post.current_user_admin = data[i].current_user_admin
+
+        posts.push(post)
+        post.display()
+    }
+    
+    if (x != 0) {
+        expandDesc(x)
+    }
+    topFunction()
+    storeAndDisplayTopics()
 }
 
 function expandDesc(x) {
