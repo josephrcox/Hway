@@ -479,6 +479,7 @@ a:visited {
 	padding-inline: 10px;
 	padding-block: 10px;
 	text-align: inherit;
+	margin-top:10px;
 }
 
 .usersheet-name, .usersheet-score, .usersheet-location, .usersheet-header {
@@ -487,5 +488,10 @@ a:visited {
 }
 
 .usersheet-header {
+	font-weight: 600;
+}
+
+#usersheet-sorting-descending-div {
+	color:white;
 	font-weight: 600;
 }

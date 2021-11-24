@@ -260,8 +260,15 @@ app.get('/posts/:postid', async(req,res) => {
 	res.render('home.ejs', {topic:""})
 })
 
-app.get('/api/get/all_users/', async(req, res) =>{
+app.get('/api/get/all_users/:sorting', async(req, res) =>{
+	// Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
 	User.find({}, function(err, users) {
+		if (req.params.sorting == '0') {
+			users.sort(function(a, b){return a.statistics.score - b.statistics.score}); 
+		}
+		if (req.params.sorting == '1') {
+			users.sort(function(a, b){return b.statistics.score - a.statistics.score}); 
+		}
 		
 		usersArr = []
 		locationArr = ""
@@ -275,6 +282,7 @@ app.get('/api/get/all_users/', async(req, res) =>{
 				location = "unknown"
 			}
 			
+			
 			usersArr.push({
 				'Name':users[i].name, 
 				'Score':users[i].statistics.score,
@@ -282,6 +290,8 @@ app.get('/api/get/all_users/', async(req, res) =>{
 				'Location':location
 			})
 		}
+
+		usersArr.sort()
 		console.log(usersArr)
 		res.send(usersArr)
 	})

@@ -1,8 +1,9 @@
+sort_option = 1 // 1 is descending, 0 is ascending
+
 const getUserSheet = async () => {
     document.getElementById("users-page-body").innerHTML = ""
-    const response = await fetch('/api/get/all_users/')
+    const response = await fetch('/api/get/all_users/'+sort_option)
     const data = await response.json()
-    console.log(data)
 
     var table = document.createElement('table')
     var header = table.insertRow(0)
@@ -43,4 +44,14 @@ const getUserSheet = async () => {
     
 }
 
-getUserSheet()
+function usersheetchangeSorting() {
+    checked = document.getElementById('usersheet-sorting-descending').checked
+    if (checked) {
+        sort_option = 1
+    } else {
+        sort_option = 0
+    }
+    getUserSheet()
+}
+
+usersheetchangeSorting()
