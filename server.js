@@ -44,6 +44,7 @@ connection.once("open", function(res) {
 
 const User = require('./models/user')
 const Post = require('./models/post')
+const Guest = require('./models/guest')
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -53,10 +54,36 @@ app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
 var allowUsersToBrowseAsGuests = true
+var geoip = require('geoip-lite');
 
-app.get('/', (req, res) => {
+app.get('/', async(req, res) => {
 	var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 	console.log(ip)
+	try {
+		Guest.findOne({ip_address:ip}, function(err, docs) {
+			if (docs != null) {
+				console.log("guest "+[i]+" has been seen before.")
+				docs[i].times_visited += 1
+				docs.save()
+			} else {
+				console.log("no guest found with this IP")
+				var geo = geoip.lookup(ip);
+				try {
+					
+					Guest.create({
+						ip_address: ip,
+						times_visited:0,
+						approximate_location: geo
+					})
+				} catch(err) {
+
+				}
+			}
+		})
+	} catch(err) {
+
+	}
+	
     res.render('index.ejs', {topic:""})
 	
 })
