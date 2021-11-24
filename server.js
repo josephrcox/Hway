@@ -62,8 +62,7 @@ app.get('/', async(req, res) => {
 	try {
 		Guest.findOne({ip_address:ip}, function(err, docs) {
 			if (docs != null) {
-				console.log("guest "+[i]+" has been seen before.")
-				docs[i].times_visited += 1
+				docs.times_visited += 1
 				docs.save()
 			} else {
 				console.log("no guest found with this IP")
