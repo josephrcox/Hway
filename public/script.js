@@ -23,19 +23,6 @@ cTopic = ""
 cID = ""
 isUserLoggedIn = false
 
-const loadUsersFromServer = async () => {
-    console.log("loading users")
-    const response = await fetch('/api/get/users')
-    const data = await response.json()
-    console.log(data)
-
-    for (i=0;i<data.length;i++) {
-        usernameArray.push(data[i].name)
-        usernameColorArray.push(data[i].color)
-    }
-
-}
-
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
@@ -288,7 +275,7 @@ const commentObject = {
             var body = document.getElementById("bodyCell_"+id)
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" says")[0]
             if (body.innerHTML == "") {
-                document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (-)"
+                document.getElementById("posterCell_"+id).innerHTML = usercolorspan+poster + "</span> says: (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
                 // if (!document.getElementById('ncDiv_'+id).innerHTML == "") {
                 //     ncDiv.style.display = 'block'
@@ -298,7 +285,7 @@ const commentObject = {
 
                 
             } else {
-                document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (+)"
+                document.getElementById("posterCell_"+id).innerHTML = usercolorspan+poster + "</span> says: (+)"
                 var x = document.getElementById("bodyCell_"+this.id.substring(10))
                 x.innerHTML = ""
                 ncContainer.style.display = 'none'
@@ -400,7 +387,6 @@ function copytoclipboard(x) {
 }
 
 const loadPosts = async (x, topic, page) => {
-    loadUsersFromServer()
     if (window.location.href.indexOf("/user/") != -1) {
         console.log("on a user page,"+window.location.href+window.location.href.split('/'))
         user = window.location.href.split('/').pop()
@@ -945,7 +931,7 @@ const uploadImage = async (x) => {
 }
 
 function getUserColor(x) {
-    return "<span style='color:"+usernameColorArray[usernameArray.indexOf(x)]+"'>"
+    return "<span style='color:blue'>"
 }
 
 function scrollFunction() {
