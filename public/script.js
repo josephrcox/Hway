@@ -23,7 +23,6 @@ cTopic = ""
 cID = ""
 isUserLoggedIn = false
 
-
 const loadUsersFromServer = async () => {
     console.log("loading users")
     const response = await fetch('/api/get/users')
@@ -34,9 +33,8 @@ const loadUsersFromServer = async () => {
         usernameArray.push(data[i].name)
         usernameColorArray.push(data[i].color)
     }
-}
 
-loadUsersFromServer()
+}
 
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
@@ -947,8 +945,7 @@ const uploadImage = async (x) => {
 }
 
 function getUserColor(x) {
-    color = usernameColorArray[usernameArray.indexOf(x)]
-    return "<span style='color:"+color+"'>"
+    return "<span style='color:"+usernameColorArray[usernameArray.indexOf(x)]+"'>"
 }
 
 function scrollFunction() {
