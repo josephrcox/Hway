@@ -209,9 +209,8 @@ tbody {
 .comVoteCount {
 	padding-right: 10px;
 	padding-left: 10px;
-	color: white;
-	font-weight: 1000;
-	align-self: center;
+	color: black;
+	font-weight: 700;
 }
 
 .titleCell {
@@ -284,13 +283,20 @@ label {
 	color:black;
 }
 
-.comFrame {
+.comFrame, .ncDiv {
   display: flex;
 	flex-direction: row;
 	background-color: azure;
 	margin-top: 8px;
 	border:1px solid black;
 	width:calc(98% + 1px);
+}
+
+.ncDiv {
+  padding:5px;
+	padding-right:0px;
+	margin-left:30px;
+	width:calc(98% + 1px - 35px);
 }
 
 .voteDiv {
@@ -304,7 +310,7 @@ label {
 .comVoteDiv {
 	display: flex;
 	flex-direction: row;
-	background-color: #003366;
+	background-color: azure;
 	/*! border-top:1px solid black; */
 	align-items:center;
 }
@@ -396,22 +402,23 @@ label {
 }
 
 .comVoteDiv {
-	height:60px;
-	border-left:2px solid black;
-	border-bottom:1px solid black;
+	height:55px;
 }
 
 .comInfoCell {
 	font-size: 12px;
 }
 
-.openPostButton {
+.openPostButton, .comreplybutton {
 	padding-left:7px;
-
 	margin-top:0px;
 	text-decoration: unset;
 	color:white;
 	height:29px;
+}
+
+.comreplybutton {
+	margin-top:-15px;
 }
 
 

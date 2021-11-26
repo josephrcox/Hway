@@ -542,14 +542,16 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 })
 
 app.get('/api/get/users', async(req, res) => {	
-	User.find({}, function(err, users){
-        if(err){
-          ////console.logerr);
-        } else{
-			
-            res.send(users)
-        }
-    })
+	User.find({}, function(err, users) {
+		usersArr = []
+		for (i=0;i<users.length;i++) {
+			usersArr.push({
+				'name':users[i].name, 
+				'color':users[i].color
+			})
+		}
+		res.send(usersArr)
+	})
 })
 
 app.get('/api/get/topics', async(req, res) => {	
@@ -642,10 +644,17 @@ app.post('/register', async(req, res) => {
     const { name, password: plainTextPassword} = req.body
     const password = await bcrypt.hash(plainTextPassword, 10)
 
+	color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
+	var rgb = [Math.random() * 256, Math.random() * 256, Math.random() * 256];
+	var mix = [brightness*51, brightness*51, brightness*51]; //51 => 255/5
+	var mixedrgb = [rgb[0] + mix[0], rgb[1] + mix[1], rgb[2] + mix[2]].map(function(x){ return Math.round(x/2.0)})
+	usercolor = "rgb(" + mixedrgb.join(",") + ")";
+
     try {
 		const response = await User.create({
             name: name,
-            password: password
+            password: password,
+			color: usercolor
 		})
 		////console.log'User created successfully: ', response)
 	} catch (error) {
@@ -722,6 +731,71 @@ app.post('/api/post/post', async(req, res) => {
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+		username = verified.name
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	let datetime = new Date()
+	month = datetime.getUTCMonth()+1
+	day = datetime.getUTCDate()
+	year = datetime.getUTCFullYear()
+	hour = datetime.getUTCHours()
+	minute = datetime.getUTCMinutes()
+	timestamp = Date.now()
+
+	if (hour > 12) {
+		ampm = "PM"
+		hour -= 12
+	} else {
+		ampm = "AM"
+	}
+	if (minute < 10) {
+		minute = "0"+minute
+	}
+
+	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
+	try {
+		Post.findById(id, function(err, docs) {
+			//console.logdocs)
+			commentArray = docs.comments
+			commentid = Math.floor(Math.random() * Date.now()) // generates a random id
+			newComment = {
+				'body': reqbody,
+				'poster':username,
+				'posterID': userID,
+				'date': fulldatetime,
+				'timestamp':timestamp,
+				'total_votes':0,
+				'users_voted':[],
+				'nested_comments':[],
+				'_id': commentid
+			}
+			commentArray.push(newComment)
+			docs.comments = commentArray
+			docs.save()
+			User.findById(userID, function(err, docs) {
+				docs.statistics.comments.created_num += 1
+				docs.statistics.comments.created_array.push([reqbody, id, commentid])
+				docs.save()
+			})
+			User.findById(userID, function(err, docs) {
+				//console.logdocs)
+			})
+			res.json(newComment)
+		})
+	} catch(err) {
+		res.send(err)
+	}
+	
+})
+
+app.post('/api/post/comment_nested/', async(req, res) => {
+	const {body:reqbody, id, parentID} = req.body
 
 	try {
 		token = req.cookies.token
@@ -751,34 +825,24 @@ app.post('/api/post/comment/', async(req, res) => {
 	}
 
 	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
-
 	try {
 		Post.findById(id, function(err, docs) {
-			//console.logdocs)
-			commentArray = docs.comments
-			commentid = Math.floor(Math.random() * Date.now()) // generates a random id
+			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
+			parentCommentIndex = docs.comments.findIndex(x => x._id == parentID)
+			console.log("index:"+parentCommentIndex)
+
+			oldComment = docs.comments[parentCommentIndex]
 			newComment = {
-				'body': reqbody,
-				'poster':username,
-				'posterID': userID,
-				'date': fulldatetime,
-				'timestamp':timestamp,
-				'total_votes':0,
-				'users_voted':[],
-				'nested_comments':[],
-				'_id': commentid
+				body:reqbody,
+				poster:username,
+				posterid:userID,
+				date:fulldatetime,
+				score:0
 			}
-			commentArray.push(newComment)
-			docs.comments = commentArray
+			oldComment.nested_comments.push(newComment)
+
+			docs.comments[parentCommentIndex] = oldComment
 			docs.save()
-			User.findById(userID, function(err, docs) {
-				docs.statistics.comments.created_num += 1
-				docs.statistics.comments.created_array.push([reqbody, id, commentid])
-				docs.save()
-			})
-			User.findById(userID, function(err, docs) {
-				//console.logdocs)
-			})
 			res.json(newComment)
 		})
 	} catch(err) {

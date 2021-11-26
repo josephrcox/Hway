@@ -1,5 +1,6 @@
 usernameArray = []
 usernameColorArray = []
+
 topicNameArray = []
 topicPostCountArray = []
 idArray = []
@@ -21,6 +22,21 @@ cPage = 1
 cTopic = ""
 cID = ""
 isUserLoggedIn = false
+
+
+const loadUsersFromServer = async () => {
+    console.log("loading users")
+    const response = await fetch('/api/get/users')
+    const data = await response.json()
+    console.log(data)
+
+    for (i=0;i<data.length;i++) {
+        usernameArray.push(data[i].name)
+        usernameColorArray.push(data[i].color)
+    }
+}
+
+loadUsersFromServer()
 
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
@@ -69,6 +85,7 @@ const postObject = {
     comment_count: "",
 
     display() {
+        usercolorspan = getUserColor(this.poster)
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
@@ -139,7 +156,8 @@ const postObject = {
 
         var topHref = "\""+this.topic+"\""
         href = this.topic.replace(/^"(.*)"$/, '$1');
-        infoCell.innerHTML = "Submitted by "+getUserColor(this.poster)+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
+        
+        infoCell.innerHTML = "Submitted by "+usercolorspan+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -188,8 +206,7 @@ const postObject = {
 const commentObject = {
     body: "",
     id: "",
-    nested_comment: "", // true or false
-    nested_comment_parentID: "", 
+    nested_comments: [],
     parentID:"",
     total_votes: "",
     users_voted:[],
@@ -199,13 +216,19 @@ const commentObject = {
     current_user_voted: "",
     current_user_admin: "",
     reply_button_shown: false,
+    
 
     display() {
-        console.log(this.current_user_voted)
+        usercolorspan = getUserColor(this.poster)
+        var fullCommentContainer = document.createElement("div")
+        fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
+        document.getElementById("comments").appendChild(fullCommentContainer)
 
         var comFrame = document.createElement("table")
         comFrame.setAttribute("class", "comFrame")
         comFrame.setAttribute("id", "comFrame_"+this.id)
+        document.getElementById("fullCommentContainer_"+this.id).appendChild(comFrame)
+        
 
         posterRow = comFrame.insertRow(0)
         posterRow.setAttribute("id", "posterRow_"+this.id)
@@ -215,17 +238,52 @@ const commentObject = {
         infoCell = infoRow.insertCell(0)
         infoCell.innerHTML = this.date
         infoCell.setAttribute("class","comInfoCell")
-        
-
 
         bodyRow = comFrame.insertRow(2)
         bodyCell = bodyRow.insertCell(0)
 
-        posterCell.innerHTML = getUserColor(this.poster)+this.poster + "</span> says: (-)"
+        posterCell.innerHTML = usercolorspan+this.poster + "</span> says: (-)"
         posterCell.setAttribute("id","posterCell_"+this.id)
+
         bodyCell.innerHTML = this.body
         bodyCell.setAttribute("class", "bodyCell")
         bodyCell.setAttribute("id", "bodyCell_"+this.id)
+
+        var ncDiv = document.createElement("div")
+        ncDiv.setAttribute("id", "ncDiv_"+this.id)
+        ncDiv.setAttribute("class", "ncDiv")
+        // for (i=0;i<this.nested_comments.length;i++) {
+        //     ncDiv.innerHTML += "<style='font-weight:700'>"+this.nested_comments[i].poster + "</style> says: "+this.nested_comments[i].body+"<br/>"
+            
+        // }
+
+        // for (i=0;i<this.nested_comments.length;i++) {
+        //     //ncDiv.innerHTML += "<style='font-weight:700'>"+this.nested_comments[i].poster + "</style> says: "+this.nested_comments[i].body+"<br/>"
+
+        //     let nc = Object.create(commentObject)
+        //     nc.body = nested_comments[i].body
+        //     nc.poster = nested_comments[i].poster
+        //     nc.posterID = nested_comments[i].posterid
+        //     nc.date = nested_comments[i].date
+        //     nc.score = nested_comments[i].score
+        //     nc.display()
+        // }
+
+        var ncContainer = document.createElement("div")
+        ncContainer.setAttribute("class", "ncContainer")
+        ncContainer.setAttribute("id", "ncContainer_"+this.id)
+        document.getElementById("fullCommentContainer_"+this.id).appendChild(ncContainer)
+
+        for (i=0;i<this.nested_comments.length;i++) {
+            //ncDiv.innerHTML += "<style='font-weight:700'>"+this.nested_comments[i].poster + "</style> says: "+this.nested_comments[i].body+"<br/>"
+
+            var ncDiv = document.createElement("div")
+            ncDiv.setAttribute("class", "ncDiv")
+            ncDiv.setAttribute("id", "ncDiv_"+this.id)
+            ncDiv.innerHTML += getUserColor(this.nested_comments[i].poster)+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"
+            document.getElementById("ncContainer_"+this.id).appendChild(ncDiv)
+        }
+
 
         posterRow.onclick = function() {
             var id = this.id.substring(10)
@@ -234,13 +292,23 @@ const commentObject = {
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
-                //console.log(id)
+                // if (!document.getElementById('ncDiv_'+id).innerHTML == "") {
+                //     ncDiv.style.display = 'block'
+                // }
+                ncContainer.style.display = 'block'
+
+
+                
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = getUserColor(poster)+poster + "</span> says: (+)"
                 var x = document.getElementById("bodyCell_"+this.id.substring(10))
                 x.innerHTML = ""
+                ncContainer.style.display = 'none'
             }
             
+        }
+        if (this.nested_comments.length == 0) {
+            ncDiv.style.display = 'none'
         }
 
         var replyDiv = document.createElement("div")
@@ -257,12 +325,23 @@ const commentObject = {
         replySubmit.setAttribute("class", "comreplySubmit")
         replySubmit.setAttribute("id", "comreplySubmit_"+this.id)
         replySubmit.innerText = "Submit reply"
+        replySubmit.onclick = function(parentID) {
+            parentID = window.location.href.split('/posts/')[1]
+            body = document.getElementById('comreplybox_'+this.id.split('_')[1]).value
+            comment_nested(parentID, document.getElementById('comreplybox_'+this.id.split('_')[1]).value, this.id.split('_')[1])
+        }
         
-        var replyButton = document.createElement('button')
-        replyButton.innerHTML = "Reply"
+        // var replyButton = document.createElement('button')
+        // replyButton.innerHTML = "Reply"
+        // replyButton.setAttribute("class","comreplybutton")
+        // replyButton.setAttribute("id", "comreplyButton_"+this.id)
+        // infoRow.appendChild(replyButton)
+        var replyButton = document.createElement('img')
         replyButton.setAttribute("class","comreplybutton")
         replyButton.setAttribute("id", "comreplyButton_"+this.id)
+        replyButton.src = '../assets/speech_bubble.png'
         infoRow.appendChild(replyButton)
+        
         replyButton.onclick = function() {
             //comment(cID, "x", true, this.id.split('_')[1])
             if (this.reply_button_shown) {
@@ -297,11 +376,11 @@ const commentObject = {
         voteUp.onclick = function() {
             voteCom(this.id.substring(10), cID)
         }
-        
-        document.getElementById("comments").appendChild(comFrame)
 
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
         document.getElementById("comments").appendChild(replyDiv)
+        
+        
         document.getElementById("comreplyDiv_"+this.id).appendChild(replyBox)
         document.getElementById("comreplyDiv_"+this.id).appendChild(replySubmit)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
@@ -323,6 +402,7 @@ function copytoclipboard(x) {
 }
 
 const loadPosts = async (x, topic, page) => {
+    loadUsersFromServer()
     if (window.location.href.indexOf("/user/") != -1) {
         console.log("on a user page,"+window.location.href+window.location.href.split('/'))
         user = window.location.href.split('/').pop()
@@ -393,6 +473,7 @@ const loadPosts = async (x, topic, page) => {
                 com.date = data.comments[i].date
                 com.users_voted = data.comments[i].users_voted
                 com.parentID = cID
+                com.nested_comments = data.comments[i].nested_comments
 
                 com.current_user_voted = data.comments[i].current_user_voted
                 com.display()
@@ -532,28 +613,6 @@ function expandDesc(x) {
     }
 }
 
-const loadUsersFromServer = async () => {
-    const response = await fetch('/api/get/users')
-    const data = await response.json()
-
-    for (i=0; i<data.length ; i++) {
-        usernameArray.push(data[i].name)
-        idArray.push(data[i]._id)
-    }
-    if (usernameArray.length == 0) {
-        localStorage.clear()
-    }
-
-    brightness = 2
-    for (i=0;i<usernameArray.length;i++) {
-        color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
-        var rgb = [Math.random() * 256, Math.random() * 256, Math.random() * 256];
-        var mix = [brightness*51, brightness*51, brightness*51]; //51 => 255/5
-        var mixedrgb = [rgb[0] + mix[0], rgb[1] + mix[1], rgb[2] + mix[2]].map(function(x){ return Math.round(x/2.0)})
-        usernameColorArray[i] = "rgb(" + mixedrgb.join(",") + ")";
-    }
-}
-
 const storeAndDisplayTopics = async () => {
     document.getElementById("topic-dropdown").innerHTML = ""
     const response = await fetch('/api/get/topics/')
@@ -644,70 +703,63 @@ const voteCom = async (id, parentID) => {
     }
 }
 
-const comment = async (postid, body, nested, nestedparentid) => { 
+const comment = async (postid, body) => { 
     body = document.getElementById("newCom_body").value
-    if (!nested) {
-        if (body != null && body != "") {
-            bodyJSON = {
-                "id":postid,
-                "body":body,
-            }
-        
-            const fetchResponse = await fetch('/api/post/comment/', {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                    },
-                method: 'POST',
-                body: JSON.stringify(bodyJSON)
-            }); 
-            var data = await fetchResponse.json()
-
-            let com = Object.create(commentObject)
-            com.body = data.body
-            com.id = data._id
-            com.total_votes = data.total_votes
-            com.poster = data.poster
-            com.posterID = data.posterID
-            com.date = data.date
-            com.display()
-            
-            comment_count.push(com.id)
-            commentBodies.push(com.body)
+    if (body != null && body != "") {
+        bodyJSON = {
+            "id":postid,
+            "body":body,
         }
-    }
-    if (nested) {
-        // if (body != null && body != "") {
-        //     bodyJSON = {
-        //         "id":postid,
-        //         "body":body,
-        //     }
-        
-        //     const fetchResponse = await fetch('/api/post/comment/nested', {
-        //         headers: {
-        //             'Accept': 'application/json',
-        //             'Content-Type': 'application/json'
-        //             },
-        //         method: 'POST',
-        //         body: JSON.stringify(bodyJSON)
-        //     }); 
-        //     var data = await fetchResponse.json()
+    
+        const fetchResponse = await fetch('/api/post/comment/', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+            method: 'POST',
+            body: JSON.stringify(bodyJSON)
+        }); 
+        var data = await fetchResponse.json()
 
-        //     let com = Object.create(commentObject)
-        //     com.body = data.body
-        //     com.id = data._id
-        //     com.total_votes = data.total_votes
-        //     com.poster = data.poster
-        //     com.posterID = data.posterID
-        //     com.date = data.date
-        //     com.nested_comment = true
-        //     com.nested_comment_parentID: 
-        //     com.display()
-            
-        //     comment_count.push(com.id)
-        //     commentBodies.push(com.body)
-        // }
-        console.log(postid, body, nested, nestedparentid)
+        let com = Object.create(commentObject)
+        com.body = data.body
+        com.id = data._id
+        com.total_votes = data.total_votes
+        com.poster = data.poster
+        com.posterID = data.posterID
+        com.date = data.date
+        com.display()
+        
+        comment_count.push(com.id)
+        commentBodies.push(com.body)
+    }
+    
+}
+
+const comment_nested = async (postid, body, commentparentID) => { 
+    
+    if (body != null && body != "") {
+        bodyJSON = {
+            "id":postid,
+            "body":body,
+            "parentID":commentparentID
+        }
+    
+        const fetchResponse = await fetch('/api/post/comment_nested/', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+            method: 'POST',
+            body: JSON.stringify(bodyJSON)
+        }); 
+        var data = await fetchResponse.json()
+
+        var ncDiv = document.createElement("div")
+        ncDiv.setAttribute("class", "ncDiv")
+        ncDiv.setAttribute("id", "ncDiv_"+postid)
+        ncDiv.innerHTML += getUserColor(data.poster)+data.poster + "</span>: "+data.body+"<br/>"
+        document.getElementById("ncContainer_"+commentparentID).appendChild(ncDiv)
     }
     
 }
@@ -818,39 +870,8 @@ document.getElementById("newPost_type_media").onclick = function() {
 }
 
 document.getElementById("newCom_submit").onclick = function() {
-    
     comment(cID, "x", false, "")
-
     document.getElementById("newCom_body").value = ""
-}
-
-function postRandomly() {
-    amountOfWords = Math.floor(Math.random() * 20)
-    posterLengthInWords = Math.floor(Math.random() * 4)
-    bodyBoolean = Math.floor(Math.random() * 2) // 0 if no, 1 if yes
-    bodyLengthInWords = Math.floor(Math.random() * 200)
-    titleStr = ""
-    posterStr = ""
-    bodyStr = ""
-    topicStr = ""
-
-    for (i=0;i<amountOfWords;i++) {
-        titleStr += englishWordsArrayForRandomization[Math.floor(Math.random() * 995) + 5]+" "
-    }
-    for (i=0;i<posterLengthInWords;i++) {
-        posterStr += englishWordsArrayForRandomization[Math.floor(Math.random() * 1000)]
-    }
-    if (bodyBoolean == 1 || bodyBoolean == "1") {
-        for (i=0;i<bodyLengthInWords;i++) {
-            bodyStr += englishWordsArrayForRandomization[Math.floor(Math.random() * 1000)]+" "
-        }
-    } else {
-        bodyStr = ""
-    }
-
-    topicStr = englishWordsArrayForRandomization[Math.floor(Math.random() * 1000)]
-
-    postText(titleStr, bodyStr, topicStr)
 }
 
 const createNewPost = async(posttype) => { 
@@ -909,48 +930,6 @@ const createNewPost = async(posttype) => {
     
 }
 
-const postText = async (x, y, z, usernameValid, topic) => { 
-    if (z == null || z == "") {
-        z = "zzdj"
-    }
-
-    password = document.getElementById("newPost_pw").value
-
-    bodyJSON = {
-        "title":x,
-        "body":y,
-        "poster":z,
-        "usernameValid":usernameValid,
-        "password":password,
-        "topic":topic
-    }
-
-    const fetchResponse = await fetch('/post', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    }); 
-
-    if (fetchResponse.status == '406') {
-        document.getElementById("newPost_logs").innerHTML = "Name taken by other user."
-    } else {
-        storeUserID(true)
-        
-        document.getElementById("newPost_name").value = ""
-        document.getElementById("newPost_desc").value = ""
-        document.getElementById("newPost_logs").innerHTML = ""
-    }
-}
-
-document.getElementById('newPost_file').addEventListener("change", ev => {
-    const formdata = new FormData()
-    formdata.append("image", ev.target.files[0])
-    uploadImage(formdata)
-})
-
 const uploadImage = async (x) => { 
     document.getElementById("newPost_logs").innerHTML = "Uploading..."
     const fetchResponse = await fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
@@ -968,9 +947,8 @@ const uploadImage = async (x) => {
 }
 
 function getUserColor(x) {
-    index = usernameArray.indexOf(x)
-    randomColor = usernameColorArray[index] 
-    return "<span style='color:"+ randomColor+"; font-weight: 900;'>"
+    color = usernameColorArray[usernameArray.indexOf(x)]
+    return "<span style='color:"+color+"'>"
 }
 
 function scrollFunction() {
