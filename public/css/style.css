@@ -411,14 +411,13 @@ label {
 
 .openPostButton, .comreplybutton {
 	padding-left:7px;
-	margin-top:0px;
 	text-decoration: unset;
 	color:white;
 	height:29px;
 }
 
 .comreplybutton {
-	margin-top:-15px;
+	margin-top:-10px;
 }
 
 
