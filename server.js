@@ -656,17 +656,10 @@ app.post('/register', async(req, res) => {
     const { name, password: plainTextPassword} = req.body
     const password = await bcrypt.hash(plainTextPassword, 10)
 
-	color = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6)
-	var rgb = [Math.random() * 256, Math.random() * 256, Math.random() * 256];
-	var mix = [brightness*51, brightness*51, brightness*51]; //51 => 255/5
-	var mixedrgb = [rgb[0] + mix[0], rgb[1] + mix[1], rgb[2] + mix[2]].map(function(x){ return Math.round(x/2.0)})
-	usercolor = "rgb(" + mixedrgb.join(",") + ")";
-
     try {
 		const response = await User.create({
             name: name,
             password: password,
-			color: usercolor
 		})
 		////console.log'User created successfully: ', response)
 	} catch (error) {
@@ -676,7 +669,6 @@ app.post('/register', async(req, res) => {
 		} else {
             return res.json({ status: 'error', code:400, error: 'Unknown error code'})
         }
-		throw error
 	}
 
 	res.json({ status: 'ok', code:200 })
