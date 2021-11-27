@@ -269,7 +269,7 @@ const commentObject = {
             voteCount.innerHTML = this.nested_comments[i].total_votes
     
             var voteUp = document.createElement("img")
-            voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id)
+            voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id+"_"+this.id)
             voteUp.setAttribute("class","nestedcommentUp")
             if (this.nested_comments[i].current_user_voted) {
                 voteUp.src = '../assets/up_selected.gif'
@@ -279,7 +279,7 @@ const commentObject = {
             
             voteUp.style.width = 'auto'
             voteUp.onclick = function() {
-                //voteCom(this.id.substring(10), cID)
+                voteCom(this.id.split("_")[1], cID, true, this.id.split("_")[2])
             }
 
             
@@ -682,30 +682,49 @@ const vote = async (change, id) => {
     }
 }
 
-const voteCom = async (id, parentID) => { 
+const voteCom = async (id, parentID, nested, commentParentID) => { 
+    console.log(id, parentID, nested, commentParentID)
+    if (commentParentID == null || "") {
+        commentParentID = "0"
+    }
     console.log(id)
 
     const settings = {
         method: 'PUT',
     };
 
-    const fetchResponse = await fetch('/votecomment/'+parentID+'/'+id+'/', settings); 
+    const fetchResponse = await fetch('/votecomment/'+parentID+'/'+id+'/'+nested+'/'+commentParentID, settings); 
     const data = await fetchResponse.json()
     console.log(data)
 
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
-            document.getElementById('voteComUp_'+id).src = '../assets/up_selected.gif'
+            if (nested) {
+                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '../assets/up_selected.gif'
+            } else {
+                document.getElementById('voteComUp_'+id).src = '../assets/up_selected.gif'
+            }
+            
         }
         if (data.voted == 'no') {
-            document.getElementById('voteComUp_'+id).src = '../assets/up.gif'
+            if (nested) {
+                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '../assets/up.gif'
+            } else {
+                document.getElementById('voteComUp_'+id).src = '../assets/up.gif'
+            }
+            
         }
-        document.getElementById('voteCount_'+id).innerHTML = data.newcount
+        if (nested) {
+            document.getElementById('comnestedVoteCount_'+id).innerHTML = data.newcount
+        } else {
+            document.getElementById('voteCount_'+id).innerHTML = data.newcount
+        }
+    } else {
+        if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+            window.location.href = '/login'
+        }
     }
-
-    if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
-        window.location.href = '/login'
-    }
+    
 }
 
 const comment = async (postid, body) => { 
@@ -760,6 +779,7 @@ const comment_nested = async (postid, body, commentparentID) => {
         }); 
         var data = await fetchResponse.json()
         console.log(data)
+        
 
         var ncDiv = document.createElement("div")
         ncDiv.setAttribute("class", "ncDiv")
@@ -779,20 +799,16 @@ const comment_nested = async (postid, body, commentparentID) => {
         voteCount.innerHTML = data.total_votes
 
         var voteUp = document.createElement("img")
-        voteUp.setAttribute("id","nestedcommentUp_"+data.id)
+        voteUp.setAttribute("id","nestedcommentUp_"+data.id+"_"+commentparentID)
         voteUp.setAttribute("class","nestedcommentUp")
-        if (false) {
-            voteUp.src = '../assets/up_selected.gif'
-        } else {
-            voteUp.src = '../assets/up.gif'
-        }
+        voteUp.src = '../assets/up.gif'
         
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
-            //voteCom(this.id.substring(10), cID)
+            voteCom(data.id, cID, true, commentparentID)
         }
 
-        
+        document.getElementById("ncContainer_"+commentparentID).style.display = 'block'
         document.getElementById("ncContainer_"+commentparentID).appendChild(ncDiv)
         document.getElementById("ncDiv_"+data.id).appendChild(ncCommentDiv)
         document.getElementById("ncDiv_"+data.id).appendChild(ncVoteDiv)
