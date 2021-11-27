@@ -372,16 +372,29 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 						docs.statistics.posts.viewed_num = (viewed_num+1)
 						docs.statistics.posts.viewed_array = viewed_array
 						docs.save()	
+
+						
 					}
 					
 				})
 			} catch (err) {
 				console.log(err)
 			}
-			
+			for (i=0;i<post.comments.length;i++) {
+				if (post.comments[i].nested_comments.length != 0) {
+					for (x=0;x<post.comments[i].nested_comments.length;x++) {
+						if (post.comments[i].nested_comments[x].posterid = userID) {
+							postModified.comments[i].nested_comments[x].current_user_admin = true
+						}
+						if (post.comments[i].nested_comments[x].users_voted.includes(userID)) {
+							postModified.comments[i].nested_comments[x].current_user_voted = true
+						}
+					}
+				}
+			}
+			console.log(post.comments[0].nested_comments)
 	
-			//console.logpostModified)
-			res.send(post)
+			res.send(postModified)
 		}
 		
 	})
@@ -838,7 +851,9 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 				date:fulldatetime,
 				total_votes:0,
 				users_voted:[],
-				id: Math.floor(Math.random() * Date.now()) // generates a random id
+				id: Math.floor(Math.random() * Date.now()), // generates a random id
+				current_user_voted:false,
+				current_user_admin:false
 			}
 			oldComment.nested_comments.push(newComment)
 
