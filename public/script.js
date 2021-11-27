@@ -266,12 +266,12 @@ const commentObject = {
             var voteCount = document.createElement("div")
             voteCount.setAttribute("id","comnestedVoteCount_"+this.nested_comments[i].id)
             voteCount.setAttribute("class","comnestedVoteCount")
-            voteCount.innerHTML = this.total_votes
+            voteCount.innerHTML = this.nested_comments[i].total_votes
     
             var voteUp = document.createElement("img")
             voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id)
             voteUp.setAttribute("class","nestedcommentUp")
-            if (false) {
+            if (this.nested_comments[i].current_user_voted) {
                 voteUp.src = '../assets/up_selected.gif'
             } else {
                 voteUp.src = '../assets/up.gif'
@@ -759,12 +759,52 @@ const comment_nested = async (postid, body, commentparentID) => {
             body: JSON.stringify(bodyJSON)
         }); 
         var data = await fetchResponse.json()
+        console.log(data)
 
         var ncDiv = document.createElement("div")
         ncDiv.setAttribute("class", "ncDiv")
-        ncDiv.setAttribute("id", "ncDiv_"+postid)
-        ncDiv.innerHTML += getUserColor(data.poster)+data.poster + "</span>: "+data.body+"<br/>"
+        ncDiv.setAttribute("id", "ncDiv_"+data.id)
+        var ncCommentDiv = document.createElement("div")
+        ncCommentDiv.setAttribute("class", "ncCommentDiv")
+        ncCommentDiv.setAttribute("id", "ncCommentDiv_"+data.id)
+        ncCommentDiv.innerHTML += getUserColor(data.poster)+data.poster + "</span>: "+data.body+"<br/>"
+        
+        var ncVoteDiv = document.createElement("div")
+        ncVoteDiv.setAttribute("class", "ncVoteDiv")
+        ncVoteDiv.setAttribute("id", "ncVoteDiv_"+data.id)
+
+        var voteCount = document.createElement("div")
+        voteCount.setAttribute("id","comnestedVoteCount_"+data.id)
+        voteCount.setAttribute("class","comnestedVoteCount")
+        voteCount.innerHTML = data.total_votes
+
+        var voteUp = document.createElement("img")
+        voteUp.setAttribute("id","nestedcommentUp_"+data.id)
+        voteUp.setAttribute("class","nestedcommentUp")
+        if (false) {
+            voteUp.src = '../assets/up_selected.gif'
+        } else {
+            voteUp.src = '../assets/up.gif'
+        }
+        
+        voteUp.style.width = 'auto'
+        voteUp.onclick = function() {
+            //voteCom(this.id.substring(10), cID)
+        }
+
+        
         document.getElementById("ncContainer_"+commentparentID).appendChild(ncDiv)
+        document.getElementById("ncDiv_"+data.id).appendChild(ncCommentDiv)
+        document.getElementById("ncDiv_"+data.id).appendChild(ncVoteDiv)
+        document.getElementById("ncVoteDiv_"+data.id).appendChild(voteCount)
+        document.getElementById("ncVoteDiv_"+data.id).appendChild(voteUp)
+
+
+        // var ncDiv = document.createElement("div")
+        // ncDiv.setAttribute("class", "ncDiv")
+        // ncDiv.setAttribute("id", "ncDiv_"+postid)
+        // ncDiv.innerHTML += getUserColor(data.poster)+data.poster + "</span>: "+data.body+"<br/>"
+        // document.getElementById("ncContainer_"+commentparentID).appendChild(ncDiv)
     }
     
 }
