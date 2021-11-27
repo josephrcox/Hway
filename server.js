@@ -961,6 +961,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	id = req.params.commentid
 	// These two variables are only for nested comments
 	nestedBoolean = req.params.nestedboolean
+	console.log("boolean:"+nestedBoolean)
 	commentParentID = req.params.commentParentID 
 	//
 	try {
@@ -971,7 +972,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
-	if (nestedBoolean) {
+	if (nestedBoolean == "true") {
 		try {
 			Post.findById(pID, function(err, docs) {
 				oldComArray = docs.comments
@@ -989,22 +990,6 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 				nc = oldComArray[comIndex].nested_comments[ncIndex]
 				console.log(nc)
 				nestedCommentPosterId = nc.posterid
-
-				if (nc.users_voted.includes(userID)) { // user has already voted
-					userIDinArray = nc.users_voted.indexOf(userID)
-					nc.users_voted.splice(userIDinArray, 1)
-					nc.total_votes -= 1
-					oldComArray[comIndex].nested_comments[ncIndex] = nc
-					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
-						console.log(docs)
-					})
-					User.findById(nestedCommentPosterId, function(err, docs) {
-						docs.statistics.score -= 1
-						docs.save()
-					})
-					docs.save()
-					return res.json({"status":'ok', 'newcount':nc.total_votes, 'voted':'no'})
-				}
 				if (!nc.users_voted.includes(userID)) { // user has not voted
 					nc.users_voted.push(userID)
 					nc.total_votes += 1
@@ -1017,7 +1002,21 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 						docs.save()
 					})
 					docs.save()
-					return res.json({"status":'ok', 'newcount':nc.total_votes, 'voted':'yes'})
+					res.json({"status":'ok', 'newcount':nc.total_votes, 'voted':'yes'})
+				} else { // user has already voted
+					userIDinArray = nc.users_voted.indexOf(userID)
+					nc.users_voted.splice(userIDinArray, 1)
+					nc.total_votes -= 1
+					oldComArray[comIndex].nested_comments[ncIndex] = nc
+					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+						console.log(docs)
+					})
+					User.findById(nestedCommentPosterId, function(err, docs) {
+						docs.statistics.score -= 1
+						docs.save()
+					})
+					docs.save()
+					res.json({"status":'ok', 'newcount':nc.total_votes, 'voted':'no'})
 				}
 			})
 			
@@ -1025,7 +1024,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 			console.error(err)
 		}
 	}
-	if (!nestedBoolean) {
+	if (nestedBoolean == "false" || nestedBoolean == null) {
 		try {
 			Post.findById(pID, function(err, docs) {
 				oldComArray = docs.comments
