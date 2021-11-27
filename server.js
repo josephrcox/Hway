@@ -392,7 +392,6 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 					}
 				}
 			}
-			console.log(post.comments[0].nested_comments)
 	
 			res.send(postModified)
 		}
@@ -834,7 +833,7 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
 			parentCommentIndex = docs.comments.findIndex(x => x._id == parentID)
 			console.log("index:"+parentCommentIndex)
-
+			randomID = Math.floor(Math.random() * Date.now()), // generates a random id
 			oldComment = docs.comments[parentCommentIndex]
 			newComment = {
 				body:reqbody,
@@ -843,9 +842,7 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 				date:fulldatetime,
 				total_votes:0,
 				users_voted:[],
-				id: Math.floor(Math.random() * Date.now()), // generates a random id
-				current_user_voted:false,
-				current_user_admin:false
+				id: randomID
 			}
 			oldComment.nested_comments.push(newComment)
 
@@ -959,10 +956,13 @@ app.put('/vote/:id/:y', function(req,res) {
 	}
 })
 
-app.put('/voteComment/:parentid/:commentid', function(req,res) {
+app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', function(req,res) {
 	pID = req.params.parentid
 	id = req.params.commentid
-	//console.log"id:"+id)
+	// These two variables are only for nested comments
+	nestedBoolean = req.params.nestedboolean
+	commentParentID = req.params.commentParentID 
+	//
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -971,53 +971,109 @@ app.put('/voteComment/:parentid/:commentid', function(req,res) {
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
-
-	try {
-		Post.findById(pID, function(err, docs) {
-			oldComArray = docs.comments
-
-			for (i=0;i<oldComArray.length;i++) {
-				if (oldComArray[i]._id == id) {
-					//console.log"match:"+i)
-					index = i
+	if (nestedBoolean) {
+		try {
+			Post.findById(pID, function(err, docs) {
+				oldComArray = docs.comments
+	
+				for (i=0;i<oldComArray.length;i++) {
+					for (x=0;x<oldComArray[i].nested_comments.length;x++) {
+						if (oldComArray[i].nested_comments[x].id == id) {
+							//console.log("nested comment is: "+oldComArray[i].nested_comments[x].body)
+							comIndex = i
+							ncIndex = x
+						}
+					}
 				}
-			}
-			oldVotes = oldComArray[index].total_votes
-			newVotes = oldVotes+1
-			newVotesDown = oldVotes-1
-			commentPosterID = oldComArray[index].posterID
-			
-			
-			if (oldComArray[index].users_voted.includes(userID)) {
-				userIDinArray = oldComArray[index].users_voted.indexOf(userID)
-				oldComArray[index].users_voted.splice(userIDinArray, 1)
-				oldComArray[index].total_votes = newVotesDown
-				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
-					User.findById(commentPosterID, function(err, docs) {
+
+				nc = oldComArray[comIndex].nested_comments[ncIndex]
+				console.log(nc)
+				nestedCommentPosterId = nc.posterid
+
+				if (nc.users_voted.includes(userID)) { // user has already voted
+					userIDinArray = nc.users_voted.indexOf(userID)
+					nc.users_voted.splice(userIDinArray, 1)
+					nc.total_votes -= 1
+					oldComArray[comIndex].nested_comments[ncIndex] = nc
+					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+						console.log(docs)
+					})
+					User.findById(nestedCommentPosterId, function(err, docs) {
 						docs.statistics.score -= 1
 						docs.save()
 					})
 					docs.save()
-					res.json({"status":'ok', "newcount":oldComArray[index].total_votes, 'voted':'no'})
-				})
-				
-			} else {
-				oldComArray[index].users_voted.push(userID)
-				oldComArray[index].total_votes = newVotes
-				Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
-					User.findById(commentPosterID, function(err, docs) {
+					return res.json({"status":'ok', 'newcount':nc.total_votes, 'voted':'no'})
+				}
+				if (!nc.users_voted.includes(userID)) { // user has not voted
+					nc.users_voted.push(userID)
+					nc.total_votes += 1
+					oldComArray[comIndex].nested_comments[ncIndex] = nc
+					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+						console.log(docs)
+					})
+					User.findById(nestedCommentPosterId, function(err, docs) {
 						docs.statistics.score += 1
 						docs.save()
 					})
 					docs.save()
-					res.json({"status":'ok', 'newcount':oldComArray[index].total_votes, 'voted':'yes'})
-				})
-			}
-		})
-		
-	} catch (err) {
-
+					return res.json({"status":'ok', 'newcount':nc.total_votes, 'voted':'yes'})
+				}
+			})
+			
+		} catch (err) {
+			console.error(err)
+		}
 	}
+	if (!nestedBoolean) {
+		try {
+			Post.findById(pID, function(err, docs) {
+				oldComArray = docs.comments
+	
+				for (i=0;i<oldComArray.length;i++) {
+					if (oldComArray[i]._id == id) {
+						//console.log"match:"+i)
+						index = i
+					}
+				}
+				oldVotes = oldComArray[index].total_votes
+				newVotes = oldVotes+1
+				newVotesDown = oldVotes-1
+				commentPosterID = oldComArray[index].posterID
+				
+				
+				if (oldComArray[index].users_voted.includes(userID)) {
+					userIDinArray = oldComArray[index].users_voted.indexOf(userID)
+					oldComArray[index].users_voted.splice(userIDinArray, 1)
+					oldComArray[index].total_votes = newVotesDown
+					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+						User.findById(commentPosterID, function(err, docs) {
+							docs.statistics.score -= 1
+							docs.save()
+						})
+						docs.save()
+						res.json({"status":'ok', "newcount":oldComArray[index].total_votes, 'voted':'no'})
+					})
+					
+				} else {
+					oldComArray[index].users_voted.push(userID)
+					oldComArray[index].total_votes = newVotes
+					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
+						User.findById(commentPosterID, function(err, docs) {
+							docs.statistics.score += 1
+							docs.save()
+						})
+						docs.save()
+						res.json({"status":'ok', 'newcount':oldComArray[index].total_votes, 'voted':'yes'})
+					})
+				}
+			})
+			
+		} catch (err) {
+	
+		}
+	}
+	
 
 })
 
