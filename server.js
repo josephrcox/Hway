@@ -836,7 +836,9 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 				poster:username,
 				posterid:userID,
 				date:fulldatetime,
-				score:0
+				total_votes:0,
+				users_voted:[],
+				id: Math.floor(Math.random() * Date.now()) // generates a random id
 			}
 			oldComment.nested_comments.push(newComment)
 

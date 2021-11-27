@@ -94,8 +94,14 @@ const postObject = {
         }   
         openPostButton.style.width = 'auto'
 
+        commentCountIncludingNested = 0
+        for (i=0;i<this.comments.length;i++) {
+            commentCountIncludingNested++
+            commentCountIncludingNested += this.comments[i].nested_comments.length
+        }
+
         var commentCount = document.createElement("div")
-        commentCount.innerHTML = "("+this.comments.length+")"
+        commentCount.innerHTML = "("+commentCountIncludingNested+")"
         commentCount.setAttribute("class", "commentCount")
 
         var voteCount = document.createElement("div")
@@ -235,39 +241,57 @@ const commentObject = {
         bodyCell.setAttribute("id", "bodyCell_"+this.id)
 
         var ncDiv = document.createElement("div")
-        ncDiv.setAttribute("id", "ncDiv_"+this.id)
         ncDiv.setAttribute("class", "ncDiv")
-        // for (i=0;i<this.nested_comments.length;i++) {
-        //     ncDiv.innerHTML += "<style='font-weight:700'>"+this.nested_comments[i].poster + "</style> says: "+this.nested_comments[i].body+"<br/>"
-            
-        // }
-
-        // for (i=0;i<this.nested_comments.length;i++) {
-        //     //ncDiv.innerHTML += "<style='font-weight:700'>"+this.nested_comments[i].poster + "</style> says: "+this.nested_comments[i].body+"<br/>"
-
-        //     let nc = Object.create(commentObject)
-        //     nc.body = nested_comments[i].body
-        //     nc.poster = nested_comments[i].poster
-        //     nc.posterID = nested_comments[i].posterid
-        //     nc.date = nested_comments[i].date
-        //     nc.score = nested_comments[i].score
-        //     nc.display()
-        // }
-
+        ncDiv.setAttribute("id", "ncDiv_"+this.id)
+        
         var ncContainer = document.createElement("div")
         ncContainer.setAttribute("class", "ncContainer")
         ncContainer.setAttribute("id", "ncContainer_"+this.id)
         document.getElementById("fullCommentContainer_"+this.id).appendChild(ncContainer)
 
         for (i=0;i<this.nested_comments.length;i++) {
-            //ncDiv.innerHTML += "<style='font-weight:700'>"+this.nested_comments[i].poster + "</style> says: "+this.nested_comments[i].body+"<br/>"
-
+            console.log(this.nested_comments[i])
             var ncDiv = document.createElement("div")
             ncDiv.setAttribute("class", "ncDiv")
-            ncDiv.setAttribute("id", "ncDiv_"+this.id)
-            ncDiv.innerHTML += getUserColor(this.nested_comments[i].poster)+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"
+            ncDiv.setAttribute("id", "ncDiv_"+this.nested_comments[i].id)
+            var ncCommentDiv = document.createElement("div")
+            ncCommentDiv.setAttribute("class", "ncCommentDiv")
+            ncCommentDiv.setAttribute("id", "ncCommentDiv_"+this.nested_comments[i].id)
+            ncCommentDiv.innerHTML += getUserColor(this.nested_comments[i].poster)+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"
+            
+            var ncVoteDiv = document.createElement("div")
+            ncVoteDiv.setAttribute("class", "ncVoteDiv")
+            ncVoteDiv.setAttribute("id", "ncVoteDiv_"+this.nested_comments[i].id)
+    
+            var voteCount = document.createElement("div")
+            voteCount.setAttribute("id","comnestedVoteCount_"+this.nested_comments[i].id)
+            voteCount.setAttribute("class","comnestedVoteCount")
+            voteCount.innerHTML = this.total_votes
+    
+            var voteUp = document.createElement("img")
+            voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id)
+            voteUp.setAttribute("class","nestedcommentUp")
+            if (false) {
+                voteUp.src = '../assets/up_selected.gif'
+            } else {
+                voteUp.src = '../assets/up.gif'
+            }
+            
+            voteUp.style.width = 'auto'
+            voteUp.onclick = function() {
+                //voteCom(this.id.substring(10), cID)
+            }
+
+            
             document.getElementById("ncContainer_"+this.id).appendChild(ncDiv)
+            document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncCommentDiv)
+            document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncVoteDiv)
+            document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteCount)
+            document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteUp)
+
         }
+
+
 
 
         posterRow.onclick = function() {
@@ -293,7 +317,7 @@ const commentObject = {
             
         }
         if (this.nested_comments.length == 0) {
-            ncDiv.style.display = 'none'
+            ncContainer.style.display = 'none'
         }
 
         var replyDiv = document.createElement("div")
@@ -314,13 +338,10 @@ const commentObject = {
             parentID = window.location.href.split('/posts/')[1]
             body = document.getElementById('comreplybox_'+this.id.split('_')[1]).value
             comment_nested(parentID, document.getElementById('comreplybox_'+this.id.split('_')[1]).value, this.id.split('_')[1])
+            document.getElementById('comreplybox_'+this.id.split('_')[1]).value = ""
+            document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'none'
         }
         
-        // var replyButton = document.createElement('button')
-        // replyButton.innerHTML = "Reply"
-        // replyButton.setAttribute("class","comreplybutton")
-        // replyButton.setAttribute("id", "comreplyButton_"+this.id)
-        // infoRow.appendChild(replyButton)
         var replyButton = document.createElement('img')
         replyButton.setAttribute("class","comreplybutton")
         replyButton.setAttribute("id", "comreplyButton_"+this.id)

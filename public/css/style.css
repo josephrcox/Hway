@@ -195,7 +195,7 @@ tbody {
 }
 
 .infoCell {
-	font-size: smaller;
+	font-size: 10px;
 	color: lightblue;
 }
 .voteCount, .commentCount {
@@ -206,11 +206,16 @@ tbody {
 	align-self: center;
 }
 
-.comVoteCount {
+
+.comVoteCount, .comnestedVoteCount {
 	padding-right: 10px;
 	padding-left: 10px;
 	color: black;
 	font-weight: 700;
+}
+
+.comnestedVoteCount {
+	margin-top:3px;
 }
 
 .titleCell {
@@ -232,7 +237,7 @@ i {
 textarea {
 	resize: none;
 }
-.voteUpButton, .voteDoButton {
+.voteUpButton, .voteDoButton, .nestedcommentUp {
 	height:20px;
 	padding-top: 4px;
 	padding-inline: 10px;
@@ -241,8 +246,12 @@ textarea {
 	border: none;
 	cursor: pointer;
 	order:0;
-	
 }
+
+.nestedcommentUp {
+	margin-top:-2px;
+}
+
 .deleteButton { 
   display:none;
 }
@@ -293,18 +302,20 @@ label {
 }
 
 .ncDiv {
-  padding:5px;
+	padding-left:5px;
+	padding-top:5px;
 	padding-right:0px;
 	margin-left:30px;
 	width:calc(98% + 1px - 35px);
 }
 
-.voteDiv {
+.voteDiv, .ncVoteDiv {
 	display: flex;
 	flex-direction: row;
-	background-color: #0b4457;
-	border-top:1px solid black;
-	border:1px solid black;
+}
+
+.voteDiv {
+	background-color: hsl(195, 77.6%, 19.2%);
 }
 
 .comVoteDiv {
@@ -501,3 +512,13 @@ a:visited {
 	color:white;
 	font-weight: 600;
 }
+
+.ncCommentDiv {
+	flex-grow:1;
+}
+
+.ncVoteDiv {
+  
+}
+
+.
