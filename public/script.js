@@ -381,6 +381,7 @@ const commentObject = {
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
             voteCom(this.id.substring(10), cID)
+            voteCom(this.id.substring(10), cID, false, 0)
         }
 
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
@@ -814,13 +815,6 @@ const comment_nested = async (postid, body, commentparentID) => {
         document.getElementById("ncDiv_"+data.id).appendChild(ncVoteDiv)
         document.getElementById("ncVoteDiv_"+data.id).appendChild(voteCount)
         document.getElementById("ncVoteDiv_"+data.id).appendChild(voteUp)
-
-
-        // var ncDiv = document.createElement("div")
-        // ncDiv.setAttribute("class", "ncDiv")
-        // ncDiv.setAttribute("id", "ncDiv_"+postid)
-        // ncDiv.innerHTML += getUserColor(data.poster)+data.poster + "</span>: "+data.body+"<br/>"
-        // document.getElementById("ncContainer_"+commentparentID).appendChild(ncDiv)
     }
     
 }
