@@ -57,7 +57,6 @@ var geoip = require('geoip-lite');
 
 app.get('/', async(req, res) => {
 	var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-	console.log(ip)
 	try {
 		Guest.findOne({ip_address:ip}, function(err, docs) {
 			let datetime = new Date()
@@ -151,7 +150,6 @@ app.get('/api/get/currentuser', function (req, res) {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-			console.log(ip)
 			if (ip.includes("ffff")) {
 				console.log("Local IP detected.")
 			} else {
@@ -179,7 +177,6 @@ app.get('/api/get/currentuser', function (req, res) {
 	} catch (err) {
 		try {
 			var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-			console.log(ip)
 			Guest.findOne({ip_address:ip}, function(err, docs) {
 				let datetime = new Date()
 				month = datetime.getUTCMonth()+1
@@ -234,8 +231,9 @@ app.get('/login', (req, res) => {
 app.get('/users', (req, res) => {
     res.render('users.ejs', {topic:"- users"})
 })
+
 app.get('/user/:user', (req, res) => {
-    res.render('home.ejs', {topic:"- "+req.params.user})
+    res.render('profile.ejs', {topic:""})
 })
 
 app.get('/register', (req, res) => {
@@ -277,7 +275,6 @@ app.get('/api/get/all_users/:sorting', async(req, res) =>{
 		for (i=0;i<users.length;i++) {
 			try {
 				locationArr = users[i].statistics.misc.approximate_location[0]
-				console.log(JSON.stringify(locationArr.region, locationArr.country))
 				location = locationArr.city
 			} catch(err) {
 				console.log(err)
@@ -294,9 +291,32 @@ app.get('/api/get/all_users/:sorting', async(req, res) =>{
 		}
 
 		usersArr.sort()
-		console.log(usersArr)
 		res.send(usersArr)
 	})
+})
+
+app.get('/api/get/user/:user/:options', async(req, res) =>{
+	comments = []
+	if (req.params.options == "all_comments") {
+		Post.find({}, function(err, posts) {
+			for (i=0;i<posts.length;i++) {
+				for (x=0;x<posts[i].comments.length;x++) {
+					if (posts[i].comments[x].poster == req.params.user) {
+						posts[i].comments[x].parentPostID = posts[i].id
+						comments.push(posts[i].comments[x])
+					}
+				}
+			}
+			res.json(comments)
+		})
+	} else {
+		User.findOne({name:req.params.user}, function(err, user) {
+			user.password = null
+			user._id = null
+			res.send(user)
+		})
+	}
+	
 })
 
 app.get('/api/get/posts/:postid', async(req,res) => {
@@ -316,7 +336,6 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 		}
 	}
 	
-
 	postModified = []
 	Post.findById(req.params.postid, function (err, post) {
 		if (post == null) {
@@ -398,8 +417,6 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 		
 	})
 })
-
-
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
@@ -635,7 +652,6 @@ app.post('/login', async(req, res) => {
 		fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
 
 		User.findById(user._id, function(err, docs) {
-			console.log("user:"+docs)
 			docs.statistics.misc.login_num += 1
 			docs.statistics.misc.login_array.push([fulldatetime, Date.now()])
 			docs.save()
@@ -718,7 +734,6 @@ app.post('/api/post/post', async(req, res) => {
 			date: fulldatetime,
 			timestamp:timestamp
 		})
-		console.log(response)
 		User.findById(userID, function(err, docs) {
 			docs.statistics.posts.created_num += 1
 			docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
@@ -832,7 +847,6 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 		Post.findById(id, function(err, docs) {
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
 			parentCommentIndex = docs.comments.findIndex(x => x._id == parentID)
-			console.log("index:"+parentCommentIndex)
 			randomID = Math.floor(Math.random() * Date.now()), // generates a random id
 			oldComment = docs.comments[parentCommentIndex]
 			newComment = {
@@ -961,7 +975,6 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	id = req.params.commentid
 	// These two variables are only for nested comments
 	nestedBoolean = req.params.nestedboolean
-	console.log("boolean:"+nestedBoolean)
 	commentParentID = req.params.commentParentID 
 	//
 	try {
@@ -980,7 +993,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 				for (i=0;i<oldComArray.length;i++) {
 					for (x=0;x<oldComArray[i].nested_comments.length;x++) {
 						if (oldComArray[i].nested_comments[x].id == id) {
-							//console.log("nested comment is: "+oldComArray[i].nested_comments[x].body)
+							
 							comIndex = i
 							ncIndex = x
 						}
@@ -988,14 +1001,13 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 				}
 
 				nc = oldComArray[comIndex].nested_comments[ncIndex]
-				console.log(nc)
+
 				nestedCommentPosterId = nc.posterid
 				if (!nc.users_voted.includes(userID)) { // user has not voted
 					nc.users_voted.push(userID)
 					nc.total_votes += 1
 					oldComArray[comIndex].nested_comments[ncIndex] = nc
 					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
-						console.log(docs)
 					})
 					User.findById(nestedCommentPosterId, function(err, docs) {
 						docs.statistics.score += 1
@@ -1009,7 +1021,6 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 					nc.total_votes -= 1
 					oldComArray[comIndex].nested_comments[ncIndex] = nc
 					Post.findByIdAndUpdate(pID, {comments: oldComArray}, function(err, docs) {	
-						console.log(docs)
 					})
 					User.findById(nestedCommentPosterId, function(err, docs) {
 						docs.statistics.score -= 1

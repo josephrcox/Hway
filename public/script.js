@@ -182,7 +182,12 @@ const postObject = {
             } 
         }
     
-        document.getElementById("postsArray").appendChild(postContainer)
+        if (window.location.href.indexOf("/user/") != -1) {
+            document.getElementById("page-profile-posts").appendChild(postContainer)
+        } else {
+            document.getElementById("postsArray").appendChild(postContainer)
+        }
+        
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
         
         document.getElementById("postContainer_"+this.id).appendChild(voteDiv)
@@ -213,7 +218,13 @@ const commentObject = {
         usercolorspan = getUserColor(this.poster)
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
-        document.getElementById("comments").appendChild(fullCommentContainer)
+        if (window.location.href.indexOf("/user/") == -1) { // on a user profile page
+            document.getElementById("comments").appendChild(fullCommentContainer)
+        } else {
+            console.log("ALERT on a user page")
+            document.getElementById("page-profile-comments").appendChild(fullCommentContainer)
+        }
+        
 
         var comFrame = document.createElement("table")
         comFrame.setAttribute("class", "comFrame")
@@ -223,6 +234,7 @@ const commentObject = {
 
         posterRow = comFrame.insertRow(0)
         posterRow.setAttribute("id", "posterRow_"+this.id)
+        posterRow.setAttribute("class", "posterRow")
         posterCell = posterRow.insertCell(0)
 
         infoRow = comFrame.insertRow(1)
@@ -380,13 +392,11 @@ const commentObject = {
         
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
-            voteCom(this.id.substring(10), cID)
             voteCom(this.id.substring(10), cID, false, 0)
         }
 
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
         document.getElementById("comments").appendChild(replyDiv)
-        
         
         document.getElementById("comreplyDiv_"+this.id).appendChild(replyBox)
         document.getElementById("comreplyDiv_"+this.id).appendChild(replySubmit)
@@ -555,7 +565,6 @@ const loadPosts = async (x, topic, page) => {
 
     cTopic = topic
     //console.log(cTopic)
-    
 }
 
 const loadUserPage = async(user) => {
@@ -564,10 +573,10 @@ const loadUserPage = async(user) => {
     const data = await response.json()
     console.log(data)
 
-    document.getElementById("postsArray").innerHTML = ""
+    document.getElementById("page-profile-posts").innerHTML = ""
     if (data.length == 0) {
         console.log("no posts found")
-        document.getElementById("postsArray").innerHTML = "<div style='color:white'>No posts... yet!</div>"
+        document.getElementById("page-profile-posts").innerHTML = "<div style='color:white'>No posts... yet!</div>"
     }
     for (i=0; i<data.length ; i++) {
         let post = Object.create(postObject)
@@ -595,10 +604,6 @@ const loadUserPage = async(user) => {
 
         posts.push(post)
         post.display()
-    }
-    
-    if (x != 0) {
-        expandDesc(x)
     }
     topFunction()
     storeAndDisplayTopics()
@@ -836,8 +841,6 @@ function launch() {
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     cPage = 1
-    //prevPage()
-    //document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
     loadPosts(0, "", 1)
 }
 

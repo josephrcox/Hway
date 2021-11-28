@@ -1,0 +1,24 @@
+#page-profile-name {
+	font-size:56px;
+	color:white;
+}
+
+.profile {
+	display:flex;
+	flex-direction: column;
+	color:white;
+}
+
+#page-profile-info, #page-profile-posts, #page-profile-comments  {
+	padding-bottom: 25px;
+	border-bottom: 1px solid white;
+	margin-bottom:25px;
+}
+
+#page-profile-comments-header, #page-profile-posts-header {
+	font-size:45px;
+}
+
+#misc_header_buttons {
+	display:none;
+}
