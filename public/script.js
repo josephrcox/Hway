@@ -1020,6 +1020,12 @@ const createNewPost = async(posttype) => {
     
 }
 
+document.getElementById('newPost_file').addEventListener("change", ev => {
+    const formdata = new FormData()
+    formdata.append("image", ev.target.files[0])
+    uploadImage(formdata)
+})
+
 const uploadImage = async (x) => { 
     document.getElementById("newPost_logs").innerHTML = "Uploading..."
     const fetchResponse = await fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
