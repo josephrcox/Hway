@@ -70,6 +70,7 @@ const postObject = {
     comment_count: "",
 
     display() {
+        console.log("displaying")
         usercolorspan = getUserColor(this.poster)
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
@@ -182,11 +183,13 @@ const postObject = {
             } 
         }
     
-        if (window.location.href.indexOf("/user/") != -1) {
-            document.getElementById("page-profile-posts").appendChild(postContainer)
-        } else {
-            document.getElementById("postsArray").appendChild(postContainer)
-        }
+        // if (window.location.href.indexOf("/user/") != -1) {
+        //     document.getElementById("page-profile-posts").appendChild(postContainer)
+        // } else {
+        //     document.getElementById("postsArray").appendChild(postContainer)
+        // }
+
+        document.getElementById("postsArray").appendChild(postContainer)
         
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
         
@@ -518,17 +521,49 @@ const loadPosts = async (x, topic, page) => {
             }
         }
     } else {
-
         const response = await fetch('/api/get/'+topic+'/'+page)
         const data = await response.json()
-        console.log(data)
+        console.log("IMPORTANT DATA:"+data)
+        console.log("length:"+data.length)
 
         document.getElementById("postsArray").innerHTML = ""
         if (data.length == 0) {
             console.log("no posts found")
             document.getElementById("postsArray").innerHTML = "<div style='color:white'>No posts... yet!</div>"
         }
-        for (i=0; i<data.length ; i++) {
+
+        // for(i=0;i<data.length;i++) {
+        // var i = 0
+        // while (i < data.length){
+        //     let post = Object.create(postObject)
+        //     post.title = data[i].title
+        //     post.body = data[i].body
+        //     if (post.body == "" || post.body == undefined || post.body == null) {
+        //         post.body = "(empty)"
+        //     }
+        //     post.total_votes = data[i].total_votes
+        //     post.upvotes = data[i].upvotes
+        //     post.downvotes = data[i].downvotes
+        //     post.id = data[i]._id
+        //     post.poster = data[i].poster
+        //     post.date = data[i].date
+        //     post.descDisplayed = false
+        //     post.link = data[i].link
+        //     post.type = data[i].type // 1=text, 2=link, 3=media
+        //     post.topic = data[i].topic
+        //     post.comment_count = data[i].comments.length
+        //     post.comments = data[i].comments
+
+        //     post.current_user_upvoted = data[i].current_user_upvoted
+        //     post.current_user_downvoted = data[i].current_user_downvoted
+        //     post.current_user_admin = data[i].current_user_admin
+
+        //     posts.push(post)
+        //     post.display()
+        //     i++
+        // }
+
+        for(let i=0; i < data.length;i++) {
             let post = Object.create(postObject)
             post.title = data[i].title
             post.body = data[i].body
@@ -556,9 +591,6 @@ const loadPosts = async (x, topic, page) => {
             post.display()
         }
         
-        if (x != 0) {
-            expandDesc(x)
-        }
         topFunction()
         storeAndDisplayTopics()
     }
@@ -841,7 +873,7 @@ function launch() {
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     cPage = 1
-    loadPosts(0, "", 1)
+    loadPosts(0, "", 0)
 }
 
 document.getElementById("newPost_submit_button").onclick = function() {
