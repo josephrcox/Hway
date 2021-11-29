@@ -970,6 +970,31 @@ app.put('/vote/:id/:y', function(req,res) {
 	}
 })
 
+
+app.put('/api/put/post/delete/:postid', function(req,res) {
+	postid = req.params.postid
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	Post.findById(postid, function(err, docs) {
+		console.log(docs)
+		if (docs.posterID == userID) {
+			Post.findByIdAndDelete(postid, function(err, docs) {
+				res.json({status:'ok'})
+			})
+		} else {
+			res.json({status:'error'})
+		}
+	})
+	
+})
+
 app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', function(req,res) {
 	pID = req.params.parentid
 	id = req.params.commentid

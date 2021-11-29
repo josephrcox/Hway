@@ -183,13 +183,31 @@ const postObject = {
             } 
         }
     
-        // if (window.location.href.indexOf("/user/") != -1) {
-        //     document.getElementById("page-profile-posts").appendChild(postContainer)
-        // } else {
-        //     document.getElementById("postsArray").appendChild(postContainer)
-        // }
+        if (this.current_user_admin) {
+            var del = document.createElement("img")
+            del.setAttribute("class", "deletePostButton")
+            del.setAttribute("id", "deletePostButton_"+this.id)
+            del.src = "../assets/trash.png"
+            del.style.height = '20px'
+            del.style.width = 'auto'
+            delPostConfirmation = false
+            
+            del.onclick = function() {
+                if (delPostConfirmation) {
+                    deletePost(this.id.split("_")[1])
+                } else {
+                    this.src = "../assets/trash_confirm.png"
+                    delPostConfirmation = true
+                }
+                
+            }
+        }
 
-        document.getElementById("postsArray").appendChild(postContainer)
+        if (window.location.href.indexOf("/user/") != -1) {
+            document.getElementById("page-profile-posts").appendChild(postContainer)
+        } else {
+            document.getElementById("postsArray").appendChild(postContainer)
+        }
         
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
         
@@ -199,6 +217,9 @@ const postObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
         document.getElementById("voteDiv_"+this.id).appendChild(commentCount)
+        if (this.current_user_admin) {
+            document.getElementById("voteDiv_"+this.id).appendChild(del)
+        }
     }
 }
 
@@ -406,6 +427,24 @@ const commentObject = {
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUp)
     }
+}
+
+const deletePost = async(x) => {
+    const settings = {
+        method: 'PUT',
+    };
+    console.log(x)
+    const response = await fetch('/api/put/post/delete/'+x, settings)
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        document.getElementById("postContainer_"+x).innerHTML = "The post was permanantly deleted."
+    }
+    if (data.status == 'error') {
+        alert(data.error)
+    }
+
+    console.log(data)
 }
 
 function copytoclipboard(x) {
