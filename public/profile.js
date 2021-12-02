@@ -81,7 +81,6 @@ const commentShortObject = {
     
 
     display() {
-        usercolorspan = getUserColor(this.poster)
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
         document.getElementById("page-profile-comments").appendChild(fullCommentContainer)
@@ -105,7 +104,7 @@ const commentShortObject = {
         bodyCell = bodyRow.insertCell(0)
 
         const link = "<a href='/posts/"+this.parentPostID+"'> here </a>"
-        posterCell.innerHTML = usercolorspan+this.poster + "</span> said"+link+": (+)"
+        posterCell.innerHTML = "<span style='color:blue'>"+this.poster + "</span> said"+link+": (+)"
         posterCell.setAttribute("id","posterCell_"+this.id)
 
         bodyCell.innerHTML = this.body
@@ -117,19 +116,16 @@ const commentShortObject = {
             var body = document.getElementById("bodyCell_"+id)
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" said")[0]
             if (body.innerHTML == "") {
-                document.getElementById("posterCell_"+id).innerHTML = usercolorspan+poster + "</span> said"+link+": (-)"
+                document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> said"+link+": (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
             } else {
-                document.getElementById("posterCell_"+id).innerHTML = usercolorspan+poster + "</span> said"+link+": (+)"
+                document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> said"+link+": (+)"
                 var x = document.getElementById("bodyCell_"+this.id.substring(10))
                 document.getElementById("voteDiv_"+this.id.substring(10)).style.height = '20px'
                 document.getElementById("voteDiv_"+this.id.substring(10)).style.alignSelf = 'center'
                 x.innerHTML = ""
             }
             
-        }
-        if (this.nested_comments.length == 0) {
-            ncContainer.style.display = 'none'
         }
 
         var voteDiv = document.createElement("div")

@@ -1112,18 +1112,4 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 
 })
 
-function updateSchema() {
-	userID_array = []
-	user_array = []
-	User.find({}, function(err, docs) {
-		for (i=0;i<docs.length;i++) {
-			userID_array.push(docs[i].id)
-			user_array.push(docs[i])
-			docs[i].save()
-		}
-	})
-}
-
-updateSchema()
-
 app.listen(process.env.PORT || 3000)

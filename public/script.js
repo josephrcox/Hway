@@ -17,11 +17,39 @@ commentBodies = []
 var lastClick = 0;
 var delay = 400;
 
+pageTypes = [
+    'user', 'usersheet', 'topic', 'index', 'home', 'post'
+]
+
 // Currents
 cPage = 1
 cTopic = ""
 cID = ""
 isUserLoggedIn = false
+
+url = (window.location.href).split('/')[3]
+switch (url) {
+    case 'user':
+        cPageType = 0
+        break;
+    case 'users':
+        cPageType = 1
+        break;
+    case ('h'):
+        cPageType = 2
+        break;
+    case '':
+        cPageType = 3
+        break;
+    case 'home':
+        cPageType = 4
+        break;
+    case 'posts':
+        cPageType = 5
+        break;
+}
+console.log("Current page: "+pageTypes[cPageType])
+
 
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
@@ -71,7 +99,6 @@ const postObject = {
 
     display() {
         console.log("displaying")
-        usercolorspan = getUserColor(this.poster)
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
@@ -149,7 +176,7 @@ const postObject = {
         var topHref = "\""+this.topic+"\""
         href = this.topic.replace(/^"(.*)"$/, '$1');
         
-        infoCell.innerHTML = "Submitted by "+usercolorspan+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
+        infoCell.innerHTML = "Submitted by "+"<span style='color:blue'>"+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -203,7 +230,7 @@ const postObject = {
             }
         }
 
-        if (window.location.href.indexOf("/user/") != -1) {
+        if (cPageType == 'user') {
             document.getElementById("page-profile-posts").appendChild(postContainer)
         } else {
             document.getElementById("postsArray").appendChild(postContainer)
@@ -239,10 +266,9 @@ const commentObject = {
     
 
     display() {
-        usercolorspan = getUserColor(this.poster)
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
-        if (window.location.href.indexOf("/user/") == -1) { // on a user profile page
+        if (cPageType == 'user') { // on a user profile page
             document.getElementById("comments").appendChild(fullCommentContainer)
         } else {
             console.log("ALERT on a user page")
@@ -269,7 +295,7 @@ const commentObject = {
         bodyRow = comFrame.insertRow(2)
         bodyCell = bodyRow.insertCell(0)
 
-        posterCell.innerHTML = usercolorspan+this.poster + "</span> says: (-)"
+        posterCell.innerHTML = "<span style='color:blue'>"+this.poster + "</span> says: (-)"
         posterCell.setAttribute("id","posterCell_"+this.id)
 
         bodyCell.innerHTML = this.body
@@ -293,7 +319,7 @@ const commentObject = {
             var ncCommentDiv = document.createElement("div")
             ncCommentDiv.setAttribute("class", "ncCommentDiv")
             ncCommentDiv.setAttribute("id", "ncCommentDiv_"+this.nested_comments[i].id)
-            ncCommentDiv.innerHTML += getUserColor(this.nested_comments[i].poster)+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"
+            ncCommentDiv.innerHTML += "<span style='color:blue'>"+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"
             
             var ncVoteDiv = document.createElement("div")
             ncVoteDiv.setAttribute("class", "ncVoteDiv")
@@ -335,7 +361,7 @@ const commentObject = {
             var body = document.getElementById("bodyCell_"+id)
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" says")[0]
             if (body.innerHTML == "") {
-                document.getElementById("posterCell_"+id).innerHTML = usercolorspan+poster + "</span> says: (-)"
+                document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> says: (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
                 // if (!document.getElementById('ncDiv_'+id).innerHTML == "") {
                 //     ncDiv.style.display = 'block'
@@ -345,7 +371,7 @@ const commentObject = {
 
                 
             } else {
-                document.getElementById("posterCell_"+id).innerHTML = usercolorspan+poster + "</span> says: (+)"
+                document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> says: (+)"
                 var x = document.getElementById("bodyCell_"+this.id.substring(10))
                 x.innerHTML = ""
                 ncContainer.style.display = 'none'
@@ -461,7 +487,7 @@ function copytoclipboard(x) {
 }
 
 const loadPosts = async (x, topic, page) => {
-    if (window.location.href.indexOf("/user/") != -1) {
+    if (cPageType == 'user') {
         console.log("on a user page,"+window.location.href+window.location.href.split('/'))
         user = window.location.href.split('/').pop()
         return loadUserPage(user)
@@ -471,13 +497,13 @@ const loadPosts = async (x, topic, page) => {
     if (topic == null || topic == "") {
         topic = "all"
     }
-    if (window.location.href.indexOf("/h/") != -1) {
+    if (cPageType == 'topic') {
         //console.log("topic page")
         url = window.location.href
         topic = url.split('/h/')[1]
         //console.log(topic)
     } 
-    if (window.location.href.indexOf("/posts/") != -1) { // on a specific post page, load only that one post & comments
+    if (cPageType == 'topic') { // on a specific post page, load only that one post & comments
         url = window.location.href
         postid = url.split('/posts/')[1]
         const response = await fetch('/api/get/posts/'+postid)
@@ -864,7 +890,7 @@ const comment_nested = async (postid, body, commentparentID) => {
         var ncCommentDiv = document.createElement("div")
         ncCommentDiv.setAttribute("class", "ncCommentDiv")
         ncCommentDiv.setAttribute("id", "ncCommentDiv_"+data.id)
-        ncCommentDiv.innerHTML += getUserColor(data.poster)+data.poster + "</span>: "+data.body+"<br/>"
+        ncCommentDiv.innerHTML += "<span style='color:blue'>"+data.poster + "</span>: "+data.body+"<br/>"
         
         var ncVoteDiv = document.createElement("div")
         ncVoteDiv.setAttribute("class", "ncVoteDiv")
@@ -998,10 +1024,13 @@ document.getElementById("newPost_type_media").onclick = function() {
     document.getElementById("newPost_submit_button").style.display = "none"
 }
 
-document.getElementById("newCom_submit").onclick = function() {
-    comment(cID, "x", false, "")
-    document.getElementById("newCom_body").value = ""
+if (cPageType == 'post') {
+    document.getElementById("newCom_submit").onclick = function() {
+        comment(cID, "x", false, "")
+        document.getElementById("newCom_body").value = ""
+    }
 }
+
 
 const createNewPost = async(posttype) => { 
     title = document.getElementById("newPost_name").value
@@ -1079,10 +1108,6 @@ const uploadImage = async (x) => {
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""
-}
-
-function getUserColor(x) {
-    return "<span style='color:blue'>"
 }
 
 function scrollFunction() {
