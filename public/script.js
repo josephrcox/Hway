@@ -88,7 +88,9 @@ function changeCommentSectionVisibility() {
             document.getElementById('newCom_submit').style.display = 'none'
         }
     } else {
-        document.getElementById('commentSection').style.display = 'none'
+        if (document.getElementById('commentSection')) {
+            document.getElementById('commentSection').style.display = 'none'
+        }
     }
 }
 
@@ -229,6 +231,13 @@ const postObject = {
                 expandDesc(this.id.split("_")[1])
             } 
         }
+        if (this.type == "3") {
+            imgThumbDiv.onclick = function() {
+                if (this.body != "(empty)") {
+                    expandDesc(this.id.split("_")[1])
+                } 
+            }
+        }
     
         if (this.current_user_admin) {
             var del = document.createElement("img")
@@ -239,12 +248,21 @@ const postObject = {
             del.style.width = 'auto'
             delPostConfirmation = false
             
+            
             del.onclick = function() {
                 if (delPostConfirmation) {
-                    deletePost(this.id.split("_")[1])
+                    if (delPostConfirmationId == this.id.split("_")[1]) {
+                        deletePost(this.id.split("_")[1])
+                    } else {
+                        this.src = "../assets/trash_confirm.png"
+                        delPostConfirmation = true
+                        delPostConfirmationId = this.id.split("_")[1]
+                    }
+                    
                 } else {
                     this.src = "../assets/trash_confirm.png"
                     delPostConfirmation = true
+                    delPostConfirmationId = this.id.split("_")[1]
                 }
                 
             }
@@ -258,8 +276,10 @@ const postObject = {
         
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
         
-        document.getElementById("postFrame_"+this.id).appendChild(imgThumbDiv)
-        document.getElementById("postImgThumbDiv_"+this.id).appendChild(imgThumb)
+        if (this.type == "3") {
+            document.getElementById("postFrame_"+this.id).appendChild(imgThumbDiv)
+            document.getElementById("postImgThumbDiv_"+this.id).appendChild(imgThumb)
+        }
         document.getElementById("postContainer_"+this.id).appendChild(voteDiv)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
@@ -702,7 +722,6 @@ const storeAndDisplayTopics = async () => {
     } else {
         document.getElementById('topic-dropdown-div').style.display = 'block'
         document.getElementById('topic-dropdown-button').style.display = 'block'
-        document.getElementById('topic-dropdown-div').style.borderRight = '2px solid black'
         if (data.length > 10) {
             topics = 10
         } else {
@@ -905,87 +924,97 @@ function launch() {
     loadPosts(0, "", 0)
 }
 
-document.getElementById("newPost_submit_button").onclick = function() {
-    postTitle = document.getElementById("newPost_name").value
-    if ((document.getElementById("newPost_topic").value).replace(" ","") == "" || (document.getElementById("newPost_topic").value).replace(" ","") == null || (document.getElementById("newPost_topic").value).replace(" ","") == undefined) {
-        topic = "all"
-    }
-
-    switch (newPost_type) {
-        case 1: // Text
-            if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
-                document.getElementById("newPost_logs").innerHTML = "Please enter title"
-            } else {
-                createNewPost(1)
-            }
-            break;
-        case 2: // Link
-            if (postTitle == "" || postTitle == null) {
-                document.getElementById("newPost_logs").innerHTML = "Please enter title"
-            } else {
-                if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
-                    createNewPost(2)
-                } else {
-                    document.getElementById("newPost_logs").innerHTML = "Please enter valid URL"
-                }
-            }
-            break;
-        case 3: // Media
-            if (postTitle == "" || postTitle == null) {
-                document.getElementById("newPost_logs").innerHTML = "Please enter title"
-            } else {
-               createNewPost(3)
-            }
-            break;
-
-    }
+if (pageTypes[cPageType] != 'user') {
+    document.getElementById("newPost_submit_button").onclick = function() {
+        postTitle = document.getElementById("newPost_name").value
+        if ((document.getElementById("newPost_topic").value).replace(" ","") == "" || (document.getElementById("newPost_topic").value).replace(" ","") == null || (document.getElementById("newPost_topic").value).replace(" ","") == undefined) {
+            topic = "all"
+        }
     
+        switch (newPost_type) {
+            case 1: // Text
+                if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
+                    document.getElementById("newPost_logs").innerHTML = "Please enter title"
+                } else {
+                    createNewPost(1)
+                }
+                break;
+            case 2: // Link
+                if (postTitle == "" || postTitle == null) {
+                    document.getElementById("newPost_logs").innerHTML = "Please enter title"
+                } else {
+                    if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
+                        createNewPost(2)
+                    } else {
+                        document.getElementById("newPost_logs").innerHTML = "Please enter valid URL"
+                    }
+                }
+                break;
+            case 3: // Media
+                if (postTitle == "" || postTitle == null) {
+                    document.getElementById("newPost_logs").innerHTML = "Please enter title"
+                } else {
+                   createNewPost(3)
+                }
+                break;
+    
+        }
+        
+    }
+        
+    document.getElementById("newPost_type_text").onclick = function() {
+        newPost_type = 1;
+        document.getElementById("newPost_type_text").style.backgroundColor = "lightgreen"
+        document.getElementById("newPost_type_link").style.backgroundColor = ""
+        document.getElementById("newPost_type_media").style.backgroundColor = ""
+
+        document.getElementById("newPost_desc").style.display = "block"
+        document.getElementById("newPost_desc_label").style.display = "block"
+        document.getElementById("newPost_link").style.display = "none"
+        document.getElementById("newPost_link_label").style.display = "none"
+        document.getElementById("newPost_file").style.display = "none"
+        document.getElementById("newPost_file_label").style.display = "none"
+        document.getElementById("newPost_submit_button").style.display = "block"
+    }
+
+    document.getElementById("newPost_type_link").onclick = function() {
+        newPost_type = 2;
+        document.getElementById("newPost_type_text").style.backgroundColor = ""
+        document.getElementById("newPost_type_link").style.backgroundColor = "lightgreen"
+        document.getElementById("newPost_type_media").style.backgroundColor = ""
+
+        document.getElementById("newPost_link").style.display = "block"
+        document.getElementById("newPost_link_label").style.display = "block"
+        document.getElementById("newPost_desc").style.display = "none"
+        document.getElementById("newPost_desc_label").style.display = "none"
+        document.getElementById("newPost_file").style.display = "none"
+        document.getElementById("newPost_file_label").style.display = "none"
+        document.getElementById("newPost_submit_button").style.display = "block"
+    }
+
+    document.getElementById("newPost_type_media").onclick = function() {
+        newPost_type = 3;
+        document.getElementById("newPost_type_text").style.backgroundColor = ""
+        document.getElementById("newPost_type_link").style.backgroundColor = ""
+        document.getElementById("newPost_type_media").style.backgroundColor = "lightgreen"
+
+        document.getElementById("newPost_desc").style.display = "none"
+        document.getElementById("newPost_desc_label").style.display = "none"
+        document.getElementById("newPost_link").style.display = "none"
+        document.getElementById("newPost_link_label").style.display = "none"
+        document.getElementById("newPost_file").style.display = "block"
+        document.getElementById("newPost_file_label").style.display = "block"
+        document.getElementById("newPost_submit_button").style.display = "none"
+    }
+
+    document.getElementById('newPost_file').addEventListener("change", ev => {
+        const formdata = new FormData()
+        formdata.append("image", ev.target.files[0])
+        uploadImage(formdata)
+    })
 }
 
-document.getElementById("newPost_type_text").onclick = function() {
-    newPost_type = 1;
-    document.getElementById("newPost_type_text").style.backgroundColor = "lightgreen"
-    document.getElementById("newPost_type_link").style.backgroundColor = ""
-    document.getElementById("newPost_type_media").style.backgroundColor = ""
 
-    document.getElementById("newPost_desc").style.display = "block"
-    document.getElementById("newPost_desc_label").style.display = "block"
-    document.getElementById("newPost_link").style.display = "none"
-    document.getElementById("newPost_link_label").style.display = "none"
-    document.getElementById("newPost_file").style.display = "none"
-    document.getElementById("newPost_file_label").style.display = "none"
-    document.getElementById("newPost_submit_button").style.display = "block"
-}
-
-document.getElementById("newPost_type_link").onclick = function() {
-    newPost_type = 2;
-    document.getElementById("newPost_type_text").style.backgroundColor = ""
-    document.getElementById("newPost_type_link").style.backgroundColor = "lightgreen"
-    document.getElementById("newPost_type_media").style.backgroundColor = ""
-
-    document.getElementById("newPost_link").style.display = "block"
-    document.getElementById("newPost_link_label").style.display = "block"
-    document.getElementById("newPost_desc").style.display = "none"
-    document.getElementById("newPost_desc_label").style.display = "none"
-    document.getElementById("newPost_file").style.display = "none"
-    document.getElementById("newPost_file_label").style.display = "none"
-    document.getElementById("newPost_submit_button").style.display = "block"
-}
-
-document.getElementById("newPost_type_media").onclick = function() {
-    newPost_type = 3;
-    document.getElementById("newPost_type_text").style.backgroundColor = ""
-    document.getElementById("newPost_type_link").style.backgroundColor = ""
-    document.getElementById("newPost_type_media").style.backgroundColor = "lightgreen"
-
-    document.getElementById("newPost_desc").style.display = "none"
-    document.getElementById("newPost_desc_label").style.display = "none"
-    document.getElementById("newPost_link").style.display = "none"
-    document.getElementById("newPost_link_label").style.display = "none"
-    document.getElementById("newPost_file").style.display = "block"
-    document.getElementById("newPost_file_label").style.display = "block"
-    document.getElementById("newPost_submit_button").style.display = "none"
-}
 
 if (pageTypes[cPageType] == 'post') {
     document.getElementById("newCom_submit").onclick = function() {
@@ -1050,11 +1079,7 @@ const createNewPost = async(posttype) => {
     
 }
 
-document.getElementById('newPost_file').addEventListener("change", ev => {
-    const formdata = new FormData()
-    formdata.append("image", ev.target.files[0])
-    uploadImage(formdata)
-})
+
 
 const uploadImage = async (x) => { 
     document.getElementById("newPost_logs").innerHTML = "Uploading..."

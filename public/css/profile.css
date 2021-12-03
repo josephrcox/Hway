@@ -7,6 +7,9 @@
 	display:flex;
 	flex-direction: column;
 	color:white;
+	width: 95%;
+	max-width: 1200px;
+	margin-left: 10px;
 }
 
 #page-profile-info, #page-profile-posts, #page-profile-comments  {

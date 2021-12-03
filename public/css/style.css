@@ -355,7 +355,6 @@ label {
 .topic-dropdown-div {
 	position: relative;
 	display: inline-block;
-	border-right: 2px solid black;
 	display:none;
 }
   
