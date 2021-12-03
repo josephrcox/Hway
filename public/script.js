@@ -670,14 +670,23 @@ const loadUserPage = async(user) => {
 
 function expandDesc(x) {
     y = "descCell_"+x
+    if (document.getElementById('postImgThumb_'+x).src != null) {
+        mediaPost = true
+    }
     title = document.getElementById("titleCell_"+x).innerHTML.replace('<span style="font-size:12px">        (+)</span>', '').replace('<span style="font-size:12px">        (-)</span>','')
     if (document.getElementById(y).innerHTML != "" && document.getElementById(y).innerHTML != null) {
         if (document.getElementById(y).style.display == 'block') {
             document.getElementById(y).style.display = 'none'
             document.getElementById("titleCell_"+x).innerHTML = title + "<span style='font-size:12px'>        (+)</span>"
+            if (mediaPost) {
+                document.getElementById('postImgThumb_'+x).style.display = 'block'
+            }
         } else {
             document.getElementById(y).style.display = 'block'
             document.getElementById("titleCell_"+x).innerHTML = title + "<span style='font-size:12px'>        (-)</span>"
+            if (mediaPost) {
+                document.getElementById('postImgThumb_'+x).style.display = 'none'
+            }
         }
     }
 }

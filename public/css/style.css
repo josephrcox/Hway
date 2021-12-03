@@ -196,7 +196,7 @@ tbody {
 }
 
 .infoCell {
-	font-size: 10px;
+	font-size: 12px;
 	color: lightblue;
 }
 .voteCount, .commentCount {
@@ -222,7 +222,7 @@ tbody {
 .titleCell {
 	font-weight: 700;
 	user-select: none;
-	font-size:larger;
+	font-size:20px;
 	word-wrap: anywhere;
 }
 .descCell {
@@ -534,10 +534,15 @@ a:visited {
 }
 
 .postImgThumbDiv {
-	height: 75px;
+	height: 65px;
 	margin-left: 30px;
-  }
-  .postImgThumb {
-	object-fit: contain;
-	max-height: 100%;
-  }
+	width: 72px;
+	margin-right: 10px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+.postImgThumb {
+	object-fit: cover;
+	height: 65px;
+	width: 72px;
+}
