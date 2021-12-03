@@ -51,6 +51,7 @@ switch (url) {
 console.log("Current page: "+pageTypes[cPageType])
 
 
+
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
@@ -73,10 +74,29 @@ const getUser = async () => {
         document.getElementById("post-button").style.display = 'block'
     }
     
-    
+    changeCommentSectionVisibility()
 }
 
 getUser()
+
+function changeCommentSectionVisibility() {
+    if (pageTypes[cPageType] == 'post') {
+        console.log("POST PAGE",isUserLoggedIn)
+        document.getElementById('commentSection').style.display = 'inline'
+        if (isUserLoggedIn) {
+            document.getElementById('commentSection_login_button').style.display = 'none'
+            document.getElementById('newCom_body').style.display = 'block'
+            document.getElementById('newCom_submit').style.display = 'block'
+        } else {
+            document.getElementById('commentSection_login_button').style.display = 'block'
+            document.getElementById('newCom_body').style.display = 'none'
+            document.getElementById('newCom_submit').style.display = 'none'
+        }
+    } else {
+        document.getElementById('commentSection').style.display = 'none'
+    }
+}
+
 
 const postObject = {
     type: "",
@@ -230,7 +250,7 @@ const postObject = {
             }
         }
 
-        if (cPageType == 'user') {
+        if (pageTypes[cPageType] == 'user') {
             document.getElementById("page-profile-posts").appendChild(postContainer)
         } else {
             document.getElementById("postsArray").appendChild(postContainer)
@@ -268,7 +288,7 @@ const commentObject = {
     display() {
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
-        if (cPageType == 'user') { // on a user profile page
+        if (pageTypes[cPageType] != 'user') { // on a user profile page
             document.getElementById("comments").appendChild(fullCommentContainer)
         } else {
             console.log("ALERT on a user page")
@@ -487,7 +507,7 @@ function copytoclipboard(x) {
 }
 
 const loadPosts = async (x, topic, page) => {
-    if (cPageType == 'user') {
+    if (pageTypes[cPageType] == 'user') {
         console.log("on a user page,"+window.location.href+window.location.href.split('/'))
         user = window.location.href.split('/').pop()
         return loadUserPage(user)
@@ -497,13 +517,13 @@ const loadPosts = async (x, topic, page) => {
     if (topic == null || topic == "") {
         topic = "all"
     }
-    if (cPageType == 'topic') {
+    if (pageTypes[cPageType] == 'topic') {
         //console.log("topic page")
         url = window.location.href
         topic = url.split('/h/')[1]
         //console.log(topic)
     } 
-    if (cPageType == 'topic') { // on a specific post page, load only that one post & comments
+    if (pageTypes[cPageType] == 'post') { // on a specific post page, load only that one post & comments
         url = window.location.href
         postid = url.split('/posts/')[1]
         const response = await fetch('/api/get/posts/'+postid)
@@ -573,17 +593,7 @@ const loadPosts = async (x, topic, page) => {
             }
             topFunction()
             storeAndDisplayTopics()
-            document.getElementById("commentSection").style.display = 'inline'
-            
-            if (isUserLoggedIn) {
-                document.getElementById('commentSection_login_button').style.display = 'none'
-                document.getElementById('newCom_body').style.display = 'block'
-                document.getElementById('newCom_submit').style.display = 'block'
-            } else {
-                document.getElementById('commentSection_login_button').style.display = 'block'
-                document.getElementById('newCom_body').style.display = 'none'
-                document.getElementById('newCom_submit').style.display = 'none'
-            }
+
         }
     } else {
         const response = await fetch('/api/get/'+topic+'/'+page)
@@ -1024,7 +1034,7 @@ document.getElementById("newPost_type_media").onclick = function() {
     document.getElementById("newPost_submit_button").style.display = "none"
 }
 
-if (cPageType == 'post') {
+if (pageTypes[cPageType] == 'post') {
     document.getElementById("newCom_submit").onclick = function() {
         comment(cID, "x", false, "")
         document.getElementById("newCom_body").value = ""
