@@ -48,15 +48,11 @@ switch (url) {
         cPageType = 5
         break;
 }
-console.log("Current page: "+pageTypes[cPageType])
-
-
 
 const getUser = async () => {
     document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
-    console.log(data)
     
     if (data.code == 400) {
         isUserLoggedIn = false
@@ -81,7 +77,6 @@ getUser()
 
 function changeCommentSectionVisibility() {
     if (pageTypes[cPageType] == 'post') {
-        console.log("POST PAGE",isUserLoggedIn)
         document.getElementById('commentSection').style.display = 'inline'
         if (isUserLoggedIn) {
             document.getElementById('commentSection_login_button').style.display = 'none'
@@ -96,7 +91,6 @@ function changeCommentSectionVisibility() {
         document.getElementById('commentSection').style.display = 'none'
     }
 }
-
 
 const postObject = {
     type: "",
@@ -118,7 +112,6 @@ const postObject = {
     comment_count: "",
 
     display() {
-        console.log("displaying")
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
@@ -206,6 +199,13 @@ const postObject = {
         titleCell.innerHTML = this.title
 
         if (this.type == "3") {
+            var imgThumbDiv = document.createElement('div')
+            imgThumbDiv.setAttribute("class", "postImgThumbDiv")
+            imgThumbDiv.setAttribute("id", "postImgThumbDiv_"+this.id)
+            var imgThumb = document.createElement('img')
+            imgThumb.setAttribute("class", "postImgThumb")
+            imgThumb.setAttribute("id", "postImgThumb_"+this.id)
+            imgThumb.src = this.link
             descCell.innerHTML = "<img src='"+this.link+"' class='"+"postPhoto' id='postPhoto_"+this.id+"' width='100%'>"
             descCell.style.width = '99%'
             descCell.style.display = 'none'
@@ -258,6 +258,8 @@ const postObject = {
         
         document.getElementById("postContainer_"+this.id).appendChild(postFrame)
         
+        document.getElementById("postFrame_"+this.id).appendChild(imgThumbDiv)
+        document.getElementById("postImgThumbDiv_"+this.id).appendChild(imgThumb)
         document.getElementById("postContainer_"+this.id).appendChild(voteDiv)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
@@ -291,7 +293,6 @@ const commentObject = {
         if (pageTypes[cPageType] != 'user') { // on a user profile page
             document.getElementById("comments").appendChild(fullCommentContainer)
         } else {
-            console.log("ALERT on a user page")
             document.getElementById("page-profile-comments").appendChild(fullCommentContainer)
         }
         
@@ -332,7 +333,6 @@ const commentObject = {
         document.getElementById("fullCommentContainer_"+this.id).appendChild(ncContainer)
 
         for (i=0;i<this.nested_comments.length;i++) {
-            console.log(this.nested_comments[i])
             var ncDiv = document.createElement("div")
             ncDiv.setAttribute("class", "ncDiv")
             ncDiv.setAttribute("id", "ncDiv_"+this.nested_comments[i].id)
@@ -479,7 +479,6 @@ const deletePost = async(x) => {
     const settings = {
         method: 'PUT',
     };
-    console.log(x)
     const response = await fetch('/api/put/post/delete/'+x, settings)
     const data = await response.json()
 
@@ -490,11 +489,9 @@ const deletePost = async(x) => {
         alert(data.error)
     }
 
-    console.log(data)
 }
 
 function copytoclipboard(x) {
-    console.log(x)
     navigator.clipboard.writeText(x);
     var copyText = x
     copyText.select()
@@ -508,7 +505,6 @@ function copytoclipboard(x) {
 
 const loadPosts = async (x, topic, page) => {
     if (pageTypes[cPageType] == 'user') {
-        console.log("on a user page,"+window.location.href+window.location.href.split('/'))
         user = window.location.href.split('/').pop()
         return loadUserPage(user)
     }
@@ -518,24 +514,19 @@ const loadPosts = async (x, topic, page) => {
         topic = "all"
     }
     if (pageTypes[cPageType] == 'topic') {
-        //console.log("topic page")
         url = window.location.href
         topic = url.split('/h/')[1]
-        //console.log(topic)
     } 
     if (pageTypes[cPageType] == 'post') { // on a specific post page, load only that one post & comments
         url = window.location.href
         postid = url.split('/posts/')[1]
         const response = await fetch('/api/get/posts/'+postid)
         const data = await response.json()
-        console.log(data)
         if (data.status == "error") {
-            console.log("error")
             window.location.href = '/login'
         }
         document.getElementById("postsArray").innerHTML = ""
         if (data.length == 0 || data.error == 'No post found') {
-            console.log("no posts found")
             document.getElementById("postsArray").innerHTML = "<div style='color:white'>No post found. It may have been deleted. </div>"
         } else {
             let post = Object.create(postObject)
@@ -566,7 +557,6 @@ const loadPosts = async (x, topic, page) => {
             post.display()
             expandDesc(post.id)
             cID = post.id
-            console.log(data.comments)
             for (i=0;i<data.comments.length;i++) {
                 let com = Object.create(commentObject)
                 com.body = data.comments[i].body
@@ -598,45 +588,11 @@ const loadPosts = async (x, topic, page) => {
     } else {
         const response = await fetch('/api/get/'+topic+'/'+page)
         const data = await response.json()
-        console.log("IMPORTANT DATA:"+data)
-        console.log("length:"+data.length)
 
         document.getElementById("postsArray").innerHTML = ""
         if (data.length == 0) {
-            console.log("no posts found")
             document.getElementById("postsArray").innerHTML = "<div style='color:white'>No posts... yet!</div>"
         }
-
-        // for(i=0;i<data.length;i++) {
-        // var i = 0
-        // while (i < data.length){
-        //     let post = Object.create(postObject)
-        //     post.title = data[i].title
-        //     post.body = data[i].body
-        //     if (post.body == "" || post.body == undefined || post.body == null) {
-        //         post.body = "(empty)"
-        //     }
-        //     post.total_votes = data[i].total_votes
-        //     post.upvotes = data[i].upvotes
-        //     post.downvotes = data[i].downvotes
-        //     post.id = data[i]._id
-        //     post.poster = data[i].poster
-        //     post.date = data[i].date
-        //     post.descDisplayed = false
-        //     post.link = data[i].link
-        //     post.type = data[i].type // 1=text, 2=link, 3=media
-        //     post.topic = data[i].topic
-        //     post.comment_count = data[i].comments.length
-        //     post.comments = data[i].comments
-
-        //     post.current_user_upvoted = data[i].current_user_upvoted
-        //     post.current_user_downvoted = data[i].current_user_downvoted
-        //     post.current_user_admin = data[i].current_user_admin
-
-        //     posts.push(post)
-        //     post.display()
-        //     i++
-        // }
 
         for(let i=0; i < data.length;i++) {
             let post = Object.create(postObject)
@@ -671,18 +627,14 @@ const loadPosts = async (x, topic, page) => {
     }
 
     cTopic = topic
-    //console.log(cTopic)
 }
 
 const loadUserPage = async(user) => {
-    console.log("loading user posts")
     const response = await fetch('/api/get/posts/user/'+user)
     const data = await response.json()
-    console.log(data)
 
     document.getElementById("page-profile-posts").innerHTML = ""
     if (data.length == 0) {
-        console.log("no posts found")
         document.getElementById("page-profile-posts").innerHTML = "<div style='color:white'>No posts... yet!</div>"
     }
     for (i=0; i<data.length ; i++) {
@@ -717,7 +669,6 @@ const loadUserPage = async(user) => {
 }
 
 function expandDesc(x) {
-    console.log(x)
     y = "descCell_"+x
     title = document.getElementById("titleCell_"+x).innerHTML.replace('<span style="font-size:12px">        (+)</span>', '').replace('<span style="font-size:12px">        (-)</span>','')
     if (document.getElementById(y).innerHTML != "" && document.getElementById(y).innerHTML != null) {
@@ -735,7 +686,6 @@ const storeAndDisplayTopics = async () => {
     document.getElementById("topic-dropdown").innerHTML = ""
     const response = await fetch('/api/get/topics/')
     var data = await response.json()
-    console.log('topicData'+data)
 
     if (data.length <= 1) {
         document.getElementById('topic-dropdown-div').style.display = 'none'
@@ -774,7 +724,6 @@ const vote = async (change, id) => {
     const data = await fetchResponse.json()
 
     if (data.status == 'ok') {
-        console.log('ok,'+data.gif)
         document.getElementById('voteCount_'+id.substring(13)).innerHTML = data.newtotal
         if (data.gif == 'none') {
             document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up.gif'
@@ -796,11 +745,9 @@ const vote = async (change, id) => {
 }
 
 const voteCom = async (id, parentID, nested, commentParentID) => { 
-    console.log(id, parentID, nested, commentParentID)
     if (commentParentID == null || "") {
         commentParentID = "0"
     }
-    console.log(id)
 
     const settings = {
         method: 'PUT',
@@ -808,7 +755,6 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
 
     const fetchResponse = await fetch('/votecomment/'+parentID+'/'+id+'/'+nested+'/'+commentParentID, settings); 
     const data = await fetchResponse.json()
-    console.log(data)
 
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
@@ -891,7 +837,6 @@ const comment_nested = async (postid, body, commentparentID) => {
             body: JSON.stringify(bodyJSON)
         }); 
         var data = await fetchResponse.json()
-        console.log(data)
         
 
         var ncDiv = document.createElement("div")
@@ -970,7 +915,6 @@ document.getElementById("newPost_submit_button").onclick = function() {
                 document.getElementById("newPost_logs").innerHTML = "Please enter title"
             } else {
                 if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
-                    console.log("link is valid")
                     createNewPost(2)
                 } else {
                     document.getElementById("newPost_logs").innerHTML = "Please enter valid URL"
@@ -1087,7 +1031,6 @@ const createNewPost = async(posttype) => {
     }); 
     const data = await fetchResponse.json()
 
-    console.log(data)
     document.getElementById("newPost_name").innerHTML = ""
     document.getElementById("newPost_desc").innerHTML = ""
     document.getElementById("newPost_topic").innerHTML = ""
@@ -1114,7 +1057,6 @@ const uploadImage = async (x) => {
     const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
 
     uploadedImageUrls.push(url)
-    console.log(uploadedImageUrls)
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""

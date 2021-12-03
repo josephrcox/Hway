@@ -192,6 +192,7 @@ a {
 tbody {
 	padding-left: 2px;
 	border-left: 1px solid black;
+	flex-grow: 1;
 }
 
 .infoCell {
@@ -220,12 +221,9 @@ tbody {
 
 .titleCell {
 	font-weight: 700;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
 	user-select: none;
-	-o-user-select: none;
 	font-size:larger;
+	word-wrap: anywhere;
 }
 .descCell {
 	white-space: pre-wrap;
@@ -534,3 +532,12 @@ a:visited {
 .deletePostButton {
 	align-self:center;
 }
+
+.postImgThumbDiv {
+	height: 75px;
+	margin-left: 30px;
+  }
+  .postImgThumb {
+	object-fit: contain;
+	max-height: 100%;
+  }
