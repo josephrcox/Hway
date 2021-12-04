@@ -1,14 +1,32 @@
 user = window.location.href.split("/user/").pop()
 userInfo = []
+admin = false
 
 comment_count = []
 commentParentPair = []
 commentBodies = []
 
+
+
 const getUserInfo = async (user) => {
     const response =  await fetch('/api/get/user/'+user+'/none')
     const data = await response.json()
     userInfo = data
+    isThisUserAdmin()
+    
+}
+
+const isThisUserAdmin = async() => {
+    const response =  await fetch('/api/get/currentuser/')
+    const data = await response.json()
+    console.log(data)
+
+    if (data.name == user) {
+        console.log("Current user is admin")
+        admin = true
+    } else {
+        console.log("Current user is not admin")
+    }
     displayInfo()
 }
 
@@ -17,7 +35,20 @@ getUserInfo(user)
 function displayInfo() {
     console.log(userInfo)
 
-    // NAME DIV
+    // HEADING DIV
+    avatar = document.getElementById("page-profile-avatar")
+    if (userInfo.avatar == "" || userInfo.avatar == null) {
+        avatar.src = '../assets/defaultavatar.png'
+    } else {
+        avatar.src = userInfo.avatar
+    }
+    if (admin) {
+        document.getElementById("page-profile-avatar-change").style.display = 'block'
+        avatar.onclick = function() {
+            console.log("change pic")
+        }
+    }
+    
     nameDiv = document.getElementById("page-profile-name")
     nameDiv.innerHTML = userInfo.name
 
@@ -167,5 +198,51 @@ const loadComments = async() => {
         commentParentPair.push(com.parentID)
         commentBodies.push(com.body)
     }
+    
 }
+
+document.getElementById('avatar_file').addEventListener("change", ev => {
+    const formdata = new FormData()
+    formdata.append("image", ev.target.files[0])
+    uploadAvatar(formdata)
+})
+
+const uploadAvatar = async (x) => { 
+    document.getElementById("page-profile-avatar-change-logs").innerHTML = "Uploading..."
+    const fetchResponse = await fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
+        method: 'POST',
+        body: x
+    })
+    const data = await fetchResponse.json();
+    const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
+
+    changeAvatar(url)
+    document.getElementById("page-profile-avatar-change-logs").innerHTML = ""
+
+}
+
+const changeAvatar = async(url) => {
+    const bodyJSON = {
+        "src":url,
+    }
+    const response = await fetch('/api/put/user/'+user+'/avatar/', {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+        method: 'PUT',
+        body: JSON.stringify(bodyJSON)
+    }); 
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        document.getElementById("avatar_file_label").innerHTML = "Change Avatar"
+        document.getElementById("page-profile-avatar").src = url
+    }
+    if (data.status == 'error') {
+        alert(data.error)
+    }
+
+}
+
 

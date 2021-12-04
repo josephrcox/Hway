@@ -319,6 +319,25 @@ app.get('/api/get/user/:user/:options', async(req, res) =>{
 	
 })
 
+app.put('/api/put/user/:user/:change/', async(req, res) => {
+	user = req.params.user
+	change = req.params.change
+	url = req.body.src
+
+	if (change == "avatar") {
+		if (url != null) {
+			User.findOne({name:user}, function(err, docs) {
+				console.log(docs)
+				docs.avatar = url
+				docs.save()
+				res.json({status:'ok', src:url})
+			})
+		} else {
+			res.json({status:'error', error:'No URL provided to backend'})
+		}
+	}
+})
+
 app.get('/api/get/posts/:postid', async(req,res) => {
 	// Commenting out this part below allows for users to view without being logged in
 	try {
@@ -411,15 +430,27 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 					}
 				}
 			}
-	
-			res.send(postModified)
+			
+			
+			
 		}
+
+		User.findById(postModified.posterID, function(err, user) {
+			console.log(user)
+			postModified.posterAvatarSrc = user.avatar
+			console.log(postModified)
+			
+			res.send(postModified)
+		})
 		
 	})
 })
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
+	if (req.params.topic == "all_users") {
+		return
+	}
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
@@ -436,9 +467,9 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	}
 	
 	if (req.params.topic == "all") {
-		Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
+		Post.find({status:'active'}).sort({total_votes: -1}).exec(async function(err, posts){
+
 			if(err){
-			  ////console.logerr);
 			} else{
 				for (i=0;i<posts.length;i++) {
 					if (posts[i].posterID == userID) {
@@ -456,16 +487,21 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 						postsonpage[i].current_user_upvoted = false
 						postsonpage[i].current_user_downvoted = true
 					}
+					
+					const user = await User.findById(posts[i].posterID);
+					postsonpage[i].posterAvatarSrc = user.avatar
 				}
+				console.log(postsonpage)
 				res.send(postsonpage)
+			
 			}
 		})
 	} else {
-		Post.find({topic: req.params.topic}).sort({total_votes: -1}).exec(function(err, posts){
+		Post.find({topic: req.params.topic, status:"active"}).sort({total_votes: -1}).exec(async function(err, posts){
 			if(err){
 			} else{
 				try {
-					User.findById(userID, function(err, docs) {
+					User.findById(userID, async function(err, docs) {
 						if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
 							index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
 							currentCount = docs.statistics.topics.visited_array[index][2]
@@ -499,6 +535,8 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 						postsonpage[i].current_user_upvoted = false
 						postsonpage[i].current_user_downvoted = true
 					}
+					const user = await User.findById(posts[i].posterID);
+					postsonpage[i].posterAvatarSrc = user.avatar
 				}
 				res.send(postsonpage)
 			}
@@ -525,11 +563,11 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 		}
 	}
 	
-	Post.find({poster:req.params.user}).sort({total_votes: -1}).exec(function(err, posts){
+	Post.find({poster:req.params.user, status:"active"}).sort({total_votes: -1}).exec(async function(err, posts){
 		if(err){
 		} else{
 			try {
-				User.findById(userID, function(err, docs) {
+				User.findById(userID, async function(err, docs) {
 					if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
 						index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
 						currentCount = docs.statistics.topics.visited_array[index][2]
@@ -563,6 +601,7 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 					postsonpage[i].current_user_upvoted = false
 					postsonpage[i].current_user_downvoted = true
 				}
+				
 			}
 			res.send(postsonpage)
 		}
@@ -585,7 +624,7 @@ app.get('/api/get/users', async(req, res) => {
 app.get('/api/get/topics', async(req, res) => {	
 	topicArray = []
 	topicCount = []
-	Post.find({}, function(err, posts){
+	Post.find({status:"active"}, function(err, posts){
         if(err){
           ////console.logerr);
         } else{
@@ -695,7 +734,6 @@ app.post('/api/post/post', async(req, res) => {
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		////console.logverified)
 		userID = verified.id
 		poster = verified.name
 	} catch (err) {
@@ -732,7 +770,8 @@ app.post('/api/post/post', async(req, res) => {
 			type: type, // 1=text, using as temporary default
 			posterID: userID,
 			date: fulldatetime,
-			timestamp:timestamp
+			timestamp:timestamp,
+			status:"active"
 		})
 		User.findById(userID, function(err, docs) {
 			docs.statistics.posts.created_num += 1
@@ -985,9 +1024,16 @@ app.put('/api/put/post/delete/:postid', function(req,res) {
 	Post.findById(postid, function(err, docs) {
 		console.log(docs)
 		if (docs.posterID == userID) {
-			Post.findByIdAndDelete(postid, function(err, docs) {
-				res.json({status:'ok'})
-			})
+			// Post.findByIdAndUpdate(postid, { $set: { status: 'deleted' }})
+			Post.findById(postid, function (err, doc) {
+				if (err) {
+					console.error(err)
+				} else {
+					doc.status = 'deleted';
+					doc.save();
+				}
+			});
+			res.json({status:'ok'})
 		} else {
 			res.json({status:'error'})
 		}

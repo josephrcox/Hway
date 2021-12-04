@@ -3,10 +3,12 @@ const mongoose = require('mongoose')
 const postSchema = new mongoose.Schema(
     {
         type: { type:Number, required:true }, // 1=text, 2=link, 3=media
+        status: { type:String, required:true, default:"active"}, //active, deleted, removed
         title: { type:String, required:true },
         body: { type:String },
         poster: { type:String, required:true},
         posterID: { type:String },
+        posterAvatarSrc: { type:String },
         link: { type:String }, // only if type=2 or type=3
         topic: { type:String, default: "all"},
         date: { type: String, default: Date.now },
@@ -20,6 +22,7 @@ const postSchema = new mongoose.Schema(
         current_user_downvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
         comments: { type: Array},
+
     },
     { collection: 'posts'}
 )

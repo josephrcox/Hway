@@ -533,7 +533,7 @@ a:visited {
 }
 
 .postImgThumbDiv {
-	height: 65px;
+	height: 55px;
 	margin-left: 30px;
 	width: 72px;
 	margin-right: 10px;
@@ -542,6 +542,36 @@ a:visited {
 }
 .postImgThumb {
 	object-fit: cover;
-	height: 65px;
+	height: 55px;
 	width: 72px;
+}
+
+.avatarimg {
+  	border-radius: 50%;
+ 	margin-bottom: -3px;
+  	height: 15px;
+	width:15px;
+	line-height: 50px;
+	border-radius:50%;
+	object-fit: cover;
+}
+
+#page-profile-heading {
+	display:flex;
+	flex-direction:row;
+	height:80px;
+}
+#page-profile-avatar {
+	margin-right:10px;
+	margin-bottom:5px;
+	padding: 0px;
+	line-height: 50px;
+	border-radius:50%;
+	width: 80px;
+	object-fit: cover;
+	height: 80px;
+}
+
+#page-profile-avatar-change {
+	display:none;
 }

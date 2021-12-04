@@ -112,6 +112,7 @@ const postObject = {
     current_user_admin: "",
     comments: [],
     comment_count: "",
+    poster_avatar_src: "",
 
     display() {
         var postContainer = document.createElement("div")
@@ -138,7 +139,7 @@ const postObject = {
         openPostButton.style.width = 'auto'
 
         commentCountIncludingNested = 0
-        for (i=0;i<this.comments.length;i++) {
+        for (let i=0;i<this.comments.length;i++) {
             commentCountIncludingNested++
             commentCountIncludingNested += this.comments[i].nested_comments.length
         }
@@ -191,7 +192,7 @@ const postObject = {
         var topHref = "\""+this.topic+"\""
         href = this.topic.replace(/^"(.*)"$/, '$1');
         
-        infoCell.innerHTML = "Submitted by "+"<span style='color:blue'>"+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
+        infoCell.innerHTML = "Submitted by "+"<img src='"+this.poster_avatar_src+"' class='avatarimg'>  <span style='color:blue'>"+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -352,7 +353,7 @@ const commentObject = {
         ncContainer.setAttribute("id", "ncContainer_"+this.id)
         document.getElementById("fullCommentContainer_"+this.id).appendChild(ncContainer)
 
-        for (i=0;i<this.nested_comments.length;i++) {
+        for (let i=0;i<this.nested_comments.length;i++) {
             var ncDiv = document.createElement("div")
             ncDiv.setAttribute("class", "ncDiv")
             ncDiv.setAttribute("id", "ncDiv_"+this.nested_comments[i].id)
@@ -517,7 +518,7 @@ function copytoclipboard(x) {
     copyText.select()
     document.execCommand("copy");
     var items = document.getElementsByClassName("shareButton");
-    for (var i=0; i < items.length; i++) {
+    for (let i=0; i < items.length; i++) {
         items[i].innerText = "Share"
     }
     document.getElementById('share_'+x).innerText = "Copied"
@@ -560,6 +561,7 @@ const loadPosts = async (x, topic, page) => {
             post.downvotes = data.downvotes
             post.id = data._id
             post.poster = data.poster
+            post.poster_avatar_src = data.posterAvatarSrc
             post.date = data.date
             post.descDisplayed = false
             post.link = data.link
@@ -567,7 +569,6 @@ const loadPosts = async (x, topic, page) => {
             post.topic = data.topic
             post.comment_count = data.comments.length
             post.comments = data.comments
-            
 
             post.current_user_upvoted = data.current_user_upvoted
             post.current_user_downvoted = data.current_user_downvoted
@@ -577,7 +578,7 @@ const loadPosts = async (x, topic, page) => {
             post.display()
             expandDesc(post.id)
             cID = post.id
-            for (i=0;i<data.comments.length;i++) {
+            for (let i=0;i<data.comments.length;i++) {
                 let com = Object.create(commentObject)
                 com.body = data.comments[i].body
                 com.id = data.comments[i]._id
@@ -626,6 +627,7 @@ const loadPosts = async (x, topic, page) => {
             post.downvotes = data[i].downvotes
             post.id = data[i]._id
             post.poster = data[i].poster
+            post.poster_avatar_src = data[i].posterAvatarSrc
             post.date = data[i].date
             post.descDisplayed = false
             post.link = data[i].link
@@ -633,6 +635,7 @@ const loadPosts = async (x, topic, page) => {
             post.topic = data[i].topic
             post.comment_count = data[i].comments.length
             post.comments = data[i].comments
+            
 
             post.current_user_upvoted = data[i].current_user_upvoted
             post.current_user_downvoted = data[i].current_user_downvoted
@@ -657,7 +660,7 @@ const loadUserPage = async(user) => {
     if (data.length == 0) {
         document.getElementById("page-profile-posts").innerHTML = "<div style='color:white'>No posts... yet!</div>"
     }
-    for (i=0; i<data.length ; i++) {
+    for (let i=0; i<data.length ; i++) {
         let post = Object.create(postObject)
         post.title = data[i].title
         post.body = data[i].body
@@ -676,6 +679,7 @@ const loadUserPage = async(user) => {
         post.topic = data[i].topic
         post.comment_count = data[i].comments.length
         post.comments = data[i].comments
+        post.poster_avatar_src = data[i].posterAvatarSrc
 
         post.current_user_upvoted = data[i].current_user_upvoted
         post.current_user_downvoted = data[i].current_user_downvoted
