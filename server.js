@@ -14,7 +14,7 @@ const fs = require('fs');
 
 app.use(cookieParser())
 
-const users = []
+var users = []
 IDs = []
 topicArray = []
 topicCount = []
@@ -54,6 +54,16 @@ app.use(bp.urlencoded({ extended: true }))
 
 var allowUsersToBrowseAsGuests = true
 var geoip = require('geoip-lite');
+
+async function get_all_avatars() {
+	tempUsers = await User.find({})
+	for (let i=0;i<tempUsers.length;i++) {
+		users.push([tempUsers[i].id, tempUsers[i].name, tempUsers[i].avatar])
+	}
+}
+
+get_all_avatars()
+
 
 app.get('/', async(req, res) => {
 	var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
@@ -327,7 +337,6 @@ app.put('/api/put/user/:user/:change/', async(req, res) => {
 	if (change == "avatar") {
 		if (url != null) {
 			User.findOne({name:user}, function(err, docs) {
-				console.log(docs)
 				docs.avatar = url
 				docs.save()
 				res.json({status:'ok', src:url})
@@ -436,9 +445,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 		}
 
 		User.findById(postModified.posterID, function(err, user) {
-			console.log(user)
 			postModified.posterAvatarSrc = user.avatar
-			console.log(postModified)
 			
 			res.send(postModified)
 		})
@@ -488,10 +495,15 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 						postsonpage[i].current_user_downvoted = true
 					}
 					
-					const user = await User.findById(posts[i].posterID);
-					postsonpage[i].posterAvatarSrc = user.avatar
+					if (users.some(x => x[0] == posts[i].posterID)) {
+						indexOfUser = users.findIndex(x => x[0] == posts[i].posterID)
+						postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
+					} else {
+						console.log("error loading user... do they exist?")
+					}
+					
+
 				}
-				console.log(postsonpage)
 				res.send(postsonpage)
 			
 			}
@@ -535,8 +547,13 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 						postsonpage[i].current_user_upvoted = false
 						postsonpage[i].current_user_downvoted = true
 					}
-					const user = await User.findById(posts[i].posterID);
-					postsonpage[i].posterAvatarSrc = user.avatar
+
+					if (users.some(x => x[0] == posts[i].posterID)) {
+						indexOfUser = users.findIndex(x => x[0] == posts[i].posterID)
+						postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
+					} else {
+						console.log("error loading user... do they exist?")
+					}
 				}
 				res.send(postsonpage)
 			}
@@ -601,7 +618,13 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 					postsonpage[i].current_user_upvoted = false
 					postsonpage[i].current_user_downvoted = true
 				}
-				
+
+				if (users.some(x => x[0] == posts[i].posterID)) {
+					indexOfUser = users.findIndex(x => x[0] == posts[i].posterID)
+					postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
+				} else {
+					console.log("error loading user... do they exist?")
+				}
 			}
 			res.send(postsonpage)
 		}
@@ -1022,7 +1045,6 @@ app.put('/api/put/post/delete/:postid', function(req,res) {
 	}
 
 	Post.findById(postid, function(err, docs) {
-		console.log(docs)
 		if (docs.posterID == userID) {
 			// Post.findByIdAndUpdate(postid, { $set: { status: 'deleted' }})
 			Post.findById(postid, function (err, doc) {

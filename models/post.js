@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema(
         body: { type:String },
         poster: { type:String, required:true},
         posterID: { type:String },
-        posterAvatarSrc: { type:String },
+        posterAvatarSrc: { type:String, default:""},
         link: { type:String }, // only if type=2 or type=3
         topic: { type:String, default: "all"},
         date: { type: String, default: Date.now },
