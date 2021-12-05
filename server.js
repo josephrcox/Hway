@@ -56,10 +56,12 @@ var allowUsersToBrowseAsGuests = true
 var geoip = require('geoip-lite');
 
 async function get_all_avatars() {
+	users = []
 	tempUsers = await User.find({})
 	for (let i=0;i<tempUsers.length;i++) {
 		users.push([tempUsers[i].id, tempUsers[i].name, tempUsers[i].avatar])
 	}
+	console.log("RECHECKING USERS..."+users)
 }
 
 get_all_avatars()
@@ -336,9 +338,10 @@ app.put('/api/put/user/:user/:change/', async(req, res) => {
 
 	if (change == "avatar") {
 		if (url != null) {
-			User.findOne({name:user}, function(err, docs) {
+			User.findOne({name:user}, async function(err, docs) {
 				docs.avatar = url
 				docs.save()
+				await get_all_avatars()
 				res.json({status:'ok', src:url})
 			})
 		} else {
