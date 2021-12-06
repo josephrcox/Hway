@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema(
     {
         name: { type:String, unique:true },
         password: { type:String },
-        color: { type:String },
         avatar: { type:String},
         
         statistics: {

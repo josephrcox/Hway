@@ -115,6 +115,8 @@ const postObject = {
     poster_avatar_src: "",
 
     display() {
+    
+        
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
@@ -189,10 +191,9 @@ const postObject = {
         infoCell.setAttribute("id", "info_"+this.id)
         infoCell.setAttribute("class", "infoCell")
 
-        var topHref = "\""+this.topic+"\""
         href = this.topic.replace(/^"(.*)"$/, '$1');
         
-        infoCell.innerHTML = "Submitted by "+"<img src='"+this.poster_avatar_src+"' class='avatarimg'>  <span style='color:blue'>"+this.poster+"</span> in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
+        infoCell.innerHTML = "Submitted by "+"<a href='/user/"+this.poster+"'><img src='"+this.poster_avatar_src+"' class='avatarimg'>  <span style='color:blue'>"+this.poster+"</span> </a>in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -307,17 +308,17 @@ const commentObject = {
     current_user_admin: "",
     reply_button_shown: false,
     
-
     display() {
+        
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
-        if (pageTypes[cPageType] != 'user') { // on a user profile page
+        if (pageTypes[cPageType] != 'user') { // not on a user profile page
+            console.log("creating cmt sec")
             document.getElementById("comments").appendChild(fullCommentContainer)
         } else {
             document.getElementById("page-profile-comments").appendChild(fullCommentContainer)
         }
         
-
         var comFrame = document.createElement("table")
         comFrame.setAttribute("class", "comFrame")
         comFrame.setAttribute("id", "comFrame_"+this.id)
@@ -328,17 +329,56 @@ const commentObject = {
         posterRow.setAttribute("id", "posterRow_"+this.id)
         posterRow.setAttribute("class", "posterRow")
         posterCell = posterRow.insertCell(0)
+        
+        
 
+        
         infoRow = comFrame.insertRow(1)
         infoCell = infoRow.insertCell(0)
         infoCell.innerHTML = this.date
         infoCell.setAttribute("class","comInfoCell")
+        infoCell.setAttribute("id", "comInfoCell_"+this.id)
+
+        if (this.current_user_admin) {
+            var del = document.createElement("img")
+            del.setAttribute("class", "deletePostButton")
+            del.setAttribute("id", "deletePostButton_"+this.id)
+            del.src = "../assets/trash.png"
+            del.style.height = '20px'
+            del.style.width = 'auto'
+            del.style.paddingLeft = '10px'
+            del.style.marginBottom = '-5px'
+            delPostConfirmation = false
+            
+            del.onclick = function() {
+                if (delPostConfirmation) {
+                    if (delPostConfirmationId == this.id.split("_")[1]) {
+                        //deletePost(this.id.split("_")[1])
+                        deleteComment(this.id.split("_")[1])
+                    } else {
+                        this.src = "../assets/trash_confirm.png"
+                        delPostConfirmation = true
+                        delPostConfirmationId = this.id.split("_")[1]
+                    }
+                    
+                } else {
+                    this.src = "../assets/trash_confirm.png"
+                    delPostConfirmation = true
+                    delPostConfirmationId = this.id.split("_")[1]
+                }
+                
+            }
+        }
+        if (this.current_user_admin) {
+            document.getElementById("comInfoCell_"+this.id).appendChild(del)
+        }
 
         bodyRow = comFrame.insertRow(2)
         bodyCell = bodyRow.insertCell(0)
 
         posterCell.innerHTML = "<span style='color:blue'>"+this.poster + "</span> says: (-)"
         posterCell.setAttribute("id","posterCell_"+this.id)
+        
 
         bodyCell.innerHTML = this.body
         bodyCell.setAttribute("class", "bodyCell")
@@ -386,12 +426,13 @@ const commentObject = {
             }
 
             
+
+            
             document.getElementById("ncContainer_"+this.id).appendChild(ncDiv)
             document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncCommentDiv)
             document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncVoteDiv)
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteCount)
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteUp)
-
         }
 
 
@@ -452,7 +493,6 @@ const commentObject = {
         infoRow.appendChild(replyButton)
         
         replyButton.onclick = function() {
-            //comment(cID, "x", true, this.id.split('_')[1])
             if (this.reply_button_shown) {
                 document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'none'
                 this.reply_button_shown = false
@@ -486,13 +526,18 @@ const commentObject = {
             voteCom(this.id.substring(10), cID, false, 0)
         }
 
+        
+
         document.getElementById("comFrame_"+this.id).appendChild(voteDiv)
         document.getElementById("comments").appendChild(replyDiv)
+        
         
         document.getElementById("comreplyDiv_"+this.id).appendChild(replyBox)
         document.getElementById("comreplyDiv_"+this.id).appendChild(replySubmit)
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUp)
+
+        
     }
 }
 
@@ -505,6 +550,20 @@ const deletePost = async(x) => {
 
     if (data.status == 'ok') {
         document.getElementById("postContainer_"+x).innerHTML = "The post was permanantly deleted."
+    }
+    if (data.status == 'error') {
+        alert(data.error)
+    }
+}
+const deleteComment = async(x) => {
+    const settings = {
+        method: 'PUT',
+    };
+    const response = await fetch('/api/put/comment/delete/'+window.location.href.split('/posts/')[1]+'/'+x, settings)
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        document.getElementById("fullCommentContainer_"+x).innerHTML = "The comment was permanantly deleted."
     }
     if (data.status == 'error') {
         alert(data.error)
@@ -591,6 +650,7 @@ const loadPosts = async (x, topic, page) => {
                 com.nested_comments = data.comments[i].nested_comments
 
                 com.current_user_voted = data.comments[i].current_user_voted
+                com.current_user_admin = data.comments[i].current_user_admin
                 com.display()
                 
                 comment_count.push(com.id)
@@ -694,9 +754,13 @@ const loadUserPage = async(user) => {
 
 function expandDesc(x) {
     y = "descCell_"+x
-    if (document.getElementById('postImgThumb_'+x).src != null) {
-        mediaPost = true
+    if (document.getElementById('postImgThumb_'+x)){
+        if (document.getElementById('postImgThumb_'+x).src != null) {
+            mediaPost = true
+        }
     }
+        
+    
     title = document.getElementById("titleCell_"+x).innerHTML.replace('<span style="font-size:12px">        (+)</span>', '').replace('<span style="font-size:12px">        (-)</span>','')
     if (document.getElementById(y).innerHTML != "" && document.getElementById(y).innerHTML != null) {
         if (document.getElementById(y).style.display == 'block') {
@@ -818,11 +882,11 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
     
 }
 
-const comment = async (postid, body) => { 
+const comment = async () => { 
     body = document.getElementById("newCom_body").value
     if (body != null && body != "") {
         bodyJSON = {
-            "id":postid,
+            "id":window.location.href.split("/posts/")[1],
             "body":body,
         }
     
@@ -843,6 +907,7 @@ const comment = async (postid, body) => {
         com.poster = data.poster
         com.posterID = data.posterID
         com.date = data.date
+        com.current_user_admin = true
         com.display()
         
         comment_count.push(com.id)
@@ -1022,7 +1087,7 @@ if (pageTypes[cPageType] != 'user') {
 
 if (pageTypes[cPageType] == 'post') {
     document.getElementById("newCom_submit").onclick = function() {
-        comment(cID, "x", false, "")
+        comment()
         document.getElementById("newCom_body").value = ""
     }
 }

@@ -64,7 +64,7 @@
 		background-color:gray;
 }
 
-@media screen and (min-width: 401px) {
+@media screen and (min-width: 540px) {
 	#sitebody {
 		display: flex;
 		flex-direction: row;
@@ -85,7 +85,7 @@
    }
 
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 539px) {
 	.newPost_container, #newPost_div {
 		display: flex;
 	}

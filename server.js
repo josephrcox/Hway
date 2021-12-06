@@ -44,6 +44,7 @@ connection.once("open", function(res) {
 const User = require('./models/user')
 const Post = require('./models/post')
 const Guest = require('./models/guest')
+const DeletedComment = require('./models/comments_deleted')
 const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -325,6 +326,26 @@ app.get('/api/get/user/:user/:options', async(req, res) =>{
 		User.findOne({name:req.params.user}, function(err, user) {
 			user.password = null
 			user._id = null
+			user.statistics.posts.viewed_array = null
+			user.statistics.posts.viewed_num = null
+			user.statistics.posts.votedOn_array = null
+			user.statistics.posts.votedOn_num = null
+
+			user.statistics.topics.visited_num = null
+			user.statistics.topics.visited_array = null
+			
+			user.statistics.comments.votedOn_array = null
+			user.statistics.comments.votedOn_num = null
+
+			user.statistics.misc.login_num = null
+			user.statistics.misc.login_array = null
+			user.statistics.misc.logout_num = null
+			user.statistics.misc.logout_array = null
+
+			user.statistics.misc.ip_address = null
+			user.statistics.misc.approximate_location = null
+
+			
 			res.send(user)
 		})
 	}
@@ -351,7 +372,6 @@ app.put('/api/put/user/:user/:change/', async(req, res) => {
 })
 
 app.get('/api/get/posts/:postid', async(req,res) => {
-	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
 		////console.logtoken)
@@ -387,11 +407,15 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 				postModified.current_user_upvoted = false
 				postModified.current_user_downvoted = true
 			}
+			
 			for (i=0;i<post.comments.length;i++) {
 				com = post.comments[i]
-				if (com.users_voted.includes(userID)) {
-					postModified.comments[i].current_user_voted = true
+				if (com.status == 'active') {
+					if (com.users_voted.includes(userID)) {
+						postModified.comments[i].current_user_voted = true
+					}
 				}
+				
 			}
 			try {
 				User.findById(userID, function(err, docs) {
@@ -430,17 +454,29 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 			} catch (err) {
 				console.log(err)
 			}
-			for (i=0;i<post.comments.length;i++) {
-				if (post.comments[i].nested_comments.length != 0) {
-					for (x=0;x<post.comments[i].nested_comments.length;x++) {
-						if (post.comments[i].nested_comments[x].posterid = userID) {
-							postModified.comments[i].nested_comments[x].current_user_admin = true
-						}
-						if (post.comments[i].nested_comments[x].users_voted.includes(userID)) {
-							postModified.comments[i].nested_comments[x].current_user_voted = true
+			for (let i=0;i<post.comments.length;i++) {
+				if (post.comments[i].status == 'active') {
+					if (post.comments[i].nested_comments.length != 0) {
+						for (x=0;x<post.comments[i].nested_comments.length;x++) {
+							if (post.comments[i].nested_comments[x].posterid = userID) {
+								postModified.comments[i].nested_comments[x].current_user_admin = true
+							}
+							if (post.comments[i].nested_comments[x].users_voted.includes(userID)) {
+								postModified.comments[i].nested_comments[x].current_user_voted = true
+							}
 						}
 					}
+					if (post.comments[i].posterid = userID) {
+						console.log("posterid: "+post.comments[i].posterid, "userID: "+userID)
+						postModified.comments[i].current_user_admin = true
+					} else {
+						postModified.comments[i].current_user_admin = false
+						console.log("posterid: "+post.comments[i].posterid, "userID: "+userID)
+					}
+				} else {
+					
 				}
+				
 			}
 			
 			
@@ -814,6 +850,7 @@ app.post('/api/post/post', async(req, res) => {
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
+	console.log(id)
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -846,6 +883,7 @@ app.post('/api/post/comment/', async(req, res) => {
 		Post.findById(id, function(err, docs) {
 			//console.logdocs)
 			commentArray = docs.comments
+			
 			commentid = Math.floor(Math.random() * Date.now()) // generates a random id
 			newComment = {
 				'body': reqbody,
@@ -856,7 +894,8 @@ app.post('/api/post/comment/', async(req, res) => {
 				'total_votes':0,
 				'users_voted':[],
 				'nested_comments':[],
-				'_id': commentid
+				'_id': commentid,
+				'status': 'active'
 			}
 			commentArray.push(newComment)
 			docs.comments = commentArray
@@ -1062,6 +1101,79 @@ app.put('/api/put/post/delete/:postid', function(req,res) {
 		} else {
 			res.json({status:'error'})
 		}
+	})
+	
+})
+
+app.put('/api/put/comment/delete/:postid/:id', async function(req,res) {
+	id = req.params.id
+	postid = req.params.postid
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	post = await Post.findById(postid)
+	ncomments = post.comments
+	for (let i=0;i<ncomments.length;i++) {
+		if (ncomments[i]._id == id) {
+			index = i
+		}
+	}
+
+	ncomments[index].status = 'deleted'
+	ctbd = ncomments[index]
+	let datetime = new Date()
+	month = datetime.getUTCMonth()+1
+	day = datetime.getUTCDate()
+	year = datetime.getUTCFullYear()
+	hour = datetime.getUTCHours()
+	minute = datetime.getUTCMinutes()
+	timestamp = Date.now()
+
+	if (hour > 12) {
+		ampm = "PM"
+		hour -= 12
+	} else {
+		ampm = "AM"
+	}
+	if (minute < 10) {
+		minute = "0"+minute
+	}
+
+	fulldatetime = month+"/"+day+"/"+year+" at "+hour+":"+minute+" "+ampm+" UTC"
+
+	try {
+		const resp = await DeletedComment.create({
+			post: postid,
+			body: ctbd.body,
+			poster: ctbd.poster,
+			posterID: ctbd.posterID,
+
+			date: ctbd.date,
+			timestamp: ctbd.timestamp,
+			users_voted:ctbd.users_voted,
+			nested_comments:ctbd.nested_comments,
+
+			date_deleted: fulldatetime,
+			timestamp_deleted: Date.now(),
+
+			deleted_by: 'user'
+		})
+	} catch(err) {
+		console.log(err)
+	}
+
+	ncomments.splice(index)
+
+	Post.findById(postid, function(err, docs) {
+		docs.comments = ncomments
+		docs.save()
+		res.json({status:'ok'})
 	})
 	
 })
