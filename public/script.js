@@ -27,6 +27,34 @@ cTopic = ""
 cID = ""
 isUserLoggedIn = false
 
+async function randomizer(x) {
+    for(let i=0;i<x;i++) {
+        title = "test post "+i
+        if (i % 2 == 0) {
+            body = ""
+        } else {
+            body = "test description "+i
+        }
+        topic = "all"
+        posttype = 1
+        bodyJSON = {
+            "title":title,
+            "body":body,
+            "topic":topic,
+            "type":posttype
+        }
+        
+        const fetchResponse = await fetch('/api/post/post', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+            method: 'POST',
+            body: JSON.stringify(bodyJSON)
+        }); 
+    }
+}
+
 url = (window.location.href).split('/')[3]
 switch (url) {
     case 'user':
@@ -583,7 +611,8 @@ function copytoclipboard(x) {
     document.getElementById('share_'+x).innerText = "Copied"
 }
 
-const loadPosts = async (x, topic, page) => {
+const loadPosts = async (x, topic) => {
+
     if (pageTypes[cPageType] == 'user') {
         user = window.location.href.split('/').pop()
         return loadUserPage(user)
@@ -667,7 +696,7 @@ const loadPosts = async (x, topic, page) => {
 
         }
     } else {
-        const response = await fetch('/api/get/'+topic+'/'+page)
+        const response = await fetch('/api/get/'+topic+'/'+cPage)
         const data = await response.json()
 
         document.getElementById("postsArray").innerHTML = ""
@@ -990,7 +1019,8 @@ function launch() {
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     cPage = 1
-    loadPosts(0, "", 0)
+    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+    loadPosts(0, "")
 }
 
 if (pageTypes[cPageType] != 'user') {
@@ -1177,22 +1207,23 @@ function topFunction() {
     window.scrollTo({top: 0, behavior: 'smooth'});  
 }
 
-// function prevPage() {
-//     if (cPage == 1) {
-//         return 
-//     }
-//     document.getElementById("page-number").innerHTML = ""
-//     cPage -= 1
-//     loadPosts(0, cTopic, cPage)
-//     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
-// }
+function prevPage() {
+    if (cPage == 1) {
+        return 
+    }
+    document.getElementById("page-number").innerHTML = ""
+    cPage -= 1
+    loadPosts(0, cTopic)
 
-// function nextPage() {
-//     document.getElementById("page-number").innerHTML = ""
-//     cPage += 1
-//     loadPosts(0, cTopic, cPage)
-//     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
-// }
+    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+}
+
+function nextPage() {
+    document.getElementById("page-number").innerHTML = ""
+    cPage += 1
+    loadPosts(0,cTopic)
+    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+}
 
 document.getElementById("users-page-button").onclick = function() { 
     window.location.href = '/users'

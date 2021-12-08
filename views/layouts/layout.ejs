@@ -9,7 +9,7 @@
     <div class="flex-container">
         <div class="header-title">
                 <a href='/home'><div id="title">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
-           <div id="page-number"></div> 
+           
         </div>
      </div>
 
@@ -21,6 +21,7 @@
             <button onclick="register()" id="reg_button" style='display: none;'>Sign up</button>
         </div>
         <div id="misc_header_buttons">
+            <div id="page-number"></div> 
             <div class="users-page-button" id="users-page-button">Users</div>
             <div class="topic-dropdown-div" id='topic-dropdown-div'>
                 <div onclick="topicdropdownclicked()" class="topic-dropdown-button" id="topic-dropdown-button">Top topics</div>
@@ -30,6 +31,7 @@
             </div>
             <div id="post-button" onclick="ui_newPost()">Create new post</div>
         </div>
+        
     </div>   
 </head>
 <body>

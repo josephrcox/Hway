@@ -253,7 +253,7 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
-app.get('/home', async(req, res) => {
+app.get('/home/:page', async(req, res) => {
 	valid = true
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
@@ -264,6 +264,11 @@ app.get('/home', async(req, res) => {
 		res.render('login.ejs', {topic:"- login"})
 	}
 })
+
+app.get('/home', async(req,res) => {
+	res.redirect('/home/1')
+})
+
 
 app.get('/h/:topic', async(req,res) => {
 	res.render('home.ejs', {topic:"- "+req.params.topic})
@@ -494,6 +499,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 
 app.get('/api/get/:topic/:page', async(req, res) => {	
 	postsonpage = []
+	page = req.params.page
 	if (req.params.topic == "all_users") {
 		return
 	}
@@ -517,25 +523,32 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 
 			if(err){
 			} else{
-				for (i=0;i<posts.length;i++) {
-					if (posts[i].posterID == userID) {
-						postsonpage[i] = posts[i]
+				totalPosts = posts.length
+				totalPages = Math.ceil((totalPosts)/postsPerPage)
+				lastPagePosts = totalPosts % postsPerPage
+
+				postsonpage = await paginate(posts, postsPerPage, page)
+
+				for (let i=0;i<postsonpage.length;i++) {
+					console.log(postsonpage[i])
+					if (postsonpage[i].posterID == userID) {
+						// postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = true
 					} else {
-						postsonpage[i] = posts[i]
+						// postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = false
 					}
-					if (posts[i].users_upvoted.includes(userID)) {
+					if (postsonpage[i].users_upvoted.includes(userID)) {
 						postsonpage[i].current_user_upvoted = true
 						postsonpage[i].current_user_downvoted = false
 					}
-					if (posts[i].users_downvoted.includes(userID)) {
+					if (postsonpage[i].users_downvoted.includes(userID)) {
 						postsonpage[i].current_user_upvoted = false
 						postsonpage[i].current_user_downvoted = true
 					}
 					
-					if (users.some(x => x[0] == posts[i].posterID)) {
-						indexOfUser = users.findIndex(x => x[0] == posts[i].posterID)
+					if (users.some(x => x[0] == postsonpage[i].posterID)) {
+						indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
 						postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 					} else {
 						console.log("error loading user... do they exist?")
@@ -601,6 +614,11 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 
 	
 })
+
+function paginate(array, page_size, page_number) {
+    // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
+    return array.slice((page_number - 1) * page_size, page_number * page_size);
+}
 
 app.get('/api/get/posts/user/:user', async(req, res) => {	
 	postsonpage = []
