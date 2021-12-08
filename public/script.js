@@ -29,12 +29,8 @@ isUserLoggedIn = false
 
 async function randomizer(x) {
     for(let i=0;i<x;i++) {
-        title = "test post "+i
-        if (i % 2 == 0) {
-            body = ""
-        } else {
-            body = "test description "+i
-        }
+        title = "test "+i
+        body = "mpwknd199999999"
         topic = "all"
         posttype = 1
         bodyJSON = {
@@ -783,8 +779,10 @@ const loadUserPage = async(user) => {
 
 function expandDesc(x) {
     y = "descCell_"+x
+    mediaPost = false
     if (document.getElementById('postImgThumb_'+x)){
         if (document.getElementById('postImgThumb_'+x).src != null) {
+            console.log(document.getElementById('postImgThumb_'+x).src)
             mediaPost = true
         }
     }

@@ -853,11 +853,16 @@ app.post('/api/post/post', async(req, res) => {
 			timestamp:timestamp,
 			status:"active"
 		})
-		User.findById(userID, function(err, docs) {
-			docs.statistics.posts.created_num += 1
-			docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
-			docs.save()
-		})
+		console.log(body.indexOf('mpwknd199999999'))
+		if (body.indexOf('mpwknd199999999') == -1) {
+			console.log(body)
+			User.findById(userID, function(err, docs) {
+				docs.statistics.posts.created_num += 1
+				docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
+				docs.save()
+			})
+		}
+		
 		res.json({ status:"ok", code:200, data: response})
 	} catch (error) {
 		console.log("ERROR:"+error)
@@ -1312,5 +1317,32 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	
 
 })
+
+function deleteTestPosts() {
+	try {
+		Post.find({}, function(err, docs) {
+			if (err) {
+				console.log(err)
+			} else {
+				newDocs = docs
+				for (let i=0;i<docs.length;i++) {
+					if (newDocs[i].body.indexOf('mpwknd199999999') != -1) {
+						Post.findByIdAndDelete(newDocs[i].id, function(err, response) {
+							console.log(response)
+						})
+					}
+				}
+			}
+			
+		})
+	} catch(err) {
+		console.log(err)
+	}
+	
+}
+
+
+
+//deleteTestPosts()
 
 app.listen(process.env.PORT || 3000)
