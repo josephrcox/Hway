@@ -18,7 +18,7 @@ var lastClick = 0;
 var delay = 400;
 
 pageTypes = [
-    'user', 'usersheet', 'topic', 'index', 'home', 'post'
+    'user', 'usersheet', 'topic', 'index', 'home', 'post', 'login', 'register'
 ]
 
 // Currents
@@ -71,10 +71,23 @@ switch (url) {
     case 'posts':
         cPageType = 5
         break;
+    case 'login':
+        cPageType = 6
+        break;
+    case 'register':
+        cPageType = 7
+        break;
+}
+console.log(pageTypes[cPageType])
+
+if (pageTypes[cPageType] == 'login' || pageTypes[cPageType] == 'register') {
+    document.getElementsByClassName('header-buttons')[0].style.display = 'none'
+} else {
+    document.getElementsByClassName('header-buttons')[0].style.display = 'flex'
 }
 
 const getUser = async () => {
-    document.getElementById("currentUser").innerHTML = "..."
+    //document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
     
@@ -88,6 +101,7 @@ const getUser = async () => {
     } else {
         currentUserID = data.id
         isUserLoggedIn = true
+        document.getElementById("currentUser").innerHTML = data.name
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
@@ -614,7 +628,13 @@ const loadPosts = async (x, topic) => {
         return loadUserPage(user)
     }
     getUser()
-    document.getElementById("logout_button").style.display = 'block'
+    if (isUserLoggedIn) {
+
+    }
+    if (!isUserLoggedIn) {
+        document.getElementById("logout_button").style.display = 'block'
+    }
+    
     if (topic == null || topic == "") {
         topic = "all"
     }

@@ -1325,12 +1325,16 @@ function deleteTestPosts() {
 				console.log(err)
 			} else {
 				newDocs = docs
-				for (let i=0;i<docs.length;i++) {
-					if (newDocs[i].body.indexOf('mpwknd199999999') != -1) {
-						Post.findByIdAndDelete(newDocs[i].id, function(err, response) {
-							console.log(response)
-						})
+				console.log(newDocs[0])
+				for (let i=0;i<newDocs.length;i++) {
+					if (newDocs[i].body != null) {
+						if (newDocs[i].body.indexOf('mpwknd199999999') != -1) {
+							Post.findByIdAndDelete(newDocs[i].id, function(err, response) {
+								console.log(response)
+							})
+						}
 					}
+					
 				}
 			}
 			
@@ -1343,6 +1347,6 @@ function deleteTestPosts() {
 
 
 
-//deleteTestPosts()
+deleteTestPosts()
 
 app.listen(process.env.PORT || 3000)
