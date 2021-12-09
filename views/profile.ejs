@@ -1,11 +1,11 @@
 <head>
-   <link rel="stylesheet" type="text/css" href="../css/profile.css" />
+   <link rel="stylesheet" type="text/css" href="/css/profile.css" />
 </head>
 
 <body>
 <div id="sitebody" class="sitebody-flex">
    <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
-   <div class="profile">
+   <div class="profile noselect">
       <div id='page-profile-heading'>
          <img id='page-profile-avatar' src=''>
          <div id="page-profile-name">
@@ -26,11 +26,11 @@
          <div id="page-profile-info-posts_num">... has created </div> 
          <div id="page-profile-info-comments_num">... has created </div>
       </div>
-      <div id="page-profile-posts-header">Posts</div>
+      <div id="page-profile-posts-header" onclick='collapse("posts")'>posts (-)</div>
       <div id="page-profile-posts">
          
       </div>
-      <div id="page-profile-comments-header">Comments</div>
+      <div id="page-profile-comments-header" onclick='collapse("comments")''>comments (-)</div>
       <div id="page-profile-comments" style="color:black">
    
       </div>
@@ -40,8 +40,7 @@
 </div>
 
 <script src="/profile.js"></script>
- <script src="/script.js"></script>
-
- <script src="/launch.js"></script>
+<script src="/script.js"></script>
+<script src="/launch.js"></script>
 
 </body>

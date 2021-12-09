@@ -253,7 +253,7 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
-app.get('/home/:page', async(req, res) => {
+app.get('/all/:page', async(req, res) => {
 	valid = true
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
@@ -265,13 +265,16 @@ app.get('/home/:page', async(req, res) => {
 	}
 })
 
-app.get('/home', async(req,res) => {
-	res.redirect('/home/1')
+app.get('/all', async(req,res) => {
+	res.redirect('/all/1')
 })
 
-
-app.get('/h/:topic', async(req,res) => {
+app.get('/h/:topic/:page', async(req,res) => {
 	res.render('home.ejs', {topic:"- "+req.params.topic})
+})
+
+app.get('/h/:topic/', async(req,res) => {
+	res.redirect('/h/'+req.params.topic+'/1')
 })
 
 app.get('/posts/:postid', async(req,res) => {	
@@ -336,7 +339,6 @@ app.get('/api/get/user/:user/:options', async(req, res) =>{
 			user.statistics.posts.votedOn_array = null
 			user.statistics.posts.votedOn_num = null
 
-			user.statistics.topics.visited_num = null
 			user.statistics.topics.visited_array = null
 			
 			user.statistics.comments.votedOn_array = null
@@ -379,7 +381,6 @@ app.put('/api/put/user/:user/:change/', async(req, res) => {
 app.get('/api/get/posts/:postid', async(req,res) => {
 	try {
 		token = req.cookies.token
-		////console.logtoken)
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
 		
@@ -472,11 +473,9 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 						}
 					}
 					if (post.comments[i].posterid = userID) {
-						console.log("posterid: "+post.comments[i].posterid, "userID: "+userID)
 						postModified.comments[i].current_user_admin = true
 					} else {
 						postModified.comments[i].current_user_admin = false
-						console.log("posterid: "+post.comments[i].posterid, "userID: "+userID)
 					}
 				} else {
 					
@@ -506,11 +505,9 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		token = req.cookies.token
-		//console.logtoken)
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
 	} catch (err) {
-		//console.logerr)
 		if (!allowUsersToBrowseAsGuests) {
 			return res.json({ status:"ok", code:400, error: "Not logged in"})
 		} else {
@@ -530,7 +527,6 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 				postsonpage = await paginate(posts, postsPerPage, page)
 
 				for (let i=0;i<postsonpage.length;i++) {
-					console.log(postsonpage[i])
 					if (postsonpage[i].posterID == userID) {
 						// postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = true
@@ -572,36 +568,42 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 							docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
 	
 						} else {
-							docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
-							docs.statistics.topics.visited_num += 1
+							array = docs.statistics.topics.visited_array
+							array.push([req.params.topic, Date.now(), 1])
+							docs.statistics.topics.visited_array = array
 						}
 						
-						docs.save()
+						docs.update()
 					})
 				} catch(err) {
 					console.log(err)
 				}
 				
+				totalPosts = posts.length
+				totalPages = Math.ceil((totalPosts)/postsPerPage)
+				lastPagePosts = totalPosts % postsPerPage
+
+				postsonpage = await paginate(posts, postsPerPage, page)
 				
-				for (i=0;i<posts.length;i++) {
-					if (posts[i].posterID == userID) {
-						postsonpage[i] = posts[i]
+				for (i=0;i<postsonpage.length;i++) {
+					if (postsonpage[i].posterID == userID) {
+						//postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = true
 					} else {
-						postsonpage[i] = posts[i]
+						//postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = false
 					}
-					if (posts[i].users_upvoted.includes(userID)) {
+					if (postsonpage[i].users_upvoted.includes(userID)) {
 						postsonpage[i].current_user_upvoted = true
 						postsonpage[i].current_user_downvoted = false
 					}
-					if (posts[i].users_downvoted.includes(userID)) {
+					if (postsonpage[i].users_downvoted.includes(userID)) {
 						postsonpage[i].current_user_upvoted = false
 						postsonpage[i].current_user_downvoted = true
 					}
 
-					if (users.some(x => x[0] == posts[i].posterID)) {
-						indexOfUser = users.findIndex(x => x[0] == posts[i].posterID)
+					if (users.some(x => x[0] == postsonpage[i].posterID)) {
+						indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
 						postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 					} else {
 						console.log("error loading user... do they exist?")
@@ -649,7 +651,6 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 
 					} else {
 						docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
-						docs.statistics.topics.visited_num += 1
 					}
 					
 					docs.save()
@@ -1347,6 +1348,6 @@ function deleteTestPosts() {
 
 
 
-deleteTestPosts()
+//deleteTestPosts()
 
 app.listen(process.env.PORT || 3000)

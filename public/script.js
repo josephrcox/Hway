@@ -18,11 +18,64 @@ var lastClick = 0;
 var delay = 400;
 
 pageTypes = [
-    'user', 'usersheet', 'topic', 'index', 'home', 'post', 'login', 'register'
+    'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register',
 ]
 
+url = (window.location.href).split('/')[3]
+switch (url) {
+    case 'user':
+        cPageType = 0
+        break;
+    case 'users':
+        cPageType = 1
+        break;
+    case ('h'):
+        cPageType = 2
+        break;
+    case '':
+        cPageType = 3
+        break;
+    case 'all':
+        cPageType = 4
+        break;
+    case 'posts':
+        cPageType = 5
+        break;
+    case 'login':
+        cPageType = 6
+        break;
+    case 'register':
+        cPageType = 7
+        break;
+}
+
 // Currents
-cPage = 1
+
+if (pageTypes[cPageType] == 'user') { 
+    
+}
+if (pageTypes[cPageType] == 'usersheet') { 
+    
+}
+if (pageTypes[cPageType] == 'topic') { 
+    cPage = parseInt(window.location.href.split('/')[5])
+}
+if (pageTypes[cPageType] == 'index') { 
+    
+}
+if (pageTypes[cPageType] == 'all') {    
+    cPage = parseInt(window.location.href.split('/')[4])
+}
+if (pageTypes[cPageType] == 'post') { 
+    cPage = 1
+}
+if (pageTypes[cPageType] == 'login') { 
+    
+}
+if (pageTypes[cPageType] == 'register') { 
+    
+}
+
 cTopic = ""
 cID = ""
 isUserLoggedIn = false
@@ -31,7 +84,12 @@ async function randomizer(x) {
     for(let i=0;i<x;i++) {
         title = "test "+i
         body = "mpwknd199999999"
-        topic = "all"
+        if (i % 2 == 0) {
+            topic = "testinggrounds"
+        } else {
+            topic = "all"
+        }
+        
         posttype = 1
         bodyJSON = {
             "title":title,
@@ -51,34 +109,7 @@ async function randomizer(x) {
     }
 }
 
-url = (window.location.href).split('/')[3]
-switch (url) {
-    case 'user':
-        cPageType = 0
-        break;
-    case 'users':
-        cPageType = 1
-        break;
-    case ('h'):
-        cPageType = 2
-        break;
-    case '':
-        cPageType = 3
-        break;
-    case 'home':
-        cPageType = 4
-        break;
-    case 'posts':
-        cPageType = 5
-        break;
-    case 'login':
-        cPageType = 6
-        break;
-    case 'register':
-        cPageType = 7
-        break;
-}
-console.log(pageTypes[cPageType])
+
 
 if (pageTypes[cPageType] == 'login' || pageTypes[cPageType] == 'register') {
     document.getElementsByClassName('header-buttons')[0].style.display = 'none'
@@ -172,7 +203,7 @@ const postObject = {
         openPostButton.setAttribute("id", "openPostButton_"+this.id)
         openPostButton.setAttribute("class", "openPostButton")
         openPostButton.innerHTML = "<a href='/posts/"+this.id+"'></a>"
-        openPostButton.src = '../assets/speech_bubble.png'
+        openPostButton.src = '/assets/speech_bubble.png'
         openPostButton.onclick = function() {
             window.location.href = '/posts/'+this.id.substring(15)
         }   
@@ -196,9 +227,9 @@ const postObject = {
         var voteUpButton = document.createElement("img")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
-        voteUpButton.src = '../assets/up.gif'
+        voteUpButton.src = '/assets/up.gif'
         if (this.current_user_upvoted) {
-            voteUpButton.src = '../assets/up_selected.gif'
+            voteUpButton.src = '/assets/up_selected.gif'
         } 
         
         voteUpButton.style.width = 'auto'
@@ -209,9 +240,9 @@ const postObject = {
         var voteDownButton = document.createElement("img")
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
-        voteDownButton.src = '../assets/down.gif'
+        voteDownButton.src = '/assets/down.gif'
         if (this.current_user_downvoted) {
-            voteDownButton.src = '../assets/down_selected.gif'
+            voteDownButton.src = '/assets/down_selected.gif'
         }
         voteDownButton.style.width = 'auto'
         voteDownButton.onclick = function() {
@@ -283,7 +314,7 @@ const postObject = {
             var del = document.createElement("img")
             del.setAttribute("class", "deletePostButton")
             del.setAttribute("id", "deletePostButton_"+this.id)
-            del.src = "../assets/trash.png"
+            del.src = "/assets/trash.png"
             del.style.height = '20px'
             del.style.width = 'auto'
             delPostConfirmation = false
@@ -294,13 +325,13 @@ const postObject = {
                     if (delPostConfirmationId == this.id.split("_")[1]) {
                         deletePost(this.id.split("_")[1])
                     } else {
-                        this.src = "../assets/trash_confirm.png"
+                        this.src = "/assets/trash_confirm.png"
                         delPostConfirmation = true
                         delPostConfirmationId = this.id.split("_")[1]
                     }
                     
                 } else {
-                    this.src = "../assets/trash_confirm.png"
+                    this.src = "/assets/trash_confirm.png"
                     delPostConfirmation = true
                     delPostConfirmationId = this.id.split("_")[1]
                 }
@@ -381,7 +412,7 @@ const commentObject = {
             var del = document.createElement("img")
             del.setAttribute("class", "deletePostButton")
             del.setAttribute("id", "deletePostButton_"+this.id)
-            del.src = "../assets/trash.png"
+            del.src = "/assets/trash.png"
             del.style.height = '20px'
             del.style.width = 'auto'
             del.style.paddingLeft = '10px'
@@ -394,13 +425,13 @@ const commentObject = {
                         //deletePost(this.id.split("_")[1])
                         deleteComment(this.id.split("_")[1])
                     } else {
-                        this.src = "../assets/trash_confirm.png"
+                        this.src = "/assets/trash_confirm.png"
                         delPostConfirmation = true
                         delPostConfirmationId = this.id.split("_")[1]
                     }
                     
                 } else {
-                    this.src = "../assets/trash_confirm.png"
+                    this.src = "/assets/trash_confirm.png"
                     delPostConfirmation = true
                     delPostConfirmationId = this.id.split("_")[1]
                 }
@@ -453,9 +484,9 @@ const commentObject = {
             voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id+"_"+this.id)
             voteUp.setAttribute("class","nestedcommentUp")
             if (this.nested_comments[i].current_user_voted) {
-                voteUp.src = '../assets/up_selected.gif'
+                voteUp.src = '/assets/up_selected.gif'
             } else {
-                voteUp.src = '../assets/up.gif'
+                voteUp.src = '/assets/up.gif'
             }
             
             voteUp.style.width = 'auto'
@@ -527,7 +558,7 @@ const commentObject = {
         var replyButton = document.createElement('img')
         replyButton.setAttribute("class","comreplybutton")
         replyButton.setAttribute("id", "comreplyButton_"+this.id)
-        replyButton.src = '../assets/speech_bubble.png'
+        replyButton.src = '/assets/speech_bubble.png'
         infoRow.appendChild(replyButton)
         
         replyButton.onclick = function() {
@@ -554,9 +585,9 @@ const commentObject = {
         voteUp.setAttribute("id","voteComUp_"+this.id)
         voteUp.setAttribute("class","voteUpButton")
         if (this.current_user_voted == true) {
-            voteUp.src = '../assets/up_selected.gif'
+            voteUp.src = '/assets/up_selected.gif'
         } else {
-            voteUp.src = '../assets/up.gif'
+            voteUp.src = '/assets/up.gif'
         }
         
         voteUp.style.width = 'auto'
@@ -640,7 +671,7 @@ const loadPosts = async (x, topic) => {
     }
     if (pageTypes[cPageType] == 'topic') {
         url = window.location.href
-        topic = url.split('/h/')[1]
+        topic = url.split('/')[4]
     } 
     if (pageTypes[cPageType] == 'post') { // on a specific post page, load only that one post & comments
         url = window.location.href
@@ -712,7 +743,15 @@ const loadPosts = async (x, topic) => {
 
         }
     } else {
-        const response = await fetch('/api/get/'+topic+'/'+cPage)
+        request = '/api/get/'+topic+'/'+cPage
+
+        if (pageTypes[cPageType] == 'all') {
+            request = '/api/get/'+topic+'/'+cPage
+        }
+        if (pageTypes[cPageType] == 'topic') {
+            request = '/api/get/'+topic+'/'+cPage
+        }
+        const response = await fetch(request)
         const data = await response.json()
 
         document.getElementById("postsArray").innerHTML = ""
@@ -869,16 +908,16 @@ const vote = async (change, id) => {
     if (data.status == 'ok') {
         document.getElementById('voteCount_'+id.substring(13)).innerHTML = data.newtotal
         if (data.gif == 'none') {
-            document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up.gif'
-            document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down.gif'
+            document.getElementById('voteUpButton_'+id.substring(13)).src = '/assets/up.gif'
+            document.getElementById('voteDoButton_'+id.substring(13)).src = '/assets/down.gif'
         }
         if (data.gif == 'up') {
-            document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up_selected.gif'
-            document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down.gif'
+            document.getElementById('voteUpButton_'+id.substring(13)).src = '/assets/up_selected.gif'
+            document.getElementById('voteDoButton_'+id.substring(13)).src = '/assets/down.gif'
         }
         if (data.gif == 'down') {
-            document.getElementById('voteUpButton_'+id.substring(13)).src = '../assets/up.gif'
-            document.getElementById('voteDoButton_'+id.substring(13)).src = '../assets/down_selected.gif'
+            document.getElementById('voteUpButton_'+id.substring(13)).src = '/assets/up.gif'
+            document.getElementById('voteDoButton_'+id.substring(13)).src = '/assets/down_selected.gif'
         }
     } 
 
@@ -902,17 +941,17 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
             if (nested) {
-                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '../assets/up_selected.gif'
+                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '/assets/up_selected.gif'
             } else {
-                document.getElementById('voteComUp_'+id).src = '../assets/up_selected.gif'
+                document.getElementById('voteComUp_'+id).src = '/assets/up_selected.gif'
             }
             
         }
         if (data.voted == 'no') {
             if (nested) {
-                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '../assets/up.gif'
+                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '/assets/up.gif'
             } else {
-                document.getElementById('voteComUp_'+id).src = '../assets/up.gif'
+                document.getElementById('voteComUp_'+id).src = '/assets/up.gif'
             }
             
         }
@@ -1003,7 +1042,7 @@ const comment_nested = async (postid, body, commentparentID) => {
         var voteUp = document.createElement("img")
         voteUp.setAttribute("id","nestedcommentUp_"+data.id+"_"+commentparentID)
         voteUp.setAttribute("class","nestedcommentUp")
-        voteUp.src = '../assets/up.gif'
+        voteUp.src = '/assets/up.gif'
         
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
@@ -1036,7 +1075,6 @@ function ui_newPost() {
 function launch() { 
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
-    cPage = 1
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
     loadPosts(0, "")
 }
@@ -1229,18 +1267,32 @@ function prevPage() {
     if (cPage == 1) {
         return 
     }
-    document.getElementById("page-number").innerHTML = ""
     cPage -= 1
+    if (pageTypes[cPageType] != 'topic') {
+        window.location.href = '/'+cTopic+'/'+cPage
+    }
+    if (pageTypes[cPageType] == 'topic') {
+        window.location.href = '/h/'+cTopic+'/'+cPage
+    }
     loadPosts(0, cTopic)
 
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
 }
 
 function nextPage() {
-    document.getElementById("page-number").innerHTML = ""
     cPage += 1
-    loadPosts(0,cTopic)
+    if (pageTypes[cPageType] != 'topic') {
+        window.location.href = '/'+cTopic+'/'+cPage
+    }
+    if (pageTypes[cPageType] == 'topic') {
+        window.location.href = '/h/'+cTopic+'/'+cPage
+    }
+
+    
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+    //loadPosts(0,cTopic)
+
+    
 }
 
 document.getElementById("users-page-button").onclick = function() { 

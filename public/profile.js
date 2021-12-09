@@ -38,7 +38,7 @@ function displayInfo() {
     // HEADING DIV
     avatar = document.getElementById("page-profile-avatar")
     if (userInfo.avatar == "" || userInfo.avatar == null) {
-        avatar.src = '../assets/defaultavatar.png'
+        avatar.src = '/assets/defaultavatar.png'
     } else {
         avatar.src = userInfo.avatar
     }
@@ -245,3 +245,14 @@ const changeAvatar = async(url) => {
 
 }
 
+function collapse(x) {
+    let z = document.getElementById('page-profile-'+x)
+    let heading = document.getElementById('page-profile-'+x+'-header')
+    if (z.style.display == 'none') {
+        z.style.display = 'block'
+        heading.innerHTML = x+' (-)'
+    } else {
+        z.style.display = 'none'
+        heading.innerHTML = x+' (+)'
+    }
+}

@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema(
                 votedOn_array: { type:Array, default: []},
             },
             topics: {
-                visited_num: { type:Number, default: 0 },
                 visited_array: { type:Array, default: []},
             },
             comments: {
