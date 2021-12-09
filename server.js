@@ -587,10 +587,8 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 				
 				for (i=0;i<postsonpage.length;i++) {
 					if (postsonpage[i].posterID == userID) {
-						//postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = true
 					} else {
-						//postsonpage[i] = posts[i]
 						postsonpage[i].current_user_admin = false
 					}
 					if (postsonpage[i].users_upvoted.includes(userID)) {
