@@ -40,7 +40,7 @@ async function loginUser(event) {
         //console.log("success: 200")
         //console.log(data.data)
         localStorage.clear()
-        window.location.href = "/home"
+        window.location.href = "/all"
     } 
     if (data.code == 400) {
         document.getElementById("logs").innerHTML = data.error

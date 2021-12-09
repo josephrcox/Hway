@@ -9,29 +9,27 @@
     <div class="flex-container">
         <div class="header-title noselect">
                 <a href='/all'><div id="title">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
-           
+        </div>
+        <div id="currentUserInfo">
+            <div id="currentUser"></div>
+            <button onclick="logout()" id="logout_button" style='display: none;'>Logout</button>
+            <button onclick="login()" id="login_button" style='display: none;'>Login</button>
+            <button onclick="register()" id="reg_button" style='display: none;'>Sign up</button>
         </div>
      </div>
 
      <div class="header-buttons noselect">
-         <div id="currentUserInfo">
-            <button onclick="logout()" id="logout_button" style='display: none;'>Logout</button>
-            <button onclick="login()" id="login_button" style='display: none;'>Login</button>
-            <button onclick="register()" id="reg_button" style='display: none;'>Sign up</button>
-            <div id="currentUser"></div>
-            
-            
-        </div>
+        
         <div id="misc_header_buttons">
             <div id="page-number"></div> 
             <div class="users-page-button" id="users-page-button">Users</div>
             <div class="topic-dropdown-div" id='topic-dropdown-div'>
-                <div onclick="topicdropdownclicked()" class="topic-dropdown-button" id="topic-dropdown-button">Top topics</div>
+                <div onclick="topicdropdownclicked()" class="topic-dropdown-button" id="topic-dropdown-button">Topics</div>
                 <div id="topic-dropdown" class="dropdown-content">
                 <!-- topics (handled by js) -->
                 </div>
             </div>
-            <div id="post-button" onclick="ui_newPost()">Create new post</div>
+            <div id="post-button" onclick="ui_newPost()">New post</div>
         </div>
         
     </div>   
