@@ -399,7 +399,7 @@ label {
 	height:55px;
 }
 
-.comInfoCell {
+.comInfoCell, .ncInfoCell {
 	font-size: 12px;
 }
 
@@ -572,3 +572,7 @@ a:visited {
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
+
+.ncInfoCell {
+	margin-top: 4px;
+}

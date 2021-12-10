@@ -184,8 +184,6 @@ const postObject = {
     poster_avatar_src: "",
 
     display() {
-    
-        
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
@@ -398,10 +396,7 @@ const commentObject = {
         posterRow.setAttribute("id", "posterRow_"+this.id)
         posterRow.setAttribute("class", "posterRow")
         posterCell = posterRow.insertCell(0)
-        
-        
-
-        
+   
         infoRow = comFrame.insertRow(1)
         infoCell = infoRow.insertCell(0)
         infoCell.innerHTML = this.date
@@ -469,7 +464,11 @@ const commentObject = {
             var ncCommentDiv = document.createElement("div")
             ncCommentDiv.setAttribute("class", "ncCommentDiv")
             ncCommentDiv.setAttribute("id", "ncCommentDiv_"+this.nested_comments[i].id)
-            ncCommentDiv.innerHTML += "<span style='color:blue'>"+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"
+            ncCommentDiv.innerHTML += "<span style='color:blue'>"+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"+"<span style='font-size:10px'>"+this.nested_comments[i].date+"</span>"
+
+            // var ncDate = document.createElement("div")
+            // ncDate.innerHTML = this.nested_comments[i].date
+            // ncDate.setAttribute("class", "ncInfoCell")
             
             var ncVoteDiv = document.createElement("div")
             ncVoteDiv.setAttribute("class", "ncVoteDiv")
@@ -498,6 +497,7 @@ const commentObject = {
 
             
             document.getElementById("ncContainer_"+this.id).appendChild(ncDiv)
+            // document.getElementById("ncContainer_"+this.id).appendChild(ncDate)
             document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncCommentDiv)
             document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncVoteDiv)
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteCount)
