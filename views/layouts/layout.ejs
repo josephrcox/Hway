@@ -10,26 +10,32 @@
         <div class="header-title noselect">
                 <a href='/all'><div id="title">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
         </div>
-        <div id="currentUserInfo">
-            <div id="currentUser"></div>
-            <button onclick="logout()" id="logout_button" style='display: none;'>Logout</button>
-            <button onclick="login()" id="login_button" style='display: none;'>Login</button>
-            <button onclick="register()" id="reg_button" style='display: none;'>Sign up</button>
+        
+        <div class="user-dropdown-div" id='user-dropdown-div'>
+            <div onclick="currentuserDropdownClicked()" class="user-dropdown-button" id="user-dropdown-button"><div id="currentUser" class="noselect"></div></div>
+            <div id="user-dropdown" class="user-dropdown-content">
+                <a href='#' onclick="profile()" id="profile_button">Profile</a>
+                <a href='#' onclick="logout()" id="logout_button">Logout</a>
+                <a href='#' onclick="login()" id="login_button">Login</a>
+                <a href='#' onclick="register()" id="reg_button">Register</a>
+            </div>
         </div>
+
      </div>
 
-     <div class="header-buttons noselect">
+     <div class="header-buttons noselect" id="header-buttons">
         
         <div id="misc_header_buttons">
             <div id="page-number"></div> 
             <div class="users-page-button" id="users-page-button">Users</div>
+
             <div class="topic-dropdown-div" id='topic-dropdown-div'>
                 <div onclick="topicdropdownclicked()" class="topic-dropdown-button" id="topic-dropdown-button">Topics</div>
                 <div id="topic-dropdown" class="dropdown-content">
-                <!-- topics (handled by js) -->
+                    
                 </div>
             </div>
-            <div id="post-button" onclick="ui_newPost()">New post</div>
+            <div id="post-button" style='display:none;' onclick="ui_newPost()">New post</div>
         </div>
         
     </div>   
@@ -44,19 +50,27 @@
 function topicdropdownclicked() {
     document.getElementById("topic-dropdown").classList.toggle("show");
 }
+function currentuserDropdownClicked() {
+    document.getElementById("user-dropdown").classList.toggle("show");
+}
 
-    window.onclick = function(event) {
-        if (!event.target.matches('.topic-dropdown-button')) {
+
+window.onclick = function(event) {
+    
+    if (!event.target.matches('.topic-dropdown-button')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
         var i;
         for (i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];
             if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
+                openDropdown.classList.remove('show');
             }
         }
+        
     }
-}      
+    
+        
+}        
 
 async function goHome() {
     const response = await fetch('/all')
@@ -73,7 +87,15 @@ async function register() {
     window.location.replace("/register");
 }
 
-getUsername()
+function profile() {
+    username = document.getElementById("currentUser").innerHTML
+    if (username == null || username == 'Account') {
+        window.location.replace('/login')
+    } else {
+        window.location.replace('/user/'+username)
+    }
+    
+}
 
 async function getUsername() {
     const response = await fetch('/api/get/currentuser')
@@ -89,6 +111,7 @@ async function getUsername() {
     }
 }
 
+getUsername()
 
 </script>
 </body>

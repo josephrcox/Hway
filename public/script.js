@@ -1,89 +1,85 @@
-usernameArray = []
-usernameColorArray = []
-
-topicNameArray = []
-topicPostCountArray = []
-idArray = []
-newPost_type = 1
-posts = []
-uploadedImageUrls = []
-sorting = 1 // 1 is highest to lowest, 0 is lowest to highest
-englishWordsArrayForRandomization = ["a","ability","able","about","above","accept","according","account","across","act","action","activity","actually","add","address","administration","admit","adult","affect","after","again","against","age","agency","agent","ago","agree","agreement","ahead","air","all","allow","almost","alone","along","already","also","although","always","American","among","amount","analysis","and","animal","another","answer","any","anyone","anything","appear","apply","approach","area","argue","arm","around","arrive","art","article","artist","as","ask","assume","at","attack","attention","attorney","audience","author","authority","available","avoid","away","baby","back","bad","bag","ball","bank","bar","base","be","beat","beautiful","because","become","bed","before","begin","behavior","behind","believe","benefit","best","better","between","beyond","big","bill","billion","bit","black","blood","blue","board","body","book","born","both","box","boy","break","bring","brother","budget","build","building","business","but","buy","by","call","camera","campaign","can","cancer","candidate","capital","car","card","care","career","carry","case","catch","cause","cell","center","central","century","certain","certainly","chair","challenge","chance","change","character","charge","check","child","choice","choose","church","citizen","city","civil","claim","class","clear","clearly","close","coach","cold","collection","college","color","come","commercial","common","community","company","compare","computer","concern","condition","conference","Congress","consider","consumer","contain","continue","control","cost","could","country","couple","course","court","cover","create","crime","cultural","culture","cup","current","customer","cut","dark","data","daughter","day","dead","deal","death","debate","decade","decide","decision","deep","defense","degree","Democrat","democratic","describe","design","despite","detail","determine","develop","development","die","difference","different","difficult","dinner","direction","director","discover","discuss","discussion","disease","do","doctor","dog","door","down","draw","dream","drive","drop","drug","during","each","early","east","easy","eat","economic","economy","edge","education","effect","effort","eight","either","election","else","employee","end","energy","enjoy","enough","enter","entire","environment","environmental","especially","establish","even","evening","event","ever","every","everybody","everyone","everything","evidence","exactly","example","executive","exist","expect","experience","expert","explain","eye","face","fact","factor","fail","fall","family","far","fast","father","fear","federal","feel","feeling","few","field","fight","figure","fill","film","final","finally","financial","find","fine","finger","finish","fire","firm","first","fish","five","floor","fly","focus","follow","food","foot","for","force","foreign","forget","form","former","forward","four","free","friend","from","front","full","fund","future","game","garden","gas","general","generation","get","girl","give","glass","go","goal","good","government","great","green","ground","group","grow","growth","guess","gun","guy","hair","half","hand","hang","happen","happy","hard","have","he","head","health","hear","heart","heat","heavy","help","her","here","herself","high","him","himself","his","history","hit","hold","home","hope","hospital","hot","hotel","hour","house","how","however","huge","human","hundred","husband","I","idea","identify","if","image","imagine","impact","important","improve","in","include","including","increase","indeed","indicate","individual","industry","information","inside","instead","institution","interest","interesting","international","interview","into","investment","involve","issue","it","item","its","itself","job","join","just","keep","key","kid","kill","kind","kitchen","know","knowledge","land","language","large","last","late","later","laugh","law","lawyer","lay","lead","leader","learn","least","leave","left","leg","legal","less","let","letter","level","lie","life","light","like","likely","line","list","listen","little","live","local","long","look","lose","loss","lot","love","low","machine","magazine","main","maintain","major","majority","make","man","manage","management","manager","many","market","marriage","material","matter","may","maybe","me","mean","measure","media","medical","meet","meeting","member","memory","mention","message","method","middle","might","military","million","mind","minute","miss","mission","model","modern","moment","money","month","more","morning","most","mother","mouth","move","movement","movie","Mr","Mrs","much","music","must","my","myself","name","nation","national","natural","nature","near","nearly","necessary","need","network","never","new","news","newspaper","next","nice","night","no","none","nor","north","not","note","nothing","notice","now","n't","number","occur","of","off","offer","office","officer","official","often","oh","oil","ok","old","on","once","one","only","onto","open","operation","opportunity","option","or","order","organization","other","others","our","out","outside","over","own","owner","page","pain","painting","paper","parent","part","participant","particular","particularly","partner","party","pass","past","patient","pattern","pay","peace","people","per","perform","performance","perhaps","period","person","personal","phone","physical","pick","picture","piece","place","plan","plant","play","player","PM","point","police","policy","political","politics","poor","popular","population","position","positive","possible","power","practice","prepare","present","president","pressure","pretty","prevent","price","private","probably","problem","process","produce","product","production","professional","professor","program","project","property","protect","prove","provide","public","pull","purpose","push","put","quality","question","quickly","quite","race","radio","raise","range","rate","rather","reach","read","ready","real","reality","realize","really","reason","receive","recent","recently","recognize","record","red","reduce","reflect","region","relate","relationship","religious","remain","remember","remove","report","represent","Republican","require","research","resource","respond","response","responsibility","rest","result","return","reveal","rich","right","rise","risk","road","rock","role","room","rule","run","safe","same","save","say","scene","school","science","scientist","score","sea","season","seat","second","section","security","see","seek","seem","sell","send","senior","sense","series","serious","serve","service","set","seven","several","sex","sexual","shake","share","she","shoot","short","shot","should","shoulder","show","side","sign","significant","similar","simple","simply","since","sing","single","sister","sit","site","situation","six","size","skill","skin","small","smile","so","social","society","soldier","some","somebody","someone","something","sometimes","son","song","soon","sort","sound","source","south","southern","space","speak","special","specific","speech","spend","sport","spring","staff","stage","stand","standard","star","start","state","statement","station","stay","step","still","stock","stop","store","story","strategy","street","strong","structure","student","study","stuff","style","subject","success","successful","such","suddenly","suffer","suggest","summer","support","sure","surface","system","table","take","talk","task","tax","teach","teacher","team","technology","television","tell","ten","tend","term","test","than","thank","that","the","their","them","themselves","then","theory","there","these","they","thing","think","third","this","those","though","thought","thousand","threat","three","through","throughout","throw","thus","time","to","today","together","tonight","too","top","total","tough","toward","town","trade","traditional","training","travel","treat","treatment","tree","trial","trip","trouble","true","truth","try","turn","TV","two","type","under","understand","unit","until","up","upon","us","use","usually","value","various","very","victim","view","violence","visit","voice","vote","wait","walk","wall","want","war","watch","water","way","we","weapon","wear","week","weight","well","west","western","what","whatever","when","where","whether","which","while","white","who","whole","whom","whose","why","wide","wife","will","win","wind","window","wish","with","within","without","woman","wonder","word","work","worker","world","worry","would","write","writer","wrong","yard","yeah","year","yes","yet","you","young","your","yourself"]
-prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>"
-nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>"
-comment_count = []
-commentParentPair = []
-commentBodies = []
-var lastClick = 0;
+let newPost_type = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
+let uploadedImageUrls = [] // This is used to store the URLs of recently uploaded images
+let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
+let nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>"
+let comment_count = [] // Used to track how many comments are being displayed on a page (maybe remove later)
+let commentBodies = [] // used to remember comment bodies that are removed when a post is temporarily collapsed by the user
+let lastClick = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
 var delay = 400;
+let pageNumber = 1 // Tracking what page number the user is on
+let currentTopic = "" // Current topic the user is on, i.e. 'bicycling'
+let currentPostID = "" // Current post ID that is loaded, only when on a user page such as http://localhost:3000/posts/61ab8741f6fadead68120454
+let isUserLoggedIn = false // Checks if a user is logged in or not. Not required for access unless enabled in backend
 
-pageTypes = [
-    'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register',
-]
+const pageTypes = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register',] // This is used to track what page type we are on
 
-url = (window.location.href).split('/')[3]
-switch (url) {
+let currentPageCategory = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
+switch (currentPageCategory) {
     case 'user':
-        cPageType = 0
+        cPageTypeIndex = 0
         break;
     case 'users':
-        cPageType = 1
+        cPageTypeIndex = 1
         break;
     case ('h'):
-        cPageType = 2
+        cPageTypeIndex = 2
         break;
     case '':
-        cPageType = 3
+        cPageTypeIndex = 3
         break;
     case 'all':
-        cPageType = 4
+        cPageTypeIndex = 4
         break;
     case 'posts':
-        cPageType = 5
+        cPageTypeIndex = 5
         break;
     case 'login':
-        cPageType = 6
+        cPageTypeIndex = 6
         break;
     case 'register':
-        cPageType = 7
+        cPageTypeIndex = 7
         break;
 }
 
-// Currents
+let currentPageType = pageTypes[cPageTypeIndex]
 
-if (pageTypes[cPageType] == 'user') { 
+if (currentPageType == 'user') { 
     
 }
-if (pageTypes[cPageType] == 'usersheet') { 
+if (currentPageType == 'usersheet') { 
     
 }
-if (pageTypes[cPageType] == 'topic') { 
-    cPage = parseInt(window.location.href.split('/')[5])
+if (currentPageType == 'topic') { 
+    pageNumber = parseInt(window.location.href.split('/')[5])
 }
-if (pageTypes[cPageType] == 'index') { 
+if (currentPageType == 'index') { 
     
 }
-if (pageTypes[cPageType] == 'all') {    
-    cPage = parseInt(window.location.href.split('/')[4])
+if (currentPageType == 'all') {    
+    pageNumber = parseInt(window.location.href.split('/')[4])
 }
-if (pageTypes[cPageType] == 'post') { 
-    cPage = 1
+if (currentPageType == 'post') { 
+    pageNumber = 1
 }
-if (pageTypes[cPageType] == 'login') { 
+if (currentPageType == 'login') { 
     
 }
-if (pageTypes[cPageType] == 'register') { 
+if (currentPageType == 'register') { 
     
 }
 
-cTopic = ""
-cID = ""
-isUserLoggedIn = false
+if (currentPageType == 'login' || currentPageType == 'register') { // If the user is on certain pages, hide the header-buttons bar as it's unneeded on that page or may cause issues
+    document.getElementById('header-buttons').style.display = 'none'
+} else {
+    document.getElementById('header-buttons').style.display = 'flex'
+}
 
+
+// The randomize function is for creating bulk posts, takes a value (x) which is the quantity of posts to be created, no limit
 async function randomizer(x) {
     for(let i=0;i<x;i++) {
         title = "test "+i
-        body = "mpwknd199999999"
+        body = "mpwknd199999999" // This string is really only for tracking which posts are test posts. Can be changed but must be changed on BE too
         if (i % 2 == 0) {
             topic = "testinggrounds"
         } else {
@@ -109,22 +105,15 @@ async function randomizer(x) {
     }
 }
 
-
-
-if (pageTypes[cPageType] == 'login' || pageTypes[cPageType] == 'register') {
-    document.getElementsByClassName('header-buttons')[0].style.display = 'none'
-} else {
-    document.getElementsByClassName('header-buttons')[0].style.display = 'flex'
-}
-
+// This getUser function is for getting the current user and displaying relevant buttons and the users name
 const getUser = async () => {
     //document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
     
-    if (data.code == 400) {
+    if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
         isUserLoggedIn = false
-        document.getElementById("currentUser").innerHTML = "No user"
+        document.getElementById("currentUser").innerHTML = "Account"
         document.getElementById("logout_button").style.display = 'none'
         document.getElementById("login_button").style.display = 'block'
         document.getElementById("reg_button").style.display = 'block'
@@ -136,7 +125,11 @@ const getUser = async () => {
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
-        document.getElementById("post-button").style.display = 'block'
+        if (currentPageType != 'user' && currentPageType != 'usersheet' ) {
+            console.log(currentPageType)
+            document.getElementById("post-button").style.display = 'block'
+        }
+        
     }
     
     changeCommentSectionVisibility()
@@ -144,8 +137,10 @@ const getUser = async () => {
 
 getUser()
 
+// This changeCommentSectionVisibility function is for changing whether or not the commentSection div should be visible, which is only on posts.
+// ... it should also be displayed differently if the user is logged in or not as they may not be able to write a comment
 function changeCommentSectionVisibility() {
-    if (pageTypes[cPageType] == 'post') {
+    if (currentPageType == 'post') {
         document.getElementById('commentSection').style.display = 'inline'
         if (isUserLoggedIn) {
             document.getElementById('commentSection_login_button').style.display = 'none'
@@ -167,8 +162,8 @@ const postObject = {
     type: "",
     title: "",
     body: "",
-    descDisplayed: "",
-    total_votes: "",
+    descDisplayed: "", // Whether or not the description of the post is currently displayed, for collapsing and expanding
+    total_votes: "", // Upvotes - Downvotes
     upvotes: "",
     downvotes: "",
     id: "",
@@ -187,11 +182,13 @@ const postObject = {
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
+
         var postFrame = document.createElement("table")
-        var voteFrame = document.createElement("table")
-        postFrame.setAttribute("class", "postFrame")
-        voteFrame.setAttribute("class", "voteFrame")
         postFrame.setAttribute("id", "postFrame_"+this.id)
+        postFrame.setAttribute("class", "postFrame")
+
+        var voteFrame = document.createElement("table")
+        voteFrame.setAttribute("class", "voteFrame")
 
         var voteDiv = document.createElement("div")
         voteDiv.setAttribute("id", "voteDiv_"+this.id)
@@ -337,7 +334,7 @@ const postObject = {
             }
         }
 
-        if (pageTypes[cPageType] == 'user') {
+        if (currentPageType == 'user') {
             document.getElementById("page-profile-posts").appendChild(postContainer)
         } else {
             document.getElementById("postsArray").appendChild(postContainer)
@@ -379,7 +376,7 @@ const commentObject = {
         
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
-        if (pageTypes[cPageType] != 'user') { // not on a user profile page
+        if (currentPageType != 'user') { // not on a user profile page
             console.log("creating cmt sec")
             document.getElementById("comments").appendChild(fullCommentContainer)
         } else {
@@ -490,7 +487,7 @@ const commentObject = {
             
             voteUp.style.width = 'auto'
             voteUp.onclick = function() {
-                voteCom(this.id.split("_")[1], cID, true, this.id.split("_")[2])
+                voteCom(this.id.split("_")[1], currentPostID, true, this.id.split("_")[2])
             }
 
             
@@ -592,7 +589,7 @@ const commentObject = {
         
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
-            voteCom(this.id.substring(10), cID, false, 0)
+            voteCom(this.id.substring(10), currentPostID, false, 0)
         }
 
         
@@ -618,12 +615,13 @@ const deletePost = async(x) => {
     const data = await response.json()
 
     if (data.status == 'ok') {
-        document.getElementById("postContainer_"+x).innerHTML = "The post was permanantly deleted."
+        document.getElementById("postContainer_"+x).innerHTML = "<span style='color:white'>The post was permanantly deleted.</span>"
     }
     if (data.status == 'error') {
         alert(data.error)
     }
 }
+
 const deleteComment = async(x) => {
     const settings = {
         method: 'PUT',
@@ -632,7 +630,7 @@ const deleteComment = async(x) => {
     const data = await response.json()
 
     if (data.status == 'ok') {
-        document.getElementById("fullCommentContainer_"+x).innerHTML = "The comment was permanantly deleted."
+        document.getElementById("fullCommentContainer_"+x).innerHTML = "<span style='color:white'>The comment was permanantly deleted.</span>"
     }
     if (data.status == 'error') {
         alert(data.error)
@@ -640,50 +638,35 @@ const deleteComment = async(x) => {
 
 }
 
-function copytoclipboard(x) {
-    navigator.clipboard.writeText(x);
-    var copyText = x
-    copyText.select()
-    document.execCommand("copy");
-    var items = document.getElementsByClassName("shareButton");
-    for (let i=0; i < items.length; i++) {
-        items[i].innerText = "Share"
-    }
-    document.getElementById('share_'+x).innerText = "Copied"
-}
-
-const loadPosts = async (x, topic) => {
-
-    if (pageTypes[cPageType] == 'user') {
+const loadPosts = async (topic) => {
+    if (currentPageType == 'user') {
         user = window.location.href.split('/').pop()
         return loadUserPage(user)
     }
     getUser()
-    if (isUserLoggedIn) {
-
-    }
-    if (!isUserLoggedIn) {
-        document.getElementById("logout_button").style.display = 'block'
-    }
     
     if (topic == null || topic == "") {
         topic = "all"
     }
-    if (pageTypes[cPageType] == 'topic') {
-        url = window.location.href
-        topic = url.split('/')[4]
-    } 
-    if (pageTypes[cPageType] == 'post') { // on a specific post page, load only that one post & comments
+
+    if (currentPageType == 'topic') {
+        currentPageCategory = window.location.href
+        topic = currentPageCategory.split('/')[4]
+    }
+
+    if (currentPageType == 'post') { // on a specific post page, load only that one post & comments
         url = window.location.href
         postid = url.split('/posts/')[1]
         const response = await fetch('/api/get/posts/'+postid)
         const data = await response.json()
-        if (data.status == "error") {
-            window.location.href = '/login'
+        if (data.status != "ok") {
+            if (data.status == "error") {
+                window.location.href = '/login'
+            }
         }
         document.getElementById("postsArray").innerHTML = ""
         if (data.length == 0 || data.error == 'No post found') {
-            document.getElementById("postsArray").innerHTML = "<div style='color:white'>No post found. It may have been deleted. </div>"
+            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No post found. It may have been deleted. </span>"
         } else {
             let post = Object.create(postObject)
             post.title = data.title
@@ -709,10 +692,9 @@ const loadPosts = async (x, topic) => {
             post.current_user_downvoted = data.current_user_downvoted
             post.current_user_admin = data.current_user_admin
 
-            posts.push(post)
             post.display()
             expandDesc(post.id)
-            cID = post.id
+            currentPostID = post.id
             for (let i=0;i<data.comments.length;i++) {
                 let com = Object.create(commentObject)
                 com.body = data.comments[i].body
@@ -722,7 +704,7 @@ const loadPosts = async (x, topic) => {
                 com.posterID = data.comments[i].posterID
                 com.date = data.comments[i].date
                 com.users_voted = data.comments[i].users_voted
-                com.parentID = cID
+                com.parentID = currentPostID
                 com.nested_comments = data.comments[i].nested_comments
 
                 com.current_user_voted = data.comments[i].current_user_voted
@@ -730,33 +712,28 @@ const loadPosts = async (x, topic) => {
                 com.display()
                 
                 comment_count.push(com.id)
-                commentParentPair.push(com.parentID)
                 commentBodies.push(com.body)
             }
             
-            
-            if (x != 0) {
-                expandDesc(x)
-            }
             topFunction()
             storeAndDisplayTopics()
 
         }
     } else {
-        request = '/api/get/'+topic+'/'+cPage
+        request = '/api/get/'+topic+'/'+ pageNumber
 
-        if (pageTypes[cPageType] == 'all') {
-            request = '/api/get/'+topic+'/'+cPage
+        if (currentPageType == 'all') {
+            request = '/api/get/'+topic+'/'+ pageNumber
         }
-        if (pageTypes[cPageType] == 'topic') {
-            request = '/api/get/'+topic+'/'+cPage
+        if (currentPageType == 'topic') {
+            request = '/api/get/'+topic+'/'+ pageNumber
         }
         const response = await fetch(request)
         const data = await response.json()
 
         document.getElementById("postsArray").innerHTML = ""
         if (data.length == 0) {
-            document.getElementById("postsArray").innerHTML = "<div style='color:white'>No posts... yet!</div>"
+            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
         }
 
         for(let i=0; i < data.length;i++) {
@@ -785,7 +762,6 @@ const loadPosts = async (x, topic) => {
             post.current_user_downvoted = data[i].current_user_downvoted
             post.current_user_admin = data[i].current_user_admin
 
-            posts.push(post)
             post.display()
         }
         
@@ -793,7 +769,7 @@ const loadPosts = async (x, topic) => {
         storeAndDisplayTopics()
     }
 
-    cTopic = topic
+    currentTopic = topic
 }
 
 const loadUserPage = async(user) => {
@@ -829,7 +805,6 @@ const loadUserPage = async(user) => {
         post.current_user_downvoted = data[i].current_user_downvoted
         post.current_user_admin = data[i].current_user_admin
 
-        posts.push(post)
         post.display()
     }
     topFunction()
@@ -1046,7 +1021,7 @@ const comment_nested = async (postid, body, commentparentID) => {
         
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
-            voteCom(data.id, cID, true, commentparentID)
+            voteCom(data.id, currentPostID, true, commentparentID)
         }
 
         document.getElementById("ncContainer_"+commentparentID).style.display = 'block'
@@ -1062,24 +1037,24 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     if (document.getElementById("newPost_div").style.display == 'block') {
         document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById("post-button").innerHTML = "Create new post"
+        document.getElementById("post-button").innerHTML = "New post"
         document.getElementById("newPost_logs").innerHTML = ""
-        document.getElementById("newPost_topic").value = cTopic
+        document.getElementById("newPost_topic").value = currentTopic
     } else {
         document.getElementById("newPost_div").style.display = 'block'
         document.getElementById("post-button").innerHTML = "Collapse"
-        document.getElementById("newPost_topic").value = cTopic
+        document.getElementById("newPost_topic").value = currentTopic
     }
 }
 
 function launch() { 
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
-    loadPosts(0, "")
+    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber + nextPageStr
+    loadPosts("")
 }
 
-if (pageTypes[cPageType] != 'user') {
+if (currentPageType != 'user') {
     document.getElementById("newPost_submit_button").onclick = function() {
         postTitle = document.getElementById("newPost_name").value
         if ((document.getElementById("newPost_topic").value).replace(" ","") == "" || (document.getElementById("newPost_topic").value).replace(" ","") == null || (document.getElementById("newPost_topic").value).replace(" ","") == undefined) {
@@ -1171,7 +1146,7 @@ if (pageTypes[cPageType] != 'user') {
 
 
 
-if (pageTypes[cPageType] == 'post') {
+if (currentPageType == 'post') {
     document.getElementById("newCom_submit").onclick = function() {
         comment()
         document.getElementById("newCom_body").value = ""
@@ -1243,9 +1218,9 @@ const uploadImage = async (x) => {
         body: x
     })
     const data = await fetchResponse.json();
-    const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
+    const currentPageCategory = (JSON.stringify(data.data.image.currentPageCategory)).replace(/["]+/g, '')
 
-    uploadedImageUrls.push(url)
+    uploadedImageUrls.push(currentPageCategory)
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""
@@ -1264,33 +1239,32 @@ function topFunction() {
 }
 
 function prevPage() {
-    if (cPage == 1) {
+    if (pageNumber == 1) {
         return 
     }
-    cPage -= 1
-    if (pageTypes[cPageType] != 'topic') {
-        window.location.href = '/'+cTopic+'/'+cPage
+    pageNumber -= 1
+    if (currentPageType != 'topic') {
+        window.location.href = '/'+currentTopic+'/'+ pageNumber
     }
-    if (pageTypes[cPageType] == 'topic') {
-        window.location.href = '/h/'+cTopic+'/'+cPage
+    if (currentPageType == 'topic') {
+        window.location.href = '/h/'+currentTopic+'/'+ pageNumber
     }
-    loadPosts(0, cTopic)
+    loadPosts(currentTopic)
 
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
+    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber +nextPageStr
 }
 
 function nextPage() {
-    cPage += 1
-    if (pageTypes[cPageType] != 'topic') {
-        window.location.href = '/'+cTopic+'/'+cPage
+    pageNumber += 1
+    if (currentPageType != 'topic') {
+        window.location.href = '/'+currentTopic+'/'+pageNumber
     }
-    if (pageTypes[cPageType] == 'topic') {
-        window.location.href = '/h/'+cTopic+'/'+cPage
+    if (currentPageType == 'topic') {
+        window.location.href = '/h/'+currentTopic+'/'+pageNumber
     }
 
     
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+cPage+nextPageStr
-    //loadPosts(0,cTopic)
+    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+pageNumber+nextPageStr
 
     
 }
