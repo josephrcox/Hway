@@ -53,24 +53,20 @@ function topicdropdownclicked() {
 function currentuserDropdownClicked() {
     document.getElementById("user-dropdown").classList.toggle("show");
 }
-
-
-window.onclick = function(event) {
-    
-    if (!event.target.matches('.topic-dropdown-button')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
+  
+document.onclick = function(e){
+    console.log(e)
+    if(e.target.id !== 'currentUser'){
+        if (document.getElementById('user-dropdown').classList.contains('show')) {
+            document.getElementById('user-dropdown').classList.remove('show');
         }
-        
     }
-    
-        
-}        
+    if(e.target.id !== 'topic-dropdown-button'){
+        if (document.getElementById('topic-dropdown').classList.contains('show')) {
+            document.getElementById('topic-dropdown').classList.remove('show');
+        }
+    }
+};
 
 async function goHome() {
     const response = await fetch('/all')
