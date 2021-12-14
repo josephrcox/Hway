@@ -1,7 +1,8 @@
 
 .descCell img {
 	max-height: 500px;
-	object-fit: scale-down;
+	object-fit: contain;
+	min-height: 10px;
 }
 
 .flex-container {
@@ -114,7 +115,8 @@
 	padding-left:10px;
 	font-style: italic;
 	font-weight: 700;
-	font-size: 25px;
+	font-size: 28px;
+	padding-bottom:2px;
 	background-color: #003366;
 	color:white;
 }
@@ -137,7 +139,7 @@
 	padding-inline: 5px;
 	text-align: center;
 	font-weight: 100;
-	font-size: 15px;
+	font-size: 18px;
 	color:white;
 	user-select: none;
 	margin-top:2px;
@@ -168,6 +170,7 @@
 body {
 	background-color: #001824;
 	font-family: Arial, Helvetica, sans-serif;
+	font-size:larger;
 }
 
 a {
@@ -186,7 +189,7 @@ tbody {
 }
 
 .infoCell {
-	font-size: 12px;
+	font-size: 15px;
 	color: lightblue;
 }
 .voteCount, .commentCount {
@@ -212,7 +215,7 @@ tbody {
 .titleCell {
 	font-weight: 700;
 	user-select: none;
-	font-size:20px;
+	font-size:25px;
 	word-wrap: anywhere;
 }
 .descCell {
@@ -407,7 +410,8 @@ label {
 }
 
 .comInfoCell, .ncInfoCell {
-	font-size: 12px;
+	font-size: 15px;
+	font-style: italic;
 }
 
 .openPostButton, .comreplybutton {
@@ -435,7 +439,7 @@ a:hover { text-decoration: none; color:red; }
 }
 
 .commentCount {
-	font-size:12px;
+	font-size:15px;
 }
 
 .index_item {
@@ -527,7 +531,7 @@ a:visited {
 
 .postImgThumbDiv {
 	height: 55px;
-	margin-left: 30px;
+	margin-left: 5px;
 	width: 72px;
 	margin-right: 10px;
 	margin-top: 1px;
@@ -588,4 +592,8 @@ a:visited {
 	color:white;
 	padding-top:5px;
 	padding-inline:3px;
+	font-size: 17px;
+	width: calc(98% + 0px);
+	overflow-x: auto;
+	white-space: nowrap;
 }

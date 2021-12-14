@@ -53,6 +53,7 @@ if (currentPageType == 'usersheet') {
     
 }
 if (currentPageType == 'topic') { 
+    document.getElementById('sorting_options').style.display = 'block'
     pageNumber = parseInt(window.location.href.split('/')[7])
     sorting = window.location.href.split('/')[5]
     sorting_duration = window.location.href.split('/')[6]
@@ -61,9 +62,11 @@ if (currentPageType == 'index') {
     
 }
 if (currentPageType == 'all') {    
+    document.getElementById('sorting_options').style.display = 'block'
     pageNumber = parseInt(window.location.href.split('/')[6])
 }
 if (currentPageType == 'post') { 
+    document.getElementById('sorting_options').style.display = 'none'
     pageNumber = 1
 }
 if (currentPageType == 'login') { 
@@ -89,6 +92,10 @@ switch (sorting) {
             case "week":
                 document.getElementById('sorting_options_top_week').style.color = '#0066ff'
                 document.getElementById('sorting_options_top_week').style.fontWeight = '700'
+                break;
+            case "month":
+                document.getElementById('sorting_options_top_month').style.color = '#0066ff'
+                document.getElementById('sorting_options_top_month').style.fontWeight = '700'
                 break;
             case "all":
                 document.getElementById('sorting_options_top_all').style.color = '#0066ff'
@@ -369,7 +376,7 @@ const postObject = {
 
         href = this.topic.replace(/^"(.*)"$/, '$1');
         
-        infoCell.innerHTML = "Submitted by "+"<a href='/user/"+this.poster+"'><img src='"+this.poster_avatar_src+"' class='avatarimg'>  <span style='color:blue'>"+this.poster+"</span> </a>in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on " +this.date
+        infoCell.innerHTML = "Submitted by "+"<a href='/user/"+this.poster+"'><img src='"+this.poster_avatar_src+"' class='avatarimg'>  <span style='color:blue'>"+this.poster+"</span> </a>in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on <span style='font-style:italic;'>" +this.date+"</span>"
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -573,7 +580,7 @@ const commentObject = {
             var ncCommentDiv = document.createElement("div")
             ncCommentDiv.setAttribute("class", "ncCommentDiv")
             ncCommentDiv.setAttribute("id", "ncCommentDiv_"+this.nested_comments[i].id)
-            ncCommentDiv.innerHTML += "<span style='color:blue'>"+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"+"<span style='font-size:10px'>"+this.nested_comments[i].date+"</span>"
+            ncCommentDiv.innerHTML += "<span style='color:blue'>"+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"+"<span style='font-size:15px; font-style:italic;'>"+this.nested_comments[i].date+"</span>"
 
             // var ncDate = document.createElement("div")
             // ncDate.innerHTML = this.nested_comments[i].date
@@ -1172,29 +1179,36 @@ if (currentPageType != 'user') {
         if ((document.getElementById("newPost_topic").value).replace(" ","") == "" || (document.getElementById("newPost_topic").value).replace(" ","") == null || (document.getElementById("newPost_topic").value).replace(" ","") == undefined) {
             topic = "all"
         }
+        var myRegEx =  /[^a-z\d]/i;
+        topic = document.getElementById("newPost_topic").value
+    
+        if((myRegEx.test(topic))){
+            return document.getElementById("newPost_logs").innerHTML = "Please enter valid topic. No spaces or characters allowed."
+        }
     
         switch (newPost_type) {
             case 1: // Text
                 if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
-                    document.getElementById("newPost_logs").innerHTML = "Please enter title"
+                    document.getElementById("newPost_logs").innerHTML = "Please enter title."
                 } else {
                     createNewPost(1)
                 }
                 break;
             case 2: // Link
+            
                 if (postTitle == "" || postTitle == null) {
-                    document.getElementById("newPost_logs").innerHTML = "Please enter title"
+                    document.getElementById("newPost_logs").innerHTML = "Please enter title."
                 } else {
                     if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
                         createNewPost(2)
                     } else {
-                        document.getElementById("newPost_logs").innerHTML = "Please enter valid URL"
+                        document.getElementById("newPost_logs").innerHTML = "Please enter valid URL."
                     }
                 }
                 break;
             case 3: // Media
                 if (postTitle == "" || postTitle == null) {
-                    document.getElementById("newPost_logs").innerHTML = "Please enter title"
+                    document.getElementById("newPost_logs").innerHTML = "Please enter title."
                 } else {
                    createNewPost(3)
                 }
@@ -1269,8 +1283,14 @@ if (currentPageType == 'post') {
 const createNewPost = async(posttype) => { 
     title = document.getElementById("newPost_name").value
     body = document.getElementById("newPost_desc").value
+
+    var myRegEx =  /[^a-z\d]/i;
     topic = document.getElementById("newPost_topic").value
     link = document.getElementById("newPost_link").value
+
+    if((myRegEx.test(topic))){
+        return document.getElementById("newPost_logs").innerHTML = "Please enter valid topic. No spaces or characters allowed."
+    }
 
     if (topic == "" || topic == null) {
         topic = "all"

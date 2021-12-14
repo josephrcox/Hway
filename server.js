@@ -267,7 +267,7 @@ app.get('/all/:sorting/:duration/:page', async(req, res) => {
 })
 
 app.get('/all', async(req,res) => {
-	res.redirect('/all/top/day/1')
+	res.redirect('/all/top/week/1')
 })
 
 app.get('/h/:topic/:sorting/:duration/:page', async(req,res) => {
