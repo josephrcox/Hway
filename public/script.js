@@ -10,6 +10,9 @@ let pageNumber = 1 // Tracking what page number the user is on
 let currentTopic = "" // Current topic the user is on, i.e. 'bicycling'
 let currentPostID = "" // Current post ID that is loaded, only when on a user page such as http://localhost:3000/posts/61ab8741f6fadead68120454
 let isUserLoggedIn = false // Checks if a user is logged in or not. Not required for access unless enabled in backend
+let sorting = window.location.href.split('/')[4]
+let sorting_duration = window.location.href.split('/')[5]
+console.log(sorting, sorting_duration)
 
 const pageTypes = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register',] // This is used to track what page type we are on
 
@@ -50,13 +53,15 @@ if (currentPageType == 'usersheet') {
     
 }
 if (currentPageType == 'topic') { 
-    pageNumber = parseInt(window.location.href.split('/')[5])
+    pageNumber = parseInt(window.location.href.split('/')[7])
+    sorting = window.location.href.split('/')[5]
+    sorting_duration = window.location.href.split('/')[6]
 }
 if (currentPageType == 'index') { 
     
 }
 if (currentPageType == 'all') {    
-    pageNumber = parseInt(window.location.href.split('/')[4])
+    pageNumber = parseInt(window.location.href.split('/')[6])
 }
 if (currentPageType == 'post') { 
     pageNumber = 1
@@ -74,6 +79,113 @@ if (currentPageType == 'login' || currentPageType == 'register') { // If the use
     document.getElementById('header-buttons').style.display = 'flex'
 }
 
+switch (sorting) {
+    case "top":
+        switch (sorting_duration) {
+            case "day":
+                document.getElementById('sorting_options_top_today').style.color = '#0066ff'
+                document.getElementById('sorting_options_top_today').style.fontWeight = '700'
+                break;
+            case "week":
+                document.getElementById('sorting_options_top_week').style.color = '#0066ff'
+                document.getElementById('sorting_options_top_week').style.fontWeight = '700'
+                break;
+            case "all":
+                document.getElementById('sorting_options_top_all').style.color = '#0066ff'
+                document.getElementById('sorting_options_top_all').style.fontWeight = '700'
+                break;
+        }
+        break;
+    case "new": 
+        document.getElementById('sorting_options_new').style.color = '#0066ff'
+        document.getElementById('sorting_options_new').style.fontWeight = '700'
+        break;
+}
+
+document.getElementById('sorting_options_top_today').addEventListener('click', function (event) {
+    sortingOptions = document.getElementsByClassName('sorting_options')
+    for (let i=0;i<sortingOptions.length;i++) {
+        sortingOptions[i].style.color = 'white'
+        sortingOptions[i].style.fontWeight = '300'
+    }
+    sorting = "top"
+    sorting_duration = "day"
+    document.getElementById('sorting_options_top_today').style.color = '#0066ff'
+    document.getElementById('sorting_options_top_today').style.fontWeight = '700'
+    if (currentPageType == "topic") {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/day/1'
+    } else {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/top/day/1'
+    }
+    
+});
+document.getElementById('sorting_options_top_week').addEventListener('click', function (event) {
+    sortingOptions = document.getElementsByClassName('sorting_options')
+    for (let i=0;i<sortingOptions.length;i++) {
+        sortingOptions[i].style.color = 'white'
+        sortingOptions[i].style.fontWeight = '300'
+    }
+    sorting = "top"
+    sorting_duration = "week"
+    document.getElementById('sorting_options_top_week').style.color = '#0066ff'
+    document.getElementById('sorting_options_top_week').style.fontWeight = '700'
+    if (currentPageType == "topic") {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/week/1'
+    } else {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/top/week/1'
+    }
+    
+});
+
+document.getElementById('sorting_options_top_month').addEventListener('click', function (event) {
+    sortingOptions = document.getElementsByClassName('sorting_options')
+    for (let i=0;i<sortingOptions.length;i++) {
+        sortingOptions[i].style.color = 'white'
+        sortingOptions[i].style.fontWeight = '300'
+    }
+    sorting = "top"
+    sorting_duration = "month"
+    document.getElementById('sorting_options_top_month').style.color = '#0066ff'
+    document.getElementById('sorting_options_top_month').style.fontWeight = '700'
+    if (currentPageType == "topic") {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/week/1'
+    } else {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/top/month/1'
+    }  
+});
+document.getElementById('sorting_options_top_all').addEventListener('click', function (event) {
+    sortingOptions = document.getElementsByClassName('sorting_options')
+    for (let i=0;i<sortingOptions.length;i++) {
+        sortingOptions[i].style.color = 'white'
+        sortingOptions[i].style.fontWeight = '300'
+    }
+    sorting = "top"
+    sorting_duration = "all"
+    document.getElementById('sorting_options_top_all').style.color = '#0066ff'
+    document.getElementById('sorting_options_top_all').style.fontWeight = '700'
+    if (currentPageType == "topic") {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/all/1'
+    } else {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/top/all/1'
+    }
+    
+});
+document.getElementById('sorting_options_new').addEventListener('click', function (event) {
+    sortingOptions = document.getElementsByClassName('sorting_options')
+    for (let i=0;i<sortingOptions.length;i++) {
+        sortingOptions[i].style.color = 'white'
+        sortingOptions[i].style.fontWeight = '300'
+    }
+    sorting = "new"
+    sorting_duration = "all"
+    document.getElementById('sorting_options_new').style.color = '#0066ff'
+    document.getElementById('sorting_options_new').style.fontWeight = '700'
+    if (currentPageType == "topic") {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/new/all/1'
+    } else {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/new/all/1'
+    }
+});
 
 // The randomize function is for creating bulk posts, takes a value (x) which is the quantity of posts to be created, no limit
 async function randomizer(x) {
@@ -720,13 +832,13 @@ const loadPosts = async (topic) => {
 
         }
     } else {
-        request = '/api/get/'+topic+'/'+ pageNumber
+        request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+ pageNumber
 
         if (currentPageType == 'all') {
-            request = '/api/get/'+topic+'/'+ pageNumber
+            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber
         }
         if (currentPageType == 'topic') {
-            request = '/api/get/'+topic+'/'+ pageNumber
+            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber
         }
         const response = await fetch(request)
         const data = await response.json()
@@ -1244,10 +1356,10 @@ function prevPage() {
     }
     pageNumber -= 1
     if (currentPageType != 'topic') {
-        window.location.href = '/'+currentTopic+'/'+ pageNumber
+        window.location.href = '/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+ pageNumber
     }
     if (currentPageType == 'topic') {
-        window.location.href = '/h/'+currentTopic+'/'+ pageNumber
+        window.location.href = '/h/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+ pageNumber
     }
     loadPosts(currentTopic)
 
@@ -1257,10 +1369,10 @@ function prevPage() {
 function nextPage() {
     pageNumber += 1
     if (currentPageType != 'topic') {
-        window.location.href = '/'+currentTopic+'/'+pageNumber
+        window.location.href = '/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+pageNumber
     }
     if (currentPageType == 'topic') {
-        window.location.href = '/h/'+currentTopic+'/'+pageNumber
+        window.location.href = '/h/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+pageNumber
     }
 
     

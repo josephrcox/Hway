@@ -105,7 +105,7 @@
   }
 }
 #sitebody {
-	padding-top:10px;
+	padding-top:5px;
 	width: 100%;
 }
 
@@ -582,4 +582,10 @@ a:visited {
 
 .ncInfoCell {
 	margin-top: 4px;
+}
+
+.sorting_options {
+	color:white;
+	padding-top:5px;
+	padding-inline:3px;
 }

@@ -20,6 +20,7 @@ topicArray = []
 topicCount = []
 postsonpage = []
 postsPerPage = 30;
+let ms_in_day = 86400000
 
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
@@ -253,7 +254,7 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
-app.get('/all/:page', async(req, res) => {
+app.get('/all/:sorting/:duration/:page', async(req, res) => {
 	valid = true
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
@@ -266,15 +267,15 @@ app.get('/all/:page', async(req, res) => {
 })
 
 app.get('/all', async(req,res) => {
-	res.redirect('/all/1')
+	res.redirect('/all/top/day/1')
 })
 
-app.get('/h/:topic/:page', async(req,res) => {
+app.get('/h/:topic/:sorting/:duration/:page', async(req,res) => {
 	res.render('home.ejs', {topic:"- "+req.params.topic})
 })
 
 app.get('/h/:topic/', async(req,res) => {
-	res.redirect('/h/'+req.params.topic+'/1')
+	res.redirect('/h/'+req.params.topic+'/top/day/1')
 })
 
 app.get('/posts/:postid', async(req,res) => {	
@@ -496,9 +497,12 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 	})
 })
 
-app.get('/api/get/:topic/:page', async(req, res) => {	
+app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {	
 	postsonpage = []
 	page = req.params.page
+	sorting = req.params.sorting
+	duration = req.params.duration
+
 	if (req.params.topic == "all_users") {
 		return
 	}
@@ -515,16 +519,59 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 		}
 	}
 	
+	sortingJSON = {}
+
+	if (sorting == "top") {
+		if (duration == "day") {
+			timestamp24hoursago = (Date.now() - ms_in_day)
+			sortingJSON = {total_votes: -1}
+		} else if (duration == "week") {
+			timestamp1weekago = (Date.now() - (ms_in_day*7))
+			sortingJSON = {total_votes: -1}
+		} else if (duration == "month") {
+			timestamp1monthago = (Date.now() - (ms_in_day*30))
+			sortingJSON = {total_votes: -1}
+		} else if (duration == "all") {
+			sortingJSON = {total_votes: -1}
+		}
+		
+	} else if (sorting == "new") {
+		sortingJSON = {timestamp: -1}
+	}
+	
+	console.log(sortingJSON)
 	if (req.params.topic == "all") {
-		Post.find({status:'active'}).sort({total_votes: -1}).exec(async function(err, posts){
+		Post.find({status:'active'}).sort(sortingJSON).exec(async function(err, posts){
 
 			if(err){
 			} else{
-				totalPosts = posts.length
+				filteredPosts = []
+
+				for (let x=0;x<posts.length;x++) {
+					if (sorting == "top" && duration == "day") {
+						if (posts[x].timestamp >= timestamp24hoursago) {
+							filteredPosts.push(posts[x])
+						}
+					} else if (sorting == "top" && duration == "week"){
+						if (posts[x].timestamp >= timestamp1weekago) {
+							filteredPosts.push(posts[x])
+						}
+					} else if (sorting == "top" && duration == "month"){
+						if (posts[x].timestamp >= timestamp1monthago) {
+							filteredPosts.push(posts[x])
+						}
+					} else if (sorting == "top" && duration == "all") {
+						filteredPosts.push(posts[x])
+					} else if (sorting == "new") {
+						filteredPosts.push(posts[x])
+					} 
+				}
+
+				totalPosts = filteredPosts.length
 				totalPages = Math.ceil((totalPosts)/postsPerPage)
 				lastPagePosts = totalPosts % postsPerPage
 
-				postsonpage = await paginate(posts, postsPerPage, page)
+				postsonpage = await paginate(filteredPosts, postsPerPage, page)
 
 				for (let i=0;i<postsonpage.length;i++) {
 					if (postsonpage[i].posterID == userID) {
@@ -578,12 +625,34 @@ app.get('/api/get/:topic/:page', async(req, res) => {
 				} catch(err) {
 					console.log(err)
 				}
+
+				filteredPosts = []
+
+				for (let x=0;x<posts.length;x++) {
+					if (sorting == "top" && duration == "day") {
+						if (posts[x].timestamp >= timestamp24hoursago) {
+							filteredPosts.push(posts[x])
+						}
+					} else if (sorting == "top" && duration == "week"){
+						if (posts[x].timestamp >= timestamp1weekago) {
+							filteredPosts.push(posts[x])
+						}
+					} else if (sorting == "top" && duration == "month"){
+						if (posts[x].timestamp >= timestamp1monthago) {
+							filteredPosts.push(posts[x])
+						}
+					} else if (sorting == "top" && duration == "all") {
+						filteredPosts.push(posts[x])
+					} else if (sorting == "new") {
+						filteredPosts.push(posts[x])
+					} 
+				}
 				
-				totalPosts = posts.length
+				totalPosts = filteredPosts.length
 				totalPages = Math.ceil((totalPosts)/postsPerPage)
 				lastPagePosts = totalPosts % postsPerPage
 
-				postsonpage = await paginate(posts, postsPerPage, page)
+				postsonpage = await paginate(filteredPosts, postsPerPage, page)
 				
 				for (i=0;i<postsonpage.length;i++) {
 					if (postsonpage[i].posterID == userID) {
