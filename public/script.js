@@ -155,7 +155,7 @@ document.getElementById('sorting_options_top_month').addEventListener('click', f
     document.getElementById('sorting_options_top_month').style.color = '#0066ff'
     document.getElementById('sorting_options_top_month').style.fontWeight = '700'
     if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/week/1'
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/month/1'
     } else {
         window.location.href = '/'+window.location.href.split('/')[3]+'/top/month/1'
     }  

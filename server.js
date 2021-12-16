@@ -608,20 +608,23 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 			if(err){
 			} else{
 				try {
-					User.findById(userID, async function(err, docs) {
-						if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
-							index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
-							currentCount = docs.statistics.topics.visited_array[index][2]
-							docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
-	
-						} else {
-							array = docs.statistics.topics.visited_array
-							array.push([req.params.topic, Date.now(), 1])
-							docs.statistics.topics.visited_array = array
-						}
-						
-						docs.update()
+					if (userID != null) {
+						User.findById(userID, async function(err, docs) {
+							console.log(docs)
+							if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+								index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
+								currentCount = docs.statistics.topics.visited_array[index][2]
+								docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
+		
+							} else {
+								array = docs.statistics.topics.visited_array
+								array.push([req.params.topic, Date.now(), 1])
+								docs.statistics.topics.visited_array = array
+							}
+							
+							docs.update()
 					})
+				}
 				} catch(err) {
 					console.log(err)
 				}
