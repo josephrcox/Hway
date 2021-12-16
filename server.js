@@ -275,7 +275,7 @@ app.get('/h/:topic/:sorting/:duration/:page', async(req,res) => {
 })
 
 app.get('/h/:topic/', async(req,res) => {
-	res.redirect('/h/'+req.params.topic+'/top/day/1')
+	res.redirect('/h/'+req.params.topic+'/hot/all/1')
 })
 
 app.get('/posts/:postid', async(req,res) => {	
@@ -551,7 +551,6 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 				filteredPosts = []
 
 				for (let x=0;x<posts.length;x++) {
-					console.log(posts[x].title, posts[x].last_touched_timestamp)
 					if (sorting == "top" && duration == "day") {
 						if (posts[x].timestamp >= timestamp24hoursago) {
 							filteredPosts.push(posts[x])
@@ -576,11 +575,13 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 									console.log(err)
 								}
 								else{
-									console.log("Updated Post : ", docs);
+									console.log("Updated Post")
 								}
 							})
 						}
-						posts.sort( compare );
+						if (posts.length > 1) {
+							posts.sort( compare );
+						}
 						filteredPosts = posts
 					}
 				}
@@ -628,7 +629,6 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 				try {
 					if (userID != null) {
 						User.findById(userID, async function(err, docs) {
-							console.log(docs)
 							if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
 								index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
 								currentCount = docs.statistics.topics.visited_array[index][2]
@@ -666,7 +666,23 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 						filteredPosts.push(posts[x])
 					} else if (sorting == "new") {
 						filteredPosts.push(posts[x])
-					} 
+					} else if (sorting == "hot") {
+						if (posts[x].last_touched_timestamp == null) {
+							now = Date.now()
+							Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
+								if (err){
+									console.log(err)
+								}
+								else{
+									console.log("Updated Post")
+								}
+							})
+						}
+						if (posts.length > 1) {
+							posts.sort( compare );
+						}
+						filteredPosts = posts
+					}
 				}
 				
 				totalPosts = filteredPosts.length
@@ -942,9 +958,7 @@ app.post('/api/post/post', async(req, res) => {
 			timestamp:timestamp,
 			status:"active"
 		})
-		console.log(body.indexOf('mpwknd199999999'))
 		if (body.indexOf('mpwknd199999999') == -1) {
-			console.log(body)
 			User.findById(userID, function(err, docs) {
 				docs.statistics.posts.created_num += 1
 				docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
@@ -962,7 +976,6 @@ app.post('/api/post/post', async(req, res) => {
 
 app.post('/api/post/comment/', async(req, res) => {
 	const {body:reqbody, id} = req.body
-	console.log(id)
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
