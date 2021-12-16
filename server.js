@@ -117,7 +117,7 @@ app.get('/', async(req, res) => {
 		console.log(err)
 	}
 	
-    res.render('index.ejs', {topic:""})
+    res.redirect('/all')
 	
 })
 
@@ -267,7 +267,7 @@ app.get('/all/:sorting/:duration/:page', async(req, res) => {
 })
 
 app.get('/all', async(req,res) => {
-	res.redirect('/all/top/week/1')
+	res.redirect('/all/hot/all/1')
 })
 
 app.get('/h/:topic/:sorting/:duration/:page', async(req,res) => {
@@ -527,6 +527,7 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "week") {
 			timestamp1weekago = (Date.now() - (ms_in_day*7))
+			console.log(Date.now() - (ms_in_day*7))
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "month") {
 			timestamp1monthago = (Date.now() - (ms_in_day*30))
@@ -537,6 +538,8 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 		
 	} else if (sorting == "new") {
 		sortingJSON = {timestamp: -1}
+	} else if (sorting == "hot") {
+		sortingJSON = {total_votes: -1}
 	}
 	
 	console.log(sortingJSON)
@@ -548,6 +551,7 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 				filteredPosts = []
 
 				for (let x=0;x<posts.length;x++) {
+					console.log(posts[x].title, posts[x].last_touched_timestamp)
 					if (sorting == "top" && duration == "day") {
 						if (posts[x].timestamp >= timestamp24hoursago) {
 							filteredPosts.push(posts[x])
@@ -564,7 +568,21 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 						filteredPosts.push(posts[x])
 					} else if (sorting == "new") {
 						filteredPosts.push(posts[x])
-					} 
+					} else if (sorting == "hot") {
+						if (posts[x].last_touched_timestamp == null) {
+							now = Date.now()
+							Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
+								if (err){
+									console.log(err)
+								}
+								else{
+									console.log("Updated Post : ", docs);
+								}
+							})
+						}
+						posts.sort( compare );
+						filteredPosts = posts
+					}
 				}
 
 				totalPosts = filteredPosts.length
@@ -977,6 +995,9 @@ app.post('/api/post/comment/', async(req, res) => {
 		Post.findById(id, function(err, docs) {
 			//console.logdocs)
 			commentArray = docs.comments
+			Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
+				console.log(err, update)
+			})
 			
 			commentid = Math.floor(Math.random() * Date.now()) // generates a random id
 			newComment = {
@@ -1112,53 +1133,63 @@ app.put('/vote/:id/:y', function(req,res) {
 			if (change == 1) {
 				if (user_already_upvoted) {
 					// do nothing
-				}
-				if (user_already_downvoted) {
-					// remove the downvote, total_votes+1
-					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes-1), total_votes: (total_votes+1)},  $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
-						User.findById(posterid, function(err, docs) {
-							docs.statistics.score += 1
-							docs.save()
-						})
-						return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'none'})
+				} else {
+					Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
+						console.log(err, update)
 					})
-				}
-				if (!user_already_downvoted && !user_already_upvoted) {
-					// vote up
-					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes+1), total_votes: (total_votes+1)},  $push: {users_upvoted: userID} }, {}, function (err, numReplaced) {
-						User.findById(posterid, function(err, docs) {
-							docs.statistics.score += 1
-							docs.save()
+					if (user_already_downvoted) {
+						// remove the downvote, total_votes+1
+						Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes-1), total_votes: (total_votes+1)},  $pull: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+							User.findById(posterid, function(err, docs) {
+								docs.statistics.score += 1
+								docs.save()
+							})
+							return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'none'})
 						})
-						return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'up'})
-					})
+					}
+					if (!user_already_downvoted && !user_already_upvoted) {
+						// vote up
+						Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes+1), total_votes: (total_votes+1)},  $push: {users_upvoted: userID} }, {}, function (err, numReplaced) {
+							User.findById(posterid, function(err, docs) {
+								docs.statistics.score += 1
+								docs.save()
+							})
+							return res.json({"status":'ok', 'newtotal':total_votes+1, 'gif':'up'})
+						})
+					}
 				}
+				
 			}
 
 			if (change == -1) {
 				if (user_already_downvoted) {
 					// do nothing
-				}
-				if (user_already_upvoted) {
-					// remove the upvote, total_votes-1
-					Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes-1), total_votes: (total_votes-1)},  $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
-						User.findById(posterid, function(err, docs) {
-							docs.statistics.score -= 1
-							docs.save()
-						})
-						return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'none'})
+				} else {
+					Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
+						console.log(err, update)
 					})
-				}
-				if (!user_already_downvoted && !user_already_upvoted) {
-					// vote down
-					Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes+1), total_votes: (total_votes-1)},  $push: {users_downvoted: userID} }, {}, function (err, numReplaced) {
-						User.findById(posterid, function(err, docs) {
-							docs.statistics.score -= 1
-							docs.save()
+					if (user_already_upvoted) {
+						// remove the upvote, total_votes-1
+						Post.findOneAndUpdate({ _id: id }, { $set: {upvotes: (upvotes-1), total_votes: (total_votes-1)},  $pull: {users_upvoted: userID} }, {}, function (err, numReplaced) {
+							User.findById(posterid, function(err, docs) {
+								docs.statistics.score -= 1
+								docs.save()
+							})
+							return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'none'})
 						})
-						return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'down'})
-					})
+					}
+					if (!user_already_downvoted && !user_already_upvoted) {
+						// vote down
+						Post.findOneAndUpdate({ _id: id }, { $set: {downvotes: (downvotes+1), total_votes: (total_votes-1)},  $push: {users_downvoted: userID} }, {}, function (err, numReplaced) {
+							User.findById(posterid, function(err, docs) {
+								docs.statistics.score -= 1
+								docs.save()
+							})
+							return res.json({"status":'ok', 'newtotal':total_votes-1, 'gif':'down'})
+						})
+					}
 				}
+				
 			}
 		
 		})
@@ -1287,6 +1318,10 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
+	Post.findByIdAndUpdate(pID, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
+		console.log(err, update)
+	})
+
 	if (nestedBoolean == "true") {
 		try {
 			Post.findById(pID, function(err, docs) {
@@ -1338,6 +1373,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 		}
 	}
 	if (nestedBoolean == "false" || nestedBoolean == null) {
+		
 		try {
 			Post.findById(pID, function(err, docs) {
 				oldComArray = docs.comments
@@ -1414,6 +1450,16 @@ function deleteTestPosts() {
 		console.log(err)
 	}
 	
+}
+
+function compare( a, b ) {
+	if ( a.last_touched_timestamp < b.last_touched_timestamp ){
+	  return 1;
+	}
+	if ( a.last_touched_timestamp > b.last_touched_timestamp ){
+	  return -1;
+	}
+	return 0;
 }
 
 

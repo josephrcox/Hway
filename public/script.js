@@ -107,6 +107,10 @@ switch (sorting) {
         document.getElementById('sorting_options_new').style.color = '#0066ff'
         document.getElementById('sorting_options_new').style.fontWeight = '700'
         break;
+    case "hot": 
+        document.getElementById('sorting_options_hot').style.color = '#0066ff'
+        document.getElementById('sorting_options_hot').style.fontWeight = '700'
+        break;
 }
 
 document.getElementById('sorting_options_top_today').addEventListener('click', function (event) {
@@ -191,6 +195,22 @@ document.getElementById('sorting_options_new').addEventListener('click', functio
         window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/new/all/1'
     } else {
         window.location.href = '/'+window.location.href.split('/')[3]+'/new/all/1'
+    }
+});
+document.getElementById('sorting_options_hot').addEventListener('click', function (event) {
+    sortingOptions = document.getElementsByClassName('sorting_options')
+    for (let i=0;i<sortingOptions.length;i++) {
+        sortingOptions[i].style.color = 'white'
+        sortingOptions[i].style.fontWeight = '300'
+    }
+    sorting = "hot"
+    sorting_duration = "all"
+    document.getElementById('sorting_options_new').style.color = '#0066ff'
+    document.getElementById('sorting_options_new').style.fontWeight = '700'
+    if (currentPageType == "topic") {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/hot/all/1'
+    } else {
+        window.location.href = '/'+window.location.href.split('/')[3]+'/hot/all/1'
     }
 });
 
