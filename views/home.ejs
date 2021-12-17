@@ -9,9 +9,11 @@
        <div id="newPost_div">
           <div class="newPost_container">
              <div id="newPost_inputs">
-                <button type="button" class="newPost_types" id="newPost_type_text" style="background-color:lightgreen">Text</button>
-                <button type="button" class="newPost_types" id="newPost_type_link">Link</button>
-                <button type="button" class="newPost_types" id="newPost_type_media">Media</button>
+                <div class="newPost_types_div">
+                  <div class="newPost_types" id="newPost_type_text" style="background-color:darkgreen">Text</div>
+                  <div class="newPost_types" id="newPost_type_link">Link</div>
+                  <div class="newPost_types" id="newPost_type_media">Media</div>
+               </div>
 
                 <label for="name" id="newPost_name_label" class="newPost_name">Title</label>
                 <textarea id="newPost_name" name="name" size="50" rows="2" cols="30" autocomplete="off" maxlength="150"></textarea>

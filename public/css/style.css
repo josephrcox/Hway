@@ -1,3 +1,16 @@
+:root {
+	--bg-color:#001824;
+	--foreground-1:#003366;
+	--foreground-2:#327da8;
+	--foreground-3:hsl(195, 77.6%, 19.2%);
+	--foreground-4:cornflowerblue;
+	/* --bg-color:#02010A;
+	--foreground-1:#140152;
+	--foreground-2:#22007C;
+	--foreground-3:#0D00A4;
+	--foreground-4:#080425; */
+}
+
 
 .descCell img {
 	max-height: 500px;
@@ -12,7 +25,7 @@
   	border-left: 1px solid black;
 	border-right:1px solid black; 
 	border-top:1px solid black;
-	background-color: #003366;
+	background-color: var(--foreground-1);
 }
 
 .commentButton {
@@ -24,9 +37,15 @@
 }
 .newPost_types {
   height:35px;
-	color: black;
+	color: white;
 	width: 100%;
-	border: 1px dotted gray;
+	text-align: center;
+	padding-top:5px;
+	font-weight: 700;
+	text-decoration: none;
+}
+.newPost_types_div {
+	display:flex;
 }
 #newPost_pw {
 	width:80%;
@@ -34,7 +53,7 @@
 #newPost_inputs {
 	display: flex;
 	flex-direction: column;
-	padding-top: 10px;
+	padding-top: 5px;
 	
 }
 
@@ -72,7 +91,7 @@
 		flex-direction: row;
 	}
 	#newPost_name, #newPost_desc, #newPost_link, #newPost_topic {
-		width: 95%;
+		width: 98%;
 	}
 	#button_sendtotop:hover {
 		background-color: #555;
@@ -117,7 +136,7 @@
 	font-weight: 700;
 	font-size: 28px;
 	padding-bottom:2px;
-	background-color: #003366;
+	background-color: var(--foreground-1);
 	color:white;
 }
 
@@ -131,7 +150,7 @@
 	border-right: 1px solid black;
 	border-left: 1px solid black;
 	border-top:1px solid black;
-	background-color: #327da8;
+	background-color: var(--foreground-2);
 	width:calc(98% + 3px);
 }
 
@@ -157,9 +176,9 @@
 
 #newPost_div {
 	border: 1px solid black;
-	background-color: cornflowerblue;
+	background-color: var(--foreground-4);
 	color: whitesmoke;
-	padding-inline: 1em;
+	padding-inline: 10px;
 	padding-bottom: 1em;
 	margin-left: 1px;
 	position: relative;
@@ -168,7 +187,7 @@
 }
 
 body {
-	background-color: #001824;
+	background-color: var(--bg-color);
 	font-family: Arial, Helvetica, sans-serif;
 	font-size:larger;
 }
@@ -306,7 +325,7 @@ label {
 }
 
 .voteDiv {
-	background-color: hsl(195, 77.6%, 19.2%);
+	background-color: var(--foreground-3);
 }
 
 .comVoteDiv {
@@ -338,7 +357,7 @@ label {
 }
 
 .topic-dropdown-button {
-	background-color: #327da8;
+	background-color: var(--foreground-2);
 	color: white;
 	border: none;
 	cursor: pointer;

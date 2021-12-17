@@ -1240,7 +1240,7 @@ if (currentPageType != 'user') {
         
     document.getElementById("newPost_type_text").onclick = function() {
         newPost_type = 1;
-        document.getElementById("newPost_type_text").style.backgroundColor = "lightgreen"
+        document.getElementById("newPost_type_text").style.backgroundColor = "darkgreen"
         document.getElementById("newPost_type_link").style.backgroundColor = ""
         document.getElementById("newPost_type_media").style.backgroundColor = ""
 
@@ -1256,7 +1256,7 @@ if (currentPageType != 'user') {
     document.getElementById("newPost_type_link").onclick = function() {
         newPost_type = 2;
         document.getElementById("newPost_type_text").style.backgroundColor = ""
-        document.getElementById("newPost_type_link").style.backgroundColor = "lightgreen"
+        document.getElementById("newPost_type_link").style.backgroundColor = "darkgreen"
         document.getElementById("newPost_type_media").style.backgroundColor = ""
 
         document.getElementById("newPost_link").style.display = "block"
@@ -1272,7 +1272,7 @@ if (currentPageType != 'user') {
         newPost_type = 3;
         document.getElementById("newPost_type_text").style.backgroundColor = ""
         document.getElementById("newPost_type_link").style.backgroundColor = ""
-        document.getElementById("newPost_type_media").style.backgroundColor = "lightgreen"
+        document.getElementById("newPost_type_media").style.backgroundColor = "darkgreen"
 
         document.getElementById("newPost_desc").style.display = "none"
         document.getElementById("newPost_desc_label").style.display = "none"
