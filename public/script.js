@@ -1420,7 +1420,3 @@ function nextPage() {
 
     
 }
-
-document.getElementById("users-page-button").onclick = function() { 
-    window.location.href = '/users'
-}

@@ -551,39 +551,41 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 				filteredPosts = []
 
 				for (let x=0;x<posts.length;x++) {
-					if (sorting == "top" && duration == "day") {
-						if (posts[x].timestamp >= timestamp24hoursago) {
+					if (filteredPosts.length >= postsPerPage) {
+
+					} else {
+						if (sorting == "top" && duration == "day") {
+							if (posts[x].timestamp >= timestamp24hoursago) {
+								filteredPosts.push(posts[x])
+							}
+						} else if (sorting == "top" && duration == "week"){
+							if (posts[x].timestamp >= timestamp1weekago) {
+								filteredPosts.push(posts[x])
+							}
+						} else if (sorting == "top" && duration == "month"){
+							if (posts[x].timestamp >= timestamp1monthago) {
+								filteredPosts.push(posts[x])
+							}
+						} else if (sorting == "top" && duration == "all") {
 							filteredPosts.push(posts[x])
-						}
-					} else if (sorting == "top" && duration == "week"){
-						if (posts[x].timestamp >= timestamp1weekago) {
+						} else if (sorting == "new") {
 							filteredPosts.push(posts[x])
+						} else if (sorting == "hot") {
+							if (posts[x].last_touched_timestamp == null) {
+								now = Date.now()
+								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
+									if (err){
+										console.log(err)
+									}
+								})
+							}
+							if (posts.length > 1) {
+								posts.sort( compare );
+							}
+							filteredPosts = posts
 						}
-					} else if (sorting == "top" && duration == "month"){
-						if (posts[x].timestamp >= timestamp1monthago) {
-							filteredPosts.push(posts[x])
-						}
-					} else if (sorting == "top" && duration == "all") {
-						filteredPosts.push(posts[x])
-					} else if (sorting == "new") {
-						filteredPosts.push(posts[x])
-					} else if (sorting == "hot") {
-						if (posts[x].last_touched_timestamp == null) {
-							now = Date.now()
-							Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
-								if (err){
-									console.log(err)
-								}
-								else{
-									console.log("Updated Post")
-								}
-							})
-						}
-						if (posts.length > 1) {
-							posts.sort( compare );
-						}
-						filteredPosts = posts
 					}
+					
 				}
 
 				totalPosts = filteredPosts.length
@@ -650,38 +652,42 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 				filteredPosts = []
 
 				for (let x=0;x<posts.length;x++) {
-					if (sorting == "top" && duration == "day") {
-						if (posts[x].timestamp >= timestamp24hoursago) {
+					if (filteredPosts.length >= postsPerPage) {
+
+					} else {
+						if (sorting == "top" && duration == "day") {
+							if (posts[x].timestamp >= timestamp24hoursago) {
+								filteredPosts.push(posts[x])
+							}
+						} else if (sorting == "top" && duration == "week"){
+							if (posts[x].timestamp >= timestamp1weekago) {
+								filteredPosts.push(posts[x])
+							}
+						} else if (sorting == "top" && duration == "month"){
+							if (posts[x].timestamp >= timestamp1monthago) {
+								filteredPosts.push(posts[x])
+							}
+						} else if (sorting == "top" && duration == "all") {
 							filteredPosts.push(posts[x])
-						}
-					} else if (sorting == "top" && duration == "week"){
-						if (posts[x].timestamp >= timestamp1weekago) {
+						} else if (sorting == "new") {
 							filteredPosts.push(posts[x])
+						} else if (sorting == "hot") {
+							if (posts[x].last_touched_timestamp == null) {
+								now = Date.now()
+								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
+									if (err){
+										console.log(err)
+									}
+									else{
+										console.log("Updated Post")
+									}
+								})
+							}
+							if (posts.length > 1) {
+								posts.sort( compare );
+							}
+							filteredPosts = posts
 						}
-					} else if (sorting == "top" && duration == "month"){
-						if (posts[x].timestamp >= timestamp1monthago) {
-							filteredPosts.push(posts[x])
-						}
-					} else if (sorting == "top" && duration == "all") {
-						filteredPosts.push(posts[x])
-					} else if (sorting == "new") {
-						filteredPosts.push(posts[x])
-					} else if (sorting == "hot") {
-						if (posts[x].last_touched_timestamp == null) {
-							now = Date.now()
-							Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
-								if (err){
-									console.log(err)
-								}
-								else{
-									console.log("Updated Post")
-								}
-							})
-						}
-						if (posts.length > 1) {
-							posts.sort( compare );
-						}
-						filteredPosts = posts
 					}
 				}
 				
@@ -1331,9 +1337,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	} catch (err) {
 		return res.json({ status:"error", code:400, error: err})
 	}
-	Post.findByIdAndUpdate(pID, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
-		console.log(err, update)
-	})
+	Post.findByIdAndUpdate(pID, {$set: {last_touched_timestamp: Date.now()}})
 
 	if (nestedBoolean == "true") {
 		try {
@@ -1477,6 +1481,6 @@ function compare( a, b ) {
 
 
 
-//deleteTestPosts()
+deleteTestPosts()
 
 app.listen(process.env.PORT || 3000)
