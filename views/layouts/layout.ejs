@@ -18,6 +18,13 @@
                 <a href='#' onclick="logout()" id="logout_button">Logout</a>
                 <a href='#' onclick="login()" id="login_button">Login</a>
                 <a href='#' onclick="register()" id="reg_button">Register</a>
+                <!-- <label for="filter_nsfw" id="filter_nsfw_label" class="filter_nsfw">NSFW</label> -->
+                <div class="border-bottom"></div>
+                <div id="filter_nsfw_div">
+                    NSFW
+                <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
+                </div>
+                
             </div>
         </div>
 
@@ -36,6 +43,7 @@
                 </div>
             </div>
             <div id="post-button" style='display:none;' onclick="ui_newPost()">New post</div>
+            
         </div>
         
     </div>   

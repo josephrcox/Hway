@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
         name: { type:String, unique:true },
         password: { type:String },
         avatar: { type:String},
+        show_nsfw: {type:Boolean, default:false},
         
         statistics: {
             posts: {

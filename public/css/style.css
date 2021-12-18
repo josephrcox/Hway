@@ -276,6 +276,7 @@ label {
 	color: whitesmoke;
 	font-weight: 500;
 	font-variant: all-small-caps;
+	word-wrap: break-word;
 }
 
 .deleteButton {
@@ -435,7 +436,7 @@ label {
 	font-style: italic;
 }
 
-.openPostButton, .comreplybutton {
+.openPostButton, .comreplybutton, .nsfwLabel {
 	padding-left:7px;
 	text-decoration: unset;
 	color:white;
@@ -626,4 +627,12 @@ a:visited {
 
 #reg-form {
   margin-top: 20px;
+}
+
+checkbox {
+    vertical-align:middle;
+}
+
+.border-bottom {
+	border-bottom: 1px solid black;
 }

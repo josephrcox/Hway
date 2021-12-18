@@ -268,10 +268,18 @@ const getUser = async () => {
             console.log(currentPageType)
             document.getElementById("post-button").style.display = 'block'
         }
+        const response = await fetch('/api/get/user/'+data.name+'/null')
+        const data2 = await response.json()
+        if (data2.show_nsfw == true) {
+            document.getElementById('filter_nsfw').checked = true
+        } else {
+            document.getElementById('filter_nsfw').checked = false
+        }
         
     }
     
     changeCommentSectionVisibility()
+    loadPosts("")
 }
 
 getUser()
@@ -316,6 +324,8 @@ const postObject = {
     comments: [],
     comment_count: "",
     poster_avatar_src: "",
+    special_attributes: [],
+    special_nsfw: "",
 
     display() {
         var postContainer = document.createElement("div")
@@ -413,10 +423,13 @@ const postObject = {
             imgThumb.setAttribute("class", "postImgThumb")
             imgThumb.setAttribute("id", "postImgThumb_"+this.id)
             imgThumb.src = this.link
+            if (this.special_nsfw == true) {
+                imgThumb.style.filter = "blur(3px)"
+            }
             descCell.innerHTML = "<img src='"+this.link+"' class='"+"postPhoto' id='postPhoto_"+this.id+"' width='100%'>"
             descCell.style.width = '99%'
             descCell.style.display = 'none'
-            titleCell.innerHTML = "🖼        "+this.title+"<span style='font-size:12px'>        (+)</span>"
+            titleCell.innerHTML = this.title+"<span style='font-size:12px'>        (+)</span>"
         }
 
         if (this.body != "(empty)") {
@@ -428,7 +441,7 @@ const postObject = {
         if (this.type == "2") {
             let domain = (new URL(this.link));
             domain = domain.hostname.replace('www.','');
-            titleCell.innerHTML = "🔗       <a href='" + this.link +"'>"+this.title+"</a> <span style='font-size: 10px'>("+domain+"...)</span>"
+            titleCell.innerHTML = "<a href='" + this.link +"'>"+this.title+"</a> <span style='font-size: 10px'>("+domain+"...)</span>"
         }
         
         titleCell.onclick = function() {
@@ -486,14 +499,35 @@ const postObject = {
             document.getElementById("postImgThumbDiv_"+this.id).appendChild(imgThumb)
         }
         document.getElementById("postContainer_"+this.id).appendChild(voteDiv)
+        
         document.getElementById("voteDiv_"+this.id).appendChild(voteCount)
         document.getElementById("voteDiv_"+this.id).appendChild(voteUpButton)
         document.getElementById("voteDiv_"+this.id).appendChild(voteDownButton)
         document.getElementById("voteDiv_"+this.id).appendChild(openPostButton)
         document.getElementById("voteDiv_"+this.id).appendChild(commentCount)
+        
         if (this.current_user_admin) {
             document.getElementById("voteDiv_"+this.id).appendChild(del)
         }
+
+        var specialBox = document.createElement("div") 
+        specialBox.setAttribute("class", "specialBox")
+        specialBox.setAttribute("id", "specialBox_"+this.id)
+        document.getElementById("voteDiv_"+this.id).append(specialBox)
+
+        if (this.special_nsfw == true) {
+            var nsfwLabel = document.createElement("img")
+            nsfwLabel.setAttribute("id", "nsfwLabel_"+this.id)
+            nsfwLabel.setAttribute("class", "nsfwLabel")
+            nsfwLabel.src = "/assets/NSFW.png"
+            nsfwLabel.style.width = 'auto'
+            nsfwLabel.style.height = '20px'
+            nsfwLabel.style.marginTop = '5px'
+            document.getElementById("specialBox_"+this.id).append(nsfwLabel)
+        }
+
+       
+        
     }
 }
 
@@ -782,7 +816,6 @@ const loadPosts = async (topic) => {
         user = window.location.href.split('/').pop()
         return loadUserPage(user)
     }
-    getUser()
     
     if (topic == null || topic == "") {
         topic = "all"
@@ -792,6 +825,7 @@ const loadPosts = async (topic) => {
         currentPageCategory = window.location.href
         topic = currentPageCategory.split('/')[4]
     }
+    options = "?nsfw="+document.getElementById("filter_nsfw").checked+""
 
     if (currentPageType == 'post') { // on a specific post page, load only that one post & comments
         url = window.location.href
@@ -826,7 +860,15 @@ const loadPosts = async (topic) => {
             post.topic = data.topic
             post.comment_count = data.comments.length
             post.comments = data.comments
+            try {
+                post.special_attributes = data.special_attributes[0]
+                if (post.special_attributes.nsfw == true) {
+                    post.special_nsfw = true
+                }
+            } catch(err) {
 
+            }
+            
             post.current_user_upvoted = data.current_user_upvoted
             post.current_user_downvoted = data.current_user_downvoted
             post.current_user_admin = data.current_user_admin
@@ -859,13 +901,13 @@ const loadPosts = async (topic) => {
 
         }
     } else {
-        request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+ pageNumber
+        request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+ pageNumber +'/'+ options
 
         if (currentPageType == 'all') {
-            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber
+            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
         }
         if (currentPageType == 'topic') {
-            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber
+            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
         }
         const response = await fetch(request)
         const data = await response.json()
@@ -895,6 +937,14 @@ const loadPosts = async (topic) => {
             post.topic = data[i].topic
             post.comment_count = data[i].comments.length
             post.comments = data[i].comments
+            try {
+                post.special_attributes = data[i].special_attributes[0]
+                if (post.special_attributes.nsfw == true) {
+                    post.special_nsfw = true
+                }
+            } catch(err) {
+
+            }
             
 
             post.current_user_upvoted = data[i].current_user_upvoted
@@ -939,6 +989,14 @@ const loadUserPage = async(user) => {
         post.comment_count = data[i].comments.length
         post.comments = data[i].comments
         post.poster_avatar_src = data[i].posterAvatarSrc
+        try {
+            post.special_attributes = data[i].special_attributes[0]
+            if (post.special_attributes.nsfw == true) {
+                post.special_nsfw = true
+            }
+        } catch(err) {
+
+        }
 
         post.current_user_upvoted = data[i].current_user_upvoted
         post.current_user_downvoted = data[i].current_user_downvoted
@@ -1190,7 +1248,6 @@ function launch() {
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber + nextPageStr
-    loadPosts("")
 }
 
 if (currentPageType != 'user') {
@@ -1303,6 +1360,7 @@ if (currentPageType == 'post') {
 const createNewPost = async(posttype) => { 
     title = document.getElementById("newPost_name").value
     body = document.getElementById("newPost_desc").value
+    nsfw = document.getElementById("newPost_nsfw").checked
 
     var myRegEx =  /[^a-z\d]/i;
     topic = document.getElementById("newPost_topic").value
@@ -1321,7 +1379,8 @@ const createNewPost = async(posttype) => {
             "title":title,
             "body":body,
             "topic":topic,
-            "type":posttype
+            "type":posttype,
+            "nsfw":nsfw
         }
     }
     if (posttype == 2) { // link
@@ -1329,7 +1388,8 @@ const createNewPost = async(posttype) => {
             "title":title,
             "link":link,
             "topic":topic,
-            "type":posttype
+            "type":posttype,
+            "nsfw":nsfw
         }
     }
     if (posttype == 3) { // media
@@ -1337,7 +1397,8 @@ const createNewPost = async(posttype) => {
             "title":title,
             "link":uploadedImageUrls.pop(),
             "topic":topic,
-            "type":posttype
+            "type":posttype,
+            "nsfw":nsfw
         }
     }
 
@@ -1370,9 +1431,9 @@ const uploadImage = async (x) => {
         body: x
     })
     const data = await fetchResponse.json();
-    const currentPageCategory = (JSON.stringify(data.data.image.currentPageCategory)).replace(/["]+/g, '')
+    const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
 
-    uploadedImageUrls.push(currentPageCategory)
+    uploadedImageUrls.push(url)
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""
@@ -1419,4 +1480,26 @@ function nextPage() {
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+pageNumber+nextPageStr
 
     
+}
+
+const filter_nsfw = async() => {
+    if (!isUserLoggedIn) {
+        window.location.href = '/login'
+    }
+    show = document.getElementById('filter_nsfw').checked
+
+    const settings = {
+        method: 'PUT',
+    };
+    const response = await fetch('/api/put/filter_nsfw/'+show, settings)
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        console.log(
+            loadPosts("")
+        )
+    }
+    if (data.status == 'error') {
+        alert(data.error)
+    }
 }

@@ -23,8 +23,7 @@ const postSchema = new mongoose.Schema(
         current_user_downvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
         comments: { type: Array},
-        
-
+        special_attributes: { type: Array},
     },
     { collection: 'posts'}
 )

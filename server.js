@@ -353,7 +353,6 @@ app.get('/api/get/user/:user/:options', async(req, res) =>{
 			user.statistics.misc.ip_address = null
 			user.statistics.misc.approximate_location = null
 
-			
 			res.send(user)
 		})
 	}
@@ -497,11 +496,14 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 	})
 })
 
-app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {	
+app.get('/api/get/:topic/:sorting/:duration/:page/', async(req, res) => {
 	postsonpage = []
 	page = req.params.page
 	sorting = req.params.sorting
 	duration = req.params.duration
+
+	queries = req.query
+	console.log(queries)
 
 	if (req.params.topic == "all_users") {
 		return
@@ -585,6 +587,19 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 							filteredPosts = posts
 						}
 					}
+					
+				}
+				for(let i=0;i<filteredPosts.length;i++) {
+					try {
+						if (filteredPosts[i].special_attributes[0].nsfw == true) {
+							if (queries.nsfw != 'true') {
+								filteredPosts.splice(i,1)
+							}
+						}
+					} catch(err) {
+
+					}
+					
 					
 				}
 
@@ -677,9 +692,6 @@ app.get('/api/get/:topic/:sorting/:duration/:page', async(req, res) => {
 								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
 									if (err){
 										console.log(err)
-									}
-									else{
-										console.log("Updated Post")
 									}
 								})
 							}
@@ -920,7 +932,9 @@ app.post('/register', async(req, res) => {
 })
 
 app.post('/api/post/post', async(req, res) => {
-	const {title, body, link, topic, type} = req.body
+	const {title, body, link, topic, type, nsfw} = req.body
+
+	var special_attributes = {nsfw:nsfw}
 
 	try {
 		token = req.cookies.token
@@ -962,15 +976,19 @@ app.post('/api/post/post', async(req, res) => {
 			posterID: userID,
 			date: fulldatetime,
 			timestamp:timestamp,
-			status:"active"
+			status:"active",
+			special_attributes: special_attributes
 		})
-		if (body.indexOf('mpwknd199999999') == -1) {
-			User.findById(userID, function(err, docs) {
-				docs.statistics.posts.created_num += 1
-				docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
-				docs.save()
-			})
+		if (body != null) {
+			if (body.indexOf('mpwknd199999999') == -1) {
+				User.findById(userID, function(err, docs) {
+					docs.statistics.posts.created_num += 1
+					docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
+					docs.save()
+				})
+			}
 		}
+		
 		
 		res.json({ status:"ok", code:200, data: response})
 	} catch (error) {
@@ -1015,7 +1033,6 @@ app.post('/api/post/comment/', async(req, res) => {
 			//console.logdocs)
 			commentArray = docs.comments
 			Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
-				console.log(err, update)
 			})
 			
 			commentid = Math.floor(Math.random() * Date.now()) // generates a random id
@@ -1154,7 +1171,6 @@ app.put('/vote/:id/:y', function(req,res) {
 					// do nothing
 				} else {
 					Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
-						console.log(err, update)
 					})
 					if (user_already_downvoted) {
 						// remove the downvote, total_votes+1
@@ -1185,7 +1201,6 @@ app.put('/vote/:id/:y', function(req,res) {
 					// do nothing
 				} else {
 					Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err, update) {
-						console.log(err, update)
 					})
 					if (user_already_upvoted) {
 						// remove the upvote, total_votes-1
@@ -1244,6 +1259,27 @@ app.put('/api/put/post/delete/:postid', function(req,res) {
 			res.json({status:'ok'})
 		} else {
 			res.json({status:'error'})
+		}
+	})
+	
+})
+
+app.put('/api/put/filter_nsfw/:show/', function(req,res) {
+	show = req.params.show
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	User.findByIdAndUpdate(userID, {$set: {show_nsfw: show}}, function (err, docs) {
+		if (err) {
+			return res.json({ status:"error", code:400, error: err})
+		} else{
+			res.json({status:'ok'})
 		}
 	})
 	
@@ -1449,12 +1485,10 @@ function deleteTestPosts() {
 				console.log(err)
 			} else {
 				newDocs = docs
-				console.log(newDocs[0])
 				for (let i=0;i<newDocs.length;i++) {
 					if (newDocs[i].body != null) {
 						if (newDocs[i].body.indexOf('mpwknd199999999') != -1) {
 							Post.findByIdAndDelete(newDocs[i].id, function(err, response) {
-								console.log(response)
 							})
 						}
 					}
@@ -1466,6 +1500,7 @@ function deleteTestPosts() {
 	} catch(err) {
 		console.log(err)
 	}
+
 	
 }
 
