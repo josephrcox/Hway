@@ -1,15 +1,13 @@
 <div class="login-reg">
     <h1 style='color:black'>Sign up</h1>
-        <form id="reg-form">
-            <input type="text" autocomplete="off" id="username" name="name" placeholder="Name" />
-            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" />
+    <a href="/login">Already signed up? <strong>Click here!</strong></a>
+        <form id="reg-form" >
+            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
+            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/>
             <input type="submit" value="Register"/>
         </form>
         <div id='logs'></div>
     
-    <br>
-    <br>
-    <a href="/login">Already signed up? <strong>Click here!</strong></a>
 </div>
 <script>
 document.getElementsByClassName('header-buttons')[0].style.display = 'none'

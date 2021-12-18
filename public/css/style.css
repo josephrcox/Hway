@@ -199,6 +199,8 @@ a {
 .login-reg {
 	background-color:white;
 	width:96vw;
+	padding-bottom: 10px;
+	text-align: center;
 }
 
 tbody {
@@ -615,4 +617,13 @@ a:visited {
 	width: calc(98% + 0px);
 	overflow-x: auto;
 	white-space: nowrap;
+}
+
+
+#username, #password {
+  font-size: large;
+}
+
+#reg-form {
+  margin-top: 20px;
 }
