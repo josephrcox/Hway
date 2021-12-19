@@ -563,6 +563,7 @@ a:visited {
 	object-fit: cover;
 	height: 55px;
 	width: 72px;
+	border: 1px solid black;
 }
 
 .avatarimg {

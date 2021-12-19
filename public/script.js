@@ -216,32 +216,55 @@ document.getElementById('sorting_options_hot').addEventListener('click', functio
 
 // The randomize function is for creating bulk posts, takes a value (x) which is the quantity of posts to be created, no limit
 async function randomizer(x) {
-    for(let i=0;i<x;i++) {
-        title = "test "+i
-        body = "mpwknd199999999" // This string is really only for tracking which posts are test posts. Can be changed but must be changed on BE too
-        if (i % 2 == 0) {
-            topic = "testinggrounds"
-        } else {
-            topic = "all"
+    alert("This will likely break a LOT! ")
+    for (let t=0;t<x;t++) {
+        const response = await fetch('https://www.reddit.com/r/all/.json', {limit:100})
+        const data = await response.json()
+        posts = data.data.children
+        console.log(posts.length)
+        for (let i=0;i<posts.length;i++) {
+            if (posts[i].data.post_hint == "link") {
+                bodyJSON = {
+                    "title":posts[i].data.title,
+                    "topic":posts[i].data.subreddit,
+                    "type":2,
+                    "link":posts[i].data.url
+                }
+            } else if(posts[i].data.post_hint == "image") {
+                bodyJSON = {
+                    "title":posts[i].data.title,
+                    "topic":posts[i].data.subreddit,
+                    "type":3,
+                    "link":posts[i].data.url
+                }
+            } else if(posts[i].data.is_self == true) {
+                bodyJSON = {
+                    "title":posts[i].data.title,
+                    "topic":posts[i].data.subreddit,
+                    "type":1,
+                    "body":posts[i].selftext
+                }
+            } else {
+                bodyJSON = null
+            }
+            if (bodyJSON == null) {
+                    
+            } else {
+                const fetchResponse = await fetch('/api/post/post', {
+                
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                        },
+                    method: 'POST',
+                    body: JSON.stringify(bodyJSON)
+                }); 
+            }
+            
+            
         }
-        
-        posttype = 1
-        bodyJSON = {
-            "title":title,
-            "body":body,
-            "topic":topic,
-            "type":posttype
-        }
-        
-        const fetchResponse = await fetch('/api/post/post', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-                },
-            method: 'POST',
-            body: JSON.stringify(bodyJSON)
-        }); 
     }
+    
 }
 
 // This getUser function is for getting the current user and displaying relevant buttons and the users name

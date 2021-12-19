@@ -1480,22 +1480,12 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 
 function deleteTestPosts() {
 	try {
-		Post.find({}, function(err, docs) {
-			if (err) {
-				console.log(err)
-			} else {
-				newDocs = docs
-				for (let i=0;i<newDocs.length;i++) {
-					if (newDocs[i].body != null) {
-						if (newDocs[i].body.indexOf('mpwknd199999999') != -1) {
-							Post.findByIdAndDelete(newDocs[i].id, function(err, response) {
-							})
-						}
-					}
-					
-				}
+		Post.find({poster:'robot'}, function(err, docs) {
+			for (let i=0;i<docs.length;i++) {
+				Post.findByIdAndDelete(docs[i].id, function(err, response) {
+					console.log(err, response)
+				})
 			}
-			
 		})
 	} catch(err) {
 		console.log(err)
