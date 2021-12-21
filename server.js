@@ -63,7 +63,6 @@ async function get_all_avatars() {
 	for (let i=0;i<tempUsers.length;i++) {
 		users.push([tempUsers[i].id, tempUsers[i].name, tempUsers[i].avatar])
 	}
-	console.log("RECHECKING USERS..."+users)
 }
 
 get_all_avatars()
@@ -1504,8 +1503,88 @@ function compare( a, b ) {
 	return 0;
 }
 
+app.get('/search/', async(req,res) => {
+	res.render('home.ejs', {topic: "- search"})
+})
 
+app.get('/api/get/search/', async(req,res) => {
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		if (!allowUsersToBrowseAsGuests) {
+			return res.json({ status:"ok", code:400, error: "Not logged in"})
+		} else {
+			userID = null
+		}
+	}
 
-deleteTestPosts()
+	var regex_q = new RegExp(req.query.query, 'i');
+
+	if (req.query.topic) {
+		var regex_t = new RegExp(req.query.topic, 'i');
+		Post.find({status:'active', title: regex_q, topic: regex_t}, function(err, docs) {
+			postsonpage = docs
+			for (let i=0;i<docs.length;i++) {
+				if (postsonpage[i].posterID == userID) {
+					// postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = true
+				} else {
+					// postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = false
+				}
+				if (postsonpage[i].users_upvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = true
+					postsonpage[i].current_user_downvoted = false
+				}
+				if (postsonpage[i].users_downvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = false
+					postsonpage[i].current_user_downvoted = true
+				}
+				
+				if (users.some(x => x[0] == postsonpage[i].posterID)) {
+					indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
+					postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
+				} else {
+					console.log("error loading user... do they exist?")
+				}
+			}
+			res.send(postsonpage)
+		})
+	} else {
+		Post.find({status:'active', title: regex_q}, function(err, docs) {
+			postsonpage = docs
+			for (let i=0;i<docs.length;i++) {
+				if (postsonpage[i].posterID == userID) {
+					// postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = true
+				} else {
+					// postsonpage[i] = posts[i]
+					postsonpage[i].current_user_admin = false
+				}
+				if (postsonpage[i].users_upvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = true
+					postsonpage[i].current_user_downvoted = false
+				}
+				if (postsonpage[i].users_downvoted.includes(userID)) {
+					postsonpage[i].current_user_upvoted = false
+					postsonpage[i].current_user_downvoted = true
+				}
+				
+				if (users.some(x => x[0] == postsonpage[i].posterID)) {
+					indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
+					postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
+				} else {
+					console.log("error loading user... do they exist?")
+				}
+			}
+			res.send(postsonpage)
+		})
+	}
+
+	
+
+})
 
 app.listen(process.env.PORT || 3000)

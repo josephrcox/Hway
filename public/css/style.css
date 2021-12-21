@@ -154,7 +154,7 @@
 	width:calc(98% + 3px);
 }
 
-#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button, #page-number {
+#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button, #page-number, #search-button {
 	padding-inline: 5px;
 	text-align: center;
 	font-weight: 100;
@@ -636,4 +636,15 @@ checkbox {
 
 .border-bottom {
 	border-bottom: 1px solid black;
+}
+
+
+#searchbar {
+	padding-top: 10px;
+	color:white;
+	font-size: 14px;
+}
+
+.search_options {
+	width: 95vw;
 }

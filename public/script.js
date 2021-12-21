@@ -12,9 +12,11 @@ let currentPostID = "" // Current post ID that is loaded, only when on a user pa
 let isUserLoggedIn = false // Checks if a user is logged in or not. Not required for access unless enabled in backend
 let sorting = window.location.href.split('/')[4]
 let sorting_duration = window.location.href.split('/')[5]
-console.log(sorting, sorting_duration)
 
-const pageTypes = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register',] // This is used to track what page type we are on
+let search_topic = ""
+let search_query = ""
+
+const pageTypes = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search'] // This is used to track what page type we are on
 
 let currentPageCategory = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
 switch (currentPageCategory) {
@@ -41,6 +43,9 @@ switch (currentPageCategory) {
         break;
     case 'register':
         cPageTypeIndex = 7
+        break;
+    case 'search':
+        cPageTypeIndex = 8
         break;
 }
 
@@ -74,6 +79,20 @@ if (currentPageType == 'login') {
 }
 if (currentPageType == 'register') { 
     
+}
+if (currentPageType == 'search') { 
+    document.getElementById('sorting_options').style.display = 'none'
+    url = window.location.href
+    
+    if (url.indexOf('?topic=') == -1) {
+        search_query = url.split('?query=')[1]
+        console.log(search_query)
+    } else {
+        indexOfQuery = url.indexOf('?query=')
+        search_query = url.substring(indexOfQuery+7)
+        search_topic = (url.split('?topic=')[1]).split('?')[0]
+        console.log(search_query, search_topic)
+    }
 }
 
 if (currentPageType == 'login' || currentPageType == 'register') { // If the user is on certain pages, hide the header-buttons bar as it's unneeded on that page or may cause issues
@@ -848,6 +867,8 @@ const loadPosts = async (topic) => {
         currentPageCategory = window.location.href
         topic = currentPageCategory.split('/')[4]
     }
+
+
     options = "?nsfw="+document.getElementById("filter_nsfw").checked+""
 
     if (currentPageType == 'post') { // on a specific post page, load only that one post & comments
@@ -931,6 +952,13 @@ const loadPosts = async (topic) => {
         }
         if (currentPageType == 'topic') {
             request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
+        }
+        if (currentPageType == 'search') {
+            if (search_topic != "" && search_topic != null) {
+                request = '/api/get/search?topic='+search_topic+'&query='+search_query
+            } else {
+                request = '/api/get/search?query='+search_query
+            }
         }
         const response = await fetch(request)
         const data = await response.json()
@@ -1525,4 +1553,84 @@ const filter_nsfw = async() => {
     if (data.status == 'error') {
         alert(data.error)
     }
+}
+
+function search() {
+    query = document.getElementById("search_phrase").innerHTML
+    topic = document.getElementById("search_topic").innerHTML
+
+    console.log(query, topic)
+}
+
+document.getElementById("search_submit").onclick = function() {
+    query = document.getElementById("search_phrase").value
+    topic = document.getElementById("search_topic").value
+
+    query.split(" ").join("+")
+    query = (query.split(" ")).join("+")
+    
+    if (topic) {
+        window.location.href = "/search/?topic="+topic+"?query="+query
+    } else {
+        window.location.href = "/search/?query="+query
+    }
+    
+}
+
+const loadPostsFromSearch = async (query, topic) => {
+    options = "?nsfw="+document.getElementById("filter_nsfw").checked+""
+    request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+ pageNumber +'/'+ options
+
+    if (currentPageType == 'all') {
+        request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
+    }
+    const response = await fetch(request)
+    const data = await response.json()
+
+    document.getElementById("postsArray").innerHTML = ""
+    if (data.length == 0) {
+        document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
+    }
+
+    for(let i=0; i < data.length;i++) {
+        let post = Object.create(postObject)
+        post.title = data[i].title
+        post.body = data[i].body
+        if (post.body == "" || post.body == undefined || post.body == null) {
+            post.body = "(empty)"
+        }
+        post.total_votes = data[i].total_votes
+        post.upvotes = data[i].upvotes
+        post.downvotes = data[i].downvotes
+        post.id = data[i]._id
+        post.poster = data[i].poster
+        post.poster_avatar_src = data[i].posterAvatarSrc
+        post.date = data[i].date
+        post.descDisplayed = false
+        post.link = data[i].link
+        post.type = data[i].type // 1=text, 2=link, 3=media
+        post.topic = data[i].topic
+        post.comment_count = data[i].comments.length
+        post.comments = data[i].comments
+        try {
+            post.special_attributes = data[i].special_attributes[0]
+            if (post.special_attributes.nsfw == true) {
+                post.special_nsfw = true
+            }
+        } catch(err) {
+
+        }
+        
+
+        post.current_user_upvoted = data[i].current_user_upvoted
+        post.current_user_downvoted = data[i].current_user_downvoted
+        post.current_user_admin = data[i].current_user_admin
+
+        post.display()
+    }
+    
+    topFunction()
+    storeAndDisplayTopics()
+
+    currentTopic = topic
 }

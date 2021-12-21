@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div id="post-button" style='display:none;' onclick="ui_newPost()">New post</div>
-            
+            <div id="search-button" onclick="showorhidesearch()">Search</div>
         </div>
         
     </div>   
@@ -57,6 +57,12 @@
         <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
         <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
         
+    </div>
+
+    <div id="searchbar" style="display:none;">
+        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search terms"><br/>
+        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)">
+        <button id="search_submit">Search</button>
     </div>
     
     <div class='page-content'>
@@ -122,6 +128,15 @@ async function getUsername() {
         if (data.error.name == "TokenExpiredError") {
             document.getElementById("currentUser").innerHTML = "token expired"
         }
+    }
+}
+
+function showorhidesearch() {
+    search = document.getElementById("searchbar")
+    if (search.style.display == "none") {
+        search.style.display = "block"
+    } else {
+        search.style.display = "none"
     }
 }
 
