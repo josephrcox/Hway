@@ -1493,6 +1493,8 @@ function deleteTestPosts() {
 	
 }
 
+deleteTestPosts()
+
 function compare( a, b ) {
 	if ( a.last_touched_timestamp < b.last_touched_timestamp ){
 	  return 1;
