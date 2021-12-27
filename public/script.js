@@ -6,12 +6,20 @@ let comment_count = [] // Used to track how many comments are being displayed on
 let commentBodies = [] // used to remember comment bodies that are removed when a post is temporarily collapsed by the user
 let lastClick = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
 var delay = 400;
-let pageNumber = 1 // Tracking what page number the user is on
 let currentTopic = "" // Current topic the user is on, i.e. 'bicycling'
 let currentPostID = "" // Current post ID that is loaded, only when on a user page such as http://localhost:3000/posts/61ab8741f6fadead68120454
 let isUserLoggedIn = false // Checks if a user is logged in or not. Not required for access unless enabled in backend
-let sorting = window.location.href.split('/')[4]
-let sorting_duration = window.location.href.split('/')[5]
+const urlSearchParams = new URLSearchParams(window.location.search);
+const pagequeries = Object.fromEntries(urlSearchParams.entries()); 
+let sorting = pagequeries.sort
+let sorting_duration = pagequeries.t
+let pageNumber =  parseInt(pagequeries.page) // Tracking what page number the user is on
+if (pageNumber == null || isNaN(pageNumber)) {
+    pageNumber = 1
+    window.location.href = window.location.href + "&page="+pageNumber
+} else {
+    console.log("page:"+pageNumber)
+}
 
 let search_topic = ""
 let search_query = ""
@@ -59,20 +67,24 @@ if (currentPageType == 'usersheet') {
 }
 if (currentPageType == 'topic') { 
     document.getElementById('sorting_options').style.display = 'block'
-    pageNumber = parseInt(window.location.href.split('/')[7])
-    sorting = window.location.href.split('/')[5]
-    sorting_duration = window.location.href.split('/')[6]
+    pageNumber = pagequeries.page
+    sorting = pagequeries.sort
+    sorting_duration = pagequeries.t
 }
 if (currentPageType == 'index') { 
     
 }
 if (currentPageType == 'all') {    
     document.getElementById('sorting_options').style.display = 'block'
-    pageNumber = parseInt(window.location.href.split('/')[6])
+    pageNumber = pagequeries.page
+    sorting = pagequeries.sort
+    sorting_duration = pagequeries.t
 }
 if (currentPageType == 'post') { 
     document.getElementById('sorting_options').style.display = 'none'
-    pageNumber = 1
+    pageNumber = pagequeries.page
+    sorting = pagequeries.sort
+    sorting_duration = pagequeries.t
 }
 if (currentPageType == 'login') { 
     
@@ -132,6 +144,11 @@ switch (sorting) {
         break;
 }
 
+curURL = window.location.href
+curSearch = window.location.search
+baseURL = curURL.replace(curSearch, "")
+
+
 document.getElementById('sorting_options_top_today').addEventListener('click', function (event) {
     sortingOptions = document.getElementsByClassName('sorting_options')
     for (let i=0;i<sortingOptions.length;i++) {
@@ -142,12 +159,8 @@ document.getElementById('sorting_options_top_today').addEventListener('click', f
     sorting_duration = "day"
     document.getElementById('sorting_options_top_today').style.color = '#0066ff'
     document.getElementById('sorting_options_top_today').style.fontWeight = '700'
-    if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/day/1'
-    } else {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/top/day/1'
-    }
-    
+    newPageQueries = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+    window.location.href = baseURL + newPageQueries
 });
 document.getElementById('sorting_options_top_week').addEventListener('click', function (event) {
     sortingOptions = document.getElementsByClassName('sorting_options')
@@ -159,12 +172,8 @@ document.getElementById('sorting_options_top_week').addEventListener('click', fu
     sorting_duration = "week"
     document.getElementById('sorting_options_top_week').style.color = '#0066ff'
     document.getElementById('sorting_options_top_week').style.fontWeight = '700'
-    if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/week/1'
-    } else {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/top/week/1'
-    }
-    
+    newPageQueries = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+    window.location.href = baseURL + newPageQueries
 });
 
 document.getElementById('sorting_options_top_month').addEventListener('click', function (event) {
@@ -177,11 +186,8 @@ document.getElementById('sorting_options_top_month').addEventListener('click', f
     sorting_duration = "month"
     document.getElementById('sorting_options_top_month').style.color = '#0066ff'
     document.getElementById('sorting_options_top_month').style.fontWeight = '700'
-    if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/month/1'
-    } else {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/top/month/1'
-    }  
+    newPageQueries = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+    window.location.href = baseURL + newPageQueries
 });
 document.getElementById('sorting_options_top_all').addEventListener('click', function (event) {
     sortingOptions = document.getElementsByClassName('sorting_options')
@@ -193,11 +199,8 @@ document.getElementById('sorting_options_top_all').addEventListener('click', fun
     sorting_duration = "all"
     document.getElementById('sorting_options_top_all').style.color = '#0066ff'
     document.getElementById('sorting_options_top_all').style.fontWeight = '700'
-    if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/top/all/1'
-    } else {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/top/all/1'
-    }
+    newPageQueries = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+    window.location.href = baseURL + newPageQueries
     
 });
 document.getElementById('sorting_options_new').addEventListener('click', function (event) {
@@ -210,11 +213,8 @@ document.getElementById('sorting_options_new').addEventListener('click', functio
     sorting_duration = "all"
     document.getElementById('sorting_options_new').style.color = '#0066ff'
     document.getElementById('sorting_options_new').style.fontWeight = '700'
-    if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/new/all/1'
-    } else {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/new/all/1'
-    }
+    newPageQueries = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+    window.location.href = baseURL + newPageQueries
 });
 document.getElementById('sorting_options_hot').addEventListener('click', function (event) {
     sortingOptions = document.getElementsByClassName('sorting_options')
@@ -226,11 +226,8 @@ document.getElementById('sorting_options_hot').addEventListener('click', functio
     sorting_duration = "all"
     document.getElementById('sorting_options_new').style.color = '#0066ff'
     document.getElementById('sorting_options_new').style.fontWeight = '700'
-    if (currentPageType == "topic") {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/'+window.location.href.split('/')[4]+'/hot/all/1'
-    } else {
-        window.location.href = '/'+window.location.href.split('/')[3]+'/hot/all/1'
-    }
+    newPageQueries = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+    window.location.href = baseURL + newPageQueries
 });
 
 // The randomize function is for creating bulk posts, takes a value (x) which is the quantity of posts to be created, no limit
@@ -310,7 +307,7 @@ const getUser = async () => {
             console.log(currentPageType)
             document.getElementById("post-button").style.display = 'block'
         }
-        const response = await fetch('/api/get/user/'+data.name+'/null')
+        const response = await fetch('/api/get/currentuser/')
         const data2 = await response.json()
         if (data2.show_nsfw == true) {
             document.getElementById('filter_nsfw').checked = true
@@ -868,9 +865,9 @@ const loadPosts = async (topic) => {
         topic = currentPageCategory.split('/')[4]
     }
 
+    options = "?sort="+sorting+"&t="+sorting_duration+"&nsfw="+document.getElementById("filter_nsfw").checked+""
 
-    options = "?nsfw="+document.getElementById("filter_nsfw").checked+""
-
+    console.log(options)
     if (currentPageType == 'post') { // on a specific post page, load only that one post & comments
         url = window.location.href
         postid = url.split('/posts/')[1]
@@ -945,14 +942,9 @@ const loadPosts = async (topic) => {
 
         }
     } else {
-        request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+ pageNumber +'/'+ options
+        request = '/api/get/'+topic+'/q'+window.location.search
+        console.log(request)
 
-        if (currentPageType == 'all') {
-            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
-        }
-        if (currentPageType == 'topic') {
-            request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
-        }
         if (currentPageType == 'search') {
             if (search_topic != "" && search_topic != null) {
                 request = '/api/get/search?topic='+search_topic+'&query='+search_query
@@ -1503,30 +1495,36 @@ function topFunction() {
 }
 
 function prevPage() {
+    curURL = window.location.href
+    curSearch = window.location.search
+    baseURL = curURL.replace(curSearch, "")
+
     if (pageNumber == 1) {
         return 
     }
     pageNumber -= 1
     if (currentPageType != 'topic') {
-        window.location.href = '/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+ pageNumber
+        window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
     }
     if (currentPageType == 'topic') {
-        window.location.href = '/h/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+ pageNumber
+        window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
     }
-    loadPosts(currentTopic)
 
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber +nextPageStr
 }
 
 function nextPage() {
-    pageNumber += 1
+    curURL = window.location.href
+    curSearch = window.location.search
+    baseURL = curURL.replace(curSearch, "")
+    pageNumber = parseInt(pageNumber) + 1
+
     if (currentPageType != 'topic') {
-        window.location.href = '/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+pageNumber
+        window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
     }
     if (currentPageType == 'topic') {
-        window.location.href = '/h/'+currentTopic+'/'+sorting+'/'+sorting_duration+'/'+pageNumber
+        window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
     }
-
     
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+pageNumber+nextPageStr
 
@@ -1575,62 +1573,4 @@ document.getElementById("search_submit").onclick = function() {
         window.location.href = "/search/?query="+query
     }
     
-}
-
-const loadPostsFromSearch = async (query, topic) => {
-    options = "?nsfw="+document.getElementById("filter_nsfw").checked+""
-    request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+ pageNumber +'/'+ options
-
-    if (currentPageType == 'all') {
-        request = '/api/get/'+topic+'/'+sorting +'/'+ sorting_duration+'/'+pageNumber +'/'+ options
-    }
-    const response = await fetch(request)
-    const data = await response.json()
-
-    document.getElementById("postsArray").innerHTML = ""
-    if (data.length == 0) {
-        document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
-    }
-
-    for(let i=0; i < data.length;i++) {
-        let post = Object.create(postObject)
-        post.title = data[i].title
-        post.body = data[i].body
-        if (post.body == "" || post.body == undefined || post.body == null) {
-            post.body = "(empty)"
-        }
-        post.total_votes = data[i].total_votes
-        post.upvotes = data[i].upvotes
-        post.downvotes = data[i].downvotes
-        post.id = data[i]._id
-        post.poster = data[i].poster
-        post.poster_avatar_src = data[i].posterAvatarSrc
-        post.date = data[i].date
-        post.descDisplayed = false
-        post.link = data[i].link
-        post.type = data[i].type // 1=text, 2=link, 3=media
-        post.topic = data[i].topic
-        post.comment_count = data[i].comments.length
-        post.comments = data[i].comments
-        try {
-            post.special_attributes = data[i].special_attributes[0]
-            if (post.special_attributes.nsfw == true) {
-                post.special_nsfw = true
-            }
-        } catch(err) {
-
-        }
-        
-
-        post.current_user_upvoted = data[i].current_user_upvoted
-        post.current_user_downvoted = data[i].current_user_downvoted
-        post.current_user_admin = data[i].current_user_admin
-
-        post.display()
-    }
-    
-    topFunction()
-    storeAndDisplayTopics()
-
-    currentTopic = topic
 }

@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
-//test
+
 const cors = require('cors')
 
 const express = require('express')
@@ -254,7 +254,25 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
-app.get('/all/:sorting/:duration/:page', async(req, res) => {
+app.get('/all/q', async(req, res) => {
+	valid = true
+	// Commenting out below allows users to view the home without being logged in
+	valid = await isloggedin(req)
+	
+	if (valid || allowUsersToBrowseAsGuests) {
+		res.render('home.ejs', {topic: "- all"})
+	} else {
+		res.render('login.ejs', {topic:"- login"})
+	}
+	
+})
+
+app.get('/all', async(req,res) => {
+	res.redirect('/all/q?sort=hot&t=all&page=1')
+})
+
+app.get('/all/:queries', async(req, res) => {
+	console.log("queries")
 	valid = true
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
@@ -266,17 +284,16 @@ app.get('/all/:sorting/:duration/:page', async(req, res) => {
 	}
 })
 
-app.get('/all', async(req,res) => {
-	res.redirect('/all/hot/all/1')
-})
 
-app.get('/h/:topic/:sorting/:duration/:page', async(req,res) => {
+
+app.get('/h/:topic/q', async(req,res) => {
 	res.render('home.ejs', {topic:"- "+req.params.topic})
 })
 
 app.get('/h/:topic/', async(req,res) => {
-	res.redirect('/h/'+req.params.topic+'/hot/all/1')
+	res.redirect('/h/'+req.params.topic+'/q?sort=hot&t=all&page=1')
 })
+
 
 app.get('/posts/:postid', async(req,res) => {	
 	res.render('home.ejs', {topic:""})
@@ -496,14 +513,15 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 	})
 })
 
-app.get('/api/get/:topic/:sorting/:duration/:page/', async(req, res) => {
+app.get('/api/get/:topic/q', async(req, res) => {
 	postsonpage = []
-	page = req.params.page
-	sorting = req.params.sorting
-	duration = req.params.duration
 
 	queries = req.query
-	console.log(queries)
+
+	page = queries.page
+	sorting = queries.sort
+	duration = queries.t
+	console.log(sorting, duration, page)
 
 	if (req.params.topic == "all_users") {
 		return
