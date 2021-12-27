@@ -14,12 +14,25 @@ const pagequeries = Object.fromEntries(urlSearchParams.entries());
 let sorting = pagequeries.sort
 let sorting_duration = pagequeries.t
 let pageNumber =  parseInt(pagequeries.page) // Tracking what page number the user is on
+let curURL = window.location.toString()
+let curSearch = window.location.search
+let baseURL = curURL.replace(curSearch, "")
+let queryset = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
 if (pageNumber == null || isNaN(pageNumber)) {
+    console.log("pagination is messed up. fixing...")
     pageNumber = 1
-    window.location.href = window.location.href + "&page="+pageNumber
-} else {
-    console.log("page:"+pageNumber)
-}
+} 
+if (['new','hot','top'].indexOf(sorting) == -1 ) {
+    console.log("sorting is messed up. fixing...")
+    newURL = curURL.replace(sorting, 'hot')
+    console.log(newURL)
+    window.location = newURL
+} 
+if (['all','day','week', 'month'].indexOf(sorting_duration) == -1 ) {
+    console.log("sorting is messed up. fixing...")
+    newURL = curURL.replace(sorting_duration, 'all')
+    window.location = newURL
+} 
 
 let search_topic = ""
 let search_query = ""
@@ -67,24 +80,15 @@ if (currentPageType == 'usersheet') {
 }
 if (currentPageType == 'topic') { 
     document.getElementById('sorting_options').style.display = 'block'
-    pageNumber = pagequeries.page
-    sorting = pagequeries.sort
-    sorting_duration = pagequeries.t
 }
 if (currentPageType == 'index') { 
     
 }
 if (currentPageType == 'all') {    
     document.getElementById('sorting_options').style.display = 'block'
-    pageNumber = pagequeries.page
-    sorting = pagequeries.sort
-    sorting_duration = pagequeries.t
 }
 if (currentPageType == 'post') { 
     document.getElementById('sorting_options').style.display = 'none'
-    pageNumber = pagequeries.page
-    sorting = pagequeries.sort
-    sorting_duration = pagequeries.t
 }
 if (currentPageType == 'login') { 
     

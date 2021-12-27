@@ -255,6 +255,9 @@ app.get('/register', (req, res) => {
 })
 
 app.get('/all/q', async(req, res) => {
+	console.log(req.query)
+	sorting = req.query.sort
+	sorting_duration = req.query.t
 	valid = true
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
