@@ -18,21 +18,6 @@ let curURL = window.location.toString()
 let curSearch = window.location.search
 let baseURL = curURL.replace(curSearch, "")
 let queryset = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
-if (pageNumber == null || isNaN(pageNumber)) {
-    console.log("pagination is messed up. fixing...")
-    pageNumber = 1
-} 
-if (['new','hot','top'].indexOf(sorting) == -1 ) {
-    console.log("sorting is messed up. fixing...")
-    newURL = curURL.replace(sorting, 'hot')
-    console.log(newURL)
-    window.location = newURL
-} 
-if (['all','day','week', 'month'].indexOf(sorting_duration) == -1 ) {
-    console.log("sorting is messed up. fixing...")
-    newURL = curURL.replace(sorting_duration, 'all')
-    window.location = newURL
-} 
 
 let search_topic = ""
 let search_query = ""
@@ -71,6 +56,22 @@ switch (currentPageCategory) {
 }
 
 let currentPageType = pageTypes[cPageTypeIndex]
+
+if (pageNumber == null || isNaN(pageNumber)) {
+    console.log("pagination is messed up. fixing...")
+    pageNumber = 1
+} 
+if (['new','hot','top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 ) {
+    console.log("sorting is messed up. fixing...")
+    newURL = curURL.replace(sorting, 'hot')
+    console.log(newURL)
+    window.location = newURL
+} 
+if (['all','day','week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 ) {
+    console.log("sorting is messed up. fixing...")
+    newURL = curURL.replace(sorting_duration, 'all')
+    window.location = newURL
+} 
 
 if (currentPageType == 'user') { 
     
