@@ -1607,8 +1607,10 @@ app.get('/api/get/search/', async(req,res) => {
 		})
 	}
 
-	
+})
 
+app.get('*', async(req, res) => {
+	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/','').replaceAll('%20',' '))})
 })
 
 app.listen(process.env.PORT || 3000)

@@ -1,0 +1,52 @@
+<head>
+   <style>
+      .error_msg {
+         padding-top:25px;
+         color: whitesmoke;
+         font-size: clamp(24px, 4vw, 48px);
+         text-align: center; 
+         text-decoration: none;
+      }
+      #query {
+         font-style: italic;
+         color:gray;
+         border-top: 1px solid gray;
+         border-bottom: 1px solid gray;
+         padding-top: 10px;
+         padding-bottom:5px;
+         word-break:break-word;
+         white-space:normal;
+         overflow:hidden;
+         text-overflow:ellipsis;
+         display: -webkit-box;
+         -webkit-line-clamp: 5; /* number of lines to show */
+                 line-clamp: 5; 
+         -webkit-box-orient: vertical; 
+      }
+      a {
+         color:blue;
+         font-weight:700;
+      }
+   </style>
+    
+</head>
+
+<body>
+   <div class="header-title noselect">
+      <a href='/all'><div id="title">HWay <span style="font-size:18px;padding-right: 10px;"></div></a>   </span>
+   </div>
+   <div class="error_msg">
+      Page not found.
+      <br/>
+      <br/>
+      <div id='query'><%- error %></div>
+      <br/>
+      <br/>
+      
+      <a href='/all/' >Go home</a>
+   </div>
+
+   
+   <script>
+   </script>
+</body>
