@@ -1558,6 +1558,12 @@ const filter_nsfw = async() => {
     }
 }
 
+document.getElementById("search_phrase").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+    	search()
+    }
+})
+
 function search() {
     query = document.getElementById("search_phrase").innerHTML
     topic = document.getElementById("search_topic").innerHTML
