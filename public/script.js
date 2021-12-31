@@ -18,6 +18,7 @@ let curURL = window.location.toString()
 let curSearch = window.location.search
 let baseURL = curURL.replace(curSearch, "")
 let queryset = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 
 let search_topic = ""
 let search_query = ""
@@ -1282,11 +1283,13 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     if (document.getElementById("newPost_div").style.display == 'block') {
         document.getElementById("newPost_div").style.display = 'none'
+        document.getElementById('postsArray').style.filter = 'blur(0px)'
         document.getElementById("post-button").innerHTML = "Post"
         document.getElementById("newPost_logs").innerHTML = ""
         document.getElementById("newPost_topic").value = currentTopic
     } else {
         document.getElementById("newPost_div").style.display = 'block'
+        document.getElementById('postsArray').style.filter = 'blur(10px)'
         document.getElementById("searchbar").style.display = 'none'
         document.getElementById("post-button").innerHTML = "Collapse"
         document.getElementById("newPost_topic").value = currentTopic
