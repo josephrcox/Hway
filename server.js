@@ -785,23 +785,6 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 	Post.find({poster:req.params.user, status:"active"}).sort({total_votes: -1}).exec(async function(err, posts){
 		if(err){
 		} else{
-			try {
-				User.findById(userID, async function(err, docs) {
-					if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
-						index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
-						currentCount = docs.statistics.topics.visited_array[index][2]
-						docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
-
-					} else {
-						docs.statistics.topics.visited_array.push([req.params.topic, Date.now(), 1])
-					}
-					
-					docs.save()
-				})
-			} catch(err) {
-				console.log(err)
-			}
-			
 			
 			for (i=0;i<posts.length;i++) {
 				if (posts[i].posterID == userID) {

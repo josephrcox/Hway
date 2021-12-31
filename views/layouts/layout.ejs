@@ -72,7 +72,7 @@
 
 <script>
 
-console.log(Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0))
+
 
 function topicdropdownclicked() {
     document.getElementById("topic-dropdown").classList.toggle("show");
@@ -82,7 +82,6 @@ function currentuserDropdownClicked() {
 }
   
 document.onclick = function(e){
-    console.log(e)
     if(e.target.id !== 'currentUser'){
         if (document.getElementById('user-dropdown').classList.contains('show')) {
             document.getElementById('user-dropdown').classList.remove('show');
@@ -138,6 +137,7 @@ function showorhidesearch() {
     search = document.getElementById("searchbar")
     if (search.style.display == "none") {
         document.getElementById("newPost_div").style.display = 'none'
+        document.getElementById('postsArray').style.filter = 'blur(0px)'
         document.getElementById("post-button").innerHTML = 'Post'
         search.style.display = "block"
     } else {
