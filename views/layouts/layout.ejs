@@ -42,7 +42,7 @@
                     
                 </div>
             </div>
-            <div id="post-button" style='display:none;' onclick="ui_newPost()">New post</div>
+            <div id="post-button" style='display:none;' onclick="ui_newPost()">Post</div>
             <div id="search-button" onclick="showorhidesearch()">Search</div>
         </div>
         
@@ -63,6 +63,7 @@
         <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search terms"><br/>
         <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)">
         <button id="search_submit">Search</button>
+        <div id="search-logs"></div>
     </div>
     
     <div class='page-content'>
@@ -134,6 +135,8 @@ async function getUsername() {
 function showorhidesearch() {
     search = document.getElementById("searchbar")
     if (search.style.display == "none") {
+        document.getElementById("newPost_div").style.display = 'none'
+        document.getElementById("post-button").innerHTML = 'Post'
         search.style.display = "block"
     } else {
         search.style.display = "none"

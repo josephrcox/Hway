@@ -1282,11 +1282,12 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     if (document.getElementById("newPost_div").style.display == 'block') {
         document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById("post-button").innerHTML = "New post"
+        document.getElementById("post-button").innerHTML = "Post"
         document.getElementById("newPost_logs").innerHTML = ""
         document.getElementById("newPost_topic").value = currentTopic
     } else {
         document.getElementById("newPost_div").style.display = 'block'
+        document.getElementById("searchbar").style.display = 'none'
         document.getElementById("post-button").innerHTML = "Collapse"
         document.getElementById("newPost_topic").value = currentTopic
     }
@@ -1558,12 +1559,6 @@ const filter_nsfw = async() => {
     }
 }
 
-document.getElementById("search_phrase").addEventListener("keyup", function(event) {
-    if (event.keyCode === 13) {
-    	search()
-    }
-})
-
 function search() {
     query = document.getElementById("search_phrase").innerHTML
     topic = document.getElementById("search_topic").innerHTML
@@ -1571,10 +1566,20 @@ function search() {
     console.log(query, topic)
 }
 
+document.getElementById("search_phrase").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+    	document.getElementById("search_submit").click()
+    }
+})
+
 document.getElementById("search_submit").onclick = function() {
     query = document.getElementById("search_phrase").value
     topic = document.getElementById("search_topic").value
 
+    if (query == "") {
+        document.getElementById('search-logs').innerHTML = "Please enter search query"
+        return 
+    }
     query.split(" ").join("+")
     query = (query.split(" ")).join("+")
     
