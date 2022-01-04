@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "devStart": "nodemon server.js"
+    "build":"tsc",
+    "devStart": "nodemon src/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14",
+    "typescript": "^4.5.4"
   }
 }
