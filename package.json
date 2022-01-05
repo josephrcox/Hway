@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node src/server.ts"
+    "start": "tsc && node src/server.ts"
   },
   "author": "",
   "license": "ISC",

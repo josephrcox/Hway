@@ -1341,7 +1341,7 @@ function getFullDateTimeAndTimeStamp() {
     let minute = datetime.getUTCMinutes();
     let timestamp = Date.now();
     let ampm;
-    let strminute = minute;
+    let strminute = "" + minute;
     if (hour > 12) {
         ampm = "PM";
         hour -= 12;

@@ -1468,7 +1468,7 @@ function getFullDateTimeAndTimeStamp() {
 	let minute = datetime.getUTCMinutes()
 	let timestamp = Date.now()
 	let ampm
-	let strminute:(string|number) = minute
+	let strminute = ""+ minute
 
 	if (hour > 12) {
 		ampm = "PM"
@@ -1485,4 +1485,4 @@ function getFullDateTimeAndTimeStamp() {
 
 }
 
-app.listen(process.env.PORT || 3000)
+app.listen(process.env.PORT || 3000) 
