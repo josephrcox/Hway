@@ -1,3 +1,5 @@
+console.log("THIS IS A TYPESCRIPT FILE - BEWARE")
+
 let newPost_type = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
 let uploadedImageUrls = [] // This is used to store the URLs of recently uploaded images
 let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
@@ -247,7 +249,7 @@ async function randomizer(x) {
 
     alert("This will likely break a LOT! ")
     for (let t=0;t<x;t++) {
-        const response = await fetch('https://www.reddit.com/r/all/.json', {limit:100})
+        const response = await fetch('https://www.reddit.com/r/all/.json')
         const data = await response.json()
         var posts = data.data.children
         console.log(posts.length)
@@ -323,9 +325,11 @@ const getUser = async () => {
         const response = await fetch('/api/get/currentuser/')
         const data2 = await response.json()
         if (data2.show_nsfw == true) {
-            document.getElementById('filter_nsfw').checked = true
+            let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement
+            filter_nsfw.checked = true
         } else {
-            document.getElementById('filter_nsfw').checked = false
+            let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement
+            filter_nsfw.checked = false
         }
         
     }
@@ -374,7 +378,7 @@ const postObject = {
     current_user_downvoted: "",
     current_user_admin: "",
     comments: [],
-    comment_count: "",
+    comment_count:'',
     poster_avatar_src: "",
     special_attributes: [],
     special_nsfw: "",
@@ -400,6 +404,7 @@ const postObject = {
         openPostButton.setAttribute("class", "openPostButton")
         openPostButton.innerHTML = "<a href='/posts/"+this.id+"'></a>"
         openPostButton.src = '/assets/speech_bubble.png'
+ 
         openPostButton.addEventListener('click', function() {
             window.location.href = '/posts/'+this.id.substring(15)
         }, false)
@@ -429,9 +434,9 @@ const postObject = {
         } 
         
         voteUpButton.style.width = 'auto'
-        voteUpButton.onclick = function() {
+        voteUpButton.addEventListener('click', function() {
             vote(1, this.id)
-        }
+        }, false)
 
         var voteDownButton = document.createElement("img")
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
@@ -441,9 +446,10 @@ const postObject = {
             voteDownButton.src = '/assets/down_selected.gif'
         }
         voteDownButton.style.width = 'auto'
-        voteDownButton.onclick = function() {
+        voteDownButton.addEventListener('click', function() {
             vote(-1, this.id)
-        }
+        }, false)
+        
          
         var title = postFrame.insertRow(0)
         var info = postFrame.insertRow(1)
@@ -496,15 +502,22 @@ const postObject = {
             titleCell.innerHTML = "<a href='" + this.link +"'>"+this.title+"</a> <span style='font-size: 10px'>("+domain+"...)</span>"
         }
         
+        // titleCell.onclick = function() {
+        //     if (this.body != "(empty)") {
+        //         expandDesc(this.id.split("_")[1])
+        //     } 
+        // }
+
         titleCell.onclick = function() {
-            if (this.body != "(empty)") {
-                expandDesc(this.id.split("_")[1])
+            if (titleCell.innerHTML != "(empty)") {
+                expandDesc(titleCell.id.split("_")[1])
             } 
         }
+
         if (this.type == "3") {
             imgThumbDiv.onclick = function() {
-                if (this.body != "(empty)") {
-                    expandDesc(this.id.split("_")[1])
+                if (imgThumbDiv.innerHTML != "(empty)") {
+                    expandDesc(imgThumbDiv.id.split("_")[1])
                 } 
             }
         }
@@ -521,18 +534,18 @@ const postObject = {
             
             del.onclick = function() {
                 if (delPostConfirmation) {
-                    if (delPostConfirmationId == this.id.split("_")[1]) {
-                        deletePost(this.id.split("_")[1])
+                    if (delPostConfirmationId == del.id.split("_")[1]) {
+                        deletePost(del.id.split("_")[1])
                     } else {
-                        this.src = "/assets/trash_confirm.png"
+                        del.src = "/assets/trash_confirm.png"
                         delPostConfirmation = true
-                        delPostConfirmationId = this.id.split("_")[1]
+                        delPostConfirmationId = del.id.split("_")[1]
                     }
                     
                 } else {
-                    this.src = "/assets/trash_confirm.png"
+                    del.src = "/assets/trash_confirm.png"
                     delPostConfirmation = true
-                    delPostConfirmationId = this.id.split("_")[1]
+                    delPostConfirmationId = del.id.split("_")[1]
                 }
                 
             }
@@ -639,19 +652,19 @@ const commentObject = {
             
             del.onclick = function() {
                 if (delPostConfirmation) {
-                    if (delPostConfirmationId == this.id.split("_")[1]) {
+                    if (delPostConfirmationId == del.id.split("_")[1]) {
                         //deletePost(this.id.split("_")[1])
-                        deleteComment(this.id.split("_")[1])
+                        deleteComment(del.id.split("_")[1])
                     } else {
-                        this.src = "/assets/trash_confirm.png"
+                        del.src = "/assets/trash_confirm.png"
                         delPostConfirmation = true
-                        delPostConfirmationId = this.id.split("_")[1]
+                        delPostConfirmationId = del.id.split("_")[1]
                     }
                     
                 } else {
-                    this.src = "/assets/trash_confirm.png"
+                    del.src = "/assets/trash_confirm.png"
                     delPostConfirmation = true
-                    delPostConfirmationId = this.id.split("_")[1]
+                    delPostConfirmationId = del.id.split("_")[1]
                 }
                 
             }
@@ -713,7 +726,7 @@ const commentObject = {
             
             voteUp.style.width = 'auto'
             voteUp.onclick = function() {
-                voteCom(this.id.split("_")[1], currentPostID, true, this.id.split("_")[2])
+                voteCom(voteUp.id.split("_")[1], currentPostID, true, voteUp.id.split("_")[2])
             }
 
             
@@ -731,22 +744,16 @@ const commentObject = {
 
 
         posterRow.onclick = function() {
-            var id = this.id.substring(10)
+            var id = posterRow.id.substring(10)
             var body = document.getElementById("bodyCell_"+id)
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" says")[0]
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> says: (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
-                // if (!document.getElementById('ncDiv_'+id).innerHTML == "") {
-                //     ncDiv.style.display = 'block'
-                // }
                 ncContainer.style.display = 'block'
-
-
-                
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> says: (+)"
-                var x = document.getElementById("bodyCell_"+this.id.substring(10))
+                var x = document.getElementById("bodyCell_"+posterRow.id.substring(10))
                 x.innerHTML = ""
                 ncContainer.style.display = 'none'
             }
@@ -770,12 +777,12 @@ const commentObject = {
         replySubmit.setAttribute("class", "comreplySubmit")
         replySubmit.setAttribute("id", "comreplySubmit_"+this.id)
         replySubmit.innerText = "Submit reply"
-        replySubmit.onclick = function() {
+        replySubmit.onclick = function() { // BIG TYPESCRIPT CHANGE
             let parentID = window.location.href.split('/posts/')[1]
-            let body = document.getElementById('comreplybox_'+this.id.split('_')[1]).value
-            comment_nested(parentID, document.getElementById('comreplybox_'+this.id.split('_')[1]).value, this.id.split('_')[1])
-            document.getElementById('comreplybox_'+this.id.split('_')[1]).value = ""
-            document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'none'
+            let reply = document.getElementById('comreplybox_'+replySubmit.id.split('_')[1]) as HTMLInputElement
+            comment_nested(parentID, reply, replySubmit.id.split('_')[1])
+            reply.value = ""
+            document.getElementById("comreplyDiv_"+replySubmit.id.split("_")[1]).style.display = 'none'
         }
         
         var replyButton = document.createElement('img')
@@ -785,13 +792,11 @@ const commentObject = {
         infoRow.appendChild(replyButton)
         
         replyButton.onclick = function() {
-            if (this.reply_button_shown) {
-                document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'none'
-                this.reply_button_shown = false
+            if (document.getElementById("comreplyDiv_"+replyButton.id.split('_')[1]).style.display == "flex") {
+                document.getElementById("comreplyDiv_"+replyButton.id.split("_")[1]).style.display = 'none'
             } else {
-                document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.display = 'flex'
-                document.getElementById("comreplyDiv_"+this.id.split("_")[1]).style.flexDirection = 'row'
-                this.reply_button_shown = true
+                document.getElementById("comreplyDiv_"+replyButton.id.split("_")[1]).style.display = 'flex'
+                document.getElementById("comreplyDiv_"+replyButton.id.split("_")[1]).style.flexDirection = 'row'
             }
         }
 
@@ -815,7 +820,7 @@ const commentObject = {
         
         voteUp.style.width = 'auto'
         voteUp.onclick = function() {
-            voteCom(this.id.substring(10), currentPostID, false, 0)
+            voteCom(voteUp.id.substring(10), currentPostID, false, 0)
         }
 
         
@@ -879,7 +884,7 @@ const loadPosts = async (topic) => {
         topic = currentPageCategory.split('/')[4]
     }
 
-    let options = "?sort="+sorting+"&t="+sorting_duration+"&nsfw="+document.getElementById("filter_nsfw").checked+""
+    let options = "?sort="+sorting+"&t="+sorting_duration+"&nsfw="+(document.getElementById("filter_nsfw") as HTMLInputElement).checked+""
 
     if (currentPageType == 'post') { // on a specific post page, load only that one post & comments
         let url = window.location.href
@@ -1066,9 +1071,9 @@ const loadUserPage = async(user) => {
 function expandDesc(x) {
     let y = "descCell_"+x
     let mediaPost = false
-    if (document.getElementById('postImgThumb_'+x)){
-        if (document.getElementById('postImgThumb_'+x).src != null) {
-            console.log(document.getElementById('postImgThumb_'+x).src)
+    if (document.getElementById('postImgThumb_'+x) as HTMLImageElement){
+        if ((document.getElementById('postImgThumb_'+x) as HTMLImageElement).src != null) {
+            console.log((document.getElementById('postImgThumb_'+x) as HTMLImageElement).src)
             mediaPost = true
         }
     }
@@ -1135,17 +1140,19 @@ const vote = async (change, id) => {
 
     if (data.status == 'ok') {
         document.getElementById('voteCount_'+id.substring(13)).innerHTML = data.newtotal
+        let voteUpButtonwithID = document.getElementById('voteUpButton_'+id.substring(13)) as HTMLImageElement
+        let voteDoButtonwithID = document.getElementById('voteDoButton_'+id.substring(13)) as HTMLImageElement
         if (data.gif == 'none') {
-            document.getElementById('voteUpButton_'+id.substring(13)).src = '/assets/up.gif'
-            document.getElementById('voteDoButton_'+id.substring(13)).src = '/assets/down.gif'
+            voteUpButtonwithID.src = '/assets/up.gif'
+            voteDoButtonwithID.src = '/assets/down.gif'
         }
         if (data.gif == 'up') {
-            document.getElementById('voteUpButton_'+id.substring(13)).src = '/assets/up_selected.gif'
-            document.getElementById('voteDoButton_'+id.substring(13)).src = '/assets/down.gif'
+            voteUpButtonwithID.src = '/assets/up_selected.gif'
+            voteDoButtonwithID.src = '/assets/down.gif'
         }
         if (data.gif == 'down') {
-            document.getElementById('voteUpButton_'+id.substring(13)).src = '/assets/up.gif'
-            document.getElementById('voteDoButton_'+id.substring(13)).src = '/assets/down_selected.gif'
+            voteUpButtonwithID.src = '/assets/up.gif'
+            voteDoButtonwithID.src = '/assets/down_selected.gif'
         }
     } 
 
@@ -1169,17 +1176,17 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
             if (nested) {
-                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '/assets/up_selected.gif'
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).src = '/assets/up_selected.gif'
             } else {
-                document.getElementById('voteComUp_'+id).src = '/assets/up_selected.gif'
+                (document.getElementById('voteComUp_'+id) as HTMLImageElement).src = '/assets/up_selected.gif'
             }
             
         }
         if (data.voted == 'no') {
             if (nested) {
-                document.getElementById('nestedcommentUp_'+id+'_'+commentParentID).src = '/assets/up.gif'
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).src = '/assets/up.gif'
             } else {
-                document.getElementById('voteComUp_'+id).src = '/assets/up.gif'
+                (document.getElementById('voteComUp_'+id) as HTMLImageElement).src = '/assets/up.gif'
             }
             
         }
@@ -1197,7 +1204,7 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
 }
 
 const comment = async () => { 
-    let body = document.getElementById("newCom_body").value
+    let body = (document.getElementById("newCom_body") as HTMLInputElement).value
     if (body != null && body != "") {
         let bodyJSON = {
             "id":window.location.href.split("/posts/")[1],
@@ -1292,14 +1299,14 @@ function ui_newPost() {
         document.getElementById("newPost_div").style.display = 'none'
         document.getElementById('postsArray').style.filter = 'blur(0px)'
         document.getElementById("post-button").innerHTML = "Post"
-        document.getElementById("newPost_logs").innerHTML = ""
-        document.getElementById("newPost_topic").value = currentTopic
+        document.getElementById("newPost_logs").innerHTML = "";
+        (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
     } else {
         document.getElementById("newPost_div").style.display = 'block'
         document.getElementById('postsArray').style.filter = 'blur(10px)'
         document.getElementById("searchbar").style.display = 'none'
-        document.getElementById("post-button").innerHTML = "Collapse"
-        document.getElementById("newPost_topic").value = currentTopic
+        document.getElementById("post-button").innerHTML = "Collapse";
+        (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
     }
 }
 
@@ -1311,13 +1318,13 @@ function launch() {
 
 if (currentPageType != 'user') {
     document.getElementById("newPost_submit_button").onclick = function() {
-        let postTitle = document.getElementById("newPost_name").value
+        let postTitle = (document.getElementById("newPost_name")as HTMLInputElement).value
         let topic
-        if ((document.getElementById("newPost_topic").value).replace(" ","") == "" || (document.getElementById("newPost_topic").value).replace(" ","") == null || (document.getElementById("newPost_topic").value).replace(" ","") == undefined) {
+        if (((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == "" || ((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == null || ((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == undefined) {
             topic = "all"
         }
         var myRegEx =  /[^a-z\d]/i;
-        topic = document.getElementById("newPost_topic").value
+        topic = (document.getElementById("newPost_topic") as HTMLInputElement).value
     
         if((myRegEx.test(topic))){
             return document.getElementById("newPost_logs").innerHTML = "Please enter valid topic. No spaces or characters allowed."
@@ -1336,7 +1343,7 @@ if (currentPageType != 'user') {
                 if (postTitle == "" || postTitle == null) {
                     document.getElementById("newPost_logs").innerHTML = "Please enter title."
                 } else {
-                    if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
+                    if ((document.getElementById("newPost_link") as HTMLInputElement).value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
                         createNewPost(2)
                     } else {
                         document.getElementById("newPost_logs").innerHTML = "Please enter valid URL."
@@ -1402,7 +1409,7 @@ if (currentPageType != 'user') {
 
     document.getElementById('newPost_file').addEventListener("change", ev => {
         const formdata = new FormData()
-        formdata.append("image", ev.target.files[0])
+        formdata.append("image", (ev.target as HTMLInputElement).files[0])
         uploadImage(formdata)
     })
 }
@@ -1411,20 +1418,20 @@ if (currentPageType != 'user') {
 
 if (currentPageType == 'post') {
     document.getElementById("newCom_submit").onclick = function() {
-        comment()
-        document.getElementById("newCom_body").value = ""
+        comment();
+        (document.getElementById("newCom_body") as HTMLInputElement).value = ""
     }
 }
 
 
 const createNewPost = async(posttype) => { 
-    let title = document.getElementById("newPost_name").value
-    let body = document.getElementById("newPost_desc").value
-    let nsfw = document.getElementById("newPost_nsfw").checked
+    let title = (document.getElementById("newPost_name") as HTMLInputElement).value
+    let body = (document.getElementById("newPost_desc") as HTMLInputElement).value
+    let nsfw = (document.getElementById("newPost_nsfw") as HTMLInputElement).checked
 
     var myRegEx =  /[^a-z\d]/i;
-    let topic = document.getElementById("newPost_topic").value
-    let link = document.getElementById("newPost_link").value
+    let topic = (document.getElementById("newPost_topic") as HTMLInputElement).value
+    let link = (document.getElementById("newPost_link") as HTMLInputElement).value
 
     let bodyJSON
 
@@ -1536,7 +1543,7 @@ function nextPage() {
     let curURL = window.location.href
     let curSearch = window.location.search
     let baseURL = curURL.replace(curSearch, "")
-    let pageNumber = parseInt(pageNumber) + 1
+    pageNumber = pageNumber + 1
 
     if (currentPageType != 'topic') {
         window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
@@ -1554,7 +1561,7 @@ const filter_nsfw = async() => {
     if (!isUserLoggedIn) {
         window.location.href = '/login'
     }
-    let show = document.getElementById('filter_nsfw').checked
+    let show = (document.getElementById('filter_nsfw') as HTMLInputElement).checked
 
     const settings = {
         method: 'PUT',
@@ -1586,8 +1593,8 @@ document.getElementById("search_phrase").addEventListener("keyup", function(even
 })
 
 document.getElementById("search_submit").onclick = function() {
-    let query = document.getElementById("search_phrase").value
-    let topic = document.getElementById("search_topic").value
+    let query = (document.getElementById("search_phrase") as HTMLInputElement).value
+    let topic = (document.getElementById("search_topic") as HTMLInputElement).value
 
     if (query == "") {
         document.getElementById('search-logs').innerHTML = "Please enter search query"

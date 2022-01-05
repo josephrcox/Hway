@@ -1,11 +1,14 @@
+// @ts-nocheck
 const mongoose = require('mongoose');
 let datetime = new Date();
-month = datetime.getUTCMonth() + 1;
-day = datetime.getUTCDate();
-year = datetime.getUTCFullYear();
-hour = datetime.getUTCHours();
-minute = datetime.getUTCMinutes();
-timestamp = Date.now();
+let month = datetime.getUTCMonth() + 1;
+let day = datetime.getUTCDate();
+let year = datetime.getUTCFullYear();
+let hour = datetime.getUTCHours();
+let minute = datetime.getUTCMinutes();
+let timestamp = Date.now();
+let ampm;
+let sminute = minute;
 if (hour > 12) {
     ampm = "PM";
     hour -= 12;
@@ -14,9 +17,9 @@ else {
     ampm = "AM";
 }
 if (minute < 10) {
-    minute = "0" + minute;
+    sminute = "0" + minute;
 }
-fulldatetime = month + "/" + day + "/" + year + " at " + hour + ":" + minute + " " + ampm + " UTC";
+let fulldatetime = month + "/" + day + "/" + year + " at " + hour + ":" + sminute + " " + ampm + " UTC";
 const userSchema = new mongoose.Schema({
     name: { type: String, unique: true },
     password: { type: String },

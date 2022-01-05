@@ -24,13 +24,13 @@ app.set('layout', 'layouts/layout');
 app.use(cors());
 app.use(express.json());
 app.use(expressLayouts);
-app.use(express.static(path.join(__dirname, './src/')));
-app.use(express.static('./src/'));
+app.use(express.static(path.join(__dirname, './src/public')));
+app.use(express.static('./src/public'));
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DATEBASE_URL, {});
 const connection = mongoose.connection;
 connection.once("open", function (res) {
-    console.log("MongoDB database connection established successfully");
+    ////console.log"MongoDB database connection established successfully");
 });
 const User = require('./models/user');
 const Post = require('./models/post');
@@ -93,9 +93,10 @@ app.get('/logout', (req, res) => {
         const dt = getFullDateTimeAndTimeStamp();
         let fulldatetime = dt[0];
         let timestamp = dt[1];
+        console.log(dt);
         User.findById(userID, function (err, docs) {
             docs.statistics.misc.logout_num += 1;
-            docs.statistics.misc.logout_array.push([fulldatetime, timestamp]);
+            docs.statistics.misc.logout_array.push([fulldatetime, Date.now()]);
             docs.save();
         });
     }
@@ -139,6 +140,8 @@ app.get('/api/get/currentuser', function (req, res) {
             Guest.findOne({ ip_address: ip }, function (err, docs) {
                 const dt = getFullDateTimeAndTimeStamp();
                 let fulldatetime = dt[0];
+                let timestamp = dt[1];
+                console.log(dt);
                 if (docs != null) {
                     docs.visited_num += 1;
                     if (!docs.visited_datetime_array.includes(fulldatetime)) {
@@ -180,6 +183,8 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', { topic: "- register" });
 });
 app.get('/all/q', async (req, res) => {
+    sorting = req.query.sort;
+    sorting_duration = req.query.t;
     let valid = true;
     // Commenting out below allows users to view the home without being logged in
     valid = await isloggedin(req);
@@ -223,10 +228,11 @@ app.get('/api/get/all_users/:sorting', async (req, res) => {
             users.sort(function (a, b) { return b.statistics.score - a.statistics.score; });
         }
         usersArr = [];
+        let locationArr = "";
         let location;
         for (let i = 0; i < users.length; i++) {
             try {
-                let locationArr = users[i].statistics.misc.approximate_location[0];
+                locationArr = users[i].statistics.misc.approximate_location[0];
                 location = locationArr.city;
             }
             catch (err) {
@@ -281,7 +287,7 @@ app.get('/api/get/user/:user/:options', async (req, res) => {
     }
 });
 app.put('/api/put/user/:user/:change/', async (req, res) => {
-    let user = req.params.user;
+    user = req.params.user;
     let change = req.params.change;
     let url = req.body.src;
     if (change == "avatar") {
@@ -305,6 +311,7 @@ app.get('/api/get/posts/:postid', async (req, res) => {
         var userID = verified.id;
     }
     catch (err) {
+        ////console.logerr)
         if (!allowUsersToBrowseAsGuests) {
             return res.json({ status: "ok", code: 400, error: "Not logged in" });
         }
@@ -314,15 +321,16 @@ app.get('/api/get/posts/:postid', async (req, res) => {
     }
     let postModified = [];
     Post.findById(req.params.postid, function (err, post) {
-        let postModified = post;
         if (post == null) {
             res.send({ error: 'No post found' });
         }
         else {
             if (post.posterID == userID) {
+                postModified = post;
                 postModified.current_user_admin = true;
             }
             else {
+                postModified = post;
                 postModified.current_user_admin = false;
             }
             if (post.users_upvoted.includes(userID)) {
@@ -346,6 +354,8 @@ app.get('/api/get/posts/:postid', async (req, res) => {
                     if (docs != null) {
                         const dt = getFullDateTimeAndTimeStamp();
                         let fulldatetime = dt[0];
+                        let timestamp = dt[1];
+                        console.log(dt);
                         let viewed_num = docs.statistics.posts.viewed_num;
                         let viewed_array = docs.statistics.posts.viewed_array;
                         viewed_array.push([post.title, post.topic, post.id, fulldatetime]);
@@ -638,10 +648,12 @@ app.get('/api/get/posts/user/:user', async (req, res) => {
     // Commenting out this part below allows for users to view without being logged in
     try {
         let token = req.cookies.token;
+        //console.logtoken)
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         userID = verified.id;
     }
     catch (err) {
+        //console.logerr)
         if (!allowUsersToBrowseAsGuests) {
             return res.json({ status: "ok", code: 400, error: "Not logged in" });
         }
@@ -698,6 +710,7 @@ app.get('/api/get/topics', async (req, res) => {
     topicCount = [];
     Post.find({ status: "active" }, function (err, posts) {
         if (err) {
+            ////console.logerr);
         }
         else {
             for (let i = 0; i < posts.length; i++) {
@@ -719,6 +732,7 @@ app.get('/api/get/topics', async (req, res) => {
             joinedArray.sort(function (a, b) {
                 return b[1] - a[1];
             });
+            ////console.logjoinedArray)
             res.send(joinedArray);
         }
     });
@@ -737,9 +751,10 @@ app.post('/login', async (req, res) => {
         const dt = getFullDateTimeAndTimeStamp();
         let fulldatetime = dt[0];
         let timestamp = dt[1];
+        console.log(dt);
         User.findById(user._id, function (err, docs) {
             docs.statistics.misc.login_num += 1;
-            docs.statistics.misc.login_array.push([fulldatetime, timestamp]);
+            docs.statistics.misc.login_array.push([fulldatetime, Date.now()]);
             docs.save();
         });
         res.cookie("token", token, {
@@ -753,17 +768,15 @@ app.post('/register', async (req, res) => {
     const { name, password: plainTextPassword } = req.body;
     const password = await bcrypt.hash(plainTextPassword, 10);
     try {
-        let dt = getFullDateTimeAndTimeStamp;
         const response = await User.create({
             name: name,
             password: password,
-            statistics: {
-                account_creation_date: [dt[0], dt[1]]
-            }
         });
+        ////console.log'User created successfully: ', response)
     }
     catch (error) {
         if (error.code === 11000) {
+            // duplicate key
             return res.json({ status: 'error', code: 400, error: 'Username already in use' });
         }
         else {
@@ -789,6 +802,7 @@ app.post('/api/post/post', async (req, res) => {
     const dt = getFullDateTimeAndTimeStamp();
     let fulldatetime = dt[0];
     let timestamp = dt[1];
+    console.log(dt);
     try {
         const response = await Post.create({
             title: title,
@@ -815,6 +829,7 @@ app.post('/api/post/post', async (req, res) => {
         res.json({ status: "ok", code: 200, data: response });
     }
     catch (error) {
+        console.log("ERROR:" + error);
         res.json(error);
     }
 });
@@ -835,8 +850,10 @@ app.post('/api/post/comment/', async (req, res) => {
     const dt = getFullDateTimeAndTimeStamp();
     let fulldatetime = dt[0];
     let timestamp = dt[1];
+    console.log(dt);
     try {
         Post.findById(id, function (err, docs) {
+            //console.logdocs)
             let commentArray = docs.comments;
             Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
             });
@@ -862,6 +879,7 @@ app.post('/api/post/comment/', async (req, res) => {
                 docs.save();
             });
             User.findById(userID, function (err, docs) {
+                //console.logdocs)
             });
             res.json(newComment);
         });
@@ -886,6 +904,8 @@ app.post('/api/post/comment_nested/', async (req, res) => {
     }
     const dt = getFullDateTimeAndTimeStamp();
     let fulldatetime = dt[0];
+    let timestamp = dt[1];
+    console.log(dt);
     try {
         Post.findById(id, function (err, docs) {
             // docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
@@ -916,7 +936,13 @@ function isloggedin(req) {
     try {
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
-        return true;
+        ////console.log"verified:"+JSON.stringify(verified))
+        if (JSON.stringify(verified).status == "error") {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
     catch (err) {
         return false;
@@ -1086,6 +1112,8 @@ app.put('/api/put/comment/delete/:postid/:id', async function (req, res) {
     let ctbd = ncomments[index];
     const dt = getFullDateTimeAndTimeStamp();
     let fulldatetime = dt[0];
+    let timestamp = dt[1];
+    console.log(dt);
     try {
         const resp = await DeletedComment.create({
             post: postid,
@@ -1124,6 +1152,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         userID = verified.id;
+        //console.loguserID)
     }
     catch (err) {
         return res.json({ status: "error", code: 400, error: err });
@@ -1185,6 +1214,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
                 let index;
                 for (let i = 0; i < oldComArray.length; i++) {
                     if (oldComArray[i]._id == id) {
+                        //console.log"match:"+i)
                         index = i;
                     }
                 }
@@ -1228,11 +1258,13 @@ function deleteTestPosts() {
         Post.find({ poster: 'robot' }, function (err, docs) {
             for (let i = 0; i < docs.length; i++) {
                 Post.findByIdAndDelete(docs[i].id, function (err, response) {
+                    console.log(err, response);
                 });
             }
         });
     }
     catch (err) {
+        console.log(err);
     }
 }
 deleteTestPosts();

@@ -1,4 +1,4 @@
-sort_option = 1 // 1 is descending, 0 is ascending
+let sort_option = 1 // 1 is descending, 0 is ascending
 
 const getUserSheet = async () => {
     document.getElementById("users-page-body").innerHTML = ""
@@ -21,7 +21,7 @@ const getUserSheet = async () => {
     
 
     table.setAttribute('class', 'usersheet-table')
-    for (i=0;i<data.length;i++) {
+    for (let i=0;i<data.length;i++) {
         var row = table.insertRow(i+1)
         row.setAttribute('class','usersheet-row')
         var name = row.insertCell(0)
@@ -35,8 +35,8 @@ const getUserSheet = async () => {
         name.innerHTML = data[i].Name
         name.setAttribute('id','usersheet-name_'+data[i].Name)
         name.onclick = function() {
-            console.log(this.id)
-            window.location.href = '/user/'+this.id.split('_')[1]
+            console.log(name.id)
+            window.location.href = '/user/'+name.id.split('_')[1]
         }
         score.innerHTML = data[i].Score
         location.innerHTML = data[i].Location
@@ -50,7 +50,7 @@ const getUserSheet = async () => {
 }
 
 function usersheetchangeSorting() {
-    checked = document.getElementById('usersheet-sorting-descending').checked
+    let checked = (document.getElementById('usersheet-sorting-descending') as HTMLInputElement).checked
     if (checked) {
         sort_option = 1
     } else {

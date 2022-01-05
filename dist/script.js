@@ -1,3 +1,4 @@
+console.log("THIS IS A TYPESCRIPT FILE - BEWARE");
 let newPost_type = 1; // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
 let uploadedImageUrls = []; // This is used to store the URLs of recently uploaded images
 let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>"; // These two are used for quickly inserting the next-page and prev-page text
@@ -452,15 +453,20 @@ const postObject = {
             domain = new URL(domain.hostname.replace('www.', ''));
             titleCell.innerHTML = "<a href='" + this.link + "'>" + this.title + "</a> <span style='font-size: 10px'>(" + domain + "...)</span>";
         }
+        // titleCell.onclick = function() {
+        //     if (this.body != "(empty)") {
+        //         expandDesc(this.id.split("_")[1])
+        //     } 
+        // }
         titleCell.onclick = function () {
-            if (this.body != "(empty)") {
-                expandDesc(this.id.split("_")[1]);
+            if (titleCell.innerHTML != "(empty)") {
+                expandDesc(titleCell.id.split("_")[1]);
             }
         };
         if (this.type == "3") {
             imgThumbDiv.onclick = function () {
-                if (this.body != "(empty)") {
-                    expandDesc(this.id.split("_")[1]);
+                if (imgThumbDiv.innerHTML != "(empty)") {
+                    expandDesc(imgThumbDiv.id.split("_")[1]);
                 }
             };
         }
@@ -475,19 +481,19 @@ const postObject = {
             let delPostConfirmationId;
             del.onclick = function () {
                 if (delPostConfirmation) {
-                    if (delPostConfirmationId == this.id.split("_")[1]) {
-                        deletePost(this.id.split("_")[1]);
+                    if (delPostConfirmationId == del.id.split("_")[1]) {
+                        deletePost(del.id.split("_")[1]);
                     }
                     else {
-                        this.src = "/assets/trash_confirm.png";
+                        del.src = "/assets/trash_confirm.png";
                         delPostConfirmation = true;
-                        delPostConfirmationId = this.id.split("_")[1];
+                        delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    this.src = "/assets/trash_confirm.png";
+                    del.src = "/assets/trash_confirm.png";
                     delPostConfirmation = true;
-                    delPostConfirmationId = this.id.split("_")[1];
+                    delPostConfirmationId = del.id.split("_")[1];
                 }
             };
         }
@@ -576,20 +582,20 @@ const commentObject = {
             let delPostConfirmationId;
             del.onclick = function () {
                 if (delPostConfirmation) {
-                    if (delPostConfirmationId == this.id.split("_")[1]) {
+                    if (delPostConfirmationId == del.id.split("_")[1]) {
                         //deletePost(this.id.split("_")[1])
-                        deleteComment(this.id.split("_")[1]);
+                        deleteComment(del.id.split("_")[1]);
                     }
                     else {
-                        this.src = "/assets/trash_confirm.png";
+                        del.src = "/assets/trash_confirm.png";
                         delPostConfirmation = true;
-                        delPostConfirmationId = this.id.split("_")[1];
+                        delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    this.src = "/assets/trash_confirm.png";
+                    del.src = "/assets/trash_confirm.png";
                     delPostConfirmation = true;
-                    delPostConfirmationId = this.id.split("_")[1];
+                    delPostConfirmationId = del.id.split("_")[1];
                 }
             };
         }
@@ -639,7 +645,7 @@ const commentObject = {
             }
             voteUp.style.width = 'auto';
             voteUp.onclick = function () {
-                voteCom(this.id.split("_")[1], currentPostID, true, this.id.split("_")[2]);
+                voteCom(voteUp.id.split("_")[1], currentPostID, true, voteUp.id.split("_")[2]);
             };
             document.getElementById("ncContainer_" + this.id).appendChild(ncDiv);
             // document.getElementById("ncContainer_"+this.id).appendChild(ncDate)
@@ -649,20 +655,17 @@ const commentObject = {
             document.getElementById("ncVoteDiv_" + this.nested_comments[i].id).appendChild(voteUp);
         }
         posterRow.onclick = function () {
-            var id = this.id.substring(10);
+            var id = posterRow.id.substring(10);
             var body = document.getElementById("bodyCell_" + id);
             var poster = document.getElementById("posterCell_" + id).innerHTML.split(" says")[0];
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_" + id).innerHTML = "<span style='color:blue'>" + poster + "</span> says: (-)";
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))];
-                // if (!document.getElementById('ncDiv_'+id).innerHTML == "") {
-                //     ncDiv.style.display = 'block'
-                // }
                 ncContainer.style.display = 'block';
             }
             else {
                 document.getElementById("posterCell_" + id).innerHTML = "<span style='color:blue'>" + poster + "</span> says: (+)";
-                var x = document.getElementById("bodyCell_" + this.id.substring(10));
+                var x = document.getElementById("bodyCell_" + posterRow.id.substring(10));
                 x.innerHTML = "";
                 ncContainer.style.display = 'none';
             }
@@ -686,10 +689,10 @@ const commentObject = {
         replySubmit.innerText = "Submit reply";
         replySubmit.onclick = function () {
             let parentID = window.location.href.split('/posts/')[1];
-            let body = document.getElementById('comreplybox_' + this.id.split('_')[1]).value;
-            comment_nested(parentID, document.getElementById('comreplybox_' + this.id.split('_')[1]).value, this.id.split('_')[1]);
-            document.getElementById('comreplybox_' + this.id.split('_')[1]).value = "";
-            document.getElementById("comreplyDiv_" + this.id.split("_")[1]).style.display = 'none';
+            let reply = document.getElementById('comreplybox_' + replySubmit.id.split('_')[1]);
+            comment_nested(parentID, reply, replySubmit.id.split('_')[1]);
+            reply.value = "";
+            document.getElementById("comreplyDiv_" + replySubmit.id.split("_")[1]).style.display = 'none';
         };
         var replyButton = document.createElement('img');
         replyButton.setAttribute("class", "comreplybutton");
@@ -697,14 +700,12 @@ const commentObject = {
         replyButton.src = '/assets/speech_bubble.png';
         infoRow.appendChild(replyButton);
         replyButton.onclick = function () {
-            if (this.reply_button_shown) {
-                document.getElementById("comreplyDiv_" + this.id.split("_")[1]).style.display = 'none';
-                this.reply_button_shown = false;
+            if (document.getElementById("comreplyDiv_" + replyButton.id.split('_')[1]).style.display == "flex") {
+                document.getElementById("comreplyDiv_" + replyButton.id.split("_")[1]).style.display = 'none';
             }
             else {
-                document.getElementById("comreplyDiv_" + this.id.split("_")[1]).style.display = 'flex';
-                document.getElementById("comreplyDiv_" + this.id.split("_")[1]).style.flexDirection = 'row';
-                this.reply_button_shown = true;
+                document.getElementById("comreplyDiv_" + replyButton.id.split("_")[1]).style.display = 'flex';
+                document.getElementById("comreplyDiv_" + replyButton.id.split("_")[1]).style.flexDirection = 'row';
             }
         };
         var voteDiv = document.createElement("div");
@@ -725,7 +726,7 @@ const commentObject = {
         }
         voteUp.style.width = 'auto';
         voteUp.onclick = function () {
-            voteCom(this.id.substring(10), currentPostID, false, 0);
+            voteCom(voteUp.id.substring(10), currentPostID, false, 0);
         };
         document.getElementById("comFrame_" + this.id).appendChild(voteDiv);
         document.getElementById("comments").appendChild(replyDiv);
