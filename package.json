@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "build":"tsc",
-    "start":"nodemon src/server.ts"
+    "build": "tsc",
+    "start": "nodemon src/server.ts"
   },
   "author": "",
   "license": "ISC",
@@ -23,7 +23,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.12",
     "path": "^0.12.7",
-    "random-words": "^1.1.1"
+    "random-words": "^1.1.1",
+    "ts-node": "^10.4.0"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
