@@ -19,13 +19,13 @@ var postsonpage = [];
 var postsPerPage = 30;
 let ms_in_day = 86400000;
 app.set('view engine', 'ejs');
-app.set('views', './views');
+app.set('views', path.join(__dirname, './'));
 app.set('layout', 'layouts/layout');
 app.use(cors());
 app.use(express.json());
 app.use(expressLayouts);
-app.use(express.static(path.join(__dirname, './src/')));
-app.use(express.static('./src/'));
+app.use(express.static(path.join(__dirname, './dist/')));
+app.use(express.static('./dist/'));
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DATEBASE_URL, {});
 const connection = mongoose.connection;
@@ -1329,9 +1329,9 @@ app.get('/api/get/search/', async (req, res) => {
         });
     }
 });
-app.get('*', async (req, res) => {
-    res.render('error.ejs', { layout: 'layouts/error.ejs', topic: "PAGE NOT FOUND", error: ((req.url).replace('/', '')) });
-});
+// app.get('*', async(req, res) => {
+// 	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/',''))})
+// })
 function getFullDateTimeAndTimeStamp() {
     let datetime = new Date();
     let month = datetime.getUTCMonth() + 1;
