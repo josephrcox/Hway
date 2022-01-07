@@ -1,12 +1,13 @@
+interface keyobject {
+    [key: string]: any
+}
 var user = window.location.href.split("/user/").pop()
-var userInfo = []
+var userInfo:keyobject = []
 var admin = false
 
 comment_count = []
 let commentParentPair = []
 commentBodies = []
-
-
 
 const getUserInfo = async (user) => {
     const response =  await fetch('/api/get/user/'+user+'/none')
@@ -36,7 +37,7 @@ function displayInfo() {
     console.log(userInfo)
 
     // HEADING DIV
-    let avatar = document.getElementById("page-profile-avatar")
+    let avatar = document.getElementById("page-profile-avatar") as HTMLImageElement
     if (userInfo.avatar == "" || userInfo.avatar == null) {
         avatar.src = '/assets/defaultavatar.png'
     } else {
@@ -63,8 +64,9 @@ function displayInfo() {
     let day = datetime.getUTCDate()
     let year = datetime.getUTCFullYear()
 
-    let end = new Date(month+"/"+day+"/"+year)
-    let start = new Date((userInfo.statistics.misc.account_creation_date[0].split(" at")[0]))
+    let end:any = (new Date(month+"/"+day+"/"+year))
+    let start:any = new Date((userInfo.statistics.misc.account_creation_date[0].split(" at")[0]))
+    console.log(start, end)
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let oneDay = 24 * 60 * 60 * 1000;
     let dif = Math.round(Math.abs((end - start) / oneDay));
@@ -73,11 +75,7 @@ function displayInfo() {
     posts_num.innerHTML += userInfo.statistics.posts.created_num+" posts"
     comments_num.innerHTML += userInfo.statistics.comments.created_num+" comments"
 
-    // POSTS DIV
     loadPosts("")
-
-    // COMMENTS DIV
-
     loadComments()
 }
 
@@ -130,7 +128,7 @@ const commentShortObject = {
         bodyCell.setAttribute("id", "bodyCell_"+this.id)
         
         posterRow.onclick = function() {
-            var id = this.id.substring(10)
+            var id = posterRow.id.substring(10)
             var body = document.getElementById("bodyCell_"+id)
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" said")[0]
             if (body.innerHTML == "") {
@@ -138,9 +136,9 @@ const commentShortObject = {
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> said"+link+": (+)"
-                var x = document.getElementById("bodyCell_"+this.id.substring(10))
-                document.getElementById("voteDiv_"+this.id.substring(10)).style.height = '20px'
-                document.getElementById("voteDiv_"+this.id.substring(10)).style.alignSelf = 'center'
+                var x = document.getElementById("bodyCell_"+posterRow.id.substring(10))
+                document.getElementById("voteDiv_"+posterRow.id.substring(10)).style.height = '20px'
+                document.getElementById("voteDiv_"+posterRow.id.substring(10)).style.alignSelf = 'center'
                 x.innerHTML = ""
             }
             
@@ -188,9 +186,9 @@ const loadComments = async() => {
     
 }
 
-document.getElementById('avatar_file').addEventListener("change", ev => {
+(document.getElementById('avatar_file')).addEventListener("change", ev => {
     const formdata = new FormData()
-    formdata.append("image", ev.target.files[0])
+    formdata.append("image", (ev.target as HTMLInputElement).files[0])
     uploadAvatar(formdata)
 })
 
@@ -223,8 +221,8 @@ const changeAvatar = async(url) => {
     const data = await response.json()
 
     if (data.status == 'ok') {
-        document.getElementById("avatar_file_label").innerHTML = "Change Avatar"
-        document.getElementById("page-profile-avatar").src = url
+        document.getElementById("avatar_file_label").innerHTML = "Change Avatar";
+        (document.getElementById("page-profile-avatar") as HTMLImageElement).src = url
     }
     if (data.status == 'error') {
         alert(data.error)

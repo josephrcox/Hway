@@ -1306,6 +1306,9 @@ app.get('/api/get/search/', async (req, res) => {
         });
     }
 });
+app.get('*', async (req, res) => {
+    res.render('error.ejs', { layout: 'layouts/error.ejs', topic: "PAGE NOT FOUND", error: ((req.url).replace('/', '')) });
+});
 function getFullDateTimeAndTimeStamp() {
     let datetime = new Date();
     let month = datetime.getUTCMonth() + 1;

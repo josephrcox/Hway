@@ -1,37 +1,33 @@
 console.log("THIS IS A TYPESCRIPT FILE - BEWARE")
 
-let newPost_type = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
-let uploadedImageUrls: string[] = [] // This is used to store the URLs of recently uploaded images
-let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
-let nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>"
-let comment_count = [] // Used to track how many comments are being displayed on a page (maybe remove later)
-let commentBodies = [] // used to remember comment bodies that are removed when a post is temporarily collapsed by the user
-let lastClick = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
-var delay = 400;
-let currentTopic = "" // Current topic the user is on, i.e. 'bicycling'
-let currentPostID = "" // Current post ID that is loaded, only when on a user page such as http://localhost:3000/posts/61ab8741f6fadead68120454
-let isUserLoggedIn = false // Checks if a user is logged in or not. Not required for access unless enabled in backend
-const urlSearchParams = new URLSearchParams(window.location.search);
-const pagequeries = Object.fromEntries(urlSearchParams.entries()); 
-let sorting = pagequeries.sort
-let sorting_duration = pagequeries.t
-let pageNumber =  parseInt(pagequeries.page) // Tracking what page number the user is on
-let curURL = window.location.toString()
-let curSearch = window.location.search
-let baseURL = curURL.replace(curSearch, "")
-let queryset = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
-const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+let newPost_type:number = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
+let uploadedImageUrls:string[] = [] // This is used to store the URLs of recently uploaded images
+let prevPageStr:string = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
+let nextPageStr:string = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>"
+let comment_count:number[] = [] // Used to track how many comments are being displayed on a page (maybe remove later)
+let commentBodies:string[] = [] // used to remember comment bodies that are removed when a post is temporarily collapsed by the user
+let lastClick:number = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
+const delay:number = 400;
+let currentTopic:string = "" // Current topic the user is on, i.e. 'bicycling'
+let currentPostID:string = "" // Current post ID that is loaded, only when on a user page such as http://localhost:3000/posts/61ab8741f6fadead68120454
+let isUserLoggedIn:boolean = false // Checks if a user is logged in or not. Not required for access unless enabled in backend
+const pagequeries = Object.fromEntries((new URLSearchParams(window.location.search)).entries()); 
+let sorting:string = pagequeries.sort // NEEDS TYPESCRIPT DEF
+let sorting_duration:string = pagequeries.t
+let pageNumber:number =  parseInt(pagequeries.page) // Tracking what page number the user is on
+let curURL:string = window.location.toString()
+let curSearch:string = window.location.search
+let baseURL:string = curURL.replace(curSearch, "")
+let queryset:string = "?sort="+sorting+"&t="+sorting_duration+"&page="+pageNumber
+const vw:number = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+let newURL:string = ""
+let cPageTypeIndex:number
+let search_topic:string = ""
+let search_query:string = ""
+const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search'] // This is used to track what page type we are on
+let currentPageCategory:string = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
+let currentPageType:string
 
-let newURL
-
-let cPageTypeIndex
-
-let search_topic = ""
-let search_query = ""
-
-const pageTypes = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search'] // This is used to track what page type we are on
-
-let currentPageCategory = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0
@@ -62,35 +58,15 @@ switch (currentPageCategory) {
         break;
 }
 
-let currentPageType = pageTypes[cPageTypeIndex]
+currentPageType = pageTypes[cPageTypeIndex]
 
-if (pageNumber == null || isNaN(pageNumber)) {
-    console.log("pagination is messed up. fixing...")
-    pageNumber = 1
-} 
-if (['new','hot','top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 ) {
-    console.log("sorting is messed up. fixing...")
-    newURL = curURL.replace(sorting, 'hot')
-    console.log(newURL)
-    window.location.replace(newURL)
-} 
-if (['all','day','week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 ) {
-    console.log("sorting is messed up. fixing...")
-    newURL = curURL.replace(sorting_duration, 'all')
-    window.location.replace(newURL)
+if (currentPageType != "user" && ((pageNumber == null || isNaN(pageNumber)) || ['new','hot','top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 || (['all','day','week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) || /[a-z]/i.test(pagequeries.page))) {
+    console.error("This URL has been tampered with, or does not fit with the current URL style. Redirecting to home page.")
+    window.location.href = '/'
 } 
 
-if (currentPageType == 'user') { 
-    
-}
-if (currentPageType == 'usersheet') { 
-    
-}
 if (currentPageType == 'topic') { 
     document.getElementById('sorting_options').style.display = 'block'
-}
-if (currentPageType == 'index') { 
-    
 }
 if (currentPageType == 'all') {    
     document.getElementById('sorting_options').style.display = 'block'
@@ -98,12 +74,7 @@ if (currentPageType == 'all') {
 if (currentPageType == 'post') { 
     document.getElementById('sorting_options').style.display = 'none'
 }
-if (currentPageType == 'login') { 
-    
-}
-if (currentPageType == 'register') { 
-    
-}
+
 if (currentPageType == 'search') { 
     document.getElementById('sorting_options').style.display = 'none'
     let url = window.location.href

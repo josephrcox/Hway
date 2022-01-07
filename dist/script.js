@@ -6,12 +6,11 @@ let nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-dec
 let comment_count = [];
 let commentBodies = [];
 let lastClick = 0;
-var delay = 400;
+const delay = 400;
 let currentTopic = "";
 let currentPostID = "";
 let isUserLoggedIn = false;
-const urlSearchParams = new URLSearchParams(window.location.search);
-const pagequeries = Object.fromEntries(urlSearchParams.entries());
+const pagequeries = Object.fromEntries((new URLSearchParams(window.location.search)).entries());
 let sorting = pagequeries.sort;
 let sorting_duration = pagequeries.t;
 let pageNumber = parseInt(pagequeries.page);
@@ -20,12 +19,13 @@ let curSearch = window.location.search;
 let baseURL = curURL.replace(curSearch, "");
 let queryset = "?sort=" + sorting + "&t=" + sorting_duration + "&page=" + pageNumber;
 const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-let newURL;
+let newURL = "";
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
 const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search'];
 let currentPageCategory = (window.location.href).split('/')[3];
+let currentPageType;
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0;
@@ -55,40 +55,19 @@ switch (currentPageCategory) {
         cPageTypeIndex = 8;
         break;
 }
-let currentPageType = pageTypes[cPageTypeIndex];
-if (pageNumber == null || isNaN(pageNumber)) {
-    console.log("pagination is messed up. fixing...");
-    pageNumber = 1;
-}
-if (['new', 'hot', 'top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) {
-    console.log("sorting is messed up. fixing...");
-    newURL = curURL.replace(sorting, 'hot');
-    console.log(newURL);
-    window.location.replace(newURL);
-}
-if (['all', 'day', 'week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) {
-    console.log("sorting is messed up. fixing...");
-    newURL = curURL.replace(sorting_duration, 'all');
-    window.location.replace(newURL);
-}
-if (currentPageType == 'user') {
-}
-if (currentPageType == 'usersheet') {
+currentPageType = pageTypes[cPageTypeIndex];
+if (currentPageType != "user" && ((pageNumber == null || isNaN(pageNumber)) || ['new', 'hot', 'top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 || (['all', 'day', 'week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) || /[a-z]/i.test(pagequeries.page))) {
+    console.error("This URL has been tampered with, or does not fit with the current URL style. Redirecting to home page.");
+    window.location.href = '/';
 }
 if (currentPageType == 'topic') {
     document.getElementById('sorting_options').style.display = 'block';
-}
-if (currentPageType == 'index') {
 }
 if (currentPageType == 'all') {
     document.getElementById('sorting_options').style.display = 'block';
 }
 if (currentPageType == 'post') {
     document.getElementById('sorting_options').style.display = 'none';
-}
-if (currentPageType == 'login') {
-}
-if (currentPageType == 'register') {
 }
 if (currentPageType == 'search') {
     document.getElementById('sorting_options').style.display = 'none';

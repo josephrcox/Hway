@@ -1,8 +1,6 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
-
-
 const cors = require('cors')
 
 const express = require('express')
@@ -22,7 +20,7 @@ var topicArray = []
 var topicCount = []
 var postsonpage = []
 var postsPerPage = 30;
-let ms_in_day = 86400000
+let ms_in_day = 86400000;
 
 app.set('view engine', 'ejs')
 app.set('views',path.join(__dirname, '/views'))
@@ -1455,9 +1453,9 @@ app.get('/api/get/search/', async(req,res) => {
 
 })
 
-// app.get('*', async(req, res) => {
-// 	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/',''))})
-// })
+app.get('*', async(req, res) => {
+	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/',''))})
+})
 
 function getFullDateTimeAndTimeStamp() {
 	let datetime = new Date()

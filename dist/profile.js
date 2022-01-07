@@ -49,8 +49,9 @@ function displayInfo() {
     let month = datetime.getUTCMonth() + 1;
     let day = datetime.getUTCDate();
     let year = datetime.getUTCFullYear();
-    let end = new Date(month + "/" + day + "/" + year);
+    let end = (new Date(month + "/" + day + "/" + year));
     let start = new Date((userInfo.statistics.misc.account_creation_date[0].split(" at")[0]));
+    console.log(start, end);
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let oneDay = 24 * 60 * 60 * 1000;
     let dif = Math.round(Math.abs((end - start) / oneDay));
@@ -100,7 +101,7 @@ const commentShortObject = {
         bodyCell.setAttribute("class", "bodyCell");
         bodyCell.setAttribute("id", "bodyCell_" + this.id);
         posterRow.onclick = function () {
-            var id = this.id.substring(10);
+            var id = posterRow.id.substring(10);
             var body = document.getElementById("bodyCell_" + id);
             var poster = document.getElementById("posterCell_" + id).innerHTML.split(" said")[0];
             if (body.innerHTML == "") {
@@ -109,9 +110,9 @@ const commentShortObject = {
             }
             else {
                 document.getElementById("posterCell_" + id).innerHTML = "<span style='color:blue'>" + poster + "</span> said" + link + ": (+)";
-                var x = document.getElementById("bodyCell_" + this.id.substring(10));
-                document.getElementById("voteDiv_" + this.id.substring(10)).style.height = '20px';
-                document.getElementById("voteDiv_" + this.id.substring(10)).style.alignSelf = 'center';
+                var x = document.getElementById("bodyCell_" + posterRow.id.substring(10));
+                document.getElementById("voteDiv_" + posterRow.id.substring(10)).style.height = '20px';
+                document.getElementById("voteDiv_" + posterRow.id.substring(10)).style.alignSelf = 'center';
                 x.innerHTML = "";
             }
         };
@@ -148,7 +149,7 @@ const loadComments = async () => {
         commentBodies.push(com.body);
     }
 };
-document.getElementById('avatar_file').addEventListener("change", ev => {
+(document.getElementById('avatar_file')).addEventListener("change", ev => {
     const formdata = new FormData();
     formdata.append("image", ev.target.files[0]);
     uploadAvatar(formdata);
