@@ -1,7 +1,7 @@
 console.log("THIS IS A TYPESCRIPT FILE - BEWARE")
 
 let newPost_type = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
-let uploadedImageUrls = [] // This is used to store the URLs of recently uploaded images
+let uploadedImageUrls: string[] = [] // This is used to store the URLs of recently uploaded images
 let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
 let nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>"
 let comment_count = [] // Used to track how many comments are being displayed on a page (maybe remove later)
@@ -1310,7 +1310,7 @@ function ui_newPost() {
     }
 }
 
-function launch() { 
+if (window.location.href.indexOf("/user/") == -1){
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber + nextPageStr
@@ -1515,6 +1515,10 @@ function scrollFunction() {
     mybutton.style.display = "none";
   }
 }
+
+var mybutton = document.getElementById("button_sendtotop");
+
+window.onscroll = function() {scrollFunction()};
 
 function topFunction() {
     window.scrollTo({top: 0, behavior: 'smooth'});  

@@ -19,7 +19,7 @@ var postsonpage = [];
 var postsPerPage = 30;
 let ms_in_day = 86400000;
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, './'));
+app.set('views', path.join(__dirname, '/views'));
 app.set('layout', 'layouts/layout');
 app.use(cors());
 app.use(express.json());
@@ -181,7 +181,6 @@ app.get('/register', (req, res) => {
 });
 app.get('/all/q', async (req, res) => {
     let valid = true;
-    // Commenting out below allows users to view the home without being logged in
     valid = await isloggedin(req);
     if (valid || allowUsersToBrowseAsGuests) {
         res.render('home.ejs', { topic: "- all" });
@@ -195,7 +194,6 @@ app.get('/all', async (req, res) => {
 });
 app.get('/all/:queries', async (req, res) => {
     let valid = true;
-    // Commenting out below allows users to view the home without being logged in
     valid = await isloggedin(req);
     if (valid || allowUsersToBrowseAsGuests) {
         res.render('home.ejs', { topic: "- all" });
@@ -214,7 +212,6 @@ app.get('/posts/:postid', async (req, res) => {
     res.render('home.ejs', { topic: "" });
 });
 app.get('/api/get/all_users/:sorting', async (req, res) => {
-    // Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
     User.find({}, function (err, users) {
         if (req.params.sorting == '0') {
             users.sort(function (a, b) { return a.statistics.score - b.statistics.score; });
@@ -397,7 +394,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
     if (req.params.topic == "all_users") {
         return;
     }
-    // Commenting out this part below allows for users to view without being logged in
     try {
         let token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -502,11 +498,9 @@ app.get('/api/get/:topic/q', async (req, res) => {
                 postsonpage = await paginate(filteredPosts, postsPerPage, page);
                 for (let i = 0; i < postsonpage.length; i++) {
                     if (postsonpage[i].posterID == userID) {
-                        // postsonpage[i] = posts[i]
                         postsonpage[i].current_user_admin = true;
                     }
                     else {
-                        // postsonpage[i] = posts[i]
                         postsonpage[i].current_user_admin = false;
                     }
                     if (postsonpage[i].users_upvoted.includes(userID)) {
@@ -629,13 +623,11 @@ app.get('/api/get/:topic/q', async (req, res) => {
     }
 });
 function paginate(array, page_size, page_number) {
-    // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
     return array.slice((page_number - 1) * page_size, page_number * page_size);
 }
 app.get('/api/get/posts/user/:user', async (req, res) => {
     postsonpage = [];
     let userID;
-    // Commenting out this part below allows for users to view without being logged in
     try {
         let token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -840,7 +832,7 @@ app.post('/api/post/comment/', async (req, res) => {
             let commentArray = docs.comments;
             Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
             });
-            let commentid = Math.floor(Math.random() * Date.now()); // generates a random id
+            let commentid = Math.floor(Math.random() * Date.now());
             let newComment = {
                 'body': reqbody,
                 'poster': username,
@@ -888,10 +880,8 @@ app.post('/api/post/comment_nested/', async (req, res) => {
     let fulldatetime = dt[0];
     try {
         Post.findById(id, function (err, docs) {
-            // docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
-            let randomID = Math.floor(Math.random() * Date.now()), // generates a random id
-            oldComment = docs.comments[parentCommentIndex];
+            let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
             let newComment = {
                 body: reqbody,
                 poster: username,
@@ -947,13 +937,11 @@ app.put('/vote/:id/:y', function (req, res) {
             let posterid = docs.posterID;
             if (change == 1) {
                 if (user_already_upvoted) {
-                    // do nothing
                 }
                 else {
                     Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
                     });
                     if (user_already_downvoted) {
-                        // remove the downvote, total_votes+1
                         Post.findOneAndUpdate({ _id: id }, { $set: { downvotes: (downvotes - 1), total_votes: (total_votes + 1) }, $pull: { users_downvoted: userID } }, {}, function (err, numReplaced) {
                             User.findById(posterid, function (err, docs) {
                                 docs.statistics.score += 1;
@@ -963,7 +951,6 @@ app.put('/vote/:id/:y', function (req, res) {
                         });
                     }
                     if (!user_already_downvoted && !user_already_upvoted) {
-                        // vote up
                         Post.findOneAndUpdate({ _id: id }, { $set: { upvotes: (upvotes + 1), total_votes: (total_votes + 1) }, $push: { users_upvoted: userID } }, {}, function (err, numReplaced) {
                             User.findById(posterid, function (err, docs) {
                                 docs.statistics.score += 1;
@@ -976,13 +963,11 @@ app.put('/vote/:id/:y', function (req, res) {
             }
             if (change == -1) {
                 if (user_already_downvoted) {
-                    // do nothing
                 }
                 else {
                     Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
                     });
                     if (user_already_upvoted) {
-                        // remove the upvote, total_votes-1
                         Post.findOneAndUpdate({ _id: id }, { $set: { upvotes: (upvotes - 1), total_votes: (total_votes - 1) }, $pull: { users_upvoted: userID } }, {}, function (err, numReplaced) {
                             User.findById(posterid, function (err, docs) {
                                 docs.statistics.score -= 1;
@@ -992,7 +977,6 @@ app.put('/vote/:id/:y', function (req, res) {
                         });
                     }
                     if (!user_already_downvoted && !user_already_upvoted) {
-                        // vote down
                         Post.findOneAndUpdate({ _id: id }, { $set: { downvotes: (downvotes + 1), total_votes: (total_votes - 1) }, $push: { users_downvoted: userID } }, {}, function (err, numReplaced) {
                             User.findById(posterid, function (err, docs) {
                                 docs.statistics.score -= 1;
@@ -1023,7 +1007,6 @@ app.put('/api/put/post/delete/:postid', function (req, res) {
     }
     Post.findById(postid, function (err, docs) {
         if (docs.posterID == userID) {
-            // Post.findByIdAndUpdate(postid, { $set: { status: 'deleted' }})
             Post.findById(postid, function (err, doc) {
                 if (err) {
                     console.error(err);
@@ -1114,12 +1097,10 @@ app.put('/api/put/comment/delete/:postid/:id', async function (req, res) {
 app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', function (req, res) {
     let pID = req.params.parentid;
     let id = req.params.commentid;
-    // These two variables are only for nested comments
     let nestedBoolean = req.params.nestedboolean;
     let commentParentID = req.params.commentParentID;
     let token;
     let userID;
-    //
     try {
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -1145,7 +1126,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
                 }
                 let nc = oldComArray[comIndex].nested_comments[ncIndex];
                 let nestedCommentPosterId = nc.posterid;
-                if (!nc.users_voted.includes(userID)) { // user has not voted
+                if (!nc.users_voted.includes(userID)) {
                     nc.users_voted.push(userID);
                     nc.total_votes += 1;
                     oldComArray[comIndex].nested_comments[ncIndex] = nc;
@@ -1158,7 +1139,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
                     docs.save();
                     res.json({ "status": 'ok', 'newcount': nc.total_votes, 'voted': 'yes' });
                 }
-                else { // user has already voted
+                else {
                     let userIDinArray = nc.users_voted.indexOf(userID);
                     nc.users_voted.splice(userIDinArray, 1);
                     nc.total_votes -= 1;
@@ -1271,11 +1252,9 @@ app.get('/api/get/search/', async (req, res) => {
             postsonpage = docs;
             for (let i = 0; i < docs.length; i++) {
                 if (postsonpage[i].posterID == userID) {
-                    // postsonpage[i] = posts[i]
                     postsonpage[i].current_user_admin = true;
                 }
                 else {
-                    // postsonpage[i] = posts[i]
                     postsonpage[i].current_user_admin = false;
                 }
                 if (postsonpage[i].users_upvoted.includes(userID)) {
@@ -1302,11 +1281,9 @@ app.get('/api/get/search/', async (req, res) => {
             postsonpage = docs;
             for (let i = 0; i < docs.length; i++) {
                 if (postsonpage[i].posterID == userID) {
-                    // postsonpage[i] = posts[i]
                     postsonpage[i].current_user_admin = true;
                 }
                 else {
-                    // postsonpage[i] = posts[i]
                     postsonpage[i].current_user_admin = false;
                 }
                 if (postsonpage[i].users_upvoted.includes(userID)) {
@@ -1329,9 +1306,6 @@ app.get('/api/get/search/', async (req, res) => {
         });
     }
 });
-// app.get('*', async(req, res) => {
-// 	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/',''))})
-// })
 function getFullDateTimeAndTimeStamp() {
     let datetime = new Date();
     let month = datetime.getUTCMonth() + 1;

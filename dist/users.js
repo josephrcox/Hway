@@ -1,4 +1,4 @@
-let sort_option = 1; // 1 is descending, 0 is ascending
+let sort_option = 1;
 const getUserSheet = async () => {
     document.getElementById("users-page-body").innerHTML = "";
     const response = await fetch('/api/get/all_users/' + sort_option);

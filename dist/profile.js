@@ -26,7 +26,6 @@ const isThisUserAdmin = async () => {
 getUserInfo(user);
 function displayInfo() {
     console.log(userInfo);
-    // HEADING DIV
     let avatar = document.getElementById("page-profile-avatar");
     if (userInfo.avatar == "" || userInfo.avatar == null) {
         avatar.src = '/assets/defaultavatar.png';
@@ -42,7 +41,6 @@ function displayInfo() {
     }
     let nameDiv = document.getElementById("page-profile-name");
     nameDiv.innerHTML = userInfo.name;
-    // INFO DIV
     let acd = document.getElementById("page-profile-info-acd");
     let score = document.getElementById("page-profile-info-score");
     let posts_num = document.getElementById("page-profile-info-posts_num");
@@ -60,9 +58,7 @@ function displayInfo() {
     score.innerHTML += userInfo.statistics.score;
     posts_num.innerHTML += userInfo.statistics.posts.created_num + " posts";
     comments_num.innerHTML += userInfo.statistics.comments.created_num + " comments";
-    // POSTS DIV
     loadPosts("");
-    // COMMENTS DIV
     loadComments();
 }
 const commentShortObject = {

@@ -1,20 +1,20 @@
 console.log("THIS IS A TYPESCRIPT FILE - BEWARE");
-let newPost_type = 1; // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
-let uploadedImageUrls = []; // This is used to store the URLs of recently uploaded images
-let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>"; // These two are used for quickly inserting the next-page and prev-page text
+let newPost_type = 1;
+let uploadedImageUrls = [];
+let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>";
 let nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>";
-let comment_count = []; // Used to track how many comments are being displayed on a page (maybe remove later)
-let commentBodies = []; // used to remember comment bodies that are removed when a post is temporarily collapsed by the user
-let lastClick = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
+let comment_count = [];
+let commentBodies = [];
+let lastClick = 0;
 var delay = 400;
-let currentTopic = ""; // Current topic the user is on, i.e. 'bicycling'
-let currentPostID = ""; // Current post ID that is loaded, only when on a user page such as http://localhost:3000/posts/61ab8741f6fadead68120454
-let isUserLoggedIn = false; // Checks if a user is logged in or not. Not required for access unless enabled in backend
+let currentTopic = "";
+let currentPostID = "";
+let isUserLoggedIn = false;
 const urlSearchParams = new URLSearchParams(window.location.search);
 const pagequeries = Object.fromEntries(urlSearchParams.entries());
 let sorting = pagequeries.sort;
 let sorting_duration = pagequeries.t;
-let pageNumber = parseInt(pagequeries.page); // Tracking what page number the user is on
+let pageNumber = parseInt(pagequeries.page);
 let curURL = window.location.toString();
 let curSearch = window.location.search;
 let baseURL = curURL.replace(curSearch, "");
@@ -24,8 +24,8 @@ let newURL;
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
-const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search']; // This is used to track what page type we are on
-let currentPageCategory = (window.location.href).split('/')[3]; // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
+const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search'];
+let currentPageCategory = (window.location.href).split('/')[3];
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0;
@@ -104,7 +104,7 @@ if (currentPageType == 'search') {
         console.log(search_query, search_topic);
     }
 }
-if (currentPageType == 'login' || currentPageType == 'register') { // If the user is on certain pages, hide the header-buttons bar as it's unneeded on that page or may cause issues
+if (currentPageType == 'login' || currentPageType == 'register') {
     document.getElementById('header-buttons').style.display = 'none';
 }
 else {
@@ -148,7 +148,7 @@ let newPageQueries;
 document.getElementById('sorting_options_top_today').addEventListener('click', function (event) {
     sortingOptions = document.getElementsByClassName('sorting_options');
     for (let i = 0; i < sortingOptions.length; i++) {
-        sortingOptions[i].style.color = 'white'; // Will need to fix this by type casting when this is a TS file https://stackoverflow.com/questions/58773652/ts2339-property-style-does-not-exist-on-type-element
+        sortingOptions[i].style.color = 'white';
         sortingOptions[i].style.fontWeight = '300';
     }
     sorting = "top";
@@ -223,7 +223,6 @@ document.getElementById('sorting_options_hot').addEventListener('click', functio
     newPageQueries = "?sort=" + sorting + "&t=" + sorting_duration + "&page=" + pageNumber;
     window.location.href = baseURL + newPageQueries;
 });
-// The randomize function is for creating bulk posts, takes a value (x) which is the quantity of posts to be created, no limit
 async function randomizer(x) {
     let bodyJSON;
     alert("This will likely break a LOT! ");
@@ -275,12 +274,10 @@ async function randomizer(x) {
         }
     }
 }
-// This getUser function is for getting the current user and displaying relevant buttons and the users name
 const getUser = async () => {
-    //document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/');
     const data = await response.json();
-    if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
+    if (data.code == 400) {
         isUserLoggedIn = false;
         document.getElementById("currentUser").innerHTML = "Account";
         document.getElementById("logout_button").style.display = 'none';
@@ -314,8 +311,6 @@ const getUser = async () => {
     loadPosts("");
 };
 getUser();
-// This changeCommentSectionVisibility function is for changing whether or not the commentSection div should be visible, which is only on posts.
-// ... it should also be displayed differently if the user is logged in or not as they may not be able to write a comment
 function changeCommentSectionVisibility() {
     if (currentPageType == 'post') {
         document.getElementById('commentSection').style.display = 'inline';
@@ -453,11 +448,6 @@ const postObject = {
             domain = new URL(domain.hostname.replace('www.', ''));
             titleCell.innerHTML = "<a href='" + this.link + "'>" + this.title + "</a> <span style='font-size: 10px'>(" + domain + "...)</span>";
         }
-        // titleCell.onclick = function() {
-        //     if (this.body != "(empty)") {
-        //         expandDesc(this.id.split("_")[1])
-        //     } 
-        // }
         titleCell.onclick = function () {
             if (titleCell.innerHTML != "(empty)") {
                 expandDesc(titleCell.id.split("_")[1]);
@@ -549,7 +539,7 @@ const commentObject = {
     display() {
         var fullCommentContainer = document.createElement("div");
         fullCommentContainer.setAttribute("id", "fullCommentContainer_" + this.id);
-        if (currentPageType != 'user') { // not on a user profile page
+        if (currentPageType != 'user') {
             console.log("creating cmt sec");
             document.getElementById("comments").appendChild(fullCommentContainer);
         }
@@ -583,7 +573,6 @@ const commentObject = {
             del.onclick = function () {
                 if (delPostConfirmation) {
                     if (delPostConfirmationId == del.id.split("_")[1]) {
-                        //deletePost(this.id.split("_")[1])
                         deleteComment(del.id.split("_")[1]);
                     }
                     else {
@@ -624,9 +613,6 @@ const commentObject = {
             ncCommentDiv.setAttribute("class", "ncCommentDiv");
             ncCommentDiv.setAttribute("id", "ncCommentDiv_" + this.nested_comments[i].id);
             ncCommentDiv.innerHTML += "<span style='color:blue'>" + this.nested_comments[i].poster + "</span>: " + this.nested_comments[i].body + "<br/>" + "<span style='font-size:15px; font-style:italic;'>" + this.nested_comments[i].date + "</span>";
-            // var ncDate = document.createElement("div")
-            // ncDate.innerHTML = this.nested_comments[i].date
-            // ncDate.setAttribute("class", "ncInfoCell")
             var ncVoteDiv = document.createElement("div");
             ncVoteDiv.setAttribute("class", "ncVoteDiv");
             ncVoteDiv.setAttribute("id", "ncVoteDiv_" + this.nested_comments[i].id);
@@ -648,7 +634,6 @@ const commentObject = {
                 voteCom(voteUp.id.split("_")[1], currentPostID, true, voteUp.id.split("_")[2]);
             };
             document.getElementById("ncContainer_" + this.id).appendChild(ncDiv);
-            // document.getElementById("ncContainer_"+this.id).appendChild(ncDate)
             document.getElementById("ncDiv_" + this.nested_comments[i].id).appendChild(ncCommentDiv);
             document.getElementById("ncDiv_" + this.nested_comments[i].id).appendChild(ncVoteDiv);
             document.getElementById("ncVoteDiv_" + this.nested_comments[i].id).appendChild(voteCount);
@@ -775,7 +760,7 @@ const loadPosts = async (topic) => {
         topic = currentPageCategory.split('/')[4];
     }
     let options = "?sort=" + sorting + "&t=" + sorting_duration + "&nsfw=" + document.getElementById("filter_nsfw").checked + "";
-    if (currentPageType == 'post') { // on a specific post page, load only that one post & comments
+    if (currentPageType == 'post') {
         let url = window.location.href;
         let postid = url.split('/posts/')[1];
         const response = await fetch('/api/get/posts/' + postid);
@@ -805,7 +790,7 @@ const loadPosts = async (topic) => {
             post.date = data.date;
             post.descDisplayed = false;
             post.link = data.link;
-            post.type = data.type; // 1=text, 2=link, 3=media
+            post.type = data.type;
             post.topic = data.topic;
             post.comment_count = data.comments.length;
             post.comments = data.comments;
@@ -876,7 +861,7 @@ const loadPosts = async (topic) => {
             post.date = data[i].date;
             post.descDisplayed = false;
             post.link = data[i].link;
-            post.type = data[i].type; // 1=text, 2=link, 3=media
+            post.type = data[i].type;
             post.topic = data[i].topic;
             post.comment_count = data[i].comments.length;
             post.comments = data[i].comments;
@@ -920,7 +905,7 @@ const loadUserPage = async (user) => {
         post.date = data[i].date;
         post.descDisplayed = false;
         post.link = data[i].link;
-        post.type = data[i].type; // 1=text, 2=link, 3=media
+        post.type = data[i].type;
         post.topic = data[i].topic;
         post.comment_count = data[i].comments.length;
         post.comments = data[i].comments;
@@ -1021,7 +1006,7 @@ const vote = async (change, id) => {
             voteDoButtonwithID.src = '/assets/down_selected.gif';
         }
     }
-    if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+    if (data.error.name == 'JsonWebTokenError') {
         window.location.href = '/login';
     }
 };
@@ -1059,7 +1044,7 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
         }
     }
     else {
-        if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+        if (data.error.name == 'JsonWebTokenError') {
             window.location.href = '/login';
         }
     }
@@ -1155,7 +1140,7 @@ function ui_newPost() {
         document.getElementById("newPost_topic").value = currentTopic;
     }
 }
-function launch() {
+if (window.location.href.indexOf("/user/") == -1) {
     document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
@@ -1173,7 +1158,7 @@ if (currentPageType != 'user') {
             return document.getElementById("newPost_logs").innerHTML = "Please enter valid topic. No spaces or characters allowed.";
         }
         switch (newPost_type) {
-            case 1: // Text
+            case 1:
                 if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
                     document.getElementById("newPost_logs").innerHTML = "Please enter title.";
                 }
@@ -1181,7 +1166,7 @@ if (currentPageType != 'user') {
                     createNewPost(1);
                 }
                 break;
-            case 2: // Link
+            case 2:
                 if (postTitle == "" || postTitle == null) {
                     document.getElementById("newPost_logs").innerHTML = "Please enter title.";
                 }
@@ -1194,7 +1179,7 @@ if (currentPageType != 'user') {
                     }
                 }
                 break;
-            case 3: // Media
+            case 3:
                 if (postTitle == "" || postTitle == null) {
                     document.getElementById("newPost_logs").innerHTML = "Please enter title.";
                 }
@@ -1269,7 +1254,7 @@ const createNewPost = async (posttype) => {
     if (topic == "" || topic == null) {
         topic = "all";
     }
-    if (posttype == 1) { // text
+    if (posttype == 1) {
         bodyJSON = {
             "title": title,
             "body": body,
@@ -1278,7 +1263,7 @@ const createNewPost = async (posttype) => {
             "nsfw": nsfw
         };
     }
-    if (posttype == 2) { // link
+    if (posttype == 2) {
         bodyJSON = {
             "title": title,
             "link": link,
@@ -1287,7 +1272,7 @@ const createNewPost = async (posttype) => {
             "nsfw": nsfw
         };
     }
-    if (posttype == 3) { // media
+    if (posttype == 3) {
         bodyJSON = {
             "title": title,
             "link": uploadedImageUrls.pop(),
@@ -1333,6 +1318,8 @@ function scrollFunction() {
         mybutton.style.display = "none";
     }
 }
+var mybutton = document.getElementById("button_sendtotop");
+window.onscroll = function () { scrollFunction(); };
 function topFunction() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
