@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
         password: { type:String },
         avatar: { type:String},
         show_nsfw: {type:Boolean, default:false},
+        notifications: { type:Array, default:[]}, // [type (comment), string of notification heading, postID, avatar of user initiated change]
         
         statistics: {
             posts: {

@@ -188,6 +188,39 @@ app.get('/api/get/currentuser', function (req, res) {
 
 })
 
+app.get('/api/get/notifications', function(req,res) {
+	try {
+		let token = req.cookies.token
+		let user = jwt.verify(token, process.env.JWT_SECRET)
+	
+		User.findById(user.id, function(err,docs) {
+			if (err) {
+				res.send({status:'error'})
+			} else {
+				res.send(docs.notifications)
+			}
+		})
+	}catch(error) {
+		res.send({status:'error', data:'nojwt'})
+	}
+	
+})
+
+app.put('/api/put/notif/remove/:index', function(req,res) {
+	try {
+		let token = req.cookies.token
+		let user = jwt.verify(token, process.env.JWT_SECRET)
+	
+		User.findById(user.id, function(err,docs) {
+			docs.notifications.splice(req.params.index, 1)
+			docs.save()
+			res.send({status:'ok'})
+		})
+	}catch(error) {
+		res.send({status:'error', data:'nojwt'})
+	}
+})
+
 app.get('/login', (req, res) => {
     res.render('login.ejs', {topic:"- login"})
 })
@@ -943,14 +976,45 @@ app.post('/api/post/comment/', async(req, res) => {
 				docs.statistics.comments.created_array.push([reqbody, id, commentid])
 				docs.save()
 			})
-			User.findById(userID, function(err, docs) {
+			User.findById(docs.posterID, async function(err, docs) {
+				if (err) {
+					console.log(err)
+				} else {
+					let user_triggered_avatar
+					let user_triggered_name
+					let notifs:any[] = docs.notifications
+					let postInfo:any[]
+					for (let i=0;i<users.length;i++) {
+						if (users[i][0] == userID) {
+							user_triggered_avatar = users[i][2]
+							user_triggered_name = users[i][1]
+						}
+					}
+					postInfo = await Post.findById(id, 'title').exec();
+					notifs.push({
+						type:'comment', 
+						body: reqbody, 
+						post: postInfo,
+						postID: id,
+						user: user_triggered_name,
+						avatar: user_triggered_avatar
+					 })
+					docs.notifications = notifs
+					docs.save()
+				}
 			})
+
+			User
 			res.json(newComment)
 		})
 	} catch(err) {
 		res.send(err)
 	}
 	
+})
+
+app.get('/notifications', async(req,res)=> {
+	res.render('notifications.ejs', {topic: "- notifications"})
 })
 
 app.post('/api/post/comment_nested/', async(req, res) => {

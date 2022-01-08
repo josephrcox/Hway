@@ -644,3 +644,62 @@ checkbox {
 	width: 95vw;
 }
 
+.notifs_bell {
+	background-color: red;
+	padding-inline: 10px;
+	text-decoration: unset;
+	color: white;
+	user-select: none;
+}
+
+.notifs {
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	flex-direction: column;
+}
+
+.notif_array {
+	display: flex;
+	flex-direction: column;
+}
+
+.notif_alert {
+	text-align: center;
+	width: 50vw;
+	color: blue;
+	background-color: white;
+	padding: 30px;
+	display: -webkit-box;
+	-webkit-line-clamp: 5;
+	-webkit-box-orient: vertical;
+	margin-top: 15px;
+}
+
+.notifBody {
+	font-style: italic;
+	font-size: 20px;
+	padding: 3px;
+}
+
+.notifContainer {
+	background-color: whitesmoke;
+	width: 90vw;
+	margin-left: 3px;
+	display: flex;
+	justify-content: space-between;
+	padding-inline: 5px;
+}
+
+.notif_container {
+	display: flex;
+	justify-content: center;
+}
+
+.notifCheck {
+	background-color: green;
+    color: white;
+    padding: 20px;
+    margin-right: -5px;
+}
+

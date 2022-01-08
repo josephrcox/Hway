@@ -23,7 +23,7 @@ let newURL = "";
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
-const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search'];
+const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications'];
 let currentPageCategory = (window.location.href).split('/')[3];
 let currentPageType;
 switch (currentPageCategory) {
@@ -54,6 +54,9 @@ switch (currentPageCategory) {
     case 'search':
         cPageTypeIndex = 8;
         break;
+    case 'notifications':
+        cPageTypeIndex = 9;
+        break;
 }
 currentPageType = pageTypes[cPageTypeIndex];
 if ((["all", "topic"].indexOf(currentPageType) != -1 && ((pageNumber == null || isNaN(pageNumber)) || ['new', 'hot', 'top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 || (['all', 'day', 'week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) || /[a-z]/i.test(pagequeries.page)))) {
@@ -69,6 +72,12 @@ if (currentPageType == 'all') {
 if (currentPageType == 'post') {
     document.getElementById('sorting_options').style.display = 'none';
     document.getElementById('page-number').style.display = 'none';
+}
+if (currentPageType == 'notifications') {
+    document.getElementById('sorting_options').style.display = 'none';
+    document.getElementById('page-number').style.display = 'none';
+    document.getElementById('post-button').style.display = 'none';
+    document.getElementById('post-button').style.display = 'none';
 }
 if (currentPageType == 'search') {
     document.getElementById('sorting_options').style.display = 'none';

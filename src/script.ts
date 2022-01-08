@@ -24,7 +24,7 @@ let newURL:string = ""
 let cPageTypeIndex:number
 let search_topic:string = ""
 let search_query:string = ""
-const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search'] // This is used to track what page type we are on
+const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search', 'notifications'] // This is used to track what page type we are on
 let currentPageCategory:string = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
 let currentPageType:string
 
@@ -56,6 +56,9 @@ switch (currentPageCategory) {
     case 'search':
         cPageTypeIndex = 8
         break;
+    case 'notifications':
+        cPageTypeIndex = 9
+        break;
 }
 
 currentPageType = pageTypes[cPageTypeIndex]
@@ -74,6 +77,12 @@ if (currentPageType == 'all') {
 if (currentPageType == 'post') { 
     document.getElementById('sorting_options').style.display = 'none'
     document.getElementById('page-number').style.display = 'none'
+}
+if (currentPageType == 'notifications') { 
+    document.getElementById('sorting_options').style.display = 'none'
+    document.getElementById('page-number').style.display = 'none'
+    document.getElementById('post-button').style.display = 'none'
+    document.getElementById('post-button').style.display = 'none'
 }
 
 if (currentPageType == 'search') { 
