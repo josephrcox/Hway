@@ -1018,12 +1018,13 @@ app.get('/notifications', async(req,res)=> {
 })
 
 app.post('/api/post/comment_nested/', async(req, res) => {
-	const {id, parentID} = req.body
+	const {id, parentID} = req.body // parentID is the id of the comment, id is the id of the post
 	let body = req.body.body
 
 	let token
 	let userID
 	let username
+	var newComment
 
 	try {
 		token = req.cookies.token
@@ -1037,12 +1038,12 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 	const dt = getFullDateTimeAndTimeStamp()
 	let fulldatetime = dt[0]
 	try {
-		Post.findById(id, function(err, docs) {
+		Post.findById(id, async function(err, docs) {
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
 			let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID)
 			let randomID = Math.floor(Math.random() * Date.now()), // generates a random id
 			oldComment = docs.comments[parentCommentIndex]
-			let newComment = {
+			newComment = {
 				body:body,
 				poster:username,
 				posterid:userID,
@@ -1056,13 +1057,17 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 			docs.comments[parentCommentIndex] = oldComment
 			docs.save()
 
-			User.findById(docs.posterID, async function(err, docs) {
+			let pCommentWriterID = oldComment.posterID
+			let pCommentBody = oldComment.body
+			
+			User.findById(pCommentWriterID, async function(err, userDoc) { // docs
 				if (err) {
 					console.log(err)
 				} else {
+					console.log(userDoc)
 					let user_triggered_avatar
 					let user_triggered_name
-					let notifs:any[] = docs.notifications
+					let notifs:any[] = userDoc.notifications
 					let postInfo:any[]
 					for (let i=0;i<users.length;i++) {
 						if (users[i][0] == userID) {
@@ -1074,18 +1079,21 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 					notifs.push({
 						type:'comment_nested', 
 						body: body, 
+						comment_body: pCommentBody,
 						post: postInfo,
 						postID: id,
 						user: user_triggered_name,
 						avatar: user_triggered_avatar
-					 })
-					docs.notifications = notifs
-					docs.save()
+					})
+					userDoc.notifications = notifs
+					userDoc.save()
 				}
 			})
 
 			res.json(newComment)
 		})
+
+		
 	} catch(err) {
 		res.send(err)
 	}

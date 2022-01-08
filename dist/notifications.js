@@ -44,7 +44,12 @@ function displayNotifs() {
         c.setAttribute("id", "notifContainer_" + i);
         let nb = document.createElement("div");
         nb.setAttribute("class", "notifBody");
-        nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
+        if (notifs[i].type == 'comment') {
+            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
+        }
+        if (notifs[i].type == 'comment_nested') {
+            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].comment_body + "' in '" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
+        }
         let check = document.createElement("span");
         check.setAttribute("class", "notifCheck noselect");
         check.innerHTML = "✔";

@@ -929,6 +929,7 @@ app.post('/api/post/comment_nested/', async (req, res) => {
     let token;
     let userID;
     let username;
+    var newComment;
     try {
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -941,10 +942,10 @@ app.post('/api/post/comment_nested/', async (req, res) => {
     const dt = getFullDateTimeAndTimeStamp();
     let fulldatetime = dt[0];
     try {
-        Post.findById(id, function (err, docs) {
+        Post.findById(id, async function (err, docs) {
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
-            let newComment = {
+            newComment = {
                 body: body,
                 poster: username,
                 posterid: userID,
@@ -956,14 +957,17 @@ app.post('/api/post/comment_nested/', async (req, res) => {
             oldComment.nested_comments.push(newComment);
             docs.comments[parentCommentIndex] = oldComment;
             docs.save();
-            User.findById(docs.posterID, async function (err, docs) {
+            let pCommentWriterID = oldComment.posterID;
+            let pCommentBody = oldComment.body;
+            User.findById(pCommentWriterID, async function (err, userDoc) {
                 if (err) {
                     console.log(err);
                 }
                 else {
+                    console.log(userDoc);
                     let user_triggered_avatar;
                     let user_triggered_name;
-                    let notifs = docs.notifications;
+                    let notifs = userDoc.notifications;
                     let postInfo;
                     for (let i = 0; i < users.length; i++) {
                         if (users[i][0] == userID) {
@@ -975,13 +979,14 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                     notifs.push({
                         type: 'comment_nested',
                         body: body,
+                        comment_body: pCommentBody,
                         post: postInfo,
                         postID: id,
                         user: user_triggered_name,
                         avatar: user_triggered_avatar
                     });
-                    docs.notifications = notifs;
-                    docs.save();
+                    userDoc.notifications = notifs;
+                    userDoc.save();
                 }
             });
             res.json(newComment);
