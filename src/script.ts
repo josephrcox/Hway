@@ -761,8 +761,9 @@ const commentObject = {
         replySubmit.innerText = "Submit reply"
         replySubmit.onclick = function() { // BIG TYPESCRIPT CHANGE
             let parentID = window.location.href.split('/posts/')[1]
-            let reply = document.getElementById('comreplybox_'+replySubmit.id.split('_')[1]) as HTMLInputElement
-            comment_nested(parentID, reply, replySubmit.id.split('_')[1])
+            let reply = (document.getElementById('comreplybox_'+replySubmit.id.split('_')[1]) as HTMLInputElement)
+            console.log("reply is:"+reply)
+            comment_nested(parentID, reply.value, replySubmit.id.split('_')[1])
             reply.value = ""
             document.getElementById("comreplyDiv_"+replySubmit.id.split("_")[1]).style.display = 'none'
         }

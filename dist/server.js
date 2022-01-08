@@ -924,7 +924,8 @@ app.get('/notifications', async (req, res) => {
     res.render('notifications.ejs', { topic: "- notifications" });
 });
 app.post('/api/post/comment_nested/', async (req, res) => {
-    const { body: reqbody, id, parentID } = req.body;
+    const { id, parentID } = req.body;
+    let body = req.body.body;
     let token;
     let userID;
     let username;
@@ -944,7 +945,7 @@ app.post('/api/post/comment_nested/', async (req, res) => {
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
             let newComment = {
-                body: reqbody,
+                body: body,
                 poster: username,
                 posterid: userID,
                 date: fulldatetime,
@@ -955,6 +956,34 @@ app.post('/api/post/comment_nested/', async (req, res) => {
             oldComment.nested_comments.push(newComment);
             docs.comments[parentCommentIndex] = oldComment;
             docs.save();
+            User.findById(docs.posterID, async function (err, docs) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    let user_triggered_avatar;
+                    let user_triggered_name;
+                    let notifs = docs.notifications;
+                    let postInfo;
+                    for (let i = 0; i < users.length; i++) {
+                        if (users[i][0] == userID) {
+                            user_triggered_avatar = users[i][2];
+                            user_triggered_name = users[i][1];
+                        }
+                    }
+                    postInfo = await Post.findById(id, 'title').exec();
+                    notifs.push({
+                        type: 'comment_nested',
+                        body: body,
+                        post: postInfo,
+                        postID: id,
+                        user: user_triggered_name,
+                        avatar: user_triggered_avatar
+                    });
+                    docs.notifications = notifs;
+                    docs.save();
+                }
+            });
             res.json(newComment);
         });
     }
