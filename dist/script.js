@@ -56,7 +56,7 @@ switch (currentPageCategory) {
         break;
 }
 currentPageType = pageTypes[cPageTypeIndex];
-if (currentPageType != "user" && ((pageNumber == null || isNaN(pageNumber)) || ['new', 'hot', 'top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 || (['all', 'day', 'week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) || /[a-z]/i.test(pagequeries.page))) {
+if ((["all", "topic"].indexOf(currentPageType) != -1 && ((pageNumber == null || isNaN(pageNumber)) || ['new', 'hot', 'top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 || (['all', 'day', 'week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) || /[a-z]/i.test(pagequeries.page)))) {
     console.error("This URL has been tampered with, or does not fit with the current URL style. Redirecting to home page.");
     window.location.href = '/';
 }
@@ -68,6 +68,7 @@ if (currentPageType == 'all') {
 }
 if (currentPageType == 'post') {
     document.getElementById('sorting_options').style.display = 'none';
+    document.getElementById('page-number').style.display = 'none';
 }
 if (currentPageType == 'search') {
     document.getElementById('sorting_options').style.display = 'none';
