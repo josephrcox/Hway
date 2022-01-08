@@ -843,7 +843,7 @@ const deleteComment = async(x) => {
 
 const loadPosts = async (topic) => {
     if (currentPageType == 'user') {
-        user = window.location.href.split('/').pop()
+        let user = window.location.href.split('/').pop()
         return loadUserPage(user)
     }
     
