@@ -4,11 +4,6 @@
 	--foreground-2:#327da8;
 	--foreground-3:hsl(195, 77.6%, 19.2%);
 	--foreground-4:cornflowerblue;
-	/* --bg-color:#02010A;
-	--foreground-1:#140152;
-	--foreground-2:#22007C;
-	--foreground-3:#0D00A4;
-	--foreground-4:#080425; */
 }
 
 
@@ -648,3 +643,4 @@ checkbox {
 .search_options {
 	width: 95vw;
 }
+
