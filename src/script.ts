@@ -78,6 +78,7 @@ if (currentPageType == 'post') {
 
 if (currentPageType == 'search') { 
     document.getElementById('sorting_options').style.display = 'none'
+    document.getElementById('page-number').style.display = 'none'
     let url = window.location.href
     
     if (url.indexOf('?topic=') == -1) {
