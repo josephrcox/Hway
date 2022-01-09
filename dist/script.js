@@ -286,14 +286,13 @@ const getUser = async () => {
             console.log(currentPageType);
             document.getElementById("post-button").style.display = 'block';
         }
-        const response = await fetch('/api/get/currentuser/');
+        const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
         const data2 = await response.json();
+        let filter_nsfw = document.getElementById('filter_nsfw');
         if (data2.show_nsfw == true) {
-            let filter_nsfw = document.getElementById('filter_nsfw');
             filter_nsfw.checked = true;
         }
         else {
-            let filter_nsfw = document.getElementById('filter_nsfw');
             filter_nsfw.checked = false;
         }
     }

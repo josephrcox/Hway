@@ -689,11 +689,13 @@ checkbox {
 	display: flex;
 	justify-content: space-between;
 	padding-inline: 5px;
+	border-bottom: 1px solid black;
 }
 
 .notif_container {
 	display: flex;
 	justify-content: center;
+	
 }
 
 .notifCheck {

@@ -46,7 +46,8 @@ function ringBell() {
 
 function displayNotifs() {
     notifArray.innerHTML = ""
-    for (let i=0;i<notifs.length;i++) {
+
+    for (let i=0;i<ncount;i++) {
         let c = document.createElement("div") // container
         c.setAttribute("class", "notifContainer")
         c.setAttribute("id", "notifContainer_"+i)
@@ -92,8 +93,6 @@ const removeNotif = async(index, id) => {
         document.getElementById(id).innerHTML = ""
         ncount -= 1
         ringBell()
-    } else if (data.status == 'error') {
-
     }
 }
 
