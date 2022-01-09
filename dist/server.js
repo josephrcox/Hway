@@ -274,7 +274,12 @@ app.get('/api/get/all_users/:sorting', async (req, res) => {
 });
 app.get('/api/get/user/:user/:options', async (req, res) => {
     let comments = [];
-    if (req.params.options == "all_comments") {
+    if (req.params.options == "show_nsfw") {
+        User.findOne({ name: req.params.user }, function (err, user) {
+            return res.send({ show_nsfw: user.show_nsfw });
+        });
+    }
+    else if (req.params.options == "all_comments") {
         Post.find({}, function (err, posts) {
             for (let i = 0; i < posts.length; i++) {
                 for (let x = 0; x < posts[i].comments.length; x++) {

@@ -286,7 +286,7 @@ const getUser = async () => {
             console.log(currentPageType);
             document.getElementById("post-button").style.display = 'block';
         }
-        const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
+        const response = await fetch('/api/get/user/' + data.name + '/show_nsfw');
         const data2 = await response.json();
         let filter_nsfw = document.getElementById('filter_nsfw');
         if (data2.show_nsfw == true) {
@@ -742,6 +742,9 @@ const loadPosts = async (topic) => {
         let user = window.location.href.split('/').pop();
         return loadUserPage(user);
     }
+    if (currentPageType == 'notifications') {
+        return;
+    }
     if (topic == null || topic == "") {
         topic = "all";
     }
@@ -1130,12 +1133,12 @@ function ui_newPost() {
         document.getElementById("newPost_topic").value = currentTopic;
     }
 }
-if (window.location.href.indexOf("/user/") == -1) {
+if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications') {
     document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
 }
-if (currentPageType != 'user') {
+if (currentPageType != 'user' && currentPageType != 'notifications') {
     document.getElementById("newPost_submit_button").onclick = function () {
         let postTitle = document.getElementById("newPost_name").value;
         let topic;
