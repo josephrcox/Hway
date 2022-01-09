@@ -79,6 +79,8 @@ const removeNotif = async (index, id) => {
     if (data.status == 'ok') {
         document.getElementById(id).innerHTML = "";
         ncount -= 1;
+        notifs.splice(index, 1);
+        displayNotifs();
         ringBell();
     }
 };
