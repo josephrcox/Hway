@@ -666,6 +666,7 @@ checkbox {
 .notif_array {
 	display: flex;
 	flex-direction: column;
+	width: 100%;
 }
 
 .notif_alert {
@@ -680,6 +681,21 @@ checkbox {
 	margin-top: 15px;
 }
 
+.notif_clearall {
+	text-align: center;
+	width:calc(100% - 41px);
+	max-width: 500px;
+	color: blue;
+	background-color: white;
+	padding: 15px;
+	-webkit-line-clamp: 5;
+	-webkit-box-orient: vertical;
+	margin-top: 15px;
+	margin-bottom: 10px;
+	margin-left: 3px;
+	cursor: pointer;
+}
+
 .notifBody {
 	font-style: italic;
 	font-size: 20px;
@@ -688,8 +704,6 @@ checkbox {
 
 .notifContainer {
 	background-color: whitesmoke;
-	width: 90vw;
-	margin-left: 3px;
 	display: flex;
 	justify-content: space-between;
 	padding-inline: 5px;
@@ -699,6 +713,7 @@ checkbox {
 .notif_container {
 	display: flex;
 	justify-content: center;
+	margin-left: 3px;
 	
 }
 
@@ -707,5 +722,12 @@ checkbox {
     color: white;
     padding: 20px;
     margin-right: -5px;
+}
+
+.notif_page_flex {
+	display: flex;
+	flex-direction: column;
+	margin-left: 3px;
+	max-width: 1000px;
 }
 

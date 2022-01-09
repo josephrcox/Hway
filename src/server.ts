@@ -221,6 +221,21 @@ app.put('/api/put/notif/remove/:index', function(req,res) {
 	}
 })
 
+app.post('/api/post/notif/clear/', function(req,res) {
+	try {
+		let token = req.cookies.token
+		let user = jwt.verify(token, process.env.JWT_SECRET)
+	
+		User.findById(user.id, function(err,docs) {
+			docs.notifications = []
+			docs.save()
+			res.send({status:'ok'})
+		})
+	}catch(error) {
+		res.send({status:'error', data:'nojwt'})
+	}
+})
+
 app.get('/login', (req, res) => {
     res.render('login.ejs', {topic:"- login"})
 })
@@ -1179,7 +1194,6 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 	}
 	
 })
-
 
 function isloggedin(req) {
 	let token

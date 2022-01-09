@@ -4,6 +4,8 @@ var notifs:any[] = []
 var notifsDiv = document.getElementById('header-notifs-bell')
 var notifArray = document.getElementById('notif_array')
 var notifAlert = document.getElementById('notif_alert')
+var clearNotifButton = document.getElementById('notif_clearall')
+
 
 const getNotifs = async() => {
     console.info("Finding notifications...")
@@ -45,6 +47,7 @@ function ringBell() {
 }
 
 function displayNotifs() {
+    clearNotifButton.style.display = 'block'
     notifArray.innerHTML = ""
 
     for (let i=0;i<ncount;i++) {
@@ -105,5 +108,24 @@ const removeNotif = async(index, id) => {
         ringBell()
     }
 }
+
+if ((window.location.href).split('/')[3] == 'notifications') {
+    clearNotifButton.addEventListener('click', async() => {
+        const fetchResponse = await fetch('/api/post/notif/clear/', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+            method: 'POST'
+        }); 
+        var data = await fetchResponse.json()
+    
+        console.log(data)
+        if (data.status == 'ok') {
+            window.location.reload()
+        }
+    })
+}
+
 
 getNotifs()
