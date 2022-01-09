@@ -167,6 +167,51 @@ app.get('/api/get/currentuser', function (req, res) {
         return res.json({ status: "error", code: 400, error: err });
     }
 });
+app.get('/api/get/notifications', function (req, res) {
+    try {
+        let token = req.cookies.token;
+        let user = jwt.verify(token, process.env.JWT_SECRET);
+        User.findById(user.id, function (err, docs) {
+            if (err) {
+                res.send({ status: 'error' });
+            }
+            else {
+                res.send(docs.notifications);
+            }
+        });
+    }
+    catch (error) {
+        res.send({ status: 'error', data: 'nojwt' });
+    }
+});
+app.put('/api/put/notif/remove/:index', function (req, res) {
+    try {
+        let token = req.cookies.token;
+        let user = jwt.verify(token, process.env.JWT_SECRET);
+        User.findById(user.id, function (err, docs) {
+            docs.notifications.splice(req.params.index, 1);
+            docs.save();
+            res.send({ status: 'ok' });
+        });
+    }
+    catch (error) {
+        res.send({ status: 'error', data: 'nojwt' });
+    }
+});
+app.post('/api/post/notif/clear/', function (req, res) {
+    try {
+        let token = req.cookies.token;
+        let user = jwt.verify(token, process.env.JWT_SECRET);
+        User.findById(user.id, function (err, docs) {
+            docs.notifications = [];
+            docs.save();
+            res.send({ status: 'ok' });
+        });
+    }
+    catch (error) {
+        res.send({ status: 'error', data: 'nojwt' });
+    }
+});
 app.get('/login', (req, res) => {
     res.render('login.ejs', { topic: "- login" });
 });
@@ -243,7 +288,12 @@ app.get('/api/get/all_users/:sorting', async (req, res) => {
 });
 app.get('/api/get/user/:user/:options', async (req, res) => {
     let comments = [];
-    if (req.params.options == "all_comments") {
+    if (req.params.options == "show_nsfw") {
+        User.findOne({ name: req.params.user }, function (err, user) {
+            return res.send({ show_nsfw: user.show_nsfw });
+        });
+    }
+    else if (req.params.options == "all_comments") {
         Post.find({}, function (err, posts) {
             for (let i = 0; i < posts.length; i++) {
                 for (let x = 0; x < posts[i].comments.length; x++) {
@@ -313,7 +363,10 @@ app.get('/api/get/posts/:postid', async (req, res) => {
     Post.findById(req.params.postid, function (err, post) {
         let postModified = post;
         if (post == null) {
-            res.send({ error: 'No post found' });
+            return res.send({ status: 'error', data: 'No post found' });
+        }
+        else if (post.status == 'deleted') {
+            return res.send({ status: 'error', data: 'This post was deleted by the creator.' });
         }
         else {
             if (post.posterID == userID) {
@@ -828,7 +881,7 @@ app.post('/api/post/comment/', async (req, res) => {
     let fulldatetime = dt[0];
     let timestamp = dt[1];
     try {
-        Post.findById(id, function (err, docs) {
+        Post.findById(id, async function (err, docs) {
             let commentArray = docs.comments;
             Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
             });
@@ -848,12 +901,52 @@ app.post('/api/post/comment/', async (req, res) => {
             commentArray.push(newComment);
             docs.comments = commentArray;
             docs.save();
+            let strArr = reqbody.split(' ');
+            let words = strArr.length;
+            let usersMentioned = [];
+            for (let i = 0; i < words; i++) {
+                if (strArr[i].indexOf('@') == 0) {
+                    let usermentioned = strArr[i].split('@')[1];
+                    let user = await User.findOne({ name: usermentioned });
+                    if (user != null) {
+                        usersMentioned.push(usermentioned);
+                    }
+                }
+            }
+            console.log(usersMentioned);
+            notifyUsers(usersMentioned, "mention", username, id);
             User.findById(userID, function (err, docs) {
                 docs.statistics.comments.created_num += 1;
                 docs.statistics.comments.created_array.push([reqbody, id, commentid]);
                 docs.save();
             });
-            User.findById(userID, function (err, docs) {
+            User.findById(docs.posterID, async function (err, docs) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    let user_triggered_avatar;
+                    let user_triggered_name;
+                    let notifs = docs.notifications;
+                    let postInfo;
+                    for (let i = 0; i < users.length; i++) {
+                        if (users[i][0] == userID) {
+                            user_triggered_avatar = users[i][2];
+                            user_triggered_name = users[i][1];
+                        }
+                    }
+                    postInfo = await Post.findById(id, 'title').exec();
+                    notifs.push({
+                        type: 'comment',
+                        body: reqbody,
+                        post: postInfo,
+                        postID: id,
+                        user: user_triggered_name,
+                        avatar: user_triggered_avatar
+                    });
+                    docs.notifications = notifs;
+                    docs.save();
+                }
             });
             res.json(newComment);
         });
@@ -862,11 +955,71 @@ app.post('/api/post/comment/', async (req, res) => {
         res.send(err);
     }
 });
+function notifyUsers(users, type, triggerUser, postID) {
+    console.log(users, type, triggerUser, postID);
+    let userCount = users.length;
+    for (let i = 0; i < userCount; i++) {
+        User.findOne({ name: users[i] }, async function (err, user) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                let user_triggered_avatar;
+                let user_triggered_name;
+                let notifs = user.notifications;
+                let postInfo;
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i][1] == triggerUser) {
+                        user_triggered_avatar = users[i][2];
+                        user_triggered_name = triggerUser;
+                    }
+                }
+                postInfo = await Post.findById(postID, 'title').exec();
+                notifs.push({
+                    type: 'mention',
+                    body: '',
+                    post: postInfo,
+                    postID: postID,
+                    user: triggerUser,
+                    avatar: user_triggered_avatar
+                });
+                user.notifications = notifs;
+                user.save();
+            }
+        });
+    }
+}
+function parseForAtMentions(x) {
+    let strArr = x.split(' ');
+    let words = strArr.length;
+    let usersMentioned = [];
+    for (let i = 0; i < words; i++) {
+        if (strArr[i].indexOf('@') == 0) {
+            let usermentioned = strArr[i].split('@')[1];
+            User.findOne({ name: usermentioned }, async function (err, user) {
+                if (err || (user == null)) {
+                    console.log(err, "this user does not exist.");
+                }
+                else {
+                    console.log("User " + usermentioned + " does exist.");
+                    usersMentioned.push(usermentioned);
+                    console.log(usersMentioned);
+                    return usersMentioned;
+                }
+            });
+        }
+    }
+}
+app.get('/notifications', async (req, res) => {
+    res.render('notifications.ejs', { topic: "- notifications" });
+});
 app.post('/api/post/comment_nested/', async (req, res) => {
-    const { body: reqbody, id, parentID } = req.body;
+    const { id, parentID } = req.body;
+    let body = req.body.body;
     let token;
     let userID;
     let username;
+    var newComment;
     try {
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -879,11 +1032,11 @@ app.post('/api/post/comment_nested/', async (req, res) => {
     const dt = getFullDateTimeAndTimeStamp();
     let fulldatetime = dt[0];
     try {
-        Post.findById(id, function (err, docs) {
+        Post.findById(id, async function (err, docs) {
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
-            let newComment = {
-                body: reqbody,
+            newComment = {
+                body: body,
                 poster: username,
                 posterid: userID,
                 date: fulldatetime,
@@ -894,6 +1047,38 @@ app.post('/api/post/comment_nested/', async (req, res) => {
             oldComment.nested_comments.push(newComment);
             docs.comments[parentCommentIndex] = oldComment;
             docs.save();
+            let pCommentWriterID = oldComment.posterID;
+            let pCommentBody = oldComment.body;
+            User.findById(pCommentWriterID, async function (err, userDoc) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log(userDoc);
+                    let user_triggered_avatar;
+                    let user_triggered_name;
+                    let notifs = userDoc.notifications;
+                    let postInfo;
+                    for (let i = 0; i < users.length; i++) {
+                        if (users[i][0] == userID) {
+                            user_triggered_avatar = users[i][2];
+                            user_triggered_name = users[i][1];
+                        }
+                    }
+                    postInfo = await Post.findById(id, 'title').exec();
+                    notifs.push({
+                        type: 'comment_nested',
+                        body: body,
+                        comment_body: pCommentBody,
+                        post: postInfo,
+                        postID: id,
+                        user: user_triggered_name,
+                        avatar: user_triggered_avatar
+                    });
+                    userDoc.notifications = notifs;
+                    userDoc.save();
+                }
+            });
             res.json(newComment);
         });
     }

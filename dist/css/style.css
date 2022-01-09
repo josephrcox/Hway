@@ -4,11 +4,6 @@
 	--foreground-2:#327da8;
 	--foreground-3:hsl(195, 77.6%, 19.2%);
 	--foreground-4:cornflowerblue;
-	/* --bg-color:#02010A;
-	--foreground-1:#140152;
-	--foreground-2:#22007C;
-	--foreground-3:#0D00A4;
-	--foreground-4:#080425; */
 }
 
 
@@ -489,6 +484,10 @@ a:hover { text-decoration: none; color:red; }
 	margin-right:6px;
 }
 
+#commentSection {
+	display: none;
+}
+
 #commentSection_login_button {
 	margin-top:5px;
 }
@@ -648,3 +647,87 @@ checkbox {
 .search_options {
 	width: 95vw;
 }
+
+.notifs_bell {
+	background-color: red;
+	padding-inline: 10px;
+	text-decoration: unset;
+	color: white;
+	user-select: none;
+}
+
+.notifs {
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	flex-direction: column;
+}
+
+.notif_array {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.notif_alert {
+	text-align: center;
+	width: 50vw;
+	color: blue;
+	background-color: white;
+	padding: 30px;
+	display: -webkit-box;
+	-webkit-line-clamp: 5;
+	-webkit-box-orient: vertical;
+	margin-top: 15px;
+}
+
+.notif_clearall {
+	text-align: center;
+	width:calc(100% - 41px);
+	max-width: 500px;
+	color: blue;
+	background-color: white;
+	padding: 15px;
+	-webkit-line-clamp: 5;
+	-webkit-box-orient: vertical;
+	margin-top: 15px;
+	margin-bottom: 10px;
+	margin-left: 3px;
+	cursor: pointer;
+}
+
+.notifBody {
+	font-style: italic;
+	font-size: 20px;
+	padding: 3px;
+}
+
+.notifContainer {
+	background-color: whitesmoke;
+	display: flex;
+	justify-content: space-between;
+	padding-inline: 5px;
+	border-bottom: 1px solid black;
+}
+
+.notif_container {
+	display: flex;
+	justify-content: center;
+	margin-left: 3px;
+	
+}
+
+.notifCheck {
+	background-color: green;
+    color: white;
+    padding: 20px;
+    margin-right: -5px;
+}
+
+.notif_page_flex {
+	display: flex;
+	flex-direction: column;
+	margin-left: 3px;
+	max-width: 1000px;
+}
+

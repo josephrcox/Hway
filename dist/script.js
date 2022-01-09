@@ -23,7 +23,7 @@ let newURL = "";
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
-const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search'];
+const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications'];
 let currentPageCategory = (window.location.href).split('/')[3];
 let currentPageType;
 switch (currentPageCategory) {
@@ -54,6 +54,9 @@ switch (currentPageCategory) {
     case 'search':
         cPageTypeIndex = 8;
         break;
+    case 'notifications':
+        cPageTypeIndex = 9;
+        break;
 }
 currentPageType = pageTypes[cPageTypeIndex];
 if ((["all", "topic"].indexOf(currentPageType) != -1 && ((pageNumber == null || isNaN(pageNumber)) || ['new', 'hot', 'top'].indexOf(sorting) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1 || (['all', 'day', 'week', 'month'].indexOf(sorting_duration) == -1 && (['all', 'topic'].indexOf(currentPageType)) != -1) || /[a-z]/i.test(pagequeries.page)))) {
@@ -69,6 +72,12 @@ if (currentPageType == 'all') {
 if (currentPageType == 'post') {
     document.getElementById('sorting_options').style.display = 'none';
     document.getElementById('page-number').style.display = 'none';
+}
+if (currentPageType == 'notifications') {
+    document.getElementById('sorting_options').style.display = 'none';
+    document.getElementById('page-number').style.display = 'none';
+    document.getElementById('post-button').style.display = 'none';
+    document.getElementById('post-button').style.display = 'none';
 }
 if (currentPageType == 'search') {
     document.getElementById('sorting_options').style.display = 'none';
@@ -277,14 +286,13 @@ const getUser = async () => {
             console.log(currentPageType);
             document.getElementById("post-button").style.display = 'block';
         }
-        const response = await fetch('/api/get/currentuser/');
+        const response = await fetch('/api/get/user/' + data.name + '/show_nsfw');
         const data2 = await response.json();
+        let filter_nsfw = document.getElementById('filter_nsfw');
         if (data2.show_nsfw == true) {
-            let filter_nsfw = document.getElementById('filter_nsfw');
             filter_nsfw.checked = true;
         }
         else {
-            let filter_nsfw = document.getElementById('filter_nsfw');
             filter_nsfw.checked = false;
         }
     }
@@ -294,7 +302,6 @@ const getUser = async () => {
 getUser();
 function changeCommentSectionVisibility() {
     if (currentPageType == 'post') {
-        document.getElementById('commentSection').style.display = 'inline';
         if (isUserLoggedIn) {
             document.getElementById('commentSection_login_button').style.display = 'none';
             document.getElementById('newCom_body').style.display = 'block';
@@ -656,7 +663,8 @@ const commentObject = {
         replySubmit.onclick = function () {
             let parentID = window.location.href.split('/posts/')[1];
             let reply = document.getElementById('comreplybox_' + replySubmit.id.split('_')[1]);
-            comment_nested(parentID, reply, replySubmit.id.split('_')[1]);
+            console.log("reply is:" + reply);
+            comment_nested(parentID, reply.value, replySubmit.id.split('_')[1]);
             reply.value = "";
             document.getElementById("comreplyDiv_" + replySubmit.id.split("_")[1]).style.display = 'none';
         };
@@ -733,6 +741,9 @@ const loadPosts = async (topic) => {
         let user = window.location.href.split('/').pop();
         return loadUserPage(user);
     }
+    if (currentPageType == 'notifications') {
+        return;
+    }
     if (topic == null || topic == "") {
         topic = "all";
     }
@@ -746,14 +757,10 @@ const loadPosts = async (topic) => {
         let postid = url.split('/posts/')[1];
         const response = await fetch('/api/get/posts/' + postid);
         const data = await response.json();
-        if (data.status != "ok") {
-            if (data.status == "error") {
-                window.location.href = '/login';
-            }
-        }
         document.getElementById("postsArray").innerHTML = "";
-        if (data.length == 0 || data.error == 'No post found') {
-            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No post found. It may have been deleted. </span>";
+        if (data.length == 0 || data.status == 'error') {
+            document.getElementById("postsArray").innerHTML = "<span style='color:white'>" + data.data + " </span>";
+            document.getElementById("commentSection").style.display = 'none';
         }
         else {
             let post = Object.create(postObject);
@@ -806,6 +813,7 @@ const loadPosts = async (topic) => {
                 comment_count.push(com.id);
                 commentBodies.push(com.body);
             }
+            document.getElementById('commentSection').style.display = 'inline';
             topFunction();
             storeAndDisplayTopics();
         }
@@ -1121,12 +1129,12 @@ function ui_newPost() {
         document.getElementById("newPost_topic").value = currentTopic;
     }
 }
-if (window.location.href.indexOf("/user/") == -1) {
+if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications') {
     document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
 }
-if (currentPageType != 'user') {
+if (currentPageType != 'user' && currentPageType != 'notifications') {
     document.getElementById("newPost_submit_button").onclick = function () {
         let postTitle = document.getElementById("newPost_name").value;
         let topic;
