@@ -484,6 +484,10 @@ a:hover { text-decoration: none; color:red; }
 	margin-right:6px;
 }
 
+#commentSection {
+	display: none;
+}
+
 #commentSection_login_button {
 	margin-top:5px;
 }

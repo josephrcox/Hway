@@ -400,7 +400,9 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 	Post.findById(req.params.postid, function (err, post) {
 		let postModified = post
 		if (post == null) {
-			res.send({error:'No post found'})
+			return res.send({status:'error', data:'No post found'})
+		} else if(post.status == 'deleted') {
+			return res.send({status:'error', data:'This post was deleted by the creator.'})
 		} else {
 			if (post.posterID == userID) {
 				postModified.current_user_admin = true

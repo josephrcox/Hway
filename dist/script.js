@@ -302,7 +302,6 @@ const getUser = async () => {
 getUser();
 function changeCommentSectionVisibility() {
     if (currentPageType == 'post') {
-        document.getElementById('commentSection').style.display = 'inline';
         if (isUserLoggedIn) {
             document.getElementById('commentSection_login_button').style.display = 'none';
             document.getElementById('newCom_body').style.display = 'block';
@@ -758,14 +757,10 @@ const loadPosts = async (topic) => {
         let postid = url.split('/posts/')[1];
         const response = await fetch('/api/get/posts/' + postid);
         const data = await response.json();
-        if (data.status != "ok") {
-            if (data.status == "error") {
-                window.location.href = '/login';
-            }
-        }
         document.getElementById("postsArray").innerHTML = "";
-        if (data.length == 0 || data.error == 'No post found') {
-            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No post found. It may have been deleted. </span>";
+        if (data.length == 0 || data.status == 'error') {
+            document.getElementById("postsArray").innerHTML = "<span style='color:white'>" + data.data + " </span>";
+            document.getElementById("commentSection").style.display = 'none';
         }
         else {
             let post = Object.create(postObject);
@@ -818,6 +813,7 @@ const loadPosts = async (topic) => {
                 comment_count.push(com.id);
                 commentBodies.push(com.body);
             }
+            document.getElementById('commentSection').style.display = 'inline';
             topFunction();
             storeAndDisplayTopics();
         }
