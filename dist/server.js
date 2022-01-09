@@ -867,7 +867,7 @@ app.post('/api/post/comment/', async (req, res) => {
     let fulldatetime = dt[0];
     let timestamp = dt[1];
     try {
-        Post.findById(id, function (err, docs) {
+        Post.findById(id, async function (err, docs) {
             let commentArray = docs.comments;
             Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
             });
@@ -887,6 +887,20 @@ app.post('/api/post/comment/', async (req, res) => {
             commentArray.push(newComment);
             docs.comments = commentArray;
             docs.save();
+            let strArr = reqbody.split(' ');
+            let words = strArr.length;
+            let usersMentioned = [];
+            for (let i = 0; i < words; i++) {
+                if (strArr[i].indexOf('@') == 0) {
+                    let usermentioned = strArr[i].split('@')[1];
+                    let user = await User.findOne({ name: usermentioned });
+                    if (user != null) {
+                        usersMentioned.push(usermentioned);
+                    }
+                }
+            }
+            console.log(usersMentioned);
+            notifyUsers(usersMentioned, "mention", username, id);
             User.findById(userID, function (err, docs) {
                 docs.statistics.comments.created_num += 1;
                 docs.statistics.comments.created_array.push([reqbody, id, commentid]);
@@ -920,7 +934,6 @@ app.post('/api/post/comment/', async (req, res) => {
                     docs.save();
                 }
             });
-            User;
             res.json(newComment);
         });
     }
@@ -928,6 +941,61 @@ app.post('/api/post/comment/', async (req, res) => {
         res.send(err);
     }
 });
+function notifyUsers(users, type, triggerUser, postID) {
+    console.log(users, type, triggerUser, postID);
+    let userCount = users.length;
+    for (let i = 0; i < userCount; i++) {
+        User.findOne({ name: users[i] }, async function (err, user) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                let user_triggered_avatar;
+                let user_triggered_name;
+                let notifs = user.notifications;
+                let postInfo;
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i][1] == triggerUser) {
+                        user_triggered_avatar = users[i][2];
+                        user_triggered_name = triggerUser;
+                    }
+                }
+                postInfo = await Post.findById(postID, 'title').exec();
+                notifs.push({
+                    type: 'mention',
+                    body: '',
+                    post: postInfo,
+                    postID: postID,
+                    user: triggerUser,
+                    avatar: user_triggered_avatar
+                });
+                user.notifications = notifs;
+                user.save();
+            }
+        });
+    }
+}
+function parseForAtMentions(x) {
+    let strArr = x.split(' ');
+    let words = strArr.length;
+    let usersMentioned = [];
+    for (let i = 0; i < words; i++) {
+        if (strArr[i].indexOf('@') == 0) {
+            let usermentioned = strArr[i].split('@')[1];
+            User.findOne({ name: usermentioned }, async function (err, user) {
+                if (err || (user == null)) {
+                    console.log(err, "this user does not exist.");
+                }
+                else {
+                    console.log("User " + usermentioned + " does exist.");
+                    usersMentioned.push(usermentioned);
+                    console.log(usersMentioned);
+                    return usersMentioned;
+                }
+            });
+        }
+    }
+}
 app.get('/notifications', async (req, res) => {
     res.render('notifications.ejs', { topic: "- notifications" });
 });
