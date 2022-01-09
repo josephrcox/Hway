@@ -1245,7 +1245,8 @@ app.put('/api/put/comment/delete/:postid/:id', async function (req, res) {
     let post = await Post.findById(postid);
     let ncomments = post.comments;
     let index;
-    for (let i = 0; i < ncomments.length; i++) {
+    let amountofcomments = ncomments.length;
+    for (let i = 0; i < amountofcomments; i++) {
         if (ncomments[i]._id == id) {
             index = i;
         }
@@ -1272,7 +1273,7 @@ app.put('/api/put/comment/delete/:postid/:id', async function (req, res) {
     catch (err) {
         console.log(err);
     }
-    ncomments.splice(index);
+    ncomments.splice(index, 1);
     Post.findById(postid, function (err, docs) {
         docs.comments = ncomments;
         docs.save();
