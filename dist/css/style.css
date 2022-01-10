@@ -52,7 +52,7 @@
 	
 }
 
-#newPost_name {
+/* #newPost_name {
 	font-size-adjust:ic-width 1.50;
 }
 #newPost_desc {
@@ -60,7 +60,7 @@
 }
 #newPost_topic {
 	font-size-adjust:ic-width 1.2;
-}
+} */
 
 
 .newPost_container {
@@ -315,6 +315,8 @@ label {
 	padding-right:0px;
 	margin-left:30px;
 	width:calc(98% + 1px - 35px);
+	display: flex;
+	justify-content: space-between;
 }
 
 .voteDiv, .ncVoteDiv {
@@ -497,9 +499,8 @@ a:hover { text-decoration: none; color:red; }
 }
 
 .comreplyDiv {
-	background-color:gray;
-	width:98%;
-	margin-left:1px;
+	margin-left: 30px;
+	width: calc(98% + 1px - 35px);
 }
 
 a:visited { 
@@ -729,5 +730,9 @@ checkbox {
 	flex-direction: column;
 	margin-left: 3px;
 	max-width: 1000px;
+}
+
+.comreplybox {
+	width: calc(98% + 1px - 35px);
 }
 

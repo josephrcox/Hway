@@ -75,19 +75,32 @@ const removeNotif = async (index, id) => {
     const settings = {
         method: 'PUT',
     };
+    document.getElementById(id).innerHTML = "";
+    ncount -= 1;
+    notifs.splice(index, 1);
+    if (ncount == 0) {
+        notifAlert.innerHTML = 'No new notifications!';
+        notifArray.innerHTML = "";
+        clearNotifButton.style.display = 'none';
+        notifAlert.style.display = 'block';
+    }
     const response = await fetch('/api/put/notif/remove/' + index, settings);
     const data = await response.json();
     console.log(data);
     if (data.status == 'ok') {
-        document.getElementById(id).innerHTML = "";
-        ncount -= 1;
-        notifs.splice(index, 1);
-        displayNotifs();
+        if (ncount != 0) {
+            displayNotifs();
+        }
         ringBell();
     }
 };
 if ((window.location.href).split('/')[3] == 'notifications') {
     clearNotifButton.addEventListener('click', async () => {
+        notifAlert.innerHTML = 'No new notifications!';
+        notifArray.innerHTML = "";
+        clearNotifButton.style.display = 'none';
+        notifAlert.style.display = 'block';
+        ringBell();
         const fetchResponse = await fetch('/api/post/notif/clear/', {
             headers: {
                 'Accept': 'application/json',
@@ -96,10 +109,8 @@ if ((window.location.href).split('/')[3] == 'notifications') {
             method: 'POST'
         });
         var data = await fetchResponse.json();
+        notifs = [];
         console.log(data);
-        if (data.status == 'ok') {
-            window.location.reload();
-        }
     });
 }
 getNotifs();
