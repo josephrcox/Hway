@@ -296,6 +296,16 @@ app.get('/posts/:postid', async(req,res) => {
 	res.render('home.ejs', {topic:""})
 })
 
+app.get('/api/get/comment/:postid/:commentid', async(req,res) => {
+	Post.findById(req.params.postid, function(err,docs) {
+		for (let i=0;i<docs.comments.length;i++) {
+			if (docs.comments[i]._id == req.params.commentid) {
+				res.send(docs.comments[i])
+			}
+		}
+	})
+})
+
 app.get('/api/get/all_users/:sorting', async(req, res) =>{
 	// Post.find({}).sort({total_votes: -1}).exec(function(err, posts){
 	User.find({}, function(err, users) {
@@ -1051,7 +1061,9 @@ app.post('/api/post/comment/', async(req, res) => {
 })
 
 function notifyUsers(users, type, triggerUser, postID) {
-	console.log(users, type, triggerUser, postID)
+	users = users.filter(function(u,index,input) {
+		return input.indexOf(u) == index
+	})
 	let userCount = users.length
 	for (let i=0;i<userCount;i++) {
 		User.findOne({name:users[i]}, async function(err, user) {
@@ -1134,6 +1146,22 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 	let fulldatetime = dt[0]
 	try {
 		Post.findById(id, async function(err, docs) {
+			let strArr:string[] = body.split(' ')
+			let words:number = strArr.length
+			let usersMentioned: string[] = []
+			for (let i=0;i<words;i++) {
+				if (strArr[i].indexOf('@') == 0) { // has '@' symbol in first character of string
+					let usermentioned = strArr[i].split('@')[1]
+					let user = await User.findOne({name:usermentioned})
+					if (user != null) {
+						usersMentioned.push(usermentioned)
+					}
+				}
+			}
+
+			console.log(usersMentioned)
+			notifyUsers(usersMentioned, "mention", username, id )
+
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
 			let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID)
 			let randomID = Math.floor(Math.random() * Date.now()), // generates a random id
@@ -1159,7 +1187,6 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 				if (err) {
 					console.log(err)
 				} else {
-					console.log(userDoc)
 					let user_triggered_avatar
 					let user_triggered_name
 					let notifs:any[] = userDoc.notifications
@@ -1185,7 +1212,9 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 				}
 			})
 
-			res.json(newComment)
+			
+
+			res.json(newComment) 
 		})
 
 		
@@ -1391,6 +1420,7 @@ app.put('/api/put/comment/delete/:postid/:id', async function(req,res) {
 			body: ctbd.body,
 			poster: ctbd.poster,
 			posterID: ctbd.posterID,
+			is_nested: false,
 
 			date: ctbd.date,
 			timestamp: ctbd.timestamp,
@@ -1415,6 +1445,86 @@ app.put('/api/put/comment/delete/:postid/:id', async function(req,res) {
 	})
 	
 })
+
+// const response = await fetch('/api/put/comment_nested/delete/'+window.location.href.split('/posts/')[1]+'/'+commentID+'/'+nestedCommentID, settings)
+// const data = await response.json()
+
+app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async function(req,res) {
+	let commentid = req.params.commentid // id of parent comment
+	let postid = req.params.postid
+	let nestedcommentid = req.params.nested_comid // NOTE: stored as 'id' not '_id'
+
+	let token
+	let userID
+
+	try {
+		token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
+
+	let post = await Post.findById(postid)
+	let ncomments = post.comments
+	let index
+	let amountofcomments = ncomments.length
+	let comIndex
+	let ncIndex
+
+	for (let i=0;i<amountofcomments;i++) {
+		if (ncomments[i]._id == commentid) {
+			let nestedComCount = ncomments[i].nested_comments.length
+			
+			for (let x=0;x<nestedComCount;x++) {
+				if (ncomments[i].nested_comments[x].id == nestedcommentid) {
+					comIndex = i
+					ncIndex = x
+				}
+			}
+		}
+	}
+	
+
+	let ctbd = ncomments[comIndex].nested_comments[ncIndex]
+	const dt = getFullDateTimeAndTimeStamp()
+	let fulldatetime = dt[0]
+	let timestampdeleted = dt[1]
+
+	try {
+		const resp = await DeletedComment.create({
+			post: postid,
+			body: ctbd.body,
+			poster: ctbd.poster,
+			posterID: ctbd.posterid,
+			is_nested:true,
+
+			date: ctbd.date,
+			timestamp: null,
+			users_voted:ctbd.users_voted,
+			nested_comments:null,
+
+			date_deleted: fulldatetime,
+			timestamp_deleted: timestampdeleted,
+
+			deleted_by: 'user'
+		})
+	} catch(err) {
+		console.log(err)
+	}
+
+	ncomments[comIndex].nested_comments.splice(ncIndex, 1)
+
+	Post.findById(postid, function(err, docs) {
+		docs.comments = ncomments
+		docs.save()
+		res.json({status:'ok'})
+	})
+	
+})
+
+
+
 
 app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', function(req,res) {
 	let pID = req.params.parentid

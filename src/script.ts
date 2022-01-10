@@ -1,5 +1,3 @@
-console.log("THIS IS A TYPESCRIPT FILE - BEWARE")
-
 let newPost_type:number = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
 let uploadedImageUrls:string[] = [] // This is used to store the URLs of recently uploaded images
 let prevPageStr:string = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
@@ -27,6 +25,7 @@ let search_query:string = ""
 const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search', 'notifications'] // This is used to track what page type we are on
 let currentPageCategory:string = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
 let currentPageType:string
+let currentUserID:string
 
 switch (currentPageCategory) {
     case 'user':
@@ -294,7 +293,7 @@ const getUser = async () => {
         document.getElementById("reg_button").style.display = 'block'
         document.getElementById("post-button").style.display = 'none'
     } else {
-        let currentUserID = data.id
+        currentUserID = data.id
         isUserLoggedIn = true
         document.getElementById("currentUser").innerHTML = data.name
         document.getElementById("logout_button").style.display = 'block'
@@ -365,6 +364,9 @@ const postObject = {
     special_nsfw: "",
 
     display() {
+        this.comments.sort((a, b) => b.total_votes-a.total_votes);
+
+
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
@@ -659,7 +661,6 @@ const commentObject = {
 
         posterCell.innerHTML = "<span style='color:blue'>"+this.poster + "</span> says: (-)"
         posterCell.setAttribute("id","posterCell_"+this.id)
-        
 
         bodyCell.innerHTML = this.body
         bodyCell.setAttribute("class", "bodyCell")
@@ -675,18 +676,32 @@ const commentObject = {
         document.getElementById("fullCommentContainer_"+this.id).appendChild(ncContainer)
 
         for (let i=0;i<this.nested_comments.length;i++) {
-            var ncDiv = document.createElement("div")
-            ncDiv.setAttribute("class", "ncDiv")
-            ncDiv.setAttribute("id", "ncDiv_"+this.nested_comments[i].id)
-            var ncCommentDiv = document.createElement("div")
-            ncCommentDiv.setAttribute("class", "ncCommentDiv")
-            ncCommentDiv.setAttribute("id", "ncCommentDiv_"+this.nested_comments[i].id)
-            ncCommentDiv.innerHTML += "<span style='color:blue'>"+this.nested_comments[i].poster + "</span>: "+this.nested_comments[i].body+"<br/>"+"<span style='font-size:15px; font-style:italic;'>"+this.nested_comments[i].date+"</span>"
+            var ncFrame = document.createElement("div")
+            ncFrame.setAttribute("class", "ncDiv")
+            ncFrame.setAttribute("id", "ncFrame_"+this.nested_comments[i].id)
 
-            // var ncDate = document.createElement("div")
-            // ncDate.innerHTML = this.nested_comments[i].date
-            // ncDate.setAttribute("class", "ncInfoCell")
-            
+            var ncTable = document.createElement("table")
+            ncTable.setAttribute("class", "ncTable")
+            ncTable.setAttribute("id", "ncTable_"+this.nested_comments[i].id)
+
+            let ncTopRow = ncTable.insertRow(0)
+            ncTopRow.setAttribute("id", "ncTopRow_"+this.id)
+            ncTopRow.setAttribute("class", "ncTopRow")
+
+            let ncPoster = ncTopRow.insertCell(0)
+            ncPoster.innerHTML = "<span style='color:blue'>"+this.nested_comments[i].poster + "</span> says:"
+
+            let ncInfoRow = ncTable.insertRow(1)
+            let ncInfoCell = ncInfoRow.insertCell(0)
+            ncInfoCell.innerHTML = "<span style='font-size:15px; font-style:italic;'>"+this.nested_comments[i].date+"</span>"
+            ncInfoCell.setAttribute("class","ncInfoCell")
+            ncInfoCell.setAttribute("id", "ncInfoCell_"+this.nested_comments[i].id)
+
+            let ncBottomRow = ncTable.insertRow(2)
+
+            let ncContent = ncBottomRow.insertCell(0)
+            ncContent.innerHTML = this.nested_comments[i].body
+
             var ncVoteDiv = document.createElement("div")
             ncVoteDiv.setAttribute("class", "ncVoteDiv")
             ncVoteDiv.setAttribute("id", "ncVoteDiv_"+this.nested_comments[i].id)
@@ -706,17 +721,55 @@ const commentObject = {
             }
             
             voteUp.style.width = 'auto'
+            let self = this
             voteUp.onclick = function() {
-                voteCom(voteUp.id.split("_")[1], currentPostID, true, voteUp.id.split("_")[2])
+                voteCom(self.nested_comments[i].id, currentPostID, true, self.id)
             }
 
-            
+            if (this.nested_comments[i].posterid == currentUserID) {
+                var delnc = document.createElement("img")
+                delnc.setAttribute("class", "deletePostButton")
+                delnc.setAttribute("id", "deletePostButton_"+this.nested_comments[i].id+"_"+this.id)
+                delnc.style.marginTop = '-15px'
+                delnc.style.marginRight = '10px'
+                delnc.src = "/assets/trash.png"
+                delnc.style.height = '20px'
+                delnc.style.width = 'auto'
+                delnc.style.paddingLeft = '10px'
+                delnc.style.marginBottom = '-5px'
+                let delPostConfirmation = false
+                let delPostConfirmationId
 
+                let self = delnc
+                delnc.onclick = function() {
+                    console.log(self.id)
+
+                    if (delPostConfirmation) {
+                        if (delPostConfirmationId == self.id.split('_')[1]) {
+                            deleteNestedComment(window.location.href.split('/posts/')[1],self.id.split('_')[2], self.id.split('_')[1])
+                        } else {
+                            self.src = "/assets/trash_confirm.png"
+                            delPostConfirmation = true
+                            delPostConfirmationId = self.id.split('_')[1]
+                        }
+                        
+                    } else {
+                        self.src = "/assets/trash_confirm.png"
+                        delPostConfirmation = true
+                        delPostConfirmationId = self.id.split('_')[1]
+                    }
+                    
+                    console.log(delPostConfirmation, delPostConfirmationId)
+                }
+                
+                ncInfoCell.appendChild(delnc)
+
+            }
             
-            document.getElementById("ncContainer_"+this.id).appendChild(ncDiv)
-            // document.getElementById("ncContainer_"+this.id).appendChild(ncDate)
-            document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncCommentDiv)
-            document.getElementById("ncDiv_"+this.nested_comments[i].id).appendChild(ncVoteDiv)
+            ncFrame.append(ncTable)
+            ncFrame.append(ncVoteDiv)
+            ncContainer.appendChild(ncFrame)
+            
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteCount)
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteUp)
         }
@@ -728,15 +781,20 @@ const commentObject = {
             var id = posterRow.id.substring(10)
             var body = document.getElementById("bodyCell_"+id)
             var poster = document.getElementById("posterCell_"+id).innerHTML.split(" says")[0]
+            let replyDiv = document.getElementById('comreplyDiv_'+posterRow.id.substring(10))
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> says: (-)"
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))]
+                replyDiv.style.display = 'flex'
                 ncContainer.style.display = 'block'
+                replyButton.style.visibility = 'visible'
             } else {
                 document.getElementById("posterCell_"+id).innerHTML = "<span style='color:blue'>"+poster + "</span> says: (+)"
                 var x = document.getElementById("bodyCell_"+posterRow.id.substring(10))
                 x.innerHTML = ""
                 ncContainer.style.display = 'none'
+                replyDiv.style.display = 'none'
+                replyButton.style.visibility = 'hidden'
             }
             
         }
@@ -747,24 +805,24 @@ const commentObject = {
         var replyDiv = document.createElement("div")
         replyDiv.setAttribute("class", "comreplyDiv")
         replyDiv.setAttribute("id", "comreplyDiv_"+this.id)
-        replyDiv.style.display = 'none'
+        replyDiv.style.display = 'flex'
+
         var replyBox = document.createElement("textarea")
         replyBox.setAttribute("class", "comreplybox")
         replyBox.setAttribute("id", "comreplybox_"+this.id)
-        replyBox.setAttribute("rows", "2")
-        replyBox.style.width = '75%'
-        replyBox.style.maxWidth = '500px'
+        replyBox.setAttribute("rows", "1")
+
         var replySubmit = document.createElement("button")
         replySubmit.setAttribute("class", "comreplySubmit")
         replySubmit.setAttribute("id", "comreplySubmit_"+this.id)
-        replySubmit.innerText = "Submit reply"
+        replySubmit.innerText = "Reply"
         replySubmit.onclick = function() { // BIG TYPESCRIPT CHANGE
             let parentID = window.location.href.split('/posts/')[1]
             let reply = (document.getElementById('comreplybox_'+replySubmit.id.split('_')[1]) as HTMLInputElement)
             console.log("reply is:"+reply)
             comment_nested(parentID, reply.value, replySubmit.id.split('_')[1])
             reply.value = ""
-            document.getElementById("comreplyDiv_"+replySubmit.id.split("_")[1]).style.display = 'none'
+            //document.getElementById("comreplyDiv_"+replySubmit.id.split("_")[1]).style.display = 'none'
         }
         
         var replyButton = document.createElement('img')
@@ -774,12 +832,7 @@ const commentObject = {
         infoRow.appendChild(replyButton)
         
         replyButton.onclick = function() {
-            if (document.getElementById("comreplyDiv_"+replyButton.id.split('_')[1]).style.display == "flex") {
-                document.getElementById("comreplyDiv_"+replyButton.id.split("_")[1]).style.display = 'none'
-            } else {
-                document.getElementById("comreplyDiv_"+replyButton.id.split("_")[1]).style.display = 'flex'
-                document.getElementById("comreplyDiv_"+replyButton.id.split("_")[1]).style.flexDirection = 'row'
-            }
+            document.getElementById("comreplyDiv_"+replyButton.id.split('_')[1]).scrollIntoView()
         }
 
         var voteDiv = document.createElement("div")
@@ -844,6 +897,25 @@ const deleteComment = async(x) => {
 
     if (data.status == 'ok') {
         document.getElementById("fullCommentContainer_"+x).innerHTML = "<span style='color:white'>The comment was permanantly deleted.</span>"
+        document.getElementById("comreplyDiv_"+x).outerHTML = ""
+    }
+    if (data.status == 'error') {
+        alert(data.error)
+    }
+
+}
+
+const deleteNestedComment = async(postID, commentID, nestedCommentID) => {
+    const settings = {
+        method: 'PUT',
+    };
+    const response = await fetch('/api/put/comment_nested/delete/'+window.location.href.split('/posts/')[1]+'/'+commentID+'/'+nestedCommentID, settings)
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        console.log(data)
+        document.getElementById("ncFrame_"+nestedCommentID).style.display = 'none'
+
     }
     if (data.status == 'error') {
         alert(data.error)
@@ -1144,6 +1216,7 @@ const vote = async (change, id) => {
 }
 
 const voteCom = async (id, parentID, nested, commentParentID) => { 
+    console.log(id, parentID, nested, commentParentID)
     if (commentParentID == null || "") {
         commentParentID = "0"
     }
@@ -1238,40 +1311,32 @@ const comment_nested = async (postid, body, commentparentID) => {
         }); 
         var data = await fetchResponse.json()
         
+        let upcomment = document.getElementById('fullCommentContainer_'+commentparentID)
+        document.getElementById('comreplybox_'+commentparentID).outerHTML = ""
+        document.getElementById('comreplySubmit_'+commentparentID).outerHTML = ""
 
-        var ncDiv = document.createElement("div")
-        ncDiv.setAttribute("class", "ncDiv")
-        ncDiv.setAttribute("id", "ncDiv_"+data.id)
-        var ncCommentDiv = document.createElement("div")
-        ncCommentDiv.setAttribute("class", "ncCommentDiv")
-        ncCommentDiv.setAttribute("id", "ncCommentDiv_"+data.id)
-        ncCommentDiv.innerHTML += "<span style='color:blue'>"+data.poster + "</span>: "+data.body+"<br/>"
         
-        var ncVoteDiv = document.createElement("div")
-        ncVoteDiv.setAttribute("class", "ncVoteDiv")
-        ncVoteDiv.setAttribute("id", "ncVoteDiv_"+data.id)
 
-        var voteCount = document.createElement("div")
-        voteCount.setAttribute("id","comnestedVoteCount_"+data.id)
-        voteCount.setAttribute("class","comnestedVoteCount")
-        voteCount.innerHTML = data.total_votes
+        const comResponse = await fetch('/api/get/comment/'+postid+'/'+commentparentID)
+        const comData = await comResponse.json()
 
-        var voteUp = document.createElement("img")
-        voteUp.setAttribute("id","nestedcommentUp_"+data.id+"_"+commentparentID)
-        voteUp.setAttribute("class","nestedcommentUp")
-        voteUp.src = '/assets/up.gif'
-        
-        voteUp.style.width = 'auto'
-        voteUp.onclick = function() {
-            voteCom(data.id, currentPostID, true, commentparentID)
-        }
+        let com = Object.create(commentObject)
+        com.body = comData.body
+        com.id = comData._id
+        com.total_votes = comData.total_votes
+        com.poster = comData.poster
+        com.posterID = comData.posterID
+        com.date = comData.date
+        com.users_voted = comData.users_voted
+        com.parentID = postid
+        com.nested_comments = comData.nested_comments
 
-        document.getElementById("ncContainer_"+commentparentID).style.display = 'block'
-        document.getElementById("ncContainer_"+commentparentID).appendChild(ncDiv)
-        document.getElementById("ncDiv_"+data.id).appendChild(ncCommentDiv)
-        document.getElementById("ncDiv_"+data.id).appendChild(ncVoteDiv)
-        document.getElementById("ncVoteDiv_"+data.id).appendChild(voteCount)
-        document.getElementById("ncVoteDiv_"+data.id).appendChild(voteUp)
+        com.current_user_voted = comData.current_user_voted
+        com.current_user_admin = comData.current_user_admin
+        upcomment.innerHTML = ""
+        com.display()
+        window.scrollBy(0,125)
+
     }
     
 }

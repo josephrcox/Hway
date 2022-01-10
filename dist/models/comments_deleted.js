@@ -6,6 +6,8 @@ const deleted_commentsSchema = new mongoose.Schema(
         body: { type:String },
         poster: { type:String, required:true},
         posterID: { type:String },
+        is_nested: { type:Boolean, required:true},
+        nested_parent: { type:String },
         
         date: { type: String, default: Date.now },
         timestamp: { type: String, default: Date.now},
