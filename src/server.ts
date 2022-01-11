@@ -21,6 +21,7 @@ var topicCount = []
 var postsonpage = []
 var postsPerPage = 30;
 let ms_in_day = 86400000;
+let currentUser;
 
 app.set('view engine', 'ejs')
 app.set('views',path.join(__dirname, '/views'))
@@ -129,7 +130,8 @@ app.get('/logout', (req, res) => {
 app.get('/api/get/currentuser', function (req, res) {
 	try {
 		let token = req.cookies.token
-		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		let verified = jwt.verify(token, process.env.JWT_SECRET)
+		currentUser = verified.id
 		var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 			if (ip.includes("ffff")) {
 			} else {
@@ -151,7 +153,7 @@ app.get('/api/get/currentuser', function (req, res) {
 					
 				})
 			}
-			
+		
 		res.json(verified)
 
 	} catch (err) {
@@ -189,20 +191,33 @@ app.get('/api/get/currentuser', function (req, res) {
 })
 
 app.get('/api/get/notifications', function(req,res) {
-	try {
-		let token = req.cookies.token
-		let user = jwt.verify(token, process.env.JWT_SECRET)
-	
-		User.findById(user.id, function(err,docs) {
+	if (currentUser) {
+		User.findById(currentUser, function(err,docs) {
 			if (err) {
 				res.send({status:'error'})
 			} else {
 				res.send(docs.notifications)
 			}
 		})
-	}catch(error) {
-		res.send({status:'error', data:'nojwt'})
+	} else {
+		console.log(currentUser)
+		try {
+			let token = req.cookies.token
+			let user = jwt.verify(token, process.env.JWT_SECRET)
+		
+			User.findById(currentUser, function(err,docs) {
+				if (err) {
+					res.send({status:'error'})
+				} else {
+					res.send(docs.notifications)
+				}
+			})
+		}catch(error) {
+			res.send({status:'error', data:'nojwt'})
+		}
 	}
+
+	
 	
 })
 
@@ -449,9 +464,9 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 					if (com.users_voted.includes(userID)) {
 						postModified.comments[i].current_user_voted = true
 					}
-				}
-				
+				}	
 			}
+
 			try {
 				User.findById(userID, function(err, docs) {
 					if (docs != null) {
@@ -476,7 +491,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 				if (post.comments[i].status == 'active') {
 					if (post.comments[i].nested_comments.length != 0) {
 						for (let x=0;x<post.comments[i].nested_comments.length;x++) {
-							if (post.comments[i].nested_comments[x].posterid = userID) {
+							if (post.comments[i].nested_comments[x].posterid == userID) {
 								postModified.comments[i].nested_comments[x].current_user_admin = true
 							}
 							if (post.comments[i].nested_comments[x].users_voted.includes(userID)) {
@@ -484,7 +499,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 							}
 						}
 					}
-					if (post.comments[i].posterid = userID) {
+					if (post.comments[i].posterID == userID) {
 						postModified.comments[i].current_user_admin = true
 					} else {
 						postModified.comments[i].current_user_admin = false

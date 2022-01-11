@@ -727,6 +727,7 @@ const commentObject = {
             }
 
             if (this.nested_comments[i].posterid == currentUserID) {
+                console.log(this.nested_comments[i])
                 var delnc = document.createElement("img")
                 delnc.setAttribute("class", "deletePostButton")
                 delnc.setAttribute("id", "deletePostButton_"+this.nested_comments[i].id+"_"+this.id)
@@ -773,9 +774,6 @@ const commentObject = {
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteCount)
             document.getElementById("ncVoteDiv_"+this.nested_comments[i].id).appendChild(voteUp)
         }
-
-
-
 
         posterRow.onclick = function() {
             var id = posterRow.id.substring(10)

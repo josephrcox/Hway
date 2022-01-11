@@ -636,6 +636,7 @@ const commentObject = {
                 voteCom(self.nested_comments[i].id, currentPostID, true, self.id);
             };
             if (this.nested_comments[i].posterid == currentUserID) {
+                console.log(this.nested_comments[i]);
                 var delnc = document.createElement("img");
                 delnc.setAttribute("class", "deletePostButton");
                 delnc.setAttribute("id", "deletePostButton_" + this.nested_comments[i].id + "_" + this.id);
