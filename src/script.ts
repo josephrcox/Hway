@@ -482,8 +482,8 @@ const postObject = {
 
         if (this.type == "2") {
             let domain = (new URL(this.link));
-            domain = new URL(domain.hostname.replace('www.',''))
-            titleCell.innerHTML = "<a href='" + this.link +"'>"+this.title+"</a> <span style='font-size: 10px'>("+domain+"...)</span>"
+            let domainstring = (domain.hostname.replace('www.',''))
+            titleCell.innerHTML = "<a href='" + this.link +"'>"+this.title+"</a> <span style='font-size: 10px'>("+domainstring+"...)</span>"
         }
         
         // titleCell.onclick = function() {
