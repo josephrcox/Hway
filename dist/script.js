@@ -686,7 +686,9 @@ const commentObject = {
             if (body.innerHTML == "") {
                 document.getElementById("posterCell_" + id).innerHTML = "<span style='color:blue'>" + poster + "</span> says: (-)";
                 body.innerHTML = commentBodies[comment_count.indexOf(parseInt(id))];
-                replyDiv.style.display = 'flex';
+                if (isUserLoggedIn) {
+                    replyDiv.style.display = 'flex';
+                }
                 ncContainer.style.display = 'block';
                 replyButton.style.visibility = 'visible';
             }
@@ -695,40 +697,47 @@ const commentObject = {
                 var x = document.getElementById("bodyCell_" + posterRow.id.substring(10));
                 x.innerHTML = "";
                 ncContainer.style.display = 'none';
-                replyDiv.style.display = 'none';
-                replyButton.style.visibility = 'hidden';
+                if (isUserLoggedIn) {
+                    replyDiv.style.display = 'none';
+                    replyButton.style.visibility = 'hidden';
+                }
             }
         };
         if (this.nested_comments.length == 0) {
             ncContainer.style.display = 'none';
         }
-        var replyDiv = document.createElement("div");
-        replyDiv.setAttribute("class", "comreplyDiv");
-        replyDiv.setAttribute("id", "comreplyDiv_" + this.id);
-        replyDiv.style.display = 'flex';
-        var replyBox = document.createElement("textarea");
-        replyBox.setAttribute("class", "comreplybox");
-        replyBox.setAttribute("id", "comreplybox_" + this.id);
-        replyBox.setAttribute("rows", "1");
-        var replySubmit = document.createElement("button");
-        replySubmit.setAttribute("class", "comreplySubmit");
-        replySubmit.setAttribute("id", "comreplySubmit_" + this.id);
-        replySubmit.innerText = "Reply";
-        replySubmit.onclick = function () {
-            let parentID = window.location.href.split('/posts/')[1];
-            let reply = document.getElementById('comreplybox_' + replySubmit.id.split('_')[1]);
-            console.log("reply is:" + reply);
-            comment_nested(parentID, reply.value, replySubmit.id.split('_')[1]);
-            reply.value = "";
-        };
-        var replyButton = document.createElement('img');
-        replyButton.setAttribute("class", "comreplybutton");
-        replyButton.setAttribute("id", "comreplyButton_" + this.id);
-        replyButton.src = '/assets/speech_bubble.png';
-        infoRow.appendChild(replyButton);
-        replyButton.onclick = function () {
-            document.getElementById("comreplyDiv_" + replyButton.id.split('_')[1]).scrollIntoView();
-        };
+        if (isUserLoggedIn) {
+            var replyDiv = document.createElement("div");
+            replyDiv.setAttribute("class", "comreplyDiv");
+            replyDiv.setAttribute("id", "comreplyDiv_" + this.id);
+            replyDiv.style.display = 'flex';
+            var replyBox = document.createElement("textarea");
+            replyBox.setAttribute("class", "comreplybox");
+            replyBox.setAttribute("id", "comreplybox_" + this.id);
+            replyBox.setAttribute("rows", "1");
+            var replySubmit = document.createElement("button");
+            replySubmit.setAttribute("class", "comreplySubmit");
+            replySubmit.setAttribute("id", "comreplySubmit_" + this.id);
+            replySubmit.innerText = "Reply";
+            replySubmit.onclick = function () {
+                let parentID = window.location.href.split('/posts/')[1];
+                let reply = document.getElementById('comreplybox_' + replySubmit.id.split('_')[1]);
+                console.log("reply is:" + reply);
+                comment_nested(parentID, reply.value, replySubmit.id.split('_')[1]);
+                reply.value = "";
+            };
+            var replyButton = document.createElement('img');
+            replyButton.setAttribute("class", "comreplybutton");
+            replyButton.setAttribute("id", "comreplyButton_" + this.id);
+            replyButton.src = '/assets/speech_bubble.png';
+            infoRow.appendChild(replyButton);
+            replyButton.onclick = function () {
+                document.getElementById("comreplyDiv_" + replyButton.id.split('_')[1]).scrollIntoView();
+            };
+            document.getElementById("comments").appendChild(replyDiv);
+            document.getElementById("comreplyDiv_" + this.id).appendChild(replyBox);
+            document.getElementById("comreplyDiv_" + this.id).appendChild(replySubmit);
+        }
         var voteDiv = document.createElement("div");
         voteDiv.setAttribute("id", "voteDiv_" + this.id);
         voteDiv.setAttribute("class", "comVoteDiv");
@@ -750,9 +759,6 @@ const commentObject = {
             voteCom(voteUp.id.substring(10), currentPostID, false, 0);
         };
         document.getElementById("comFrame_" + this.id).appendChild(voteDiv);
-        document.getElementById("comments").appendChild(replyDiv);
-        document.getElementById("comreplyDiv_" + this.id).appendChild(replyBox);
-        document.getElementById("comreplyDiv_" + this.id).appendChild(replySubmit);
         document.getElementById("voteDiv_" + this.id).appendChild(voteCount);
         document.getElementById("voteDiv_" + this.id).appendChild(voteUp);
     }
