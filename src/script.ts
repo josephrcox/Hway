@@ -292,6 +292,7 @@ const getUser = async () => {
         document.getElementById("login_button").style.display = 'block'
         document.getElementById("reg_button").style.display = 'block'
         document.getElementById("post-button").style.display = 'none'
+        document.getElementById('header-notifs').style.display = 'none'
     } else {
         currentUserID = data.id
         isUserLoggedIn = true
@@ -1312,8 +1313,6 @@ const comment_nested = async (postid, body, commentparentID) => {
         let upcomment = document.getElementById('fullCommentContainer_'+commentparentID)
         document.getElementById('comreplybox_'+commentparentID).outerHTML = ""
         document.getElementById('comreplySubmit_'+commentparentID).outerHTML = ""
-
-        
 
         const comResponse = await fetch('/api/get/comment/'+postid+'/'+commentparentID)
         const comData = await comResponse.json()
