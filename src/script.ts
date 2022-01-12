@@ -1,5 +1,6 @@
 let newPost_type:number = 1 // By default, creating a new post creates a text post, 1=text, 2=link, 3=media
 let uploadedImageUrls:string[] = [] // This is used to store the URLs of recently uploaded images
+let uploadImageDeleteUrls:string[] = []
 let prevPageStr:string = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>" // These two are used for quickly inserting the next-page and prev-page text
 let nextPageStr:string = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>"
 let comment_count:number[] = [] // Used to track how many comments are being displayed on a page (maybe remove later)
@@ -1352,13 +1353,11 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     if (document.getElementById("newPost_div").style.display == 'block') {
         document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById('postsArray').style.filter = 'blur(0px)'
         document.getElementById("post-button").innerHTML = "Post"
         document.getElementById("newPost_logs").innerHTML = "";
         (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
     } else {
         document.getElementById("newPost_div").style.display = 'block'
-        document.getElementById('postsArray').style.filter = 'blur(10px)'
         document.getElementById("searchbar").style.display = 'none'
         document.getElementById("post-button").innerHTML = "Collapse";
         (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
@@ -1520,6 +1519,7 @@ const createNewPost = async(posttype) => {
         bodyJSON = {
             "title":title,
             "link":uploadedImageUrls.pop(),
+            "delete_photo_link":uploadImageDeleteUrls.pop(),
             "topic":topic,
             "type":posttype,
             "nsfw":nsfw
@@ -1558,6 +1558,7 @@ const uploadImage = async (x) => {
     const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
 
     uploadedImageUrls.push(url)
+    console.log(data)
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""
