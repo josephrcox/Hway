@@ -318,7 +318,7 @@ app.get('/api/get/user/:user/:options', async (req, res) => {
         });
     }
     else if (req.params.options == "all_comments") {
-        Post.find({}, function (err, posts) {
+        Post.find({ status: 'active' }, function (err, posts) {
             for (let i = 0; i < posts.length; i++) {
                 for (let x = 0; x < posts[i].comments.length; x++) {
                     if (posts[i].comments[x].poster == req.params.user) {
@@ -1231,15 +1231,8 @@ app.put('/api/put/post/delete/:postid', function (req, res) {
     }
     Post.findById(postid, function (err, docs) {
         if (docs.posterID == userID) {
-            Post.findById(postid, function (err, doc) {
-                if (err) {
-                    console.error(err);
-                }
-                else {
-                    doc.status = 'deleted';
-                    doc.save();
-                }
-            });
+            docs.status = 'deleted';
+            docs.save();
             res.json({ status: 'ok' });
         }
         else {

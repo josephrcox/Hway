@@ -1,5 +1,6 @@
 let newPost_type = 1;
 let uploadedImageUrls = [];
+let uploadImageDeleteUrls = [];
 let prevPageStr = "<a href='javascript:prevPage()' style='color: white; text-decoration: none;'> ⇐ </a>";
 let nextPageStr = "<a href='javascript:nextPage()' style='color: white; text-decoration: none;'> ⇒ </a>";
 let comment_count = [];
@@ -1177,14 +1178,12 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     if (document.getElementById("newPost_div").style.display == 'block') {
         document.getElementById("newPost_div").style.display = 'none';
-        document.getElementById('postsArray').style.filter = 'blur(0px)';
         document.getElementById("post-button").innerHTML = "Post";
         document.getElementById("newPost_logs").innerHTML = "";
         document.getElementById("newPost_topic").value = currentTopic;
     }
     else {
         document.getElementById("newPost_div").style.display = 'block';
-        document.getElementById('postsArray').style.filter = 'blur(10px)';
         document.getElementById("searchbar").style.display = 'none';
         document.getElementById("post-button").innerHTML = "Collapse";
         document.getElementById("newPost_topic").value = currentTopic;
@@ -1326,6 +1325,7 @@ const createNewPost = async (posttype) => {
         bodyJSON = {
             "title": title,
             "link": uploadedImageUrls.pop(),
+            "delete_photo_link": uploadImageDeleteUrls.pop(),
             "topic": topic,
             "type": posttype,
             "nsfw": nsfw
@@ -1357,6 +1357,7 @@ const uploadImage = async (x) => {
     const data = await fetchResponse.json();
     const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '');
     uploadedImageUrls.push(url);
+    console.log(data);
     document.getElementById("newPost_submit_button").style.display = "block";
     document.getElementById("newPost_logs").innerHTML = "";
 };
