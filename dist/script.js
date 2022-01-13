@@ -23,10 +23,12 @@ let newURL = "";
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
-const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications'];
+const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications', 'home'];
 let currentPageCategory = (window.location.href).split('/')[3];
 let currentPageType;
 let currentUserID;
+let topic;
+let currentUsername;
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0;
@@ -57,6 +59,9 @@ switch (currentPageCategory) {
         break;
     case 'notifications':
         cPageTypeIndex = 9;
+        break;
+    case 'home':
+        cPageTypeIndex = 10;
         break;
 }
 currentPageType = pageTypes[cPageTypeIndex];
@@ -94,6 +99,9 @@ if (currentPageType == 'search') {
         search_topic = (url.split('?topic=')[1]).split('?')[0];
         console.log(search_query, search_topic);
     }
+}
+if (currentPageType == 'home') {
+    topic = 'home';
 }
 if (currentPageType == 'login' || currentPageType == 'register') {
     document.getElementById('header-buttons').style.display = 'none';
@@ -279,6 +287,7 @@ const getUser = async () => {
     }
     else {
         currentUserID = data.id;
+        currentUsername = data.name;
         isUserLoggedIn = true;
         document.getElementById("currentUser").innerHTML = data.name;
         document.getElementById("logout_button").style.display = 'block';
@@ -298,6 +307,7 @@ const getUser = async () => {
             filter_nsfw.checked = false;
         }
     }
+    getSubscriptions();
     changeCommentSectionVisibility();
     loadPosts("");
 };
@@ -805,6 +815,28 @@ const deleteNestedComment = async (postID, commentID, nestedCommentID) => {
         alert(data.error);
     }
 };
+const subscribe = async (x, type) => {
+    if (type == 'topic') {
+        const settings = {
+            method: 'PUT',
+        };
+        const fetchResponse = await fetch('/api/put/subscribe/' + x, settings);
+        const data = await fetchResponse.json();
+        console.log(data);
+        getSubscriptions();
+    }
+};
+const unsubscribe = async (x, type) => {
+    if (type == 'topic') {
+        const settings = {
+            method: 'PUT',
+        };
+        const fetchResponse = await fetch('/api/put/unsubscribe/' + x, settings);
+        const data = await fetchResponse.json();
+        console.log(data);
+        getSubscriptions();
+    }
+};
 const loadPosts = async (topic) => {
     if (currentPageType == 'user') {
         let user = window.location.href.split('/').pop();
@@ -819,6 +851,9 @@ const loadPosts = async (topic) => {
     if (currentPageType == 'topic') {
         currentPageCategory = window.location.href;
         topic = currentPageCategory.split('/')[4];
+    }
+    if (currentPageType == 'home') {
+        topic = 'home';
     }
     let options = "?sort=" + sorting + "&t=" + sorting_duration + "&nsfw=" + document.getElementById("filter_nsfw").checked + "";
     if (currentPageType == 'post') {
@@ -1197,7 +1232,6 @@ if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifica
 if (currentPageType != 'user' && currentPageType != 'notifications') {
     document.getElementById("newPost_submit_button").onclick = function () {
         let postTitle = document.getElementById("newPost_name").value;
-        let topic;
         if ((document.getElementById("newPost_topic").value).replace(" ", "") == "" || (document.getElementById("newPost_topic").value).replace(" ", "") == null || (document.getElementById("newPost_topic").value).replace(" ", "") == undefined) {
             topic = "all";
         }

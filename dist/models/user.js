@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema(
         show_nsfw: {type:Boolean, default:false},
         notifications: { type:Array, default:[]}, // [type (comment), string of notification heading, postID, avatar of user initiated change]
         
+        subscriptions: {
+            topics: { type:Array, default:[]},
+            users: { type:Array, default:[]},
+        },
+
         statistics: {
             posts: {
                 created_num: { type:Number, default: 0 },

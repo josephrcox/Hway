@@ -252,6 +252,19 @@ app.get('/all/q', async (req, res) => {
 app.get('/all', async (req, res) => {
     res.redirect('/all/q?sort=hot&t=all&page=1');
 });
+app.get('/home', async (req, res) => {
+    res.redirect('/home/q?sort=hot&t=all&page=1');
+});
+app.get('/home/q', async (req, res) => {
+    let valid = true;
+    valid = await isloggedin(req);
+    if (valid || allowUsersToBrowseAsGuests) {
+        res.render('home.ejs', { topic: "- home" });
+    }
+    else {
+        res.render('login.ejs', { topic: "- login" });
+    }
+});
 app.get('/all/:queries', async (req, res) => {
     let valid = true;
     valid = await isloggedin(req);
@@ -313,9 +326,25 @@ app.get('/api/get/all_users/:sorting', async (req, res) => {
 app.get('/api/get/user/:user/:options', async (req, res) => {
     let comments = [];
     if (req.params.options == "show_nsfw") {
-        User.findOne({ name: req.params.user }, function (err, user) {
-            return res.send({ show_nsfw: user.show_nsfw });
-        });
+        try {
+            User.findOne({ name: req.params.user }, function (err, user) {
+                return res.send({ show_nsfw: user.show_nsfw });
+            });
+        }
+        catch (err) {
+            res.json({ status: 'error', data: err });
+        }
+    }
+    else if (req.params.options == "subscriptions") {
+        try {
+            User.findOne({ name: req.params.user }, function (err, user) {
+                console.log(user);
+                return res.json(user.subscriptions);
+            });
+        }
+        catch (err) {
+            res.json({ status: 'error', data: err });
+        }
     }
     else if (req.params.options == "all_comments") {
         Post.find({ status: 'active' }, function (err, posts) {
@@ -461,6 +490,37 @@ app.get('/api/get/posts/:postid', async (req, res) => {
         });
     });
 });
+app.put('/api/put/subscribe/:topic', async (req, res) => {
+    if (currentUser) {
+        User.findById(currentUser, function (err, docs) {
+            if (docs.subscriptions.topics.some(x => x[0] == req.params.topic)) {
+                res.json({ status: 'error', data: 'already subscribed' });
+            }
+            else {
+                docs.subscriptions.topics.push([
+                    req.params.topic, Date.now()
+                ]);
+                docs.save();
+                res.json({ status: 'ok' });
+            }
+        });
+    }
+});
+app.put('/api/put/unsubscribe/:topic', async (req, res) => {
+    if (currentUser) {
+        User.findById(currentUser, function (err, docs) {
+            if (!docs.subscriptions.topics.some(x => x[0] == req.params.topic)) {
+                res.json({ status: 'error', data: 'already unsubscribed' });
+            }
+            else {
+                let index = docs.subscriptions.topics.findIndex(x => x[0] == req.params.topic);
+                docs.subscriptions.topics.splice(index, 1);
+                docs.save();
+                res.json({ status: 'ok' });
+            }
+        });
+    }
+});
 app.get('/api/get/:topic/q', async (req, res) => {
     postsonpage = [];
     let queries = req.query;
@@ -599,6 +659,111 @@ app.get('/api/get/:topic/q', async (req, res) => {
                 res.send(postsonpage);
             }
         });
+    }
+    else if (req.params.topic == 'home') {
+        let user = await User.findById(userID);
+        let subtop = user.subscriptions.topics;
+        let subusers = user.subscriptions.users;
+        console.log(subtop, subusers);
+        let subtop_count = subtop.length;
+        let subusers_count = subusers.length;
+        let subscriptions_query = {};
+        let posts = [];
+        for (let i = 0; i < subtop_count; i++) {
+            let topicPosts = await Post.find({ topic: subtop[i][0], status: 'active' });
+            posts.push(topicPosts);
+        }
+        try {
+            if (userID != null) {
+                User.findById(userID, async function (err, docs) {
+                    if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+                        let index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic);
+                        let currentCount = docs.statistics.topics.visited_array[index][2];
+                        docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(), (currentCount + 1)];
+                    }
+                    else {
+                        let array = docs.statistics.topics.visited_array;
+                        array.push([req.params.topic, Date.now(), 1]);
+                        docs.statistics.topics.visited_array = array;
+                    }
+                    docs.update();
+                });
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+        let filteredPosts = [];
+        for (let x = 0; x < posts.length; x++) {
+            if (filteredPosts.length >= postsPerPage) {
+            }
+            else {
+                if (sorting == "top" && duration == "day") {
+                    if (posts[x].timestamp >= timestamp24hoursago) {
+                        filteredPosts.push(posts[x]);
+                    }
+                }
+                else if (sorting == "top" && duration == "week") {
+                    if (posts[x].timestamp >= timestamp1weekago) {
+                        filteredPosts.push(posts[x]);
+                    }
+                }
+                else if (sorting == "top" && duration == "month") {
+                    if (posts[x].timestamp >= timestamp1monthago) {
+                        filteredPosts.push(posts[x]);
+                    }
+                }
+                else if (sorting == "top" && duration == "all") {
+                    filteredPosts.push(posts[x]);
+                }
+                else if (sorting == "new") {
+                    filteredPosts.push(posts[x]);
+                }
+                else if (sorting == "hot") {
+                    if (posts[x].last_touched_timestamp == null) {
+                        let now = Date.now();
+                        Post.findByIdAndUpdate(posts[x].id, { last_touched_timestamp: now }, { new: true }, function (err, docs) {
+                            if (err) {
+                                console.log(err);
+                            }
+                        });
+                    }
+                    if (posts.length > 1) {
+                        posts.sort(compare);
+                    }
+                    filteredPosts = posts;
+                }
+            }
+        }
+        let totalPosts = filteredPosts.length;
+        let totalPages = Math.ceil((totalPosts) / postsPerPage);
+        let lastPagePosts = totalPosts % postsPerPage;
+        postsonpage = await paginate(filteredPosts, postsPerPage, page);
+        for (let i = 0; i < postsonpage.length; i++) {
+            postsonpage[i] = postsonpage[i][0];
+            if (postsonpage[i].posterID == userID) {
+                postsonpage[i].current_user_admin = true;
+            }
+            else {
+                postsonpage[i].current_user_admin = false;
+            }
+            if (postsonpage[i].users_upvoted.includes(userID)) {
+                postsonpage[i].current_user_upvoted = true;
+                postsonpage[i].current_user_downvoted = false;
+            }
+            if (postsonpage[i].users_downvoted.includes(userID)) {
+                postsonpage[i].current_user_upvoted = false;
+                postsonpage[i].current_user_downvoted = true;
+            }
+            if (users.some(x => x[0] == postsonpage[i].posterID)) {
+                let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID);
+                postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+            }
+            else {
+                console.log("error loading user... do they exist?");
+            }
+        }
+        res.send(postsonpage);
     }
     else {
         Post.find({ topic: req.params.topic, status: "active" }).sort({ total_votes: -1 }).exec(async function (err, posts) {

@@ -23,10 +23,12 @@ let newURL:string = ""
 let cPageTypeIndex:number
 let search_topic:string = ""
 let search_query:string = ""
-const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search', 'notifications'] // This is used to track what page type we are on
+const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search', 'notifications', 'home'] // This is used to track what page type we are on
 let currentPageCategory:string = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
 let currentPageType:string
 let currentUserID:string
+let topic:string
+let currentUsername:string
 
 switch (currentPageCategory) {
     case 'user':
@@ -58,6 +60,9 @@ switch (currentPageCategory) {
         break;
     case 'notifications':
         cPageTypeIndex = 9
+        break;
+    case 'home':
+        cPageTypeIndex = 10
         break;
 }
 
@@ -99,6 +104,9 @@ if (currentPageType == 'search') {
         search_topic = (url.split('?topic=')[1]).split('?')[0]
         console.log(search_query, search_topic)
     }
+}
+if (currentPageType == 'home') {
+    topic = 'home'
 }
 
 if (currentPageType == 'login' || currentPageType == 'register') { // If the user is on certain pages, hide the header-buttons bar as it's unneeded on that page or may cause issues
@@ -296,6 +304,7 @@ const getUser = async () => {
         document.getElementById('header-notifs').style.display = 'none'
     } else {
         currentUserID = data.id
+        currentUsername = data.name
         isUserLoggedIn = true
         document.getElementById("currentUser").innerHTML = data.name
         document.getElementById("logout_button").style.display = 'block'
@@ -316,7 +325,9 @@ const getUser = async () => {
         }
         
     }
-    
+
+    getSubscriptions()
+
     changeCommentSectionVisibility()
     loadPosts("")
 }
@@ -934,6 +945,34 @@ const deleteNestedComment = async(postID, commentID, nestedCommentID) => {
 
 }
 
+const subscribe = async(x, type) => { // x is the topic or user, type is 'topic' or 'user'
+    if (type == 'topic') {
+        const settings = {
+            method: 'PUT',
+        };
+    
+        const fetchResponse = await fetch('/api/put/subscribe/'+x, settings); 
+        const data = await fetchResponse.json()
+
+        console.log(data)
+        getSubscriptions()
+    }
+}
+
+const unsubscribe = async(x, type) => { // x is the topic or user, type is 'topic' or 'user'
+    if (type == 'topic') {
+        const settings = {
+            method: 'PUT',
+        };
+    
+        const fetchResponse = await fetch('/api/put/unsubscribe/'+x, settings); 
+        const data = await fetchResponse.json()
+
+        console.log(data)
+        getSubscriptions()
+    }
+}
+
 const loadPosts = async (topic) => {
     if (currentPageType == 'user') {
         let user = window.location.href.split('/').pop()
@@ -949,6 +988,9 @@ const loadPosts = async (topic) => {
     if (currentPageType == 'topic') {
         currentPageCategory = window.location.href
         topic = currentPageCategory.split('/')[4]
+    }
+    if (currentPageType == 'home') {
+        topic = 'home'
     }
 
     let options = "?sort="+sorting+"&t="+sorting_duration+"&nsfw="+(document.getElementById("filter_nsfw") as HTMLInputElement).checked+""
@@ -1373,7 +1415,6 @@ if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifica
 if (currentPageType != 'user' && currentPageType != 'notifications') {
     document.getElementById("newPost_submit_button").onclick = function() {
         let postTitle = (document.getElementById("newPost_name")as HTMLInputElement).value
-        let topic
         if (((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == "" || ((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == null || ((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == undefined) {
             topic = "all"
         }

@@ -37,6 +37,7 @@
      <div class="header-buttons noselect" id="header-buttons">
         
         <div id="misc_header_buttons">
+            <div id="home-button" onclick='navHome()'>Home</div>
             <div id="page-number"></div> 
             <!-- <div class="users-page-button" id="users-page-button">Users</div> -->
 
@@ -48,6 +49,7 @@
             </div>
             <div id="post-button" style='display:none;' onclick="ui_newPost()">Post</div>
             <div id="search-button" onclick="showorhidesearch()">Search</div>
+            <div id="subscribe-button" style='display:none;'>Subscribe</div>
         </div>
         
     </div>   
@@ -98,18 +100,17 @@ document.onclick = function(e){
     }
 };
 
-async function goHome() {
-    const response = await fetch('/all')
-}
-
 async function logout() {
     const response = await fetch('/logout')
     window.location.replace("/");
 }
-async function login() {
+function navHome() {
+    window.location.href = '/home'
+}
+function login() {
     window.location.replace("/login");
 }
-async function register() {
+function register() {
     window.location.replace("/register");
 }
 
@@ -148,8 +149,6 @@ function showorhidesearch() {
         search.style.display = "none"
     }
 }
-
-// getUsername()
 
 </script>
 

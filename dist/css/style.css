@@ -149,11 +149,9 @@
 	width:calc(98% + 3px);
 }
 
-#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button, #page-number, #search-button {
-	padding-inline: 5px;
-	text-align: center;
-	font-weight: 100;
-	font-size: 18px;
+#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button, #page-number, #search-button, #subscribe-button, #home-button {
+	padding-inline: 7px;
+	font-size: 15px;
 	color:white;
 	user-select: none;
 	margin-top:2px;
