@@ -289,6 +289,7 @@ const getUser = async () => {
         currentUserID = data.id;
         currentUsername = data.name;
         isUserLoggedIn = true;
+        getSubscriptions();
         document.getElementById("currentUser").innerHTML = data.name;
         document.getElementById("logout_button").style.display = 'block';
         document.getElementById("login_button").style.display = 'none';
@@ -307,7 +308,6 @@ const getUser = async () => {
             filter_nsfw.checked = false;
         }
     }
-    getSubscriptions();
     changeCommentSectionVisibility();
     loadPosts("");
 };
