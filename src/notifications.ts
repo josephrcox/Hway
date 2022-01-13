@@ -123,7 +123,6 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         notifArray.innerHTML = ""
         clearNotifButton.style.display = 'none'
         notifAlert.style.display = 'block'
-        ringBell()
         const fetchResponse = await fetch('/api/post/notif/clear/', {
             headers: {
                 'Accept': 'application/json',
@@ -134,6 +133,7 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         var data = await fetchResponse.json()
         notifs = []
 
+        ringBell()
         console.log(data)
     })
 }
