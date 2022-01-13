@@ -147,6 +147,8 @@
 	border-top:1px solid black;
 	background-color: var(--foreground-2);
 	width:calc(98% + 3px);
+	overflow-x: auto;
+	white-space: nowrap;
 }
 
 #post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button, #page-number, #search-button, #subscribe-button, #home-button {
