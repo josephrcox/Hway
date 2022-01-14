@@ -71,7 +71,6 @@ notifsDiv.addEventListener('click', function () {
     window.location.href = '/notifications';
 });
 const removeNotif = async (index, id) => {
-    console.log(index);
     const settings = {
         method: 'PUT',
     };
@@ -86,7 +85,6 @@ const removeNotif = async (index, id) => {
     }
     const response = await fetch('/api/put/notif/remove/' + index, settings);
     const data = await response.json();
-    console.log(data);
     if (data.status == 'ok') {
         if (ncount != 0) {
             displayNotifs();
@@ -110,7 +108,6 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         var data = await fetchResponse.json();
         notifs = [];
         ringBell();
-        console.log(data);
     });
 }
 getNotifs();

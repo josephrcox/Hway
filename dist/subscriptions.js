@@ -3,7 +3,6 @@ let subscriptions;
 const getSubscriptions = async () => {
     const response = await fetch('/api/get/user/' + currentUsername + '/subscriptions');
     const data = await response.json();
-    console.log(data);
     let str = '';
     for (let i = 0; i < data.topics.length; i++) {
         str += data.topics[i][0] + ',';
@@ -12,7 +11,6 @@ const getSubscriptions = async () => {
     subscriptions = localStorage.getItem('subscriptions').split(',');
     if (window.location.href.indexOf('/h/') != -1) {
         subbutton.style.display = 'block';
-        console.log(subscriptions);
         if (subscriptions.indexOf(currentTopic) != -1) {
             subbutton.innerHTML = 'Unsubscribe';
         }

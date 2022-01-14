@@ -39,7 +39,7 @@ mongoose.connect(process.env.DATEBASE_URL, {
 const connection = mongoose.connection;
 
 connection.once("open", function(res) {
-  console.log("MongoDB database connection established successfully");
+ 
 });
 
 

@@ -91,7 +91,7 @@ notifsDiv.addEventListener('click', function() {
 })
 
 const removeNotif = async(index, id) => {
-    console.log(index)
+   
     const settings = {
         method: 'PUT',
     };
@@ -107,7 +107,7 @@ const removeNotif = async(index, id) => {
     const response = await fetch('/api/put/notif/remove/'+index, settings)
     const data = await response.json()
 
-    console.log(data)
+   
 
     if (data.status == 'ok') {
         if (ncount != 0) {
@@ -134,7 +134,7 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         notifs = []
 
         ringBell()
-        console.log(data)
+       
     })
 }
 

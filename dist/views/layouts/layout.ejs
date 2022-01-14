@@ -38,8 +38,6 @@
         
         <div id="misc_header_buttons">
             <div id="home-button" onclick='navHome()'>Home</div>
-            <div id="page-number"></div> 
-            <!-- <div class="users-page-button" id="users-page-button">Users</div> -->
 
             <div class="topic-dropdown-div" id='topic-dropdown-div'>
                 <div onclick="topicdropdownclicked()" class="topic-dropdown-button" id="topic-dropdown-button">Topics</div>
@@ -71,11 +69,12 @@
         <button id="search_submit">Search</button>
         <div id="search-logs"></div>
     </div>
-    
+    <div id="page-number"></div> 
     <div class='page-content'>
         <%- body %>
     </div>
 
+    <script src='/subscriptions.js'></script>
 <script>
 
 
@@ -142,7 +141,6 @@ function showorhidesearch() {
     search = document.getElementById("searchbar")
     if (search.style.display == "none") {
         document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById('postsArray').style.filter = 'blur(0px)'
         document.getElementById("post-button").innerHTML = 'Post'
         search.style.display = "block"
     } else {

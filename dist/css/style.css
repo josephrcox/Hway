@@ -16,7 +16,7 @@
 .flex-container {
 	display: flex;
 	flex-direction: row;
-	width:calc(98% + 3px);
+	width:100%;
   	border-left: 1px solid black;
 	border-right:1px solid black; 
 	border-top:1px solid black;
@@ -35,9 +35,10 @@
 	color: white;
 	width: 100%;
 	text-align: center;
-	padding-top:5px;
+	padding-top:10px;
 	font-weight: 700;
 	text-decoration: none;
+  color: black;
 }
 .newPost_types_div {
 	display:flex;
@@ -50,6 +51,7 @@
 	flex-direction: column;
 	padding-top: 5px;
 	
+	width: 100%;
 }
 
 /* #newPost_name {
@@ -80,7 +82,7 @@
 		background-color:gray;
 }
 
-@media screen and (min-width: 540px) {
+@media screen and (min-width: 744px) {
 	#sitebody {
 		display: flex;
 		flex-direction: row;
@@ -97,11 +99,11 @@
 		margin-right: 5px;
   }
 	.newPost_container {
-		  width:200px;
+		  width:400px;
    }
 
 }
-@media screen and (max-width: 539px) {
+@media screen and (max-width: 743px) {
 	.newPost_container, #newPost_div {
 		display: flex;
 	}
@@ -146,7 +148,7 @@
 	border-left: 1px solid black;
 	border-top:1px solid black;
 	background-color: var(--foreground-2);
-	width:calc(98% + 3px);
+	width:100%;
 	overflow-x: auto;
 	white-space: nowrap;
 }
@@ -156,7 +158,7 @@
 	font-size: 15px;
 	color:white;
 	user-select: none;
-	margin-top:2px;
+	/*! margin-top:2px; */
 	text-decoration: unset;
 }
 
@@ -171,14 +173,13 @@
 
 #newPost_div {
 	border: 1px solid black;
-	background-color: var(--foreground-4);
-	color: whitesmoke;
+	background-color: white;
+	color: black;
 	padding-inline: 10px;
 	padding-bottom: 1em;
 	margin-left: 1px;
 	position: relative;
-	order: 0;
-	margin-right: 8px;
+	margin-right: 10px;
 }
 
 body {
@@ -268,7 +269,7 @@ textarea {
 }
 label {
 	margin-top: 10px;
-	color: whitesmoke;
+	color: black;
 	font-weight: 500;
 	font-variant: all-small-caps;
 	word-wrap: break-word;
@@ -288,7 +289,7 @@ label {
 .postContainer {
 	display:flex;
 	flex-direction:column;
-	width:calc(98% + 0px);
+	width:100%;
 }
 
 .postFrame {
@@ -378,6 +379,7 @@ label {
 	overflow: auto;
 	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 	z-index: 1;
+	right: 5px;
 }
   
 .dropdown-content a {
@@ -405,7 +407,11 @@ label {
 }
 
 #page-number {
-	margin-top: -1px;
+	padding-top: 6px;
+	font-size: large;
+	text-align: center;
+	border-top: 1px solid white;
+	margin-top: 10px;
 }
 
 
@@ -478,7 +484,7 @@ a:hover { text-decoration: none; color:red; }
 }
 #misc_header_buttons {
 	display:flex;
-	padding-left:2px;
+	/*! padding-left:2px; */
 	
 }
 
@@ -616,7 +622,7 @@ a:visited {
 	padding-top:5px;
 	padding-inline:3px;
 	font-size: 17px;
-	width: calc(98% + 0px);
+	width: 100%;
 	overflow-x: auto;
 	white-space: nowrap;
 }
@@ -734,5 +740,29 @@ checkbox {
 
 .comreplybox {
 	width: calc(98% + 1px - 35px);
+}
+
+.button:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.button {
+  background-color: darkblue; /* Green */
+  border: none;
+  color: white;
+  padding: 12px 28px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#newPost_name {
+	font-size: 20px;
+}
+#newPost_desc {
+	font-size: 18px;
 }
 
