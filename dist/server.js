@@ -75,13 +75,11 @@ app.get('/', async (req, res) => {
                     });
                 }
                 catch (err) {
-                    console.log(err);
                 }
             }
         });
     }
     catch (err) {
-        console.log(err);
     }
     res.redirect('/all');
 });
@@ -127,7 +125,6 @@ app.get('/api/get/currentuser', function (req, res) {
                         docs.save();
                     }
                     catch (err) {
-                        console.log(err);
                     }
                 }
             });
@@ -157,13 +154,11 @@ app.get('/api/get/currentuser', function (req, res) {
                         });
                     }
                     catch (err) {
-                        console.log(err);
                     }
                 }
             });
         }
         catch (err) {
-            console.log(err);
         }
         return res.json({ status: "error", code: 400, error: err });
     }
@@ -180,7 +175,6 @@ app.get('/api/get/notifications', function (req, res) {
         });
     }
     else {
-        console.log(currentUser);
         try {
             let token = req.cookies.token;
             let user = jwt.verify(token, process.env.JWT_SECRET);
@@ -308,7 +302,6 @@ app.get('/api/get/all_users/:sorting', async (req, res) => {
                 location = locationArr.city;
             }
             catch (err) {
-                console.log(err);
                 location = "unknown";
             }
             usersArr.push({
@@ -337,7 +330,6 @@ app.get('/api/get/user/:user/:options', async (req, res) => {
     else if (req.params.options == "subscriptions") {
         try {
             User.findOne({ name: req.params.user }, function (err, user) {
-                console.log(user);
                 return res.json(user.subscriptions);
             });
         }
@@ -458,7 +450,6 @@ app.get('/api/get/posts/:postid', async (req, res) => {
                 });
             }
             catch (err) {
-                console.log(err);
             }
             for (let i = 0; i < post.comments.length; i++) {
                 if (post.comments[i].status == 'active') {
@@ -606,7 +597,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                                 let now = Date.now();
                                 Post.findByIdAndUpdate(posts[x].id, { last_touched_timestamp: now }, { new: true }, function (err, docs) {
                                     if (err) {
-                                        console.log(err);
                                     }
                                 });
                             }
@@ -652,7 +642,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                         postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
                     }
                     else {
-                        console.log("error loading user... do they exist?");
                     }
                 }
                 res.send(postsonpage);
@@ -663,7 +652,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
         let user = await User.findById(userID);
         let subtop = user.subscriptions.topics;
         let subusers = user.subscriptions.users;
-        console.log(subtop, subusers);
         let subtop_count = subtop.length;
         let subusers_count = subusers.length;
         let subscriptions_query = {};
@@ -690,7 +678,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
             }
         }
         catch (err) {
-            console.log(err);
         }
         let filteredPosts = [];
         for (let x = 0; x < posts.length; x++) {
@@ -723,7 +710,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                         let now = Date.now();
                         Post.findByIdAndUpdate(posts[x].id, { last_touched_timestamp: now }, { new: true }, function (err, docs) {
                             if (err) {
-                                console.log(err);
                             }
                         });
                     }
@@ -759,7 +745,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                 postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
             }
             else {
-                console.log("error loading user... do they exist?");
             }
         }
         res.send(postsonpage);
@@ -787,7 +772,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                     }
                 }
                 catch (err) {
-                    console.log(err);
                 }
                 let filteredPosts = [];
                 for (let x = 0; x < posts.length; x++) {
@@ -820,7 +804,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                                 let now = Date.now();
                                 Post.findByIdAndUpdate(posts[x].id, { last_touched_timestamp: now }, { new: true }, function (err, docs) {
                                     if (err) {
-                                        console.log(err);
                                     }
                                 });
                             }
@@ -855,7 +838,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                         postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
                     }
                     else {
-                        console.log("error loading user... do they exist?");
                     }
                 }
                 res.send(postsonpage);
@@ -908,7 +890,6 @@ app.get('/api/get/posts/user/:user', async (req, res) => {
                     postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
                 }
                 else {
-                    console.log("error loading user... do they exist?");
                 }
             }
             res.send(postsonpage);
@@ -1101,7 +1082,6 @@ app.post('/api/post/comment/', async (req, res) => {
                     }
                 }
             }
-            console.log(usersMentioned);
             notifyUsers(usersMentioned, "mention", username, id);
             User.findById(userID, function (err, docs) {
                 docs.statistics.comments.created_num += 1;
@@ -1110,7 +1090,6 @@ app.post('/api/post/comment/', async (req, res) => {
             });
             User.findById(docs.posterID, async function (err, docs) {
                 if (err) {
-                    console.log(err);
                 }
                 else {
                     let user_triggered_avatar;
@@ -1151,7 +1130,6 @@ function notifyUsers(users, type, triggerUser, postID) {
     for (let i = 0; i < userCount; i++) {
         User.findOne({ name: users[i] }, async function (err, user) {
             if (err) {
-                console.log(err);
             }
             else {
                 let user_triggered_avatar;
@@ -1188,12 +1166,9 @@ function parseForAtMentions(x) {
             let usermentioned = strArr[i].split('@')[1];
             User.findOne({ name: usermentioned }, async function (err, user) {
                 if (err || (user == null)) {
-                    console.log(err, "this user does not exist.");
                 }
                 else {
-                    console.log("User " + usermentioned + " does exist.");
                     usersMentioned.push(usermentioned);
-                    console.log(usersMentioned);
                     return usersMentioned;
                 }
             });
@@ -1235,7 +1210,6 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                     }
                 }
             }
-            console.log(usersMentioned);
             notifyUsers(usersMentioned, "mention", username, id);
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
@@ -1255,7 +1229,6 @@ app.post('/api/post/comment_nested/', async (req, res) => {
             let pCommentBody = oldComment.body;
             User.findById(pCommentWriterID, async function (err, userDoc) {
                 if (err) {
-                    console.log(err);
                 }
                 else {
                     let user_triggered_avatar;
@@ -1468,7 +1441,6 @@ app.put('/api/put/comment/delete/:postid/:id', async function (req, res) {
         });
     }
     catch (err) {
-        console.log(err);
     }
     ncomments.splice(index, 1);
     Post.findById(postid, function (err, docs) {
@@ -1529,7 +1501,6 @@ app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async
         });
     }
     catch (err) {
-        console.log(err);
     }
     ncomments[comIndex].nested_comments.splice(ncIndex, 1);
     Post.findById(postid, function (err, docs) {
@@ -1676,6 +1647,7 @@ app.get('/search/', async (req, res) => {
 app.get('/api/get/search/', async (req, res) => {
     let token;
     let userID;
+    let query = req.query.query;
     try {
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -1690,6 +1662,7 @@ app.get('/api/get/search/', async (req, res) => {
         }
     }
     var regex_q = new RegExp(req.query.query, 'i');
+    console.log(regex_q);
     if (req.query.topic) {
         var regex_t = new RegExp(req.query.topic, 'i');
         Post.find({ status: 'active', title: regex_q, topic: regex_t }, function (err, docs) {
@@ -1714,14 +1687,13 @@ app.get('/api/get/search/', async (req, res) => {
                     postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
                 }
                 else {
-                    console.log("error loading user... do they exist?");
                 }
             }
             res.send(postsonpage);
         });
     }
     else {
-        Post.find({ status: 'active', title: regex_q }, function (err, docs) {
+        Post.find({ status: 'active', title: regex_q }, async function (err, docs) {
             postsonpage = docs;
             for (let i = 0; i < docs.length; i++) {
                 if (postsonpage[i].posterID == userID) {
@@ -1743,7 +1715,6 @@ app.get('/api/get/search/', async (req, res) => {
                     postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
                 }
                 else {
-                    console.log("error loading user... do they exist?");
                 }
             }
             res.send(postsonpage);

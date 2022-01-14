@@ -37,7 +37,7 @@ async function registerUser(event) {
     const data = await fetchResponse.json()
     
     if (data.code == 200) {
-        //console.log("success: 200")
+        //
         loginUser(name, password)
     } 
     if (data.code == 400) {
@@ -66,8 +66,8 @@ async function loginUser(name, password) {
     const data = await fetchResponse.json()
     
     if (data.code == 200) {
-        //console.log("success: 200")
-        //console.log(data.data)
+        //
+        //
         localStorage.clear()
         window.location.href = "/all"
     } 

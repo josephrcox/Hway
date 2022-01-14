@@ -29,6 +29,7 @@ let currentPageType;
 let currentUserID;
 let topic;
 let currentUsername;
+let all_topics_array = [];
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0;
@@ -520,6 +521,21 @@ const postObject = {
         }
     }
 };
+const topicObject = {
+    name: "",
+    post_count: "",
+    display() {
+        var topicContainer = document.createElement("div");
+        topicContainer.setAttribute("id", "topicContainer_" + this.id);
+        topicContainer.setAttribute("class", "topicContainer postContainer");
+        var topicFrame = document.createElement("table");
+        topicFrame.setAttribute("id", "topicFrame_" + this.id);
+        topicFrame.setAttribute("class", "topicFrame postFrame");
+        topicFrame.innerHTML = this.name + " | Posts: " + this.post_count;
+        topicContainer.append(topicFrame);
+        document.getElementById("postsArray").append(topicContainer);
+    }
+};
 const commentObject = {
     body: "",
     id: "",
@@ -907,7 +923,6 @@ const loadPosts = async (topic) => {
             }
             document.getElementById('commentSection').style.display = 'inline';
             topFunction();
-            storeAndDisplayTopics();
         }
     }
     else {
@@ -925,6 +940,15 @@ const loadPosts = async (topic) => {
         document.getElementById("postsArray").innerHTML = "";
         if (data.length == 0) {
             document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
+        }
+        for (let i = 0; i < all_topics_array.length; i++) {
+            if (search_query.indexOf(all_topics_array[i][0]) != -1) {
+                console.log("Query match for " + all_topics_array[i][0]);
+                var topObj = Object.create(topicObject);
+                topObj.name = all_topics_array[i][0];
+                topObj.post_count = all_topics_array[i][1];
+                topObj.display();
+            }
         }
         for (let i = 0; i < data.length; i++) {
             let post = Object.create(postObject);
@@ -960,7 +984,6 @@ const loadPosts = async (topic) => {
             post.display();
         }
         topFunction();
-        storeAndDisplayTopics();
     }
     currentTopic = topic;
 };
@@ -1005,7 +1028,6 @@ const loadUserPage = async (user) => {
         post.display();
     }
     topFunction();
-    storeAndDisplayTopics();
 };
 function expandDesc(x) {
     let y = "descCell_" + x;
@@ -1038,6 +1060,7 @@ const storeAndDisplayTopics = async () => {
     const response = await fetch('/api/get/topics/');
     var data = await response.json();
     let topics;
+    all_topics_array = data;
     if (data.length <= 1) {
         document.getElementById('topic-dropdown-div').style.display = 'none';
         document.getElementById('topic-dropdown-div').style.borderRight = '0px solid black';
@@ -1059,6 +1082,7 @@ const storeAndDisplayTopics = async () => {
         }
     }
 };
+storeAndDisplayTopics();
 const vote = async (change, id) => {
     if (lastClick >= (Date.now() - delay)) {
         return;
@@ -1460,10 +1484,6 @@ document.getElementById("search_phrase").addEventListener("keyup", function (eve
 document.getElementById("search_submit").onclick = function () {
     let query = document.getElementById("search_phrase").value;
     let topic = document.getElementById("search_topic").value;
-    if (query == "") {
-        document.getElementById('search-logs').innerHTML = "Please enter search query";
-        return;
-    }
     query.split(" ").join("+");
     query = (query.split(" ")).join("+");
     if (topic) {

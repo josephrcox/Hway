@@ -64,7 +64,7 @@
     </div>
 
     <div id="searchbar" style="display:none;">
-        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search terms"><br/>
+        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
         <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)">
         <button id="search_submit">Search</button>
         <div id="search-logs"></div>
@@ -126,7 +126,7 @@ function profile() {
 async function getUsername() {
     const response = await fetch('/api/get/currentuser')
     const data = await response.json()
-    //console.log(data)
+    //
 
     if (data.status != "error") {
         document.getElementById("currentUser").innerHTML = data.name
