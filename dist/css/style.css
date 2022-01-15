@@ -124,6 +124,8 @@
 #sitebody {
 	padding-top:5px;
 	width: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 #title {
@@ -766,3 +768,28 @@ checkbox {
 	font-size: 18px;
 }
 
+.recommended_topics_div {
+	display: flex;
+	flex-direction: row;
+	justify-content:start;
+	padding-bottom: 10px;
+	width:100%;
+	overflow-x: auto;
+	white-space: nowrap;
+	scrollbar-width: 0px;
+}
+
+.topicContainer {
+	margin-inline: 10px;
+	width: max-content;
+}
+
+.topicFrame {
+	padding: 10px;
+	border: 1px solid black;
+}
+
+.topicFrame:hover {
+  color:blue;
+	cursor:pointer;
+}

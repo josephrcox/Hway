@@ -526,14 +526,17 @@ const topicObject = {
     post_count: "",
     display() {
         var topicContainer = document.createElement("div");
-        topicContainer.setAttribute("id", "topicContainer_" + this.id);
+        topicContainer.setAttribute("id", "topicContainer_" + this.name);
         topicContainer.setAttribute("class", "topicContainer postContainer");
+        topicContainer.onclick = function () {
+            window.location.href = '/h/' + topicContainer.id.split('_')[1];
+        };
         var topicFrame = document.createElement("table");
-        topicFrame.setAttribute("id", "topicFrame_" + this.id);
+        topicFrame.setAttribute("id", "topicFrame_" + this.name);
         topicFrame.setAttribute("class", "topicFrame postFrame");
         topicFrame.innerHTML = this.name + " | Posts: " + this.post_count;
         topicContainer.append(topicFrame);
-        document.getElementById("postsArray").append(topicContainer);
+        document.getElementById("recommended_topics").append(topicContainer);
     }
 };
 const commentObject = {
@@ -927,6 +930,7 @@ const loadPosts = async (topic) => {
     }
     else {
         let request = '/api/get/' + topic + '/q' + window.location.search;
+        document.getElementById("postsArray").innerHTML = "";
         if (currentPageType == 'search') {
             if (search_topic != "" && search_topic != null) {
                 request = '/api/get/search?topic=' + search_topic + '&query=' + search_query;
@@ -937,17 +941,26 @@ const loadPosts = async (topic) => {
         }
         const response = await fetch(request);
         const data = await response.json();
-        document.getElementById("postsArray").innerHTML = "";
-        if (data.length == 0) {
-            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
+        let search_query_array = search_query.split('+');
+        let search_similar_topics = 0;
+        for (let x = 0; x < search_query_array.length; x++) {
+            for (let i = 0; i < all_topics_array.length; i++) {
+                if (all_topics_array[i][0].toLowerCase().indexOf(search_query_array[x]) != -1 && window.location.href.indexOf('/search/') != -1) {
+                    console.log("Query match for " + all_topics_array[i][0]);
+                    var topObj = Object.create(topicObject);
+                    topObj.name = all_topics_array[i][0];
+                    topObj.post_count = all_topics_array[i][1];
+                    topObj.display();
+                    search_similar_topics++;
+                }
+            }
         }
-        for (let i = 0; i < all_topics_array.length; i++) {
-            if (search_query.indexOf(all_topics_array[i][0]) != -1) {
-                console.log("Query match for " + all_topics_array[i][0]);
-                var topObj = Object.create(topicObject);
-                topObj.name = all_topics_array[i][0];
-                topObj.post_count = all_topics_array[i][1];
-                topObj.display();
+        if (data.length == 0) {
+            if (search_similar_topics > 0) {
+                document.getElementById("recommended_topics").style.display = 'flex';
+            }
+            else {
+                document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
             }
         }
         for (let i = 0; i < data.length; i++) {
