@@ -1478,21 +1478,19 @@ function nextPage() {
 const filter_nsfw = async () => {
     if (!isUserLoggedIn) {
         window.location.href = '/login';
-    } else {
-        let show = document.getElementById('filter_nsfw').checked;
-        const settings = {
-            method: 'PUT',
-        };
-        const response = await fetch('/api/put/filter_nsfw/' + show, settings);
-        const data = await response.json();
-        if (data.status == 'ok') {
-            loadPosts("");
-        }
-        if (data.status == 'error') {
-            alert(data.error);
-        }
     }
-    
+    let show = document.getElementById('filter_nsfw').checked;
+    const settings = {
+        method: 'PUT',
+    };
+    const response = await fetch('/api/put/filter_nsfw/' + show, settings);
+    const data = await response.json();
+    if (data.status == 'ok') {
+        loadPosts("");
+    }
+    if (data.status == 'error') {
+        alert(data.error);
+    }
 };
 function search() {
     let query = document.getElementById("search_phrase").innerHTML;
