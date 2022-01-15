@@ -22,7 +22,7 @@
                 <a href='#' onclick="logout()" id="logout_button">Logout</a>
                 <a href='#' onclick="login()" id="login_button">Login</a>
                 <a href='#' onclick="register()" id="reg_button">Register</a>
-                <!-- <label for="filter_nsfw" id="filter_nsfw_label" class="filter_nsfw">NSFW</label> -->
+                <a href='#' onclick="view_subscriptions()" id="view_subs_button">Subscriptions</a>
                 <div class="border-bottom"></div>
                 <div id="filter_nsfw_div">
                     NSFW
@@ -95,6 +95,9 @@ function login() {
 }
 function register() {
     window.location.replace("/register");
+}
+function view_subscriptions() {
+    window.location.replace("/subscriptions")
 }
 
 function profile() {

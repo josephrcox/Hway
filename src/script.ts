@@ -607,22 +607,43 @@ const topicObject = {
     post_count: "",
 
     display() {
+        if (this.name == "") {
+            return null;
+        }
         var topicContainer = document.createElement("div")
         topicContainer.setAttribute("id","topicContainer_"+this.name)
         topicContainer.setAttribute("class","topicContainer postContainer")
-        topicContainer.onclick = function() {
-            window.location.href = '/h/'+topicContainer.id.split('_')[1]
-        }
 
-        var topicFrame = document.createElement("table")
+        var topicFrame = document.createElement("div")
         topicFrame.setAttribute("id", "topicFrame_"+this.name)
         topicFrame.setAttribute("class", "topicFrame postFrame")
+        topicFrame.onclick = function() {
+            window.location.href = '/h/'+topicFrame.id.split('_')[1]
+        }
 
-        topicFrame.innerHTML = this.name + " | Posts: " + this.post_count
+        if (this.post_count != "") {
+            topicFrame.innerHTML = this.name + " | Posts: " + this.post_count
+            topicContainer.append(topicFrame)
+            document.getElementById("recommended_topics").append(topicContainer)
+        } else if (window.location.href.indexOf('/subscriptions') != -1) {
+            topicFrame.innerHTML = this.name
 
-        topicContainer.append(topicFrame)
+            var topicUnsub = document.createElement('div')
+            topicUnsub.innerHTML = '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_'+this.name+'"></i>'
+            topicUnsub.style.marginTop = '20px'
+            topicUnsub.setAttribute("id", "topicUnsub_"+this.name)
+            topicUnsub.onclick = function() {
+                unsubscribe(topicUnsub.id.split('_')[1], "topic")
+                topicContainer.outerHTML = ""
+            }
+
+            topicContainer.append(topicFrame)
+            topicContainer.append(topicUnsub)
         
-        document.getElementById("recommended_topics").append(topicContainer)
+            document.getElementById("subscriptions_page_container").append(topicContainer)
+        }
+
+        
     }
 }
 
@@ -1440,7 +1461,7 @@ function ui_newPost() {
     }
 }
 
-if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications'){
+if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications' && window.location.href.indexOf("/subscriptions") == -1){
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber + nextPageStr

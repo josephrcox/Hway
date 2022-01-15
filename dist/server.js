@@ -232,6 +232,9 @@ app.get('/user/:user', (req, res) => {
 app.get('/register', (req, res) => {
     res.render('register.ejs', { topic: "- register" });
 });
+app.get('/subscriptions', (req, res) => {
+    res.render('subscriptions.ejs', { topic: "- subscriptions" });
+});
 app.get('/all/q', async (req, res) => {
     let valid = true;
     valid = await isloggedin(req);

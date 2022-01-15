@@ -159,8 +159,8 @@
 }
 
 #post-button, #goHomeButton, .users-page-button, #page-number, #search-button, #subscribe-button, #home-button {
-	padding-inline: 14px;
-	font-size: 20px;
+	padding-inline: 9px;
+	font-size: 16px;
 	color:white;
 	user-select: none;
 	/*! margin-top:2px; */
@@ -745,7 +745,7 @@ checkbox {
 }
 
 .button:hover {
-	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+	box-shadow: 0 6px 6px 0 rgba(0,0,0,0.24), 0 7px 25px 0 rgba(0,0,0,0.19);
 }
 
 .button {
@@ -784,6 +784,8 @@ checkbox {
 .topicContainer {
 	margin-inline: 10px;
 	width: max-content;
+	display: flex;
+	flex-direction: row;
 }
 
 .topicFrame {
@@ -805,4 +807,5 @@ checkbox {
 	height: 15px;
 	vertical-align: inherit;
 	padding-left: 4px;
-  }
+}
+

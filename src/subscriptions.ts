@@ -25,6 +25,16 @@ const getSubscriptions = async() => {
             subbutton.innerHTML = 'Subscribe'
         }
     }
+    if (window.location.href.indexOf('/subscriptions') != -1) {
+        let subscriptions_page_container = document.getElementById('subscriptions_page_container')
+
+        subscriptions_page_container.innerHTML = ""
+        for (let i=0;i<subscriptions.length;i++) {
+            var top = Object.create(topicObject)
+            top.name = subscriptions[i]
+            top.display()
+        }
+    }
 }
 
 subbutton.addEventListener('click', function() {
@@ -68,3 +78,5 @@ async function addInlineSubscribeEventListeners() {
         });
     });
 }
+
+

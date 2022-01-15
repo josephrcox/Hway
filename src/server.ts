@@ -266,6 +266,10 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
+app.get('/subscriptions', (req, res) => {
+    res.render('subscriptions.ejs', {topic:"- subscriptions"})
+})
+
 app.get('/all/q', async(req, res) => {
 	let valid = true
 	// Commenting out below allows users to view the home without being logged in
