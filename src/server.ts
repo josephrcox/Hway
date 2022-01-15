@@ -39,7 +39,7 @@ mongoose.connect(process.env.DATEBASE_URL, {
 const connection = mongoose.connection;
 
 connection.once("open", function(res) {
-  console.log("MongoDB database connection established successfully");
+ 
 });
 
 
@@ -58,6 +58,9 @@ app.use(bp.urlencoded({ extended: true }))
 var allowUsersToBrowseAsGuests = true
 var geoip = require('geoip-lite');
 let usersArr = []
+
+const bannedTopics:string[] = ['home','notifications','profile','login','logout','signup','admin',]
+const bannedUsernames:string[] = ['joey','admin',]
 
 async function get_all_avatars() {
 	let tempUsers = await User.find({})
@@ -91,14 +94,14 @@ app.get('/', async(req, res) => {
 						visited_datetime_array: [fulldatetime]
 					})
 				} catch(err) {
-					console.log(err)
+					
 				}
 			}
 		})
 
 		
 	} catch(err) {
-		console.log(err)
+		
 	}
 	
     res.redirect('/all')
@@ -147,13 +150,12 @@ app.get('/api/get/currentuser', function (req, res) {
 							}
 							docs.save()
 						} catch(err) {
-							console.log(err)
+							
 						}
 					}
 					
 				})
 			}
-		
 		res.json(verified)
 
 	} catch (err) {
@@ -178,12 +180,12 @@ app.get('/api/get/currentuser', function (req, res) {
 							visited_datetime_array: [fulldatetime]
 						})
 					} catch(err) {
-						console.log(err)
+						
 					}
 				}
 			})
 		} catch(err) {
-			console.log(err)
+			
 		}
 		return res.json({ status:"error", code:400, error: err})
 	}
@@ -200,7 +202,7 @@ app.get('/api/get/notifications', function(req,res) {
 			}
 		})
 	} else {
-		console.log(currentUser)
+		
 		try {
 			let token = req.cookies.token
 			let user = jwt.verify(token, process.env.JWT_SECRET)
@@ -267,8 +269,21 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
+app.get('/subscriptions', async(req, res) => {
+	let valid = false
+	// Commenting out below allows users to view the home without being logged in
+	valid = await isloggedin(req)
+
+	if (valid) {
+		res.render('subscriptions.ejs', {topic:"- subscriptions"})
+	} else {
+		res.render('login.ejs', {topic:"- login"})
+	}
+    
+})
+
 app.get('/all/q', async(req, res) => {
-	let valid = true
+	let valid = false
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
 	
@@ -282,6 +297,23 @@ app.get('/all/q', async(req, res) => {
 
 app.get('/all', async(req,res) => {
 	res.redirect('/all/q?sort=hot&t=all&page=1')
+})
+
+app.get('/home', async(req,res) => {
+	res.redirect('/home/q?sort=hot&t=all&page=1')
+})
+
+app.get('/home/q', async(req, res) => {
+	let valid = false
+	// Commenting out below allows users to view the home without being logged in
+	valid = await isloggedin(req)
+	
+	if (valid) {
+		res.render('home.ejs', {topic: "- home"})
+	} else {
+		res.render('login.ejs', {topic:"- login"})
+	}
+	
 })
 
 app.get('/all/:queries', async(req, res) => {
@@ -338,7 +370,7 @@ app.get('/api/get/all_users/:sorting', async(req, res) =>{
 				let locationArr = users[i].statistics.misc.approximate_location[0]
 				location = locationArr.city
 			} catch(err) {
-				console.log(err)
+				
 				location = "unknown"
 			}
 			
@@ -360,9 +392,24 @@ app.get('/api/get/user/:user/:options', async(req, res) =>{
 	let comments = []
 
 	if (req.params.options == "show_nsfw") {
-		User.findOne({name:req.params.user}, function(err, user) {
-			return res.send({show_nsfw: user.show_nsfw})
-		})
+		try {
+			User.findOne({name:req.params.user}, function(err, user) {
+				return res.send({show_nsfw: user.show_nsfw})
+			})
+		} catch(err) {
+			res.json({status:'error', data:err})
+		}
+
+	} else if(req.params.options == "subscriptions") {
+		try {
+			User.findOne({name:req.params.user}, function(err, user) {
+				
+				return res.json(user.subscriptions)
+			})
+		} catch(err) {
+			res.json({status:'error', data:err})
+		}
+
 	} else if (req.params.options == "all_comments") {
 		Post.find({status:'active'}, function(err, posts) {
 			for (let i=0;i<posts.length;i++) {
@@ -485,7 +532,7 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 					
 				})
 			} catch (err) {
-				console.log(err)
+				
 			}
 			for (let i=0;i<post.comments.length;i++) {
 				if (post.comments[i].status == 'active') {
@@ -522,6 +569,49 @@ app.get('/api/get/posts/:postid', async(req,res) => {
 		
 	})
 })
+
+app.put('/api/put/subscribe/:topic', async(req,res) => {
+	if (bannedTopics.includes(req.params.topic.toLowerCase())) {
+		res.status(400)
+		return res.send({status:'error', data:'This topic is not available to subscribe'})
+	}
+
+	if (currentUser) {
+		User.findById(currentUser, function(err,docs) {
+			if (docs.subscriptions.topics.some(x => x[0] == req.params.topic)) {
+				res.json({status:'error', data:'already subscribed'})
+			} else {
+				docs.subscriptions.topics.push([
+					req.params.topic, Date.now()
+				])
+				docs.save()
+				res.json({status:'ok'})
+			}
+
+
+		})
+		
+	} 
+})
+
+app.put('/api/put/unsubscribe/:topic', async(req,res) => {
+	if (currentUser) {
+		User.findById(currentUser, function(err,docs) {
+			if (!docs.subscriptions.topics.some(x => x[0] == req.params.topic)) {
+				res.json({status:'error', data:'already unsubscribed'})
+			} else {
+				let index = docs.subscriptions.topics.findIndex(x => x[0] == req.params.topic)
+				docs.subscriptions.topics.splice(index,1)
+				docs.save()
+				res.json({status:'ok'})
+			}
+
+
+		})
+		
+	} 
+})
+
 
 app.get('/api/get/:topic/q', async(req, res) => {
 	postsonpage = []
@@ -606,7 +696,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 								let now = Date.now()
 								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
 									if (err){
-										console.log(err)
+										
 									}
 								})
 							}
@@ -659,7 +749,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 						let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
 						postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 					} else {
-						console.log("error loading user... do they exist?")
+						
 					}
 					
 
@@ -668,6 +758,119 @@ app.get('/api/get/:topic/q', async(req, res) => {
 			
 			}
 		})
+	} else if (req.params.topic == 'home') {
+
+		let user = await User.findById(userID)
+		let subtop = user.subscriptions.topics
+		let subusers = user.subscriptions.users
+		
+		let subtop_count = subtop.length
+		let subusers_count = subusers.length
+
+		let subscriptions_query = {}
+
+		// for (let i=0;i<subtop_count;i++) {
+		// 	let topicStr = subtop[i][0].replace('"','')
+		// 	let topicObject = {topic:topicStr}
+		// 	subscriptions_query.push(topicObject)
+		// }
+
+		let posts = []
+		for (let i=0;i<subtop_count;i++) {
+			let topicPosts = await Post.find({topic:subtop[i][0], status:'active'})
+			posts.push(topicPosts)
+		}
+		
+		try {
+			if (userID != null) {
+				User.findById(userID, async function(err, docs) {
+					if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+						let index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
+						let currentCount = docs.statistics.topics.visited_array[index][2]
+						docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
+
+					} else {
+						let array = docs.statistics.topics.visited_array
+						array.push([req.params.topic, Date.now(), 1])
+						docs.statistics.topics.visited_array = array
+					}
+					
+					docs.update()
+			})
+		}
+		} catch(err) {
+			
+		}
+
+		let filteredPosts = []
+
+		for (let x=0;x<posts.length;x++) {
+			if (filteredPosts.length >= postsPerPage) {
+
+			} else {
+				if (sorting == "top" && duration == "day") {
+					if (posts[x].timestamp >= timestamp24hoursago) {
+						filteredPosts.push(posts[x])
+					}
+				} else if (sorting == "top" && duration == "week"){
+					if (posts[x].timestamp >= timestamp1weekago) {
+						filteredPosts.push(posts[x])
+					}
+				} else if (sorting == "top" && duration == "month"){
+					if (posts[x].timestamp >= timestamp1monthago) {
+						filteredPosts.push(posts[x])
+					}
+				} else if (sorting == "top" && duration == "all") {
+					filteredPosts.push(posts[x])
+				} else if (sorting == "new") {
+					filteredPosts.push(posts[x])
+				} else if (sorting == "hot") {
+					if (posts[x].last_touched_timestamp == null) {
+						let now = Date.now()
+						Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
+							if (err){
+								
+							}
+						})
+					}
+					if (posts.length > 1) {
+						posts.sort( compare );
+					}
+					filteredPosts = posts
+				}
+			}
+		}
+		
+		let totalPosts = filteredPosts.length
+		let totalPages = Math.ceil((totalPosts)/postsPerPage)
+		let lastPagePosts = totalPosts % postsPerPage
+
+		postsonpage = await paginate(filteredPosts, postsPerPage, page)
+		
+		for (let i=0;i<postsonpage.length;i++) {
+			postsonpage[i] = postsonpage[i][0]
+			if (postsonpage[i].posterID == userID) {
+				postsonpage[i].current_user_admin = true
+			} else {
+				postsonpage[i].current_user_admin = false
+			}
+			if (postsonpage[i].users_upvoted.includes(userID)) {
+				postsonpage[i].current_user_upvoted = true
+				postsonpage[i].current_user_downvoted = false
+			}
+			if (postsonpage[i].users_downvoted.includes(userID)) {
+				postsonpage[i].current_user_upvoted = false
+				postsonpage[i].current_user_downvoted = true
+			}
+
+			if (users.some(x => x[0] == postsonpage[i].posterID)) {
+				let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
+				postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
+			} else {
+				
+			}
+		}
+		res.send(postsonpage)
 	} else {
 		Post.find({topic: req.params.topic, status:"active"}).sort({total_votes: -1}).exec(async function(err, posts){
 			if(err){
@@ -690,7 +893,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 					})
 				}
 				} catch(err) {
-					console.log(err)
+					
 				}
 
 				let filteredPosts = []
@@ -720,7 +923,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 								let now = Date.now()
 								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err, docs) {
 									if (err){
-										console.log(err)
+										
 									}
 								})
 							}
@@ -757,7 +960,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 						let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
 						postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 					} else {
-						console.log("error loading user... do they exist?")
+						
 					}
 				}
 				res.send(postsonpage)
@@ -770,7 +973,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 
 function paginate(array, page_size, page_number) {
     // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
-    return array.slice((page_number - 1) * page_size, page_number * page_size);
+    return array.slice((page_number - 1) * page_size, page_number * page_size).filter(value => Object.keys(value).length !== 0);
 }
 
 app.get('/api/get/posts/user/:user', async(req, res) => {	
@@ -814,7 +1017,7 @@ app.get('/api/get/posts/user/:user', async(req, res) => {
 					let indexOfUser = users.findIndex(x => x[0] == posts[i].posterID)
 					postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 				} else {
-					console.log("error loading user... do they exist?")
+					
 				}
 			}
 			res.send(postsonpage)
@@ -932,6 +1135,11 @@ app.post('/api/post/post', async(req, res) => {
 
 	var special_attributes = {nsfw:nsfw}
 
+	if (bannedTopics.includes(topic.toLowerCase())) {
+		res.status(400)
+		return res.send({ status:"error", error: "Please enter a different topic"})
+	}
+
 	try {
 		let token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -1032,7 +1240,7 @@ app.post('/api/post/comment/', async(req, res) => {
 				}
 			}
 
-			console.log(usersMentioned)
+			
 			notifyUsers(usersMentioned, "mention", username, id )
 
 			User.findById(userID, function(err, docs) {
@@ -1042,7 +1250,7 @@ app.post('/api/post/comment/', async(req, res) => {
 			})
 			User.findById(docs.posterID, async function(err, docs) {
 				if (err) {
-					console.log(err)
+					
 				} else {
 					let user_triggered_avatar
 					let user_triggered_name
@@ -1083,7 +1291,7 @@ function notifyUsers(users, type, triggerUser, postID) {
 	for (let i=0;i<userCount;i++) {
 		User.findOne({name:users[i]}, async function(err, user) {
 			if (err) {
-				console.log(err)
+				
 			} else {
 				let user_triggered_avatar
 				let user_triggered_name
@@ -1120,11 +1328,11 @@ function parseForAtMentions(x:string) {
 			let usermentioned = strArr[i].split('@')[1]
 			User.findOne({name:usermentioned}, async function(err, user) {
 				if (err || (user == null)) {
-					console.log(err, "this user does not exist.")
+					
 				} else {
-					console.log("User "+usermentioned+" does exist.")
+					
 					usersMentioned.push(usermentioned)
-					console.log(usersMentioned)
+					
 					return usersMentioned
 				}
 			})
@@ -1174,7 +1382,7 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 				}
 			}
 
-			console.log(usersMentioned)
+			
 			notifyUsers(usersMentioned, "mention", username, id )
 
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
@@ -1200,7 +1408,7 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 			
 			User.findById(pCommentWriterID, async function(err, userDoc) { // docs
 				if (err) {
-					console.log(err)
+					
 				} else {
 					let user_triggered_avatar
 					let user_triggered_name
@@ -1441,7 +1649,7 @@ app.put('/api/put/comment/delete/:postid/:id', async function(req,res) {
 			deleted_by: 'user'
 		})
 	} catch(err) {
-		console.log(err)
+		
 	}
 
 	ncomments.splice(index, 1)
@@ -1518,7 +1726,7 @@ app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async
 			deleted_by: 'user'
 		})
 	} catch(err) {
-		console.log(err)
+		
 	}
 
 	ncomments[comIndex].nested_comments.splice(ncIndex, 1)
@@ -1690,6 +1898,7 @@ app.get('/search/', async(req,res) => {
 app.get('/api/get/search/', async(req,res) => {
 	let token
 	let userID
+	let query = req.query.query
 
 	try {
 		token = req.cookies.token
@@ -1704,7 +1913,8 @@ app.get('/api/get/search/', async(req,res) => {
 	}
 
 	var regex_q = new RegExp(req.query.query, 'i');
-
+	
+	console.log(regex_q)
 	if (req.query.topic) {
 		var regex_t = new RegExp(req.query.topic, 'i');
 		Post.find({status:'active', title: regex_q, topic: regex_t}, function(err, docs) {
@@ -1730,13 +1940,13 @@ app.get('/api/get/search/', async(req,res) => {
 					let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
 					postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 				} else {
-					console.log("error loading user... do they exist?")
+					
 				}
 			}
 			res.send(postsonpage)
 		})
 	} else {
-		Post.find({status:'active', title: regex_q}, function(err, docs) {
+		Post.find({status:'active', title: regex_q}, async function(err, docs) {
 			postsonpage = docs
 			for (let i=0;i<docs.length;i++) {
 				if (postsonpage[i].posterID == userID) {
@@ -1759,7 +1969,7 @@ app.get('/api/get/search/', async(req,res) => {
 					let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID)
 					postsonpage[i].posterAvatarSrc = users[indexOfUser][2]
 				} else {
-					console.log("error loading user... do they exist?")
+					
 				}
 			}
 			res.send(postsonpage)

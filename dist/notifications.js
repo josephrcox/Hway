@@ -71,7 +71,6 @@ notifsDiv.addEventListener('click', function () {
     window.location.href = '/notifications';
 });
 const removeNotif = async (index, id) => {
-    console.log(index);
     const settings = {
         method: 'PUT',
     };
@@ -86,7 +85,6 @@ const removeNotif = async (index, id) => {
     }
     const response = await fetch('/api/put/notif/remove/' + index, settings);
     const data = await response.json();
-    console.log(data);
     if (data.status == 'ok') {
         if (ncount != 0) {
             displayNotifs();
@@ -100,7 +98,6 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         notifArray.innerHTML = "";
         clearNotifButton.style.display = 'none';
         notifAlert.style.display = 'block';
-        ringBell();
         const fetchResponse = await fetch('/api/post/notif/clear/', {
             headers: {
                 'Accept': 'application/json',
@@ -110,7 +107,7 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         });
         var data = await fetchResponse.json();
         notifs = [];
-        console.log(data);
+        ringBell();
     });
 }
 getNotifs();

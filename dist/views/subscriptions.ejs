@@ -1,0 +1,43 @@
+<head>
+    
+</head>
+
+<body>
+   
+<div id="sitebody" class="sitebody-flex" style="display: block;">
+   <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
+ 
+   <div style="display: flex;flex-direction: column;">
+      <input type='text' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off" onkeypress="return event.charCode != 32">
+      <button class='button' id='subscribe_topic_submit'>Subscribe </button>
+   </div>
+
+
+   <div id="subscriptions_page_container">
+
+   </div>
+
+
+</div> 
+
+ <script src="/script.js"></script>
+ <script src='/subscriptions.js'></script>
+ <script>
+   document.getElementById('sorting_options').style.display = 'none'
+   document.getElementById('header-buttons').style.display = 'none'
+
+   document.getElementById("subscribe_topic_input").addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+         document.getElementById("subscribe_topic_submit").click()
+      }
+   })
+
+   document.getElementById("subscribe_topic_submit").onclick = async function() {
+      let topicToSubscribe = document.getElementById("subscribe_topic_input").value
+      await subscribe(topicToSubscribe, "topic")
+      document.getElementById("subscribe_topic_input").value = ""
+   }
+ </script>
+
+ <script src='/notifications.js'></script>
+</body>

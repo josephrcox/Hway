@@ -13,19 +13,15 @@ const getUserInfo = async (user) => {
 const isThisUserAdmin = async () => {
     const response = await fetch('/api/get/currentuser/');
     const data = await response.json();
-    console.log(data);
     if (data.name == user) {
-        console.log("Current user is admin");
         admin = true;
     }
     else {
-        console.log("Current user is not admin");
     }
     displayInfo();
 };
 getUserInfo(user);
 function displayInfo() {
-    console.log(userInfo);
     let avatar = document.getElementById("page-profile-avatar");
     if (userInfo.avatar == "" || userInfo.avatar == null) {
         avatar.src = '/assets/defaultavatar.png';
@@ -36,7 +32,6 @@ function displayInfo() {
     if (admin) {
         document.getElementById("page-profile-avatar-change").style.display = 'block';
         avatar.onclick = function () {
-            console.log("change pic");
         };
     }
     let nameDiv = document.getElementById("page-profile-name");
@@ -51,7 +46,6 @@ function displayInfo() {
     let year = datetime.getUTCFullYear();
     let end = (new Date(month + "/" + day + "/" + year));
     let start = new Date((userInfo.statistics.misc.account_creation_date[0].split(" at")[0]));
-    console.log(start, end);
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let oneDay = 24 * 60 * 60 * 1000;
     let dif = Math.round(Math.abs((end - start) / oneDay));
@@ -130,7 +124,6 @@ const commentShortObject = {
 const loadComments = async () => {
     const response = await fetch('/api/get/user/' + user + '/all_comments');
     const data = await response.json();
-    console.log(data);
     for (let i = 0; i < data.length; i++) {
         let com = Object.create(commentShortObject);
         com.body = data[i].body;

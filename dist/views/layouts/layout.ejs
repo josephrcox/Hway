@@ -22,7 +22,7 @@
                 <a href='#' onclick="logout()" id="logout_button">Logout</a>
                 <a href='#' onclick="login()" id="login_button">Login</a>
                 <a href='#' onclick="register()" id="reg_button">Register</a>
-                <!-- <label for="filter_nsfw" id="filter_nsfw_label" class="filter_nsfw">NSFW</label> -->
+                <a href='#' onclick="view_subscriptions()" id="view_subs_button">Subscriptions</a>
                 <div class="border-bottom"></div>
                 <div id="filter_nsfw_div">
                     NSFW
@@ -37,22 +37,22 @@
      <div class="header-buttons noselect" id="header-buttons">
         
         <div id="misc_header_buttons">
-            <div id="page-number"></div> 
-            <!-- <div class="users-page-button" id="users-page-button">Users</div> -->
-
-            <div class="topic-dropdown-div" id='topic-dropdown-div'>
-                <div onclick="topicdropdownclicked()" class="topic-dropdown-button" id="topic-dropdown-button">Topics</div>
-                <div id="topic-dropdown" class="dropdown-content">
-                    
-                </div>
-            </div>
+            <div id="home-button" onclick='navHome()'>Home</div>
             <div id="post-button" style='display:none;' onclick="ui_newPost()">Post</div>
             <div id="search-button" onclick="showorhidesearch()">Search</div>
+            <div id="subscribe-button" style='display:none;'></div>
         </div>
         
     </div>   
 </head>
 <body>
+    <div id="searchbar" style="display:none;">
+        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
+        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
+        <button id="search_submit" class="button">Search</button>
+        <div id="search-logs"></div>
+    </div>
+
     <div id="sorting_options" class="sorting_options">
         <a id="sorting_options_new" class="sorting_options" href="#">New</a>
         <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
@@ -63,24 +63,14 @@
         
     </div>
 
-    <div id="searchbar" style="display:none;">
-        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search terms"><br/>
-        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)">
-        <button id="search_submit">Search</button>
-        <div id="search-logs"></div>
-    </div>
-    
+
+    <div id="page-number"></div> 
     <div class='page-content'>
         <%- body %>
     </div>
 
 <script>
 
-
-
-function topicdropdownclicked() {
-    document.getElementById("topic-dropdown").classList.toggle("show");
-}
 function currentuserDropdownClicked() {
     document.getElementById("user-dropdown").classList.toggle("show");
 }
@@ -91,26 +81,23 @@ document.onclick = function(e){
             document.getElementById('user-dropdown').classList.remove('show');
         }
     }
-    if(e.target.id !== 'topic-dropdown-button'){
-        if (document.getElementById('topic-dropdown').classList.contains('show')) {
-            document.getElementById('topic-dropdown').classList.remove('show');
-        }
-    }
 };
-
-async function goHome() {
-    const response = await fetch('/all')
-}
 
 async function logout() {
     const response = await fetch('/logout')
     window.location.replace("/");
 }
-async function login() {
+function navHome() {
+    window.location.href = '/home'
+}
+function login() {
     window.location.replace("/login");
 }
-async function register() {
+function register() {
     window.location.replace("/register");
+}
+function view_subscriptions() {
+    window.location.replace("/subscriptions")
 }
 
 function profile() {
@@ -126,7 +113,6 @@ function profile() {
 async function getUsername() {
     const response = await fetch('/api/get/currentuser')
     const data = await response.json()
-    //console.log(data)
 
     if (data.status != "error") {
         document.getElementById("currentUser").innerHTML = data.name
@@ -141,19 +127,16 @@ function showorhidesearch() {
     search = document.getElementById("searchbar")
     if (search.style.display == "none") {
         document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById('postsArray').style.filter = 'blur(0px)'
         document.getElementById("post-button").innerHTML = 'Post'
-        search.style.display = "block"
+        search.style.display = "flex"
     } else {
         search.style.display = "none"
     }
 }
 
-// getUsername()
-
 </script>
 
-
+<script src="https://kit.fontawesome.com/046a6861b9.js" crossorigin="anonymous"></script>
 
 </body>
 </html>

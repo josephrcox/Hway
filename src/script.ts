@@ -23,10 +23,13 @@ let newURL:string = ""
 let cPageTypeIndex:number
 let search_topic:string = ""
 let search_query:string = ""
-const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search', 'notifications'] // This is used to track what page type we are on
+const pageTypes:string[] = [ 'user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register','search', 'notifications', 'home'] // This is used to track what page type we are on
 let currentPageCategory:string = (window.location.href).split('/')[3] // Used to find the category where we are, i.e. 'localhost:3000/user' -> 'user'
 let currentPageType:string
 let currentUserID:string
+let topic:string
+let currentUsername:string
+let all_topics_array = []
 
 switch (currentPageCategory) {
     case 'user':
@@ -58,6 +61,9 @@ switch (currentPageCategory) {
         break;
     case 'notifications':
         cPageTypeIndex = 9
+        break;
+    case 'home':
+        cPageTypeIndex = 10
         break;
 }
 
@@ -92,13 +98,16 @@ if (currentPageType == 'search') {
     
     if (url.indexOf('?topic=') == -1) {
         search_query = url.split('?query=')[1]
-        console.log(search_query)
+       
     } else {
         let indexOfQuery = url.indexOf('?query=')
         search_query = url.substring(indexOfQuery+7)
         search_topic = (url.split('?topic=')[1]).split('?')[0]
-        console.log(search_query, search_topic)
+       
     }
+}
+if (currentPageType == 'home') {
+    topic = 'home'
 }
 
 if (currentPageType == 'login' || currentPageType == 'register') { // If the user is on certain pages, hide the header-buttons bar as it's unneeded on that page or may cause issues
@@ -234,7 +243,7 @@ async function randomizer(x) {
         const response = await fetch('https://www.reddit.com/r/all/.json')
         const data = await response.json()
         var posts = data.data.children
-        console.log(posts.length)
+       
         for (let i=0;i<posts.length;i++) {
             if (posts[i].data.post_hint == "link") {
                 bodyJSON = {
@@ -296,13 +305,15 @@ const getUser = async () => {
         document.getElementById('header-notifs').style.display = 'none'
     } else {
         currentUserID = data.id
+        currentUsername = data.name
         isUserLoggedIn = true
+        await getSubscriptions()
         document.getElementById("currentUser").innerHTML = data.name
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
         if (currentPageType != 'user' && currentPageType != 'usersheet' ) {
-            console.log(currentPageType)
+           
             document.getElementById("post-button").style.display = 'block'
         }
         const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
@@ -316,7 +327,9 @@ const getUser = async () => {
         }
         
     }
-    
+
+
+
     changeCommentSectionVisibility()
     loadPosts("")
 }
@@ -449,7 +462,18 @@ const postObject = {
 
         let href = this.topic.replace(/^"(.*)"$/, '$1');
         
-        infoCell.innerHTML = "Submitted by "+"<a href='/user/"+this.poster+"'><img src='"+this.poster_avatar_src+"' class='avatarimg'>  <span style='color:blue'>"+this.poster+"</span> </a>in "+"<span style='color:blue; font-weight: 900;'><a href='/h/"+href+"'>"+this.topic+"</a></span>  on <span style='font-style:italic;'>" +this.date+"</span>"
+        infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>"
+        
+        if (isUserLoggedIn == false){
+            // Don't add fancy unsub/sub button
+        } else if (subscriptions.includes(this.topic)) {
+            infoCell.innerHTML += '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_'+this.topic+'"></i>'
+        } else {
+            infoCell.innerHTML += '<i class="fas fa-plus-square subscribe_inline_button" style="margin-left:0px;color:green;" id="subscribeInlineButton_'+this.topic+'"></i>'
+        }
+        
+        infoCell.innerHTML += "  on <span style='font-style:italic;'>" + this.date + "</span>";
+        
 
         var desc = postFrame.insertRow(2)
         var descCell = desc.insertCell(0)
@@ -581,6 +605,51 @@ const postObject = {
     }
 }
 
+const topicObject = {
+    name: "",
+    post_count: "",
+
+    display() {
+        if (this.name == "") {
+            return null;
+        }
+        var topicContainer = document.createElement("div")
+        topicContainer.setAttribute("id","topicContainer_"+this.name)
+        topicContainer.setAttribute("class","topicContainer postContainer")
+
+        var topicFrame = document.createElement("div")
+        topicFrame.setAttribute("id", "topicFrame_"+this.name)
+        topicFrame.setAttribute("class", "topicFrame postFrame")
+        topicFrame.onclick = function() {
+            window.location.href = '/h/'+topicFrame.id.split('_')[1]
+        }
+
+        if (this.post_count != "") {
+            topicFrame.innerHTML = this.name + " | Posts: " + this.post_count
+            topicContainer.append(topicFrame)
+            document.getElementById("recommended_topics").append(topicContainer)
+        } else if (window.location.href.indexOf('/subscriptions') != -1) {
+            topicFrame.innerHTML = this.name
+
+            var topicUnsub = document.createElement('div')
+            topicUnsub.innerHTML = '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_'+this.name+'"></i>'
+            topicUnsub.style.marginTop = '20px'
+            topicUnsub.setAttribute("id", "topicUnsub_"+this.name)
+            topicUnsub.onclick = function() {
+                unsubscribe(topicUnsub.id.split('_')[1], "topic")
+                topicContainer.outerHTML = ""
+            }
+
+            topicContainer.append(topicFrame)
+            topicContainer.append(topicUnsub)
+        
+            document.getElementById("subscriptions_page_container").append(topicContainer)
+        }
+
+        
+    }
+}
+
 const commentObject = {
     body: "",
     id: "",
@@ -600,7 +669,7 @@ const commentObject = {
         var fullCommentContainer = document.createElement("div")
         fullCommentContainer.setAttribute("id", "fullCommentContainer_"+this.id)
         if (currentPageType != 'user') { // not on a user profile page
-            console.log("creating cmt sec")
+           
             document.getElementById("comments").appendChild(fullCommentContainer)
         } else {
             document.getElementById("page-profile-comments").appendChild(fullCommentContainer)
@@ -729,7 +798,7 @@ const commentObject = {
             }
 
             if (this.nested_comments[i].posterid == currentUserID) {
-                console.log(this.nested_comments[i])
+               
                 var delnc = document.createElement("img")
                 delnc.setAttribute("class", "deletePostButton")
                 delnc.setAttribute("id", "deletePostButton_"+this.nested_comments[i].id+"_"+this.id)
@@ -745,7 +814,7 @@ const commentObject = {
 
                 let self = delnc
                 delnc.onclick = function() {
-                    console.log(self.id)
+                   
 
                     if (delPostConfirmation) {
                         if (delPostConfirmationId == self.id.split('_')[1]) {
@@ -762,7 +831,7 @@ const commentObject = {
                         delPostConfirmationId = self.id.split('_')[1]
                     }
                     
-                    console.log(delPostConfirmation, delPostConfirmationId)
+                   
                 }
                 
                 ncInfoCell.appendChild(delnc)
@@ -827,7 +896,7 @@ const commentObject = {
             replySubmit.onclick = function() { // BIG TYPESCRIPT CHANGE
                 let parentID = window.location.href.split('/posts/')[1]
                 let reply = (document.getElementById('comreplybox_'+replySubmit.id.split('_')[1]) as HTMLInputElement)
-                console.log("reply is:"+reply)
+               
                 comment_nested(parentID, reply.value, replySubmit.id.split('_')[1])
                 reply.value = ""
                 //document.getElementById("comreplyDiv_"+replySubmit.id.split("_")[1]).style.display = 'none'
@@ -924,7 +993,7 @@ const deleteNestedComment = async(postID, commentID, nestedCommentID) => {
     const data = await response.json()
 
     if (data.status == 'ok') {
-        console.log(data)
+       
         document.getElementById("ncFrame_"+nestedCommentID).style.display = 'none'
 
     }
@@ -932,6 +1001,35 @@ const deleteNestedComment = async(postID, commentID, nestedCommentID) => {
         alert(data.error)
     }
 
+}
+
+const subscribe = async(x, type) => { // x is the topic or user, type is 'topic' or 'user'
+    if (type == 'topic') {
+        const settings = {
+            method: 'PUT',
+        };
+    
+        const fetchResponse = await fetch('/api/put/subscribe/'+x, settings); 
+        const data = await fetchResponse.json()
+        if (data.status != 200) {
+            alert(data.data)
+        }
+
+        getSubscriptions()
+    }
+}
+
+const unsubscribe = async(x, type) => { // x is the topic or user, type is 'topic' or 'user'
+    if (type == 'topic') {
+        const settings = {
+            method: 'PUT',
+        };
+    
+        const fetchResponse = await fetch('/api/put/unsubscribe/'+x, settings); 
+        const data = await fetchResponse.json()
+
+        getSubscriptions()
+    }
 }
 
 const loadPosts = async (topic) => {
@@ -949,6 +1047,9 @@ const loadPosts = async (topic) => {
     if (currentPageType == 'topic') {
         currentPageCategory = window.location.href
         topic = currentPageCategory.split('/')[4]
+    }
+    if (currentPageType == 'home') {
+        topic = 'home'
     }
 
     let options = "?sort="+sorting+"&t="+sorting_duration+"&nsfw="+(document.getElementById("filter_nsfw") as HTMLInputElement).checked+""
@@ -1021,26 +1122,51 @@ const loadPosts = async (topic) => {
             
             document.getElementById('commentSection').style.display = 'inline'
             topFunction()
-            storeAndDisplayTopics()
+
 
         }
     } else {
         let request = '/api/get/'+topic+'/q'+window.location.search
-
+        
+        document.getElementById("postsArray").innerHTML = ""
         if (currentPageType == 'search') {
             if (search_topic != "" && search_topic != null) {
                 request = '/api/get/search?topic='+search_topic+'&query='+search_query
             } else {
                 request = '/api/get/search?query='+search_query
             }
-        }
+        }  
+
         const response = await fetch(request)
         const data = await response.json()
 
-        document.getElementById("postsArray").innerHTML = ""
-        if (data.length == 0) {
-            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
+        let search_query_array = search_query.split('+')
+        let search_similar_topics = 0
+
+        for (let x=0;x<search_query_array.length;x++) {
+            for (let i=0;i<all_topics_array.length;i++) {
+                if (all_topics_array[i][0].toLowerCase().indexOf(search_query_array[x]) != -1  && window.location.href.indexOf('/search/') != -1) {
+                    console.log("Query match for "+all_topics_array[i][0])
+                    var topObj = Object.create(topicObject)
+                    topObj.name = all_topics_array[i][0]
+                    topObj.post_count = all_topics_array[i][1]
+                    topObj.display()
+                    search_similar_topics++
+                }
+            }
         }
+
+        if (data.length == 0) {
+            if (search_similar_topics > 0) {
+                document.getElementById("recommended_topics").style.display = 'flex'
+                //document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
+            } else {
+                document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
+                document.getElementById("recommended_topics").style.display = 'none'
+            }
+            
+        }
+
 
         for(let i=0; i < data.length;i++) {
             let post = Object.create(postObject)
@@ -1080,9 +1206,8 @@ const loadPosts = async (topic) => {
         }
         
         topFunction()
-        storeAndDisplayTopics()
     }
-
+    addInlineSubscribeEventListeners()
     currentTopic = topic
 }
 
@@ -1130,7 +1255,6 @@ const loadUserPage = async(user) => {
         post.display()
     }
     topFunction()
-    storeAndDisplayTopics()
 }
 
 function expandDesc(x) {
@@ -1138,7 +1262,7 @@ function expandDesc(x) {
     let mediaPost = false
     if (document.getElementById('postImgThumb_'+x) as HTMLImageElement){
         if ((document.getElementById('postImgThumb_'+x) as HTMLImageElement).src != null) {
-            console.log((document.getElementById('postImgThumb_'+x) as HTMLImageElement).src)
+           
             mediaPost = true
         }
     }
@@ -1163,32 +1287,12 @@ function expandDesc(x) {
 }
 
 const storeAndDisplayTopics = async () => {
-    document.getElementById("topic-dropdown").innerHTML = ""
     const response = await fetch('/api/get/topics/')
     var data = await response.json()
-    let topics
-
-    if (data.length <= 1) {
-        document.getElementById('topic-dropdown-div').style.display = 'none'
-        document.getElementById('topic-dropdown-div').style.borderRight = '0px solid black'
-    } else {
-        document.getElementById('topic-dropdown-div').style.display = 'block'
-        document.getElementById('topic-dropdown-button').style.display = 'block'
-        if (data.length > 10) {
-            topics = 10
-        } else {
-            topics = data.length
-        }
-        for (let j=0;j<topics;j++) {
-            var newTopic = document.createElement('a')
-            let href = data[j][0].replace(/^"(.*)"$/, '$1');
-            newTopic.innerHTML = "<a href='/h/"+href+"'>"+data[j][0]+"("+data[j][1]+")</a>"
-            document.getElementById("topic-dropdown").appendChild(newTopic)
-        }
-    }
-
-    
+    all_topics_array = data
 }
+
+storeAndDisplayTopics()
 
 const vote = async (change, id) => { 
     if (lastClick >= (Date.now() - delay)) {
@@ -1227,7 +1331,7 @@ const vote = async (change, id) => {
 }
 
 const voteCom = async (id, parentID, nested, commentParentID) => { 
-    console.log(id, parentID, nested, commentParentID)
+   
     if (commentParentID == null || "") {
         commentParentID = "0"
     }
@@ -1364,7 +1468,7 @@ function ui_newPost() {
     }
 }
 
-if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications'){
+if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications' && window.location.href.indexOf("/subscriptions") == -1){
     document.getElementById("newPost_div").style.display = 'none'
     document.getElementById("newPost_logs").innerHTML = ""
     document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber + nextPageStr
@@ -1373,7 +1477,6 @@ if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifica
 if (currentPageType != 'user' && currentPageType != 'notifications') {
     document.getElementById("newPost_submit_button").onclick = function() {
         let postTitle = (document.getElementById("newPost_name")as HTMLInputElement).value
-        let topic
         if (((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == "" || ((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == null || ((document.getElementById("newPost_topic") as HTMLInputElement).value).replace(" ","") == undefined) {
             topic = "all"
         }
@@ -1418,7 +1521,8 @@ if (currentPageType != 'user' && currentPageType != 'notifications') {
         
     document.getElementById("newPost_type_text").onclick = function() {
         newPost_type = 1;
-        document.getElementById("newPost_type_text").style.backgroundColor = "darkgreen"
+        document.getElementById("newPost_type_text").style.backgroundColor = "#070731"
+        document.getElementById("newPost_type_text").style.color = "white"
         document.getElementById("newPost_type_link").style.backgroundColor = ""
         document.getElementById("newPost_type_media").style.backgroundColor = ""
 
@@ -1429,12 +1533,16 @@ if (currentPageType != 'user' && currentPageType != 'notifications') {
         document.getElementById("newPost_file").style.display = "none"
         document.getElementById("newPost_file_label").style.display = "none"
         document.getElementById("newPost_submit_button").style.display = "block"
+
+        document.getElementById("newPost_type_link").style.color = "black"
+        document.getElementById("newPost_type_media").style.color = "black"
     }
 
     document.getElementById("newPost_type_link").onclick = function() {
         newPost_type = 2;
         document.getElementById("newPost_type_text").style.backgroundColor = ""
-        document.getElementById("newPost_type_link").style.backgroundColor = "darkgreen"
+        document.getElementById("newPost_type_link").style.backgroundColor = "#070731"
+        document.getElementById("newPost_type_link").style.color = "white"
         document.getElementById("newPost_type_media").style.backgroundColor = ""
 
         document.getElementById("newPost_link").style.display = "block"
@@ -1444,13 +1552,17 @@ if (currentPageType != 'user' && currentPageType != 'notifications') {
         document.getElementById("newPost_file").style.display = "none"
         document.getElementById("newPost_file_label").style.display = "none"
         document.getElementById("newPost_submit_button").style.display = "block"
+
+        document.getElementById("newPost_type_text").style.color = "black"
+        document.getElementById("newPost_type_media").style.color = "black"
     }
 
     document.getElementById("newPost_type_media").onclick = function() {
         newPost_type = 3;
         document.getElementById("newPost_type_text").style.backgroundColor = ""
         document.getElementById("newPost_type_link").style.backgroundColor = ""
-        document.getElementById("newPost_type_media").style.backgroundColor = "darkgreen"
+        document.getElementById("newPost_type_media").style.backgroundColor = "#070731"
+        document.getElementById("newPost_type_media").style.color = "white"
 
         document.getElementById("newPost_desc").style.display = "none"
         document.getElementById("newPost_desc_label").style.display = "none"
@@ -1459,6 +1571,9 @@ if (currentPageType != 'user' && currentPageType != 'notifications') {
         document.getElementById("newPost_file").style.display = "block"
         document.getElementById("newPost_file_label").style.display = "block"
         document.getElementById("newPost_submit_button").style.display = "none"
+
+        document.getElementById("newPost_type_text").style.color = "black"
+        document.getElementById("newPost_type_link").style.color = "black"
     }
 
     document.getElementById('newPost_file').addEventListener("change", ev => {
@@ -1535,6 +1650,9 @@ const createNewPost = async(posttype) => {
         body: JSON.stringify(bodyJSON)
     }); 
     const data = await fetchResponse.json()
+    if (data.code != 200) {
+        document.getElementById('newPost_logs').innerHTML = data.error
+    }
 
     document.getElementById("newPost_name").innerHTML = ""
     document.getElementById("newPost_desc").innerHTML = ""
@@ -1558,7 +1676,7 @@ const uploadImage = async (x) => {
     const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
 
     uploadedImageUrls.push(url)
-    console.log(data)
+   
     
     document.getElementById("newPost_submit_button").style.display = "block"
     document.getElementById("newPost_logs").innerHTML = ""
@@ -1630,9 +1748,8 @@ const filter_nsfw = async() => {
     const data = await response.json()
 
     if (data.status == 'ok') {
-        console.log(
-            loadPosts("")
-        )
+       
+        loadPosts("")
     }
     if (data.status == 'error') {
         alert(data.error)
@@ -1642,8 +1759,6 @@ const filter_nsfw = async() => {
 function search() {
     let query = document.getElementById("search_phrase").innerHTML
     let topic = document.getElementById("search_topic").innerHTML
-
-    console.log(query, topic)
 }
 
 document.getElementById("search_phrase").addEventListener("keyup", function(event) {
@@ -1656,10 +1771,11 @@ document.getElementById("search_submit").onclick = function() {
     let query = (document.getElementById("search_phrase") as HTMLInputElement).value
     let topic = (document.getElementById("search_topic") as HTMLInputElement).value
 
-    if (query == "") {
-        document.getElementById('search-logs').innerHTML = "Please enter search query"
-        return 
-    }
+    // if (query == "") {
+    //     document.getElementById('search-logs').innerHTML = "Please enter search query"
+    //     return 
+    // }
+
     query.split(" ").join("+")
     query = (query.split(" ")).join("+")
     

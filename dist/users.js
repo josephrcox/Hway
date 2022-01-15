@@ -27,7 +27,6 @@ const getUserSheet = async () => {
         name.innerHTML = data[i].Name;
         name.setAttribute('id', 'usersheet-name_' + data[i].Name);
         name.onclick = function () {
-            console.log(name.id);
             window.location.href = '/user/' + name.id.split('_')[1];
         };
         score.innerHTML = data[i].Score;
