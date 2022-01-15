@@ -415,7 +415,9 @@ const postObject = {
         infoCell.setAttribute("class", "infoCell");
         let href = this.topic.replace(/^"(.*)"$/, '$1');
         infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>";
-        if (subscriptions.includes(this.topic)) {
+        if (isUserLoggedIn == false) {
+        }
+        else if (subscriptions.includes(this.topic)) {
             infoCell.innerHTML += '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_' + this.topic + '"></i>';
         }
         else {
@@ -1476,19 +1478,21 @@ function nextPage() {
 const filter_nsfw = async () => {
     if (!isUserLoggedIn) {
         window.location.href = '/login';
+    } else {
+        let show = document.getElementById('filter_nsfw').checked;
+        const settings = {
+            method: 'PUT',
+        };
+        const response = await fetch('/api/put/filter_nsfw/' + show, settings);
+        const data = await response.json();
+        if (data.status == 'ok') {
+            loadPosts("");
+        }
+        if (data.status == 'error') {
+            alert(data.error);
+        }
     }
-    let show = document.getElementById('filter_nsfw').checked;
-    const settings = {
-        method: 'PUT',
-    };
-    const response = await fetch('/api/put/filter_nsfw/' + show, settings);
-    const data = await response.json();
-    if (data.status == 'ok') {
-        loadPosts("");
-    }
-    if (data.status == 'error') {
-        alert(data.error);
-    }
+    
 };
 function search() {
     let query = document.getElementById("search_phrase").innerHTML;

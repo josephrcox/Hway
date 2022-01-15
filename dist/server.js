@@ -232,11 +232,18 @@ app.get('/user/:user', (req, res) => {
 app.get('/register', (req, res) => {
     res.render('register.ejs', { topic: "- register" });
 });
-app.get('/subscriptions', (req, res) => {
-    res.render('subscriptions.ejs', { topic: "- subscriptions" });
+app.get('/subscriptions', async (req, res) => {
+    let valid = false;
+    valid = await isloggedin(req);
+    if (valid) {
+        res.render('subscriptions.ejs', { topic: "- subscriptions" });
+    }
+    else {
+        res.render('login.ejs', { topic: "- login" });
+    }
 });
 app.get('/all/q', async (req, res) => {
-    let valid = true;
+    let valid = false;
     valid = await isloggedin(req);
     if (valid || allowUsersToBrowseAsGuests) {
         res.render('home.ejs', { topic: "- all" });

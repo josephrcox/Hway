@@ -266,12 +266,21 @@ app.get('/register', (req, res) => {
     res.render('register.ejs', {topic:"- register"})
 })
 
-app.get('/subscriptions', (req, res) => {
-    res.render('subscriptions.ejs', {topic:"- subscriptions"})
+app.get('/subscriptions', async(req, res) => {
+	let valid = false
+	// Commenting out below allows users to view the home without being logged in
+	valid = await isloggedin(req)
+
+	if (valid) {
+		res.render('subscriptions.ejs', {topic:"- subscriptions"})
+	} else {
+		res.render('login.ejs', {topic:"- login"})
+	}
+    
 })
 
 app.get('/all/q', async(req, res) => {
-	let valid = true
+	let valid = false
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
 	
