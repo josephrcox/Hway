@@ -8,7 +8,7 @@
    <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
  
    <div style="display: flex;flex-direction: column;">
-      <input type='text' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off">
+      <input type='text' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off" onkeypress="return event.charCode != 32">
       <button class='button' id='subscribe_topic_submit'>Subscribe </button>
    </div>
 
