@@ -1011,6 +1011,9 @@ const subscribe = async(x, type) => { // x is the topic or user, type is 'topic'
     
         const fetchResponse = await fetch('/api/put/subscribe/'+x, settings); 
         const data = await fetchResponse.json()
+        if (data.status != 200) {
+            alert(data.data)
+        }
 
         getSubscriptions()
     }
@@ -1646,6 +1649,9 @@ const createNewPost = async(posttype) => {
         body: JSON.stringify(bodyJSON)
     }); 
     const data = await fetchResponse.json()
+    if (data.code != 200) {
+        document.getElementById('newPost_logs').innerHTML = data.error
+    }
 
     document.getElementById("newPost_name").innerHTML = ""
     document.getElementById("newPost_desc").innerHTML = ""

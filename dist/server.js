@@ -44,6 +44,8 @@ app.use(bp.urlencoded({ extended: true }));
 var allowUsersToBrowseAsGuests = true;
 var geoip = require('geoip-lite');
 let usersArr = [];
+const bannedTopics = ['home', 'notifications', 'profile', 'login', 'logout', 'signup', 'admin',];
+const bannedUsernames = ['joey', 'admin',];
 async function get_all_avatars() {
     let tempUsers = await User.find({});
     for (let i = 0; i < tempUsers.length; i++) {
@@ -491,6 +493,10 @@ app.get('/api/get/posts/:postid', async (req, res) => {
     });
 });
 app.put('/api/put/subscribe/:topic', async (req, res) => {
+    if (bannedTopics.includes(req.params.topic.toLowerCase())) {
+        res.status(400);
+        return res.send({ status: 'error', data: 'This topic is not available to subscribe' });
+    }
     if (currentUser) {
         User.findById(currentUser, function (err, docs) {
             if (docs.subscriptions.topics.some(x => x[0] == req.params.topic)) {
@@ -1001,6 +1007,10 @@ app.post('/api/post/post', async (req, res) => {
     let userID;
     let poster;
     var special_attributes = { nsfw: nsfw };
+    if (bannedTopics.includes(topic.toLowerCase())) {
+        res.status(400);
+        return res.send({ status: "error", error: "Please enter a different topic" });
+    }
     try {
         let token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
