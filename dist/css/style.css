@@ -774,6 +774,8 @@ checkbox {
 	scrollbar-width: 0px;
 }
 
+.show {display: block;}
+
 .topicContainer {
 	margin-inline: 10px;
 	width: max-content;
