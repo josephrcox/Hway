@@ -1167,6 +1167,7 @@ const loadPosts = async (topic) => {
             
         }
 
+        data.sort((a, b) => b.total_votes-a.total_votes);
 
         for(let i=0; i < data.length;i++) {
             let post = Object.create(postObject)

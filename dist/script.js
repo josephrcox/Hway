@@ -995,6 +995,7 @@ const loadPosts = async (topic) => {
                 document.getElementById("recommended_topics").style.display = 'none';
             }
         }
+        data.sort((a, b) => b.total_votes - a.total_votes);
         for (let i = 0; i < data.length; i++) {
             let post = Object.create(postObject);
             post.title = data[i].title;
