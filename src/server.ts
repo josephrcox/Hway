@@ -838,8 +838,6 @@ app.get('/api/get/:topic/q', async(req, res) => {
 		let lastPagePosts = totalPosts % postsPerPage
 
 		postsonpage = await paginate(filteredPosts, postsPerPage, page)
-
-		postsonpage = postsonpage.filter(value => Object.keys(value).length !== 0);
 		
 		for (let i=0;i<postsonpage.length;i++) {
 			postsonpage[i] = postsonpage[i][0]
@@ -967,7 +965,7 @@ app.get('/api/get/:topic/q', async(req, res) => {
 
 function paginate(array, page_size, page_number) {
     // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
-    return array.slice((page_number - 1) * page_size, page_number * page_size);
+    return array.slice((page_number - 1) * page_size, page_number * page_size).filter(value => Object.keys(value).length !== 0);
 }
 
 app.get('/api/get/posts/user/:user', async(req, res) => {	
