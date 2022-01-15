@@ -46,6 +46,13 @@
     </div>   
 </head>
 <body>
+    <div id="searchbar" style="display:none;">
+        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
+        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
+        <button id="search_submit" class="button">Search</button>
+        <div id="search-logs"></div>
+    </div>
+
     <div id="sorting_options" class="sorting_options">
         <a id="sorting_options_new" class="sorting_options" href="#">New</a>
         <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
@@ -56,12 +63,7 @@
         
     </div>
 
-    <div id="searchbar" style="display:none;">
-        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
-        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)">
-        <button id="search_submit">Search</button>
-        <div id="search-logs"></div>
-    </div>
+
     <div id="page-number"></div> 
     <div class='page-content'>
         <%- body %>
@@ -123,7 +125,7 @@ function showorhidesearch() {
     if (search.style.display == "none") {
         document.getElementById("newPost_div").style.display = 'none'
         document.getElementById("post-button").innerHTML = 'Post'
-        search.style.display = "block"
+        search.style.display = "flex"
     } else {
         search.style.display = "none"
     }

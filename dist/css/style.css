@@ -156,8 +156,8 @@
 }
 
 #post-button, #goHomeButton, .users-page-button, #page-number, #search-button, #subscribe-button, #home-button {
-	padding-inline: 7px;
-	font-size: 15px;
+	padding-inline: 14px;
+	font-size: 20px;
 	color:white;
 	user-select: none;
 	/*! margin-top:2px; */
@@ -175,7 +175,7 @@
 
 #newPost_div {
 	border: 1px solid black;
-	background-color: white;
+	background-color: #fffff0bf;
 	color: black;
 	padding-inline: 10px;
 	padding-bottom: 1em;
@@ -636,10 +636,18 @@ checkbox {
 	padding-top: 10px;
 	color:white;
 	font-size: 14px;
+	width: 100%;
+	background-color: #fffff0bf;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
-.search_options {
-	width: 95vw;
+.search_options, #search_submit {
+	width: 85vw;
+	max-width: 500px;
+	margin-bottom: 5px;
+	margin-left: 5px;
 }
 
 .notifs_bell {
@@ -777,4 +785,8 @@ checkbox {
 .topicFrame:hover {
   color:blue;
 	cursor:pointer;
+}
+
+#search_submit {
+	margin-top: 10px;
 }
