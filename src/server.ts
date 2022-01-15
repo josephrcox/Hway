@@ -838,6 +838,8 @@ app.get('/api/get/:topic/q', async(req, res) => {
 		let lastPagePosts = totalPosts % postsPerPage
 
 		postsonpage = await paginate(filteredPosts, postsPerPage, page)
+
+		postsonpage = postsonpage.filter(value => Object.keys(value).length !== 0);
 		
 		for (let i=0;i<postsonpage.length;i++) {
 			postsonpage[i] = postsonpage[i][0]
