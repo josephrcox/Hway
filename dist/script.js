@@ -949,7 +949,6 @@ const loadPosts = async (topic) => {
                     console.log("Query match for " + all_topics_array[i][0]);
                     var topObj = Object.create(topicObject);
                     document.getElementById("recommended_topics").style.display = 'flex'
-                    document.getElementById("sitebody").style.flexDirection = 'column'
                     topObj.name = all_topics_array[i][0];
                     topObj.post_count = all_topics_array[i][1];
                     topObj.display();
@@ -959,7 +958,7 @@ const loadPosts = async (topic) => {
         }
         if (data.length == 0) {
             if (search_similar_topics > 0) {
-                document.getElementById("recommended_topics").style.display = 'flex';
+                document.getElementById("postsArray").innerHTML += "<span style='color:white'>No posts... yet!</span>";
             }
             else {
                 document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
