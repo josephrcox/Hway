@@ -244,10 +244,12 @@ tbody {
 .descCell {
 	white-space: pre-wrap;
 }
+
 i {
     margin-left: -30px;
     cursor: pointer;
 }
+
 textarea {
 	resize: none;
 }
@@ -502,6 +504,7 @@ a:hover { text-decoration: none; color:red; }
 
 a:visited { 
  text-decoration: none;
+	color:unset;
 }
 
 .usersheet-table {
@@ -796,3 +799,10 @@ checkbox {
 #search_submit {
 	margin-top: 10px;
 }
+
+
+.subscribe_inline_button {
+	height: 15px;
+	vertical-align: inherit;
+	padding-left: 4px;
+  }

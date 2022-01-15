@@ -287,7 +287,7 @@ const getUser = async () => {
         currentUserID = data.id;
         currentUsername = data.name;
         isUserLoggedIn = true;
-        getSubscriptions();
+        await getSubscriptions();
         document.getElementById("currentUser").innerHTML = data.name;
         document.getElementById("logout_button").style.display = 'block';
         document.getElementById("login_button").style.display = 'none';
@@ -414,7 +414,14 @@ const postObject = {
         infoCell.setAttribute("id", "info_" + this.id);
         infoCell.setAttribute("class", "infoCell");
         let href = this.topic.replace(/^"(.*)"$/, '$1');
-        infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>  on <span style='font-style:italic;'>" + this.date + "</span>";
+        infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>";
+        if (subscriptions.includes(this.topic)) {
+            infoCell.innerHTML += '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_' + this.topic + '"></i>';
+        }
+        else {
+            infoCell.innerHTML += '<i class="fas fa-plus-square subscribe_inline_button" style="margin-left:0px;color:green;" id="subscribeInlineButton_' + this.topic + '"></i>';
+        }
+        infoCell.innerHTML += "  on <span style='font-style:italic;'>" + this.date + "</span>";
         var desc = postFrame.insertRow(2);
         var descCell = desc.insertCell(0);
         descCell.setAttribute("id", "descCell_" + this.id);
@@ -948,7 +955,6 @@ const loadPosts = async (topic) => {
                 if (all_topics_array[i][0].toLowerCase().indexOf(search_query_array[x]) != -1 && window.location.href.indexOf('/search/') != -1) {
                     console.log("Query match for " + all_topics_array[i][0]);
                     var topObj = Object.create(topicObject);
-                    document.getElementById("recommended_topics").style.display = 'flex'
                     topObj.name = all_topics_array[i][0];
                     topObj.post_count = all_topics_array[i][1];
                     topObj.display();
@@ -958,7 +964,7 @@ const loadPosts = async (topic) => {
         }
         if (data.length == 0) {
             if (search_similar_topics > 0) {
-                document.getElementById("postsArray").innerHTML += "<span style='color:white'>No posts... yet!</span>";
+                document.getElementById("recommended_topics").style.display = 'flex';
             }
             else {
                 document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
@@ -999,6 +1005,7 @@ const loadPosts = async (topic) => {
         }
         topFunction();
     }
+    addInlineSubscribeEventListeners();
     currentTopic = topic;
 };
 const loadUserPage = async (user) => {
