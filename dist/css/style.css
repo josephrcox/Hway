@@ -107,9 +107,10 @@
 @media screen and (max-width: 743px) {
 	.newPost_container, #newPost_div {
 		display: flex;
+		justify-content: center;
 	}
 	#newPost_inputs {
-		width:100%;
+		width:90%;
 	}
 	#newPost_topic {
 		width:98%;
@@ -184,8 +185,7 @@
 	padding-bottom: 1em;
 	margin-left: 1px;
 	position: relative;
-	margin-right: 10px;
-	width: fit-content;
+	margin-right: 1px;
 }
 
 body {
