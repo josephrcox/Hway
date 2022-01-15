@@ -1069,31 +1069,9 @@ function expandDesc(x) {
     }
 }
 const storeAndDisplayTopics = async () => {
-    document.getElementById("topic-dropdown").innerHTML = "";
     const response = await fetch('/api/get/topics/');
     var data = await response.json();
-    let topics;
     all_topics_array = data;
-    if (data.length <= 1) {
-        document.getElementById('topic-dropdown-div').style.display = 'none';
-        document.getElementById('topic-dropdown-div').style.borderRight = '0px solid black';
-    }
-    else {
-        document.getElementById('topic-dropdown-div').style.display = 'block';
-        document.getElementById('topic-dropdown-button').style.display = 'block';
-        if (data.length > 10) {
-            topics = 10;
-        }
-        else {
-            topics = data.length;
-        }
-        for (let j = 0; j < topics; j++) {
-            var newTopic = document.createElement('a');
-            let href = data[j][0].replace(/^"(.*)"$/, '$1');
-            newTopic.innerHTML = "<a href='/h/" + href + "'>" + data[j][0] + "(" + data[j][1] + ")</a>";
-            document.getElementById("topic-dropdown").appendChild(newTopic);
-        }
-    }
 };
 storeAndDisplayTopics();
 const vote = async (change, id) => {

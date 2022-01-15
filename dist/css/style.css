@@ -155,7 +155,7 @@
 	white-space: nowrap;
 }
 
-#post-button, #topic-chooser, #goHomeButton, .topic-dropdown-button, .users-page-button, #page-number, #search-button, #subscribe-button, #home-button {
+#post-button, #goHomeButton, .users-page-button, #page-number, #search-button, #subscribe-button, #home-button {
 	padding-inline: 7px;
 	font-size: 15px;
 	color:white;
@@ -359,20 +359,6 @@ label {
 	border-radius: 4px;
 }
 
-.topic-dropdown-button {
-	background-color: var(--foreground-2);
-	color: white;
-	border: none;
-	cursor: pointer;
-	display:none;
-}
-  
-.topic-dropdown-div {
-	position: relative;
-	display: inline-block;
-	display:none;
-}
-  
 .dropdown-content, .user-dropdown-content {
 	display: none;
 	position: absolute;
@@ -397,10 +383,6 @@ label {
 	text-decoration: none;
 	display: block;
 }
-  
-.topic-dropdown-div a:hover {background-color: #ddd;}
-  
-.show {display: block;}
 
 .header-title {
 	display:flex;
@@ -492,6 +474,9 @@ a:hover { text-decoration: none; color:red; }
 
 #post-button {
 	margin-right:6px;
+	position: absolute;
+	right: 0;
+	padding-right: 7px;
 }
 
 #commentSection {

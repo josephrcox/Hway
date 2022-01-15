@@ -1,6 +1,5 @@
+let subbutton = document.getElementById('subscribe-button')
 let subscriptions
-
-const subbutton = document.getElementById('subscribe-button')
 
 const getSubscriptions = async() => {
     const response = await fetch('/api/get/user/'+currentUsername+'/subscriptions')
@@ -11,14 +10,17 @@ const getSubscriptions = async() => {
     for (let i=0;i<data.topics.length;i++) {
         str += data.topics[i][0]+','
     }
+
     localStorage.setItem("subscriptions", str)
     subscriptions = localStorage.getItem('subscriptions').split(',')
 
     if (window.location.href.indexOf('/h/') != -1) {
         subbutton.style.display = 'block'
-       
+        
         if (subscriptions.indexOf(currentTopic) != -1) {
             subbutton.innerHTML = 'Unsubscribe'
+        } else if (subscriptions.indexOf(currentTopic) == -1) {
+            subbutton.innerHTML = 'Subscribe'
         }
     }
 }

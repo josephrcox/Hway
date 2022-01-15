@@ -1,5 +1,5 @@
+let subbutton = document.getElementById('subscribe-button');
 let subscriptions;
-const subbutton = document.getElementById('subscribe-button');
 const getSubscriptions = async () => {
     const response = await fetch('/api/get/user/' + currentUsername + '/subscriptions');
     const data = await response.json();
@@ -13,6 +13,9 @@ const getSubscriptions = async () => {
         subbutton.style.display = 'block';
         if (subscriptions.indexOf(currentTopic) != -1) {
             subbutton.innerHTML = 'Unsubscribe';
+        }
+        else if (subscriptions.indexOf(currentTopic) == -1) {
+            subbutton.innerHTML = 'Subscribe';
         }
     }
 };
