@@ -988,7 +988,6 @@ const subscribe = async(x, type) => { // x is the topic or user, type is 'topic'
         const fetchResponse = await fetch('/api/put/subscribe/'+x, settings); 
         const data = await fetchResponse.json()
 
-       
         getSubscriptions()
     }
 }
@@ -1002,7 +1001,6 @@ const unsubscribe = async(x, type) => { // x is the topic or user, type is 'topi
         const fetchResponse = await fetch('/api/put/unsubscribe/'+x, settings); 
         const data = await fetchResponse.json()
 
-       
         getSubscriptions()
     }
 }

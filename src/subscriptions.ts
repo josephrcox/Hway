@@ -38,6 +38,10 @@ subbutton.addEventListener('click', function() {
     
 })
 
+function querySubscribeElements() {
+    const elements = document.querySelectorAll('.subscribe_inline_button');
+}
+
 async function addInlineSubscribeEventListeners() {
     const elements = document.querySelectorAll('.subscribe_inline_button');
 
@@ -46,17 +50,20 @@ async function addInlineSubscribeEventListeners() {
         elem.addEventListener("click", function() {
             console.log(elem.id)
             if (elem.id.indexOf("unsubscribe") != -1) {
-                unsubscribe(elem.id.split('_')[1], "topic")
+                let topic = elem.id.split('_')[1]
+                unsubscribe(topic, "topic")
                 console.log(document.getElementById(elem.id))
                 document.getElementById(elem.id).classList.remove('far','fa-minus-square')
                 document.getElementById(elem.id).classList.add('fas','fa-plus-square')
                 document.getElementById(elem.id).style.color = 'green'
+                document.getElementById(elem.id).id = 'subscribeInlineButton_'+topic
             } else {
                 subscribe(elem.id.split('_')[1], "topic")
                 console.log(document.getElementById(elem.id))
                 document.getElementById(elem.id).classList.remove('fas','fa-plus-square')
                 document.getElementById(elem.id).classList.add('far','fa-minus-square')
                 document.getElementById(elem.id).style.color = 'red'
+                document.getElementById(elem.id).id = 'unsubscribeInlineButton_'+topic
             }
         });
     });
