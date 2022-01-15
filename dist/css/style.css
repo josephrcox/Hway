@@ -4,6 +4,7 @@
 	--foreground-2:#327da8;
 	--foreground-3:hsl(195, 77.6%, 19.2%);
 	--foreground-4:cornflowerblue;
+	--foreground-menu-gray:#fffff0bf;
 }
 
 
@@ -125,7 +126,7 @@
 	padding-top:5px;
 	width: 100%;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 }
 
 #title {
@@ -175,13 +176,14 @@
 
 #newPost_div {
 	border: 1px solid black;
-	background-color: #fffff0bf;
+	background-color: var(--foreground-menu-gray);
 	color: black;
 	padding-inline: 10px;
 	padding-bottom: 1em;
 	margin-left: 1px;
 	position: relative;
 	margin-right: 10px;
+	width: fit-content;
 }
 
 body {
@@ -637,7 +639,7 @@ checkbox {
 	color:white;
 	font-size: 14px;
 	width: 100%;
-	background-color: #fffff0bf;
+	background-color: var(--foreground-menu-gray);
 	display: flex;
 	flex-direction: column;
 	align-items: center;

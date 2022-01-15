@@ -948,6 +948,8 @@ const loadPosts = async (topic) => {
                 if (all_topics_array[i][0].toLowerCase().indexOf(search_query_array[x]) != -1 && window.location.href.indexOf('/search/') != -1) {
                     console.log("Query match for " + all_topics_array[i][0]);
                     var topObj = Object.create(topicObject);
+                    document.getElementById("recommended_topics").style.display = 'flex'
+                    document.getElementById("sitebody").style.flexDirection = 'column'
                     topObj.name = all_topics_array[i][0];
                     topObj.post_count = all_topics_array[i][1];
                     topObj.display();
