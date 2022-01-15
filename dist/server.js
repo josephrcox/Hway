@@ -249,9 +249,9 @@ app.get('/home', async (req, res) => {
     res.redirect('/home/q?sort=hot&t=all&page=1');
 });
 app.get('/home/q', async (req, res) => {
-    let valid = true;
+    let valid = false;
     valid = await isloggedin(req);
-    if (valid || allowUsersToBrowseAsGuests) {
+    if (valid) {
         res.render('home.ejs', { topic: "- home" });
     }
     else {

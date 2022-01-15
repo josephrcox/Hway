@@ -288,11 +288,11 @@ app.get('/home', async(req,res) => {
 })
 
 app.get('/home/q', async(req, res) => {
-	let valid = true
+	let valid = false
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
 	
-	if (valid || allowUsersToBrowseAsGuests) {
+	if (valid) {
 		res.render('home.ejs', {topic: "- home"})
 	} else {
 		res.render('login.ejs', {topic:"- login"})
