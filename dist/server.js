@@ -16,7 +16,7 @@ var IDs = [];
 var topicArray = [];
 var topicCount = [];
 var postsonpage = [];
-var postsPerPage = 30;
+var postsPerPage = 50;
 let ms_in_day = 86400000;
 let currentUser;
 app.set('view engine', 'ejs');
@@ -1714,7 +1714,12 @@ app.get('/api/get/search/', async (req, res) => {
     }
     else {
         Post.find({ status: 'active', title: regex_q }, async function (err, docs) {
+            let totalPosts = docs.length;
+            let totalPages = Math.ceil((totalPosts) / postsPerPage);
+            let lastPagePosts = totalPosts % postsPerPage;
+            postsonpage = await paginate(docs, postsPerPage, 1);
             postsonpage = docs;
+            console.log(postsonpage.length);
             for (let i = 0; i < docs.length; i++) {
                 if (postsonpage[i].posterID == userID) {
                     postsonpage[i].current_user_admin = true;
