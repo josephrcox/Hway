@@ -992,6 +992,7 @@ const loadPosts = async (topic) => {
             }
             else {
                 document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
+                document.getElementById("recommended_topics").style.display = 'none';
             }
         }
         for (let i = 0; i < data.length; i++) {

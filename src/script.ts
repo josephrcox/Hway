@@ -1162,6 +1162,7 @@ const loadPosts = async (topic) => {
                 //document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
             } else {
                 document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
+                document.getElementById("recommended_topics").style.display = 'none'
             }
             
         }
