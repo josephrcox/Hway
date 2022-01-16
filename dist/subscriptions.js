@@ -9,6 +9,8 @@ const getSubscriptions = async () => {
     }
     localStorage.setItem("subscriptions", str);
     subscriptions = localStorage.getItem('subscriptions').split(',');
+    subscriptions.filter(function () { return true })
+
     if (window.location.href.indexOf('/h/') != -1) {
         subbutton.style.display = 'block';
         if (subscriptions.includes(window.location.href.split('/')[4])) {
@@ -46,19 +48,20 @@ async function addInlineSubscribeEventListeners() {
     const elements = document.querySelectorAll('.subscribe_inline_button');
     elements.forEach(async function (elem) {
         elem.addEventListener("click", function () {
-            console.log(elem.id);
+            let topic = elem.id.split('_')[1];
             if (elem.id.indexOf("unsubscribe") != -1) {
-                let topic = elem.id.split('_')[1];
-                unsubscribe(topic, "topic");
-                console.log(document.getElementById(elem.id));
+                if (topic != 'home') {
+                    unsubscribe(topic, "topic");
+                } 
                 document.getElementById(elem.id).classList.remove('far', 'fa-minus-square');
                 document.getElementById(elem.id).classList.add('fas', 'fa-plus-square');
                 document.getElementById(elem.id).style.color = 'green';
                 document.getElementById(elem.id).id = 'subscribeInlineButton_' + topic;
             }
             else {
-                subscribe(elem.id.split('_')[1], "topic");
-                console.log(document.getElementById(elem.id));
+                if (topic != 'home') {
+                    subscribe(elem.id.split('_')[1], "topic");
+                } 
                 document.getElementById(elem.id).classList.remove('fas', 'fa-plus-square');
                 document.getElementById(elem.id).classList.add('far', 'fa-minus-square');
                 document.getElementById(elem.id).style.color = 'red';

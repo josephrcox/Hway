@@ -23,7 +23,7 @@ let newURL = "";
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
-const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications', 'home'];
+const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications', 'home', 'subscriptions'];
 let currentPageCategory = (window.location.href).split('/')[3];
 let currentPageType;
 let currentUserID;
@@ -63,6 +63,9 @@ switch (currentPageCategory) {
         break;
     case 'home':
         cPageTypeIndex = 10;
+        break;
+    case 'subscriptions':
+        cPageTypeIndex = 11;
         break;
 }
 currentPageType = pageTypes[cPageTypeIndex];
@@ -859,8 +862,8 @@ const subscribe = async (x, type) => {
         };
         const fetchResponse = await fetch('/api/put/subscribe/' + x, settings);
         const data = await fetchResponse.json();
-        if (data.status != 200) {
-            alert(data.data);
+        if (fetchResponse.status != 200) {
+            alert(fetchResponse.status);
         }
         getSubscriptions();
     }
@@ -872,6 +875,10 @@ const unsubscribe = async (x, type) => {
         };
         const fetchResponse = await fetch('/api/put/unsubscribe/' + x, settings);
         const data = await fetchResponse.json();
+        console.log(fetchResponse);
+        if (fetchResponse.status != 200) {
+            alert(fetchResponse.status);
+        }
         getSubscriptions();
     }
 };
@@ -880,7 +887,7 @@ const loadPosts = async (topic) => {
         let user = window.location.href.split('/').pop();
         return loadUserPage(user);
     }
-    if (currentPageType == 'notifications') {
+    if (['notifications', 'subscriptions'].indexOf(currentPageType) != -1) {
         return;
     }
     if (topic == null || topic == "") {
@@ -961,7 +968,9 @@ const loadPosts = async (topic) => {
     }
     else {
         let request = '/api/get/' + topic + '/q' + window.location.search;
-        document.getElementById("postsArray").innerHTML = "";
+        if (['home', 'topic'].indexOf(currentPageType) != -1) {
+            document.getElementById("postsArray").innerHTML = "";
+        }
         if (currentPageType == 'search') {
             if (search_topic != "" && search_topic != null) {
                 request = '/api/get/search?topic=' + search_topic + '&query=' + search_query;
@@ -994,8 +1003,16 @@ const loadPosts = async (topic) => {
                 document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
                 document.getElementById("recommended_topics").style.display = 'none';
             }
+            if (currentPageType == 'home' && subscriptions[0] == "") {
+                document.getElementById("postsArray").innerHTML = "<div style='text-align:center;padding-bottom:20px;'><span style='color:white'>You are not subscribed to any topics. <br/><br/>Press the logo shown below next to a topic to subscribe (or visit the topic page).</span></div>";
+                document.getElementById("postsArray").innerHTML += '<div style="text-align:center;"><i class="fas fa-plus-square subscribe_inline_button" style="margin-left:0px;color:green;" id="subscribeInlineButton_home"></i></div>';
+                document.getElementById('sorting_options').style.display = 'none';
+                document.getElementById('page-number').style.display = 'none';
+            }
         }
-        data.sort((a, b) => b.total_votes - a.total_votes);
+        else {
+            data.sort((a, b) => b.total_votes - a.total_votes);
+        }
         for (let i = 0; i < data.length; i++) {
             let post = Object.create(postObject);
             post.title = data[i].title;
@@ -1264,7 +1281,7 @@ if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifica
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
 }
-if (currentPageType != 'user' && currentPageType != 'notifications') {
+if (['user', 'notifications', 'subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function () {
         let postTitle = document.getElementById("newPost_name").value;
         if ((document.getElementById("newPost_topic").value).replace(" ", "") == "" || (document.getElementById("newPost_topic").value).replace(" ", "") == null || (document.getElementById("newPost_topic").value).replace(" ", "") == undefined) {
