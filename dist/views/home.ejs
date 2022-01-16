@@ -59,6 +59,10 @@
    if (window.location.href.indexOf('/h/') != -1) {
       document.getElementById('newPost_topic').value = window.location.href.split('/')[4]
    }
+   if (window.innerWidth <= 743 && window.location.pathname != '/post') {
+      document.getElementById('newPost_div').style.display = 'none'
+      document.getElementById('post-button').innerHTML = 'Post'
+   }
    
 </script>
 

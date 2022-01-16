@@ -1270,7 +1270,7 @@ const comment_nested = async (postid, body, commentparentID) => {
 };
 function ui_newPost() {
     console.log(window.innerWidth, window.outerWidth);
-    if (window.innerWidth > 743 || window.location.href.indexOf('/post') != -1) {
+    if (window.innerWidth > 743 || window.location.pathname == '/post') {
         if (document.getElementById("newPost_div").style.display == 'block') {
             document.getElementById("newPost_div").style.display = 'none';
             document.getElementById("post-button").innerHTML = "Post";
