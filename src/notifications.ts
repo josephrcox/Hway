@@ -6,6 +6,30 @@ var notifArray = document.getElementById('notif_array')
 var notifAlert = document.getElementById('notif_alert')
 var clearNotifButton = document.getElementById('notif_clearall')
 
+const getNCount = async() => {
+    const response = await fetch('/api/get/notification_count')
+    const data = await response.json()
+    ncount = parseInt(data.length) 
+    
+    if (ncount >= 1) {
+        ringBell()
+        if ((window.location.href).indexOf('notifications') != -1) {
+            getNotifs()
+            displayNotifs()
+        }
+    } else {
+        ringBell()
+        if ((window.location.href).indexOf('notifications') != -1) {
+            notifAlert.innerHTML = 'No new notifications!'
+        }
+    }
+    if ((window.location.href).indexOf('notifications') != -1) {
+        if (notifAlert.innerHTML != "") {
+            notifAlert.style.display = 'block'
+        }
+    }
+
+}
 
 const getNotifs = async() => {
     console.info("Finding notifications...")
@@ -27,18 +51,12 @@ const getNotifs = async() => {
             }
         } else {
             ringBell()
-        }
-    }
-
-    if ((window.location.pathname == '/notifications')) {
-        if (ncount < 1) {
             notifAlert.innerHTML = 'No new notifications!'
         }
         if (notifAlert.innerHTML != "") {
             notifAlert.style.display = 'block'
         }
-        
-    } 
+    }
     
 }
 
@@ -139,4 +157,4 @@ if ((window.location.href).split('/')[3] == 'notifications') {
 }
 
 
-getNotifs()
+getNCount()

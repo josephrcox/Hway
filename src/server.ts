@@ -192,6 +192,33 @@ app.get('/api/get/currentuser', function (req, res) {
 
 })
 
+app.get('/api/get/notification_count', async(req,res) => {
+	if (currentUser) {
+		User.findById(currentUser, function(err,docs) {
+			if (err) {
+				res.send({status:'error'})
+			} else {
+				res.send({length:docs.notifications.length})
+			}
+		})
+	} else {
+		try {
+			let token = req.cookies.token
+			let user = jwt.verify(token, process.env.JWT_SECRET)
+		
+			User.findById(user, function(err,docs) {
+				if (err) {
+					res.send({status:'error'})
+				} else {
+					res.send({length:docs.notifications.length})
+				}
+			})
+		}catch(error) {
+			res.send({status:'error', data:'nojwt'})
+		}
+	}
+})
+
 app.get('/api/get/notifications', function(req,res) {
 	if (currentUser) {
 		User.findById(currentUser, function(err,docs) {
@@ -202,12 +229,11 @@ app.get('/api/get/notifications', function(req,res) {
 			}
 		})
 	} else {
-		
 		try {
 			let token = req.cookies.token
 			let user = jwt.verify(token, process.env.JWT_SECRET)
 		
-			User.findById(currentUser, function(err,docs) {
+			User.findById(user, function(err,docs) {
 				if (err) {
 					res.send({status:'error'})
 				} else {
