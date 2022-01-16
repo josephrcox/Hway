@@ -809,3 +809,11 @@ checkbox {
 	padding-left: 4px;
 }
 
+.user-dropdown-item:hover {
+	color:blue;
+}
+
+.cursor_pointer {
+	cursor: pointer;
+}
+

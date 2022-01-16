@@ -646,7 +646,7 @@ const topicObject = {
             topicContainer.append(topicFrame)
             topicContainer.append(topicUnsub)
         
-            document.getElementById("subscriptions_page_container").append(topicContainer)
+            document.getElementById("subscriptions_page_container").appendChild(topicContainer)
         }
 
         
@@ -1017,8 +1017,11 @@ const subscribe = async(x, type) => { // x is the topic or user, type is 'topic'
         if (fetchResponse.status != 200) {
             alert(fetchResponse.status)
         }
-
-        getSubscriptions()
+        if (window.location.href.indexOf('/subscriptions') != -1) {
+            var top = Object.create(topicObject);
+            top.name = x;
+            top.display();
+        }
     }
 }
 
@@ -1034,8 +1037,6 @@ const unsubscribe = async(x, type) => { // x is the topic or user, type is 'topi
         if (fetchResponse.status != 200) {
             alert(fetchResponse.status)
         }
-
-        getSubscriptions()
     }
 }
 
