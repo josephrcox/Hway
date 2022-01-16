@@ -31,6 +31,7 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.DATEBASE_URL, {});
 const connection = mongoose.connection;
 connection.once("open", function (res) {
+    console.log("Connected to Mongoose.");
 });
 const User = require('./models/user');
 const Post = require('./models/post');
