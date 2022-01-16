@@ -1497,10 +1497,14 @@ function ui_newPost() {
 
 }
 
-if (['user', 'notifications', 'subscriptions','createpost'].indexOf(currentPageType) == -1){
-    document.getElementById("newPost_div").style.display = 'none'
-    document.getElementById("newPost_logs").innerHTML = ""
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber + nextPageStr
+if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
+    //document.getElementById("newPost_div").style.display = 'none';
+    document.getElementById("newPost_logs").innerHTML = "";
+    document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
+} 
+if (['search', 'notifications', 'subscriptions', 'home'].indexOf(currentPageType) != -1) {
+    console.log("hiding")
+    document.getElementById("newPost_div").style.display = 'none';
 }
 
 if (['user','notifications','subscriptions'].indexOf(currentPageType) == -1) {
