@@ -31,6 +31,7 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.DATEBASE_URL, {});
 const connection = mongoose.connection;
 connection.once("open", function (res) {
+    console.log("Connected to Mongoose!");
 });
 const User = require('./models/user');
 const Post = require('./models/post');
@@ -44,7 +45,7 @@ app.use(bp.urlencoded({ extended: true }));
 var allowUsersToBrowseAsGuests = true;
 var geoip = require('geoip-lite');
 let usersArr = [];
-const bannedTopics = ['home', 'notifications', 'profile', 'login', 'logout', 'signup', 'admin',];
+const bannedTopics = ['home', 'notifications', 'profile', 'login', 'logout', 'signup', 'admin', 'post'];
 const bannedUsernames = ['joey', 'admin',];
 async function get_all_avatars() {
     let tempUsers = await User.find({});
@@ -253,6 +254,9 @@ app.post('/api/post/notif/clear/', function (req, res) {
 });
 app.get('/login', (req, res) => {
     res.render('login.ejs', { topic: "- login" });
+});
+app.get('/post', (req, res) => {
+    res.render('post.ejs', { topic: "- post" });
 });
 app.get('/users', (req, res) => {
     res.render('users.ejs', { topic: "- users" });
