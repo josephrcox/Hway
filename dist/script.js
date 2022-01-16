@@ -23,7 +23,7 @@ let newURL = "";
 let cPageTypeIndex;
 let search_topic = "";
 let search_query = "";
-const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications', 'home', 'subscriptions'];
+const pageTypes = ['user', 'usersheet', 'topic', 'index', 'all', 'post', 'login', 'register', 'search', 'notifications', 'home', 'subscriptions', 'createpost'];
 let currentPageCategory = (window.location.href).split('/')[3];
 let currentPageType;
 let currentUserID;
@@ -66,6 +66,9 @@ switch (currentPageCategory) {
         break;
     case 'subscriptions':
         cPageTypeIndex = 11;
+        break;
+    case 'post':
+        cPageTypeIndex = 12;
         break;
 }
 currentPageType = pageTypes[cPageTypeIndex];
@@ -890,7 +893,7 @@ const loadPosts = async (topic) => {
         let user = window.location.href.split('/').pop();
         return loadUserPage(user);
     }
-    if (['notifications', 'subscriptions'].indexOf(currentPageType) != -1) {
+    if (['notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) != -1) {
         return;
     }
     if (topic == null || topic == "") {
@@ -1266,20 +1269,26 @@ const comment_nested = async (postid, body, commentparentID) => {
     }
 };
 function ui_newPost() {
-    if (document.getElementById("newPost_div").style.display == 'block') {
-        document.getElementById("newPost_div").style.display = 'none';
-        document.getElementById("post-button").innerHTML = "Post";
-        document.getElementById("newPost_logs").innerHTML = "";
-        document.getElementById("newPost_topic").value = currentTopic;
+    console.log(window.innerWidth, window.outerWidth);
+    if (window.innerWidth > 743 || window.location.href.indexOf('/post') != -1) {
+        if (document.getElementById("newPost_div").style.display == 'block') {
+            document.getElementById("newPost_div").style.display = 'none';
+            document.getElementById("post-button").innerHTML = "Post";
+            document.getElementById("newPost_logs").innerHTML = "";
+            document.getElementById("newPost_topic").value = currentTopic;
+        }
+        else {
+            document.getElementById("newPost_div").style.display = 'block';
+            document.getElementById("searchbar").style.display = 'none';
+            document.getElementById("post-button").innerHTML = "Collapse";
+            document.getElementById("newPost_topic").value = currentTopic;
+        }
     }
     else {
-        document.getElementById("newPost_div").style.display = 'block';
-        document.getElementById("searchbar").style.display = 'none';
-        document.getElementById("post-button").innerHTML = "Collapse";
-        document.getElementById("newPost_topic").value = currentTopic;
+        window.location.href = '/post';
     }
 }
-if (window.location.href.indexOf("/user/") == -1 && currentPageType != 'notifications' && window.location.href.indexOf("/subscriptions") == -1) {
+if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
@@ -1446,7 +1455,7 @@ const createNewPost = async (posttype) => {
     document.getElementById("newPost_topic").innerHTML = "";
     document.getElementById("newPost_link").innerHTML = "";
     if (data.code == 200) {
-        window.location.reload();
+        window.location.href = '/h/' + topic;
     }
 };
 const uploadImage = async (x) => {
