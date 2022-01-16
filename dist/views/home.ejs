@@ -5,33 +5,6 @@
 <body>
     <div id="sitebody" class="sitebody-flex">
        <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
-         <div id="newPost_div" style='display:none;margin-top: 8px;'>
-            <div class="newPost_container">
-               <div id="newPost_inputs">
-                  <div class="newPost_types_div">
-                    <div class="newPost_types" id="newPost_type_text" style="background-color:rgb(7, 7, 49); color:white;">Text</div>
-                    <div class="newPost_types" id="newPost_type_link">Link</div>
-                    <div class="newPost_types" id="newPost_type_media">Media</div>
-                 </div>
-                  <label for="name" id="newPost_name_label" class="newPost_name">Title</label>
-                  <textarea id="newPost_name" name="name" size="50" rows="1" cols="30" autocomplete="off" maxlength="150"></textarea>
-                  <label for="desc" id="newPost_desc_label" class="newPost_desc">Description</label>
-                  <textarea id="newPost_desc" name="desc" rows="10" cols="30" autocomplete="off" aria-multiline="true" maxlength="1500"></textarea>
-                  <label for="link" id="newPost_link_label" class="newPost_link">Link</label>
-                  <textarea id="newPost_link" class="newPost_link" name="link" rows="1" cols="30" autocomplete="off" ></textarea>
-                  <label for="newPost_file" id="newPost_file_label" class="newPost_file">Media</label>
-                  <input type="file" name="newPost_file" class="newPost_file" id="newPost_file" accept=".jpg, .jpeg, .png, .gif">
-                  <label for="newPost_topic" id="newPost_topic_label" class="newPost_topic">Topic</label>
-                  <input type="text" id="newPost_topic" name="topic" maxlength="15" onkeypress="return event.charCode != 32">
-                  <div style="display: flex;flex-direction: row;padding-top: 15px;">
-                     NSFW<input type="checkbox" id="newPost_nsfw">
-                  </div>
-                  
-                  <input type="submit" value="Submit new post" id="newPost_submit_button" class='button'><br>
-                  <div id="newPost_logs"></div>
-            </div>
-             </div>
-         </div>
 
      <div class="posts_and_more" id="posts_and_more">
       <div class="recommended_topics_div" id="recommended_topics"></div>
@@ -39,6 +12,34 @@
          
         </div>
      </div>
+     <div id="newPost_div" style='display:none;'>
+      <div class="newPost_container">
+         <div id="newPost_inputs">
+            <div id='newPost_close' class='noselect' onclick='ui_newPost()'>Close</div>
+            <div class="newPost_types_div">
+              <div class="newPost_types" id="newPost_type_text" style="background-color:rgb(7, 7, 49); color:white;">Text</div>
+              <div class="newPost_types" id="newPost_type_link">Link</div>
+              <div class="newPost_types" id="newPost_type_media">Media</div>
+           </div>
+            <label for="name" id="newPost_name_label" class="newPost_name">Title</label>
+            <textarea id="newPost_name" name="name" size="50" rows="1" cols="30" autocomplete="off" maxlength="150"></textarea>
+            <label for="desc" id="newPost_desc_label" class="newPost_desc">Description</label>
+            <textarea id="newPost_desc" name="desc" rows="10" cols="30" autocomplete="off" aria-multiline="true" maxlength="1500"></textarea>
+            <label for="link" id="newPost_link_label" class="newPost_link">Link</label>
+            <textarea id="newPost_link" class="newPost_link" name="link" rows="1" cols="30" autocomplete="off" ></textarea>
+            <label for="newPost_file" id="newPost_file_label" class="newPost_file">Media</label>
+            <input type="file" name="newPost_file" class="newPost_file" id="newPost_file" accept=".jpg, .jpeg, .png, .gif">
+            <label for="newPost_topic" id="newPost_topic_label" class="newPost_topic">Topic</label>
+            <input type="text" id="newPost_topic" name="topic" maxlength="15" onkeypress="return event.charCode != 32">
+            <div style="display: flex;flex-direction: row;padding-top: 15px;">
+               NSFW<input type="checkbox" id="newPost_nsfw">
+            </div>
+            
+            <input type="submit" value="Submit new post" id="newPost_submit_button" class='button'><br>
+            <div id="newPost_logs"></div>
+      </div>
+       </div>
+   </div>
      
     </div>
     <div id="commentSection" style='display:none;'>

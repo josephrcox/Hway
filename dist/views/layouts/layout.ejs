@@ -6,65 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <title class="noselect">HWay v-b0.01</title>
-    <div id='test'></div>
-    <div class="flex-container">
-        <div class="header-title noselect">
-                <a href='/all'><div id="title" class="cursor_pointer">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
-        </div>
-        
-        <div class="notifs" id='header-notifs'>
-            <div class="notifs_bell cursor_pointer" id="header-notifs-bell"></div>
-        </div>
-        <div class="user-dropdown-div" id='user-dropdown-div'>
-            <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect"></div></div>
-            <div id="user-dropdown" class="user-dropdown-content">
-                <a href='#' onclick="profile()" id="profile_button" class="user-dropdown-item">Profile</a>
-                <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
-                <a href='#' onclick="login()" id="login_button" class="user-dropdown-item">Login</a>
-                <a href='#' onclick="register()" id="reg_button" class="user-dropdown-item">Register</a>
-                <a href='#' onclick="view_subscriptions()" id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
-                <div class="border-bottom"></div>
-                <div id="filter_nsfw_div">
-                    NSFW
-                <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
-                </div>
-                
-            </div>
-        </div>
 
-     </div>
-
-     <div class="header-buttons noselect" id="header-buttons">
-        
-        <div id="misc_header_buttons">
-            <div id="home-button" onclick='navHome()' class="cursor_pointer">Home</div>
-            <div id="post-button" style='display:none;' onclick="ui_newPost()" class="cursor_pointer">Post</div>
-            <div id="search-button" onclick="showorhidesearch()" class="cursor_pointer">Search</div>
-            <div id="subscribe-button" style='display:none;' class="cursor_pointer"></div>
-        </div>
-        
-    </div>   
 </head>
 <body>
-    <div id="searchbar" style="display:none;">
-        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
-        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
-        <button id="search_submit" class="button">Search</button>
-        <div id="search-logs"></div>
+    <div class="header">
+        <div class="flex-container">
+            <div class="header-title noselect">
+                    <a href='/all'><div id="title" class="cursor_pointer">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
+            </div>
+            
+            <div class="notifs" id='header-notifs'>
+                <div class="notifs_bell cursor_pointer" id="header-notifs-bell"></div>
+            </div>
+            <div class="user-dropdown-div" id='user-dropdown-div'>
+                <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect"></div></div>
+                <div id="user-dropdown" class="user-dropdown-content">
+                    <a href='#' onclick="profile()" id="profile_button" class="user-dropdown-item">Profile</a>
+                    <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
+                    <a href='#' onclick="login()" id="login_button" class="user-dropdown-item">Login</a>
+                    <a href='#' onclick="register()" id="reg_button" class="user-dropdown-item">Register</a>
+                    <a href='#' onclick="view_subscriptions()" id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
+                    <div class="border-bottom"></div>
+                    <div id="filter_nsfw_div">
+                        NSFW
+                    <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
+                    </div>
+                    
+                </div>
+            </div>
+    
+         </div>
+    
+         <div class="header-buttons noselect" id="header-buttons">
+            
+            <div id="misc_header_buttons">
+                <div id="home-button" onclick='navHome()' class="cursor_pointer">Home</div>
+                <div id="post-button" style='display:none;' onclick="ui_newPost()" class="cursor_pointer">Post</div>
+                <div id="search-button" onclick="showorhidesearch()" class="cursor_pointer">Search</div>
+                <div id="subscribe-button" style='display:none;' class="cursor_pointer"></div>
+            </div>
+            
+        </div>   
+        <div id="searchbar" style="display:none;">
+            <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
+            <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
+            <button id="search_submit" class="button">Search</button>
+            <div id="search-logs"></div>
+        </div>
+    
+        <div id="sorting_options" class="sorting_options noselect">
+            <a id="sorting_options_new" class="sorting_options" href="#">New</a>
+            <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
+            <a id="sorting_options_top_today" class="sorting_options" href="#">Top (day)</a>
+            <a id="sorting_options_top_week" class="sorting_options" href="#">Top (week)</a>
+            <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
+            <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
+            
+        </div>
+    
+    
+        <div id="page-number" class="noselect"></div> 
     </div>
 
-    <div id="sorting_options" class="sorting_options noselect">
-        <a id="sorting_options_new" class="sorting_options" href="#">New</a>
-        <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
-        <a id="sorting_options_top_today" class="sorting_options" href="#">Top (day)</a>
-        <a id="sorting_options_top_week" class="sorting_options" href="#">Top (week)</a>
-        <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
-        <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
-        
-    </div>
-
-
-    <div id="page-number" class="noselect"></div> 
+    
     <div class='page-content'>
         <%- body %>
     </div>
