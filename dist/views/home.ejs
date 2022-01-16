@@ -12,7 +12,7 @@
          
         </div>
      </div>
-     <div id="newPost_div" style='display:none;'>
+     <div id="newPost_div" style='display:block;'>
       <div class="newPost_container">
          <div id="newPost_inputs">
             <div id='newPost_close' class='noselect' onclick='ui_newPost()'>Close</div>
@@ -54,6 +54,13 @@
           <!-- comments go here from js -->
        </div>
  </div> 
+
+<script> 
+   if (window.location.href.indexOf('/h/') != -1) {
+      document.getElementById('newPost_topic').value = window.location.href.split('/')[4]
+   }
+   
+</script>
 
 <script src="/script.js"></script>
 <script src="/subscriptions.js"></script>

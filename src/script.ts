@@ -1488,7 +1488,7 @@ function ui_newPost() {
         } else {
             document.getElementById("newPost_div").style.display = 'block'
             document.getElementById("searchbar").style.display = 'none'
-            document.getElementById("post-button").innerHTML = "Collapse";
+            document.getElementById("post-button").innerHTML = "Collapse new post";
             (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
         }
     } else {

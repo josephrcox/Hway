@@ -1280,7 +1280,7 @@ function ui_newPost() {
         else {
             document.getElementById("newPost_div").style.display = 'block';
             document.getElementById("searchbar").style.display = 'none';
-            document.getElementById("post-button").innerHTML = "Collapse";
+            document.getElementById("post-button").innerHTML = "Collapse new post";
             document.getElementById("newPost_topic").value = currentTopic;
         }
     }
@@ -1289,9 +1289,12 @@ function ui_newPost() {
     }
 }
 if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
-    document.getElementById("newPost_div").style.display = 'none';
+    //document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
+} 
+if (['search', 'notifications', 'subscriptions', 'home'].indexOf(currentPageType) != -1) {
+    document.getElementById("newPost_div").style.display = 'none';
 }
 if (['user', 'notifications', 'subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function () {
