@@ -282,6 +282,7 @@ const getUser = async () => {
     const data = await response.json();
     if (data.code == 400) {
         isUserLoggedIn = false;
+        document.getElementById("newPost_div").style.display = 'none';
         document.getElementById("currentUser").innerHTML = "Account";
         document.getElementById("logout_button").style.display = 'none';
         document.getElementById("login_button").style.display = 'block';
