@@ -71,6 +71,19 @@ async function get_all_avatars() {
 
 get_all_avatars()
 
+function sanitize(string:string) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        "/": '&#x2F;',
+    };
+    const reg = /[&<>"'/]/ig;
+    return string.replace(reg, (match)=>(map[match]));
+}
+
 
 app.get('/', async(req, res) => {
 	var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
@@ -1159,9 +1172,20 @@ app.post('/register', async(req, res) => {
 })
 
 app.post('/api/post/post', async(req, res) => {
-	const {title, body, link, topic, type, nsfw} = req.body
+	var {title, body, link, topic, type, nsfw} = req.body
 	let userID
 	let poster
+
+	// SANITIZING DON'T MODIFY - FOR SECURITY PURPOSES!!!
+	title = sanitize(title)
+	if (body) {
+		body = sanitize(body)
+	}
+	if (link) {
+		link = sanitize(link)
+	}
+	
+	// 
 
 	var special_attributes = {nsfw:nsfw}
 
@@ -1216,10 +1240,12 @@ app.post('/api/post/post', async(req, res) => {
 
 
 app.post('/api/post/comment/', async(req, res) => {
-	const {body:reqbody, id} = req.body
+	var {body:reqbody, id} = req.body
 	let token
 	let userID
 	let username
+
+	reqbody = sanitize(reqbody)
 
 	try {
 		token = req.cookies.token
@@ -1379,7 +1405,7 @@ app.get('/notifications', async(req,res)=> {
 
 app.post('/api/post/comment_nested/', async(req, res) => {
 	const {id, parentID} = req.body // parentID is the id of the comment, id is the id of the post
-	let body = req.body.body
+	let body = sanitize(req.body.body)
 
 	let token
 	let userID
@@ -1691,9 +1717,6 @@ app.put('/api/put/comment/delete/:postid/:id', async function(req,res) {
 	})
 	
 })
-
-// const response = await fetch('/api/put/comment_nested/delete/'+window.location.href.split('/posts/')[1]+'/'+commentID+'/'+nestedCommentID, settings)
-// const data = await response.json()
 
 app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async function(req,res) {
 	let commentid = req.params.commentid // id of parent comment
