@@ -89,11 +89,11 @@ if (currentPageType == 'all') {
 if (currentPageType == 'post') { 
     document.getElementById('sorting_options').style.display = 'none'
     document.getElementById('page-number').style.display = 'none'
+    document.getElementById('post-button').style.display = 'none'
 }
 if (currentPageType == 'notifications') { 
     document.getElementById('sorting_options').style.display = 'none'
     document.getElementById('page-number').style.display = 'none'
-    document.getElementById('post-button').style.display = 'none'
     document.getElementById('post-button').style.display = 'none'
 }
 
@@ -297,14 +297,13 @@ async function randomizer(x) {
 
 // This getUser function is for getting the current user and displaying relevant buttons and the users name
 const getUser = async () => {
-    //document.getElementById("currentUser").innerHTML = "..."
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
     
     if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
         isUserLoggedIn = false;
         (document.getElementById("newPost_div") as HTMLInputElement).style.display = 'none'
-        document.getElementById("currentUser").innerHTML = "Account"
+        document.getElementById("currentUser").innerText = "Login / Register"
         document.getElementById("logout_button").style.display = 'none'
         document.getElementById("login_button").style.display = 'block'
         document.getElementById("reg_button").style.display = 'block'
@@ -315,12 +314,11 @@ const getUser = async () => {
         currentUsername = data.name
         isUserLoggedIn = true
         await getSubscriptions()
-        document.getElementById("currentUser").innerHTML = data.name
+        document.getElementById("currentUser").innerText = data.name
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
-        if (currentPageType != 'user' && currentPageType != 'usersheet' ) {
-           
+        if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
             document.getElementById("post-button").style.display = 'block'
         }
         const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
@@ -388,14 +386,15 @@ const postObject = {
     display() {
         this.comments.sort((a, b) => b.total_votes-a.total_votes);
 
-
         var postContainer = document.createElement("div")
         postContainer.setAttribute("class","postContainer")
         postContainer.setAttribute("id","postContainer_"+this.id)
+        postContainer.dataset.postId = this.id
 
         var postFrame = document.createElement("table")
         postFrame.setAttribute("id", "postFrame_"+this.id)
         postFrame.setAttribute("class", "postFrame")
+        postFrame.dataset.postId = this.id
 
         var voteFrame = document.createElement("table")
         voteFrame.setAttribute("class", "voteFrame")
@@ -403,16 +402,18 @@ const postObject = {
         var voteDiv = document.createElement("div")
         voteDiv.setAttribute("id", "voteDiv_"+this.id)
         voteDiv.setAttribute("class", "voteDiv")
+        voteDiv.dataset.postId = this.id
 
         var openPostButton = document.createElement("img")
         openPostButton.setAttribute("id", "openPostButton_"+this.id)
         openPostButton.setAttribute("class", "openPostButton")
-        openPostButton.innerHTML = "<a href='/posts/"+this.id+"'></a>"
+        openPostButton.dataset.postId = this.id
         openPostButton.src = '/assets/speech_bubble.png'
- 
+        
         openPostButton.addEventListener('click', function() {
-            window.location.href = '/posts/'+this.id.substring(15)
+            window.location.href = '/posts/'+openPostButton.dataset.postId
         }, false)
+
         openPostButton.style.width = 'auto'
 
         let commentCountIncludingNested = 0
@@ -428,11 +429,13 @@ const postObject = {
         var voteCount = document.createElement("div")
         voteCount.setAttribute("id","voteCount_"+this.id)
         voteCount.setAttribute("class","voteCount")
+        voteCount.dataset.postId = this.id
         voteCount.innerHTML = this.total_votes
 
         var voteUpButton = document.createElement("img")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
+        voteUpButton.dataset.postId = this.id
         voteUpButton.src = '/assets/up.gif'
         if (this.current_user_upvoted) {
             voteUpButton.src = '/assets/up_selected.gif'
@@ -440,12 +443,13 @@ const postObject = {
         
         voteUpButton.style.width = 'auto'
         voteUpButton.addEventListener('click', function() {
-            vote(1, this.id)
+            vote(1, voteUpButton.dataset.postId)
         }, false)
 
         var voteDownButton = document.createElement("img")
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
+        voteDownButton.dataset.postId = this.id
         voteDownButton.src = '/assets/down.gif'
         if (this.current_user_downvoted) {
             voteDownButton.src = '/assets/down_selected.gif'
@@ -455,7 +459,6 @@ const postObject = {
             vote(-1, this.id)
         }, false)
         
-         
         var title = postFrame.insertRow(0)
         var info = postFrame.insertRow(1)
         
@@ -467,10 +470,13 @@ const postObject = {
         infoCell.setAttribute("id", "info_"+this.id)
         infoCell.setAttribute("class", "infoCell")
 
+        titleCell.dataset.postId = this.id
+        infoCell.dataset.postId = this.id
+
         let href = this.topic.replace(/^"(.*)"$/, '$1');
         
         infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>"
-        
+
         if (isUserLoggedIn == false){
             // Don't add fancy unsub/sub button
         } else if (subscriptions.includes(this.topic)) {
@@ -1499,13 +1505,13 @@ function ui_newPost() {
 }
 
 if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
-    //document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
 } 
-if (['search', 'notifications', 'subscriptions', 'home'].indexOf(currentPageType) != -1) {
+if (['search', 'notifications', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
     console.log("hiding")
     document.getElementById("newPost_div").style.display = 'none';
+    document.getElementById("post-button").style.display = 'none';
 }
 
 if (['user','notifications','subscriptions'].indexOf(currentPageType) == -1) {

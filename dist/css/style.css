@@ -22,6 +22,7 @@
 	border-right:1px solid black; 
 	border-top:1px solid black;
 	background-color: var(--foreground-1);
+	flex-grow: ho;
 }
 
 .commentButton {
@@ -398,7 +399,6 @@ label {
 .header-title {
 	display:flex;
 	flex-direction: row;
-	width: calc(98% + 3px);
 }
 
 #page-number {
@@ -458,6 +458,8 @@ a:hover { text-decoration: none; color:red; }
 	font-weight: 200;
 	font-variant: all-petite-caps;
 	margin-top: 5px;
+	position: relative;
+	width: 100%;
 }
 
 .commentCount {
@@ -848,3 +850,11 @@ checkbox {
 	display: block;
 	top: ;
   }
+
+
+.header-title  {
+	flex-grow: 1;
+}
+
+
+

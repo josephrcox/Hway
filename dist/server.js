@@ -54,6 +54,18 @@ async function get_all_avatars() {
     }
 }
 get_all_avatars();
+function sanitize(string) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        "/": '&#x2F;',
+    };
+    const reg = /[&<>"'/]/ig;
+    return string.replace(reg, (match) => (map[match]));
+}
 app.get('/', async (req, res) => {
     var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
     try {
@@ -1036,9 +1048,16 @@ app.post('/register', async (req, res) => {
     res.json({ status: 'ok', code: 200 });
 });
 app.post('/api/post/post', async (req, res) => {
-    const { title, body, link, topic, type, nsfw } = req.body;
+    var { title, body, link, topic, type, nsfw } = req.body;
     let userID;
     let poster;
+    title = sanitize(title);
+    if (body) {
+        body = sanitize(body);
+    }
+    if (link) {
+        link = sanitize(link);
+    }
     var special_attributes = { nsfw: nsfw };
     if (bannedTopics.includes(topic.toLowerCase())) {
         res.status(400);
@@ -1086,10 +1105,11 @@ app.post('/api/post/post', async (req, res) => {
     }
 });
 app.post('/api/post/comment/', async (req, res) => {
-    const { body: reqbody, id } = req.body;
+    var { body: reqbody, id } = req.body;
     let token;
     let userID;
     let username;
+    reqbody = sanitize(reqbody);
     try {
         token = req.cookies.token;
         const verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -1233,7 +1253,7 @@ app.get('/notifications', async (req, res) => {
 });
 app.post('/api/post/comment_nested/', async (req, res) => {
     const { id, parentID } = req.body;
-    let body = req.body.body;
+    let body = sanitize(req.body.body);
     let token;
     let userID;
     let username;
