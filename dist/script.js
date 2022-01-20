@@ -404,6 +404,7 @@ const postObject = {
         }
         voteUpButton.style.width = 'auto';
         voteUpButton.addEventListener('click', function () {
+            console.log(voteUpButton.dataset.postId);
             vote(1, voteUpButton.dataset.postId);
         }, false);
         var voteDownButton = document.createElement("img");
@@ -416,7 +417,7 @@ const postObject = {
         }
         voteDownButton.style.width = 'auto';
         voteDownButton.addEventListener('click', function () {
-            vote(-1, this.id);
+            vote(-1, voteDownButton.dataset.postId);
         }, false);
         var title = postFrame.insertRow(0);
         var info = postFrame.insertRow(1);
@@ -1141,6 +1142,7 @@ const storeAndDisplayTopics = async () => {
 };
 storeAndDisplayTopics();
 const vote = async (change, id) => {
+    console.log(change, id);
     if (lastClick >= (Date.now() - delay)) {
         return;
     }
@@ -1151,9 +1153,9 @@ const vote = async (change, id) => {
     const fetchResponse = await fetch('/vote/' + id + '/' + change, settings);
     const data = await fetchResponse.json();
     if (data.status == 'ok') {
-        document.getElementById('voteCount_' + id.substring(13)).innerHTML = data.newtotal;
-        let voteUpButtonwithID = document.getElementById('voteUpButton_' + id.substring(13));
-        let voteDoButtonwithID = document.getElementById('voteDoButton_' + id.substring(13));
+        document.getElementById('voteCount_' + id).innerHTML = data.newtotal;
+        let voteUpButtonwithID = document.getElementById('voteUpButton_' + id);
+        let voteDoButtonwithID = document.getElementById('voteDoButton_' + id);
         if (data.gif == 'none') {
             voteUpButtonwithID.src = '/assets/up.gif';
             voteDoButtonwithID.src = '/assets/down.gif';
@@ -1167,8 +1169,10 @@ const vote = async (change, id) => {
             voteDoButtonwithID.src = '/assets/down_selected.gif';
         }
     }
-    if (data.error.name == 'JsonWebTokenError') {
-        window.location.href = '/login';
+    if (data.error) {
+        if (data.error.name == 'JsonWebTokenError') {
+            window.location.href = '/login';
+        }
     }
 };
 const voteCom = async (id, parentID, nested, commentParentID) => {
@@ -1278,7 +1282,6 @@ const comment_nested = async (postid, body, commentparentID) => {
     }
 };
 function ui_newPost() {
-    console.log(window.innerWidth, window.outerWidth);
     if (window.innerWidth > 743 || window.location.pathname == '/post') {
         if (document.getElementById("newPost_div").style.display == 'block') {
             document.getElementById("newPost_div").style.display = 'none';

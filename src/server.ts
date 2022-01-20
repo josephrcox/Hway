@@ -1515,7 +1515,7 @@ function isloggedin(req) {
 }
 
 app.put('/vote/:id/:y', function(req,res) {
-	let id = (req.params.id).substring(13)
+	let id = req.params.id
 	let change = req.params.y
 	let token
 	let userID
@@ -1530,6 +1530,7 @@ app.put('/vote/:id/:y', function(req,res) {
 
 	try {
 		Post.findOne({_id: id }, function (err, docs) { 
+			console.log(docs, err)
 			let upvotes = docs.upvotes
 			let downvotes = docs.downvotes
 			let total_votes = docs.total_votes
