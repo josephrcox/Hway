@@ -4,6 +4,7 @@ var notifsDiv = document.getElementById('header-notifs-bell');
 var notifArray = document.getElementById('notif_array');
 var notifAlert = document.getElementById('notif_alert');
 var clearNotifButton = document.getElementById('notif_clearall');
+var notifSorting = document.getElementById('notif_sorting');
 const getNCount = async () => {
     const response = await fetch('/api/get/notification_count');
     const data = await response.json();
@@ -57,53 +58,74 @@ function ringBell() {
     notifsDiv.innerHTML = "" + ncount;
 }
 function displayNotifs() {
+    if (notifSorting.dataset.sortingoption == '0') {
+        notifs.sort(function (a, b) { return a.timestamp - b.timestamp; });
+    }
+    else {
+        notifs.sort(function (a, b) { return b.timestamp - a.timestamp; });
+    }
+    notifSorting.style.display = 'block';
     clearNotifButton.style.display = 'block';
     notifArray.innerHTML = "";
+    let currentTimestamp = new Date();
     for (let i = 0; i < ncount; i++) {
+        let secondsAgo = (currentTimestamp.getTime() - notifs[i].timestamp) / 1000;
+        let timeago;
+        if (secondsAgo > 60) {
+            timeago = Math.floor(secondsAgo / 60) + " minutes ago";
+        }
+        else {
+            timeago = 'less than a minute ago';
+        }
         let c = document.createElement("div");
         c.setAttribute("class", "notifContainer");
         c.setAttribute("id", "notifContainer_" + i);
-        
-        let anb = document.createElement("div")
+        let anb = document.createElement("div");
         anb.setAttribute("class", "notifAvatarAndBody");
-        anb.style.display = 'flex'
-
+        anb.style.display = 'flex';
         let nb = document.createElement("div");
         nb.setAttribute("class", "notifBody");
-        nb.style.paddingLeft = '10px'
-
-        let avatar = document.createElement("img")
-        avatar.src = notifs[i].avatar
-        avatar.style.width = '50px'
-        avatar.style.height = 'auto'
-        avatar.style.marginLeft = '-6px'
-
+        nb.style.paddingLeft = '10px';
+        let avatar = document.createElement("img");
+        avatar.src = notifs[i].avatar;
+        avatar.style.width = '50px';
+        avatar.style.height = 'auto';
+        avatar.style.marginLeft = '-6px';
         let check = document.createElement("span");
         check.setAttribute("class", "notifCheck noselect");
         check.innerHTML = "✔";
-
         check.onclick = function () {
             removeNotif(i, "notifContainer_" + i);
         };
         if (notifs[i].type == 'comment') {
-            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
+            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + timeago + " - " + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
         }
         if (notifs[i].type == 'comment_nested') {
-            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].comment_body + "' in '" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
+            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + timeago + " - " + notifs[i].user + " replied to '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].comment_body + "' in '" + notifs[i].post.title + "</a>':</span><br/> " + notifs[i].body;
         }
         if (notifs[i].type == 'mention') {
-            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + notifs[i].user + " mentioned you in '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].post.title + "</a>'";
+            nb.innerHTML = "<span style='font-size:16px;color:gray;font-style:normal;'>" + timeago + " - " + notifs[i].user + " mentioned you in '<a href='/posts/" + notifs[i].postID + "'>" + notifs[i].post.title + "</a>'";
             check.style.paddingTop = '5px';
             check.style.paddingBottom = '5px';
         }
-
-        anb.append(avatar, nb)
+        anb.append(avatar, nb);
         c.append(anb, check);
         notifArray.append(c);
     }
 }
 notifsDiv.addEventListener('click', function () {
     window.location.href = '/notifications';
+});
+notifSorting.addEventListener('click', function () {
+    if (notifSorting.dataset.sortingoption == '0') {
+        notifSorting.dataset.sortingoption = '1';
+        notifSorting.innerHTML = 'Sorting newest to oldest';
+    }
+    else {
+        notifSorting.dataset.sortingoption = '0';
+        notifSorting.innerHTML = 'Sorting oldest to newest';
+    }
+    displayNotifs();
 });
 const removeNotif = async (index, id) => {
     const settings = {
@@ -120,6 +142,7 @@ const removeNotif = async (index, id) => {
             notifArray.innerHTML = "";
             clearNotifButton.style.display = 'none';
             notifAlert.style.display = 'block';
+            notifSorting.style.display = 'none';
         }
         if (ncount != 0) {
             displayNotifs();
@@ -133,6 +156,7 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         notifArray.innerHTML = "";
         clearNotifButton.style.display = 'none';
         notifAlert.style.display = 'block';
+        notifSorting.style.display = 'none';
         const fetchResponse = await fetch('/api/post/notif/clear/', {
             headers: {
                 'Accept': 'application/json',
