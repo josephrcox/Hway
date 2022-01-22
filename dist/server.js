@@ -1155,7 +1155,7 @@ app.post('/api/post/comment/', async (req, res) => {
                     }
                 }
             }
-            notifyUsers(usersMentioned, "mention", username, id, "");
+            notifyUsers(usersMentioned, "mention", username, id, "", "");
             User.findById(userID, function (err, docs) {
                 docs.statistics.comments.created_num += 1;
                 docs.statistics.comments.created_array.push([reqbody, id, commentid]);
@@ -1176,7 +1176,7 @@ app.post('/api/post/comment/', async (req, res) => {
                         }
                     }
                     postInfo = await Post.findById(id, 'title').exec();
-                    notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody);
+                    notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody, "");
                 }
             });
             res.json(newComment);
@@ -1186,7 +1186,7 @@ app.post('/api/post/comment/', async (req, res) => {
         res.send(err);
     }
 });
-function notifyUsers(users, type, triggerUser, postID, commentBody) {
+function notifyUsers(users, type, triggerUser, postID, commentBody, parentCommentBody) {
     const fulldatetime = getFullDateTimeAndTimeStamp();
     let dt = fulldatetime[0];
     let timestamp = fulldatetime[1];
@@ -1242,6 +1242,7 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
                     notifs.push({
                         type: 'comment_nested',
                         body: commentBody,
+                        comment_body: parentCommentBody,
                         post: postInfo,
                         postID: postID,
                         user: triggerUser,
@@ -1310,7 +1311,7 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                 }
             }
             console.log(usersMentioned);
-            notifyUsers(usersMentioned, "mention", username, id, "");
+            notifyUsers(usersMentioned, "mention", username, id, "", "");
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
             newComment = {
@@ -1342,7 +1343,7 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                         }
                     }
                     postInfo = await Post.findById(id, 'title').exec();
-                    notifyUsers([userDoc.name], 'commentNested', user_triggered_name, id, "pCommentBody");
+                    notifyUsers([userDoc.name], 'commentNested', user_triggered_name, id, body, pCommentBody);
                 }
             });
             res.json(newComment);

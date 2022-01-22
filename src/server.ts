@@ -1297,7 +1297,7 @@ app.post('/api/post/comment/', async(req, res) => {
 			}
 
 			
-			notifyUsers(usersMentioned, "mention", username, id,"")
+			notifyUsers(usersMentioned, "mention", username, id,"","")
 
 			User.findById(userID, function(err, docs) {
 				docs.statistics.comments.created_num += 1
@@ -1321,7 +1321,7 @@ app.post('/api/post/comment/', async(req, res) => {
 					}
 					postInfo = await Post.findById(id, 'title').exec();
 
-					notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody)
+					notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody,"")
 				}
 			})
 			res.json(newComment)
@@ -1332,7 +1332,7 @@ app.post('/api/post/comment/', async(req, res) => {
 	
 })
 
-function notifyUsers(users, type, triggerUser, postID, commentBody) { 
+function notifyUsers(users, type, triggerUser, postID, commentBody, parentCommentBody) { 
 	// users: taken as an array of usernames
 	// type: taken as a string, either 'mention' or 'comment' or 'commentNested'
 	// triggerUser: taken as a string username of user that triggered the notification
@@ -1392,6 +1392,7 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
 						notifs.push({
 						type:'comment_nested', 
 						body: commentBody, 
+						comment_body: parentCommentBody,
 						post: postInfo,
 						postID: postID,
 						user: triggerUser,
@@ -1472,7 +1473,7 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 			}
 
 			console.log(usersMentioned)
-			notifyUsers(usersMentioned, "mention", username, id,"" )
+			notifyUsers(usersMentioned, "mention", username, id,"","" )
 
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
 			let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID)
@@ -1511,7 +1512,7 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 					}
 					postInfo = await Post.findById(id, 'title').exec();
 
-					notifyUsers([userDoc.name], 'commentNested',user_triggered_name, id, "pCommentBody" )
+					notifyUsers([userDoc.name], 'commentNested',user_triggered_name, id, body, pCommentBody)
 					// notifs.push({
 					// 	type:'comment_nested', 
 					// 	body: body, 
