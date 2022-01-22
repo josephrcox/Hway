@@ -1513,18 +1513,6 @@ app.post('/api/post/comment_nested/', async(req, res) => {
 					postInfo = await Post.findById(id, 'title').exec();
 
 					notifyUsers([userDoc.name], 'commentNested',user_triggered_name, id, body, pCommentBody)
-					// notifs.push({
-					// 	type:'comment_nested', 
-					// 	body: body, 
-					// 	comment_body: pCommentBody,
-					// 	post: postInfo,
-					// 	postID: id,
-					// 	user: user_triggered_name,
-					// 	avatar: user_triggered_avatar
-					// })
-
-					// userDoc.notifications = notifs
-					// userDoc.save()
 				}
 			})
 
