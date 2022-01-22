@@ -1823,6 +1823,8 @@ app.get('*', async (req, res) => {
 });
 function getFullDateTimeAndTimeStamp() {
     let datetime = new Date();
+    console.log(datetime);
+    console.log(datetime.getTime());
     let month = datetime.getUTCMonth() + 1;
     let day = datetime.getUTCDate();
     let year = datetime.getUTCFullYear();

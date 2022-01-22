@@ -78,12 +78,27 @@ function displayNotifs() {
     let currentTimestamp = new Date()
 
     for (let i=0;i<ncount;i++) {
-        let secondsAgo = (currentTimestamp.getTime() - notifs[i].timestamp) / 1000;
-        let timeago
-        if (secondsAgo > 60) {
-            timeago = Math.floor(secondsAgo/60) + " minutes ago"
-        } else {
-            timeago = 'less than a minute ago'
+        let diffMs = currentTimestamp.getTime() - notifs[i].timestamp;
+        let timeago = 'less than 1 minute ago'
+        console.log(diffMs)
+        
+        if (diffMs > 60000) {
+            timeago = Math.round(diffMs/60000) + ' minutes ago'
+        }
+        if (diffMs > 3600000) {
+            timeago = Math.round(diffMs/3600000) + ' hours ago'
+        }
+        if (diffMs > 86400000) {
+            timeago = Math.round(diffMs/86400000) + ' days ago'
+        }
+        if (diffMs > 604800000) {
+            timeago = Math.round(diffMs/604800000) + ' weeks ago'
+        }
+        if (diffMs > (604800000*31)) {
+            timeago = Math.round(diffMs/(604800000*31)) + ' months ago'
+        }
+        if (diffMs > 31556952000) {
+            timeago = Math.round(diffMs/31556952000) + ' years ago'
         }
 
         let c = document.createElement("div");
