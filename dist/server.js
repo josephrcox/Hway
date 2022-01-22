@@ -1187,6 +1187,9 @@ app.post('/api/post/comment/', async (req, res) => {
     }
 });
 function notifyUsers(users, type, triggerUser, postID, commentBody) {
+    const fulldatetime = getFullDateTimeAndTimeStamp();
+    let dt = fulldatetime[0];
+    let timestamp = fulldatetime[1];
     users = users.filter(function (u, index, input) {
         return input.indexOf(u) == index;
     });
@@ -1201,7 +1204,6 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
                 let notifs = user.notifications;
                 let postInfo;
                 for (let i = 0; i < users.length; i++) {
-                    console.log(users[i]);
                     if (users[i] == triggerUser) {
                         let indexOfUser = masterUserArr.findIndex(x => x[1] == triggerUser);
                         user_triggered_avatar = masterUserArr[indexOfUser][2];
@@ -1215,7 +1217,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
                         post: postInfo,
                         postID: postID,
                         user: triggerUser,
-                        avatar: user_triggered_avatar
+                        avatar: user_triggered_avatar,
+                        date: dt,
+                        timestamp: timestamp
                     });
                     user.notifications = notifs;
                     user.save();
@@ -1227,7 +1231,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
                         post: postInfo,
                         postID: postID,
                         user: triggerUser,
-                        avatar: user_triggered_avatar
+                        avatar: user_triggered_avatar,
+                        date: dt,
+                        timestamp: timestamp
                     });
                     user.notifications = notifs;
                     user.save();
@@ -1239,7 +1245,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
                         post: postInfo,
                         postID: postID,
                         user: triggerUser,
-                        avatar: user_triggered_avatar
+                        avatar: user_triggered_avatar,
+                        date: dt,
+                        timestamp: timestamp
                     });
                     user.notifications = notifs;
                     user.save();

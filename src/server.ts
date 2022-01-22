@@ -1338,6 +1338,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
 	// triggerUser: taken as a string username of user that triggered the notification
 	// postID: string of postID which we should link the user to
 
+	const fulldatetime = getFullDateTimeAndTimeStamp()
+	let dt = fulldatetime[0]
+	let timestamp = fulldatetime[1]
 
 	users = users.filter(function(u,index,input) {
 		return input.indexOf(u) == index
@@ -1346,18 +1349,12 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
 	for (let i=0;i<userCount;i++) {
 		User.findOne({name:users[i]}, async function(err, user) {
 			if (err) {
-				
 			} else {
 				let user_triggered_avatar
 				let user_triggered_name
 				let notifs:any[] = user.notifications
 				let postInfo:any[]
-				// if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
-				// 	let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
-				// 	postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
-				// }
 				for (let i=0;i<users.length;i++) {
-					console.log(users[i])
 					if (users[i] == triggerUser) {
 						let indexOfUser = masterUserArr.findIndex(x => x[1] == triggerUser)
 						user_triggered_avatar = masterUserArr[indexOfUser][2]
@@ -1372,7 +1369,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
 						post: postInfo,
 						postID: postID,
 						user: triggerUser,
-						avatar: user_triggered_avatar
+						avatar: user_triggered_avatar,
+						date: dt,
+						timestamp:timestamp
 					 })
 					user.notifications = notifs
 					user.save()
@@ -1383,7 +1382,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
 						post: postInfo,
 						postID: postID,
 						user: triggerUser,
-						avatar: user_triggered_avatar
+						avatar: user_triggered_avatar,
+						date: dt,
+						timestamp:timestamp
 					 })
 					user.notifications = notifs
 					user.save()
@@ -1394,7 +1395,9 @@ function notifyUsers(users, type, triggerUser, postID, commentBody) {
 						post: postInfo,
 						postID: postID,
 						user: triggerUser,
-						avatar: user_triggered_avatar
+						avatar: user_triggered_avatar,
+						date: dt,
+						timestamp:timestamp
 					})
 					user.notifications = notifs
 					user.save()
