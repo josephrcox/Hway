@@ -185,7 +185,10 @@ app.get('/api/get/notification_count', async (req, res) => {
                 res.send({ status: 'error' });
             }
             else {
-                res.send({ length: docs.notifications.length });
+                let notifs = (docs.notifications.filter(function (x) {
+                    return x.status == "active";
+                }));
+                res.send({ length: notifs.length });
             }
         });
     }
@@ -214,7 +217,10 @@ app.get('/api/get/notifications', function (req, res) {
                 res.send({ status: 'error' });
             }
             else {
-                res.send(docs.notifications);
+                let notifs = (docs.notifications.filter(function (x) {
+                    return x.status == "active";
+                }));
+                res.send(notifs);
             }
         });
     }
@@ -241,7 +247,9 @@ app.put('/api/put/notif/remove/:index', function (req, res) {
         let token = req.cookies.token;
         let user = jwt.verify(token, process.env.JWT_SECRET);
         User.findById(user.id, function (err, docs) {
-            docs.notifications.splice(req.params.index, 1);
+            let notif = docs.notifications[req.params.index];
+            notif.status = "cleared";
+            docs.notifications[req.params.index] = notif;
             docs.save();
             res.send({ status: 'ok' });
         });
@@ -255,7 +263,11 @@ app.post('/api/post/notif/clear/', function (req, res) {
         let token = req.cookies.token;
         let user = jwt.verify(token, process.env.JWT_SECRET);
         User.findById(user.id, function (err, docs) {
-            docs.notifications = [];
+            for (let i = 0; i < docs.notifications.length; i++) {
+                let notif = docs.notifications[i];
+                notif.status = "cleared";
+                docs.notifications[i] = notif;
+            }
             docs.save();
             res.send({ status: 'ok' });
         });
@@ -1219,7 +1231,8 @@ function notifyUsers(users, type, triggerUser, postID, commentBody, parentCommen
                         user: triggerUser,
                         avatar: user_triggered_avatar,
                         date: dt,
-                        timestamp: timestamp
+                        timestamp: timestamp,
+                        status: 'active'
                     });
                     user.notifications = notifs;
                     user.save();
@@ -1233,7 +1246,8 @@ function notifyUsers(users, type, triggerUser, postID, commentBody, parentCommen
                         user: triggerUser,
                         avatar: user_triggered_avatar,
                         date: dt,
-                        timestamp: timestamp
+                        timestamp: timestamp,
+                        status: 'active'
                     });
                     user.notifications = notifs;
                     user.save();
@@ -1248,7 +1262,8 @@ function notifyUsers(users, type, triggerUser, postID, commentBody, parentCommen
                         user: triggerUser,
                         avatar: user_triggered_avatar,
                         date: dt,
-                        timestamp: timestamp
+                        timestamp: timestamp,
+                        status: 'active'
                     });
                     user.notifications = notifs;
                     user.save();
