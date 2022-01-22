@@ -63,11 +63,25 @@ function displayNotifs() {
         let c = document.createElement("div");
         c.setAttribute("class", "notifContainer");
         c.setAttribute("id", "notifContainer_" + i);
+        
+        let anb = document.createElement("div")
+        anb.setAttribute("class", "notifAvatarAndBody");
+        anb.style.display = 'flex'
+
         let nb = document.createElement("div");
         nb.setAttribute("class", "notifBody");
+        nb.style.paddingLeft = '10px'
+
+        let avatar = document.createElement("img")
+        avatar.src = notifs[i].avatar
+        avatar.style.width = '50px'
+        avatar.style.height = 'auto'
+        avatar.style.marginLeft = '-6px'
+
         let check = document.createElement("span");
         check.setAttribute("class", "notifCheck noselect");
         check.innerHTML = "✔";
+
         check.onclick = function () {
             removeNotif(i, "notifContainer_" + i);
         };
@@ -82,7 +96,9 @@ function displayNotifs() {
             check.style.paddingTop = '5px';
             check.style.paddingBottom = '5px';
         }
-        c.append(nb, check);
+
+        anb.append(avatar, nb)
+        c.append(anb, check);
         notifArray.append(c);
     }
 }
@@ -93,18 +109,18 @@ const removeNotif = async (index, id) => {
     const settings = {
         method: 'PUT',
     };
-    document.getElementById(id).innerHTML = "";
-    ncount -= 1;
-    notifs.splice(index, 1);
-    if (ncount == 0) {
-        notifAlert.innerHTML = 'No new notifications!';
-        notifArray.innerHTML = "";
-        clearNotifButton.style.display = 'none';
-        notifAlert.style.display = 'block';
-    }
     const response = await fetch('/api/put/notif/remove/' + index, settings);
     const data = await response.json();
     if (data.status == 'ok') {
+        ncount -= 1;
+        document.getElementById(id).innerHTML = "";
+        notifs.splice(index, 1);
+        if (ncount == 0) {
+            notifAlert.innerHTML = 'No new notifications!';
+            notifArray.innerHTML = "";
+            clearNotifButton.style.display = 'none';
+            notifAlert.style.display = 'block';
+        }
         if (ncount != 0) {
             displayNotifs();
         }

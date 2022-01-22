@@ -11,7 +11,7 @@ const { response } = require('express');
 const path = require('path');
 const fs = require('fs');
 app.use(cookieParser());
-var users = [];
+var masterUserArr = [];
 var IDs = [];
 var topicArray = [];
 var topicCount = [];
@@ -50,7 +50,7 @@ const bannedUsernames = ['joey', 'admin',];
 async function get_all_avatars() {
     let tempUsers = await User.find({});
     for (let i = 0; i < tempUsers.length; i++) {
-        users.push([tempUsers[i].id, tempUsers[i].name, tempUsers[i].avatar]);
+        masterUserArr.push([tempUsers[i].id, tempUsers[i].name, tempUsers[i].avatar]);
     }
 }
 get_all_avatars();
@@ -698,9 +698,9 @@ app.get('/api/get/:topic/q', async (req, res) => {
                         postsonpage[i].current_user_upvoted = false;
                         postsonpage[i].current_user_downvoted = true;
                     }
-                    if (users.some(x => x[0] == postsonpage[i].posterID)) {
-                        let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID);
-                        postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+                    if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
+                        let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID);
+                        postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2];
                     }
                     else {
                     }
@@ -801,9 +801,9 @@ app.get('/api/get/:topic/q', async (req, res) => {
                 postsonpage[i].current_user_upvoted = false;
                 postsonpage[i].current_user_downvoted = true;
             }
-            if (users.some(x => x[0] == postsonpage[i].posterID)) {
-                let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID);
-                postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+            if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
+                let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID);
+                postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2];
             }
             else {
             }
@@ -894,9 +894,9 @@ app.get('/api/get/:topic/q', async (req, res) => {
                         postsonpage[i].current_user_upvoted = false;
                         postsonpage[i].current_user_downvoted = true;
                     }
-                    if (users.some(x => x[0] == postsonpage[i].posterID)) {
-                        let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID);
-                        postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+                    if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
+                        let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID);
+                        postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2];
                     }
                     else {
                     }
@@ -946,9 +946,9 @@ app.get('/api/get/posts/user/:user', async (req, res) => {
                     postsonpage[i].current_user_upvoted = false;
                     postsonpage[i].current_user_downvoted = true;
                 }
-                if (users.some(x => x[0] == posts[i].posterID)) {
-                    let indexOfUser = users.findIndex(x => x[0] == posts[i].posterID);
-                    postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+                if (masterUserArr.some(x => x[0] == posts[i].posterID)) {
+                    let indexOfUser = masterUserArr.findIndex(x => x[0] == posts[i].posterID);
+                    postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2];
                 }
                 else {
                 }
@@ -1155,7 +1155,7 @@ app.post('/api/post/comment/', async (req, res) => {
                     }
                 }
             }
-            notifyUsers(usersMentioned, "mention", username, id);
+            notifyUsers(usersMentioned, "mention", username, id, "");
             User.findById(userID, function (err, docs) {
                 docs.statistics.comments.created_num += 1;
                 docs.statistics.comments.created_array.push([reqbody, id, commentid]);
@@ -1169,23 +1169,14 @@ app.post('/api/post/comment/', async (req, res) => {
                     let user_triggered_name;
                     let notifs = docs.notifications;
                     let postInfo;
-                    for (let i = 0; i < users.length; i++) {
-                        if (users[i][0] == userID) {
-                            user_triggered_avatar = users[i][2];
-                            user_triggered_name = users[i][1];
+                    for (let i = 0; i < masterUserArr.length; i++) {
+                        if (masterUserArr[i][0] == userID) {
+                            user_triggered_avatar = masterUserArr[i][2];
+                            user_triggered_name = masterUserArr[i][1];
                         }
                     }
                     postInfo = await Post.findById(id, 'title').exec();
-                    notifs.push({
-                        type: 'comment',
-                        body: reqbody,
-                        post: postInfo,
-                        postID: id,
-                        user: user_triggered_name,
-                        avatar: user_triggered_avatar
-                    });
-                    docs.notifications = notifs;
-                    docs.save();
+                    notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody);
                 }
             });
             res.json(newComment);
@@ -1195,7 +1186,7 @@ app.post('/api/post/comment/', async (req, res) => {
         res.send(err);
     }
 });
-function notifyUsers(users, type, triggerUser, postID) {
+function notifyUsers(users, type, triggerUser, postID, commentBody) {
     users = users.filter(function (u, index, input) {
         return input.indexOf(u) == index;
     });
@@ -1210,22 +1201,49 @@ function notifyUsers(users, type, triggerUser, postID) {
                 let notifs = user.notifications;
                 let postInfo;
                 for (let i = 0; i < users.length; i++) {
-                    if (users[i][1] == triggerUser) {
-                        user_triggered_avatar = users[i][2];
-                        user_triggered_name = triggerUser;
+                    console.log(users[i]);
+                    if (users[i] == triggerUser) {
+                        let indexOfUser = masterUserArr.findIndex(x => x[1] == triggerUser);
+                        user_triggered_avatar = masterUserArr[indexOfUser][2];
                     }
                 }
                 postInfo = await Post.findById(postID, 'title').exec();
-                notifs.push({
-                    type: 'mention',
-                    body: '',
-                    post: postInfo,
-                    postID: postID,
-                    user: triggerUser,
-                    avatar: user_triggered_avatar
-                });
-                user.notifications = notifs;
-                user.save();
+                if (type == 'mention') {
+                    notifs.push({
+                        type: 'mention',
+                        body: '',
+                        post: postInfo,
+                        postID: postID,
+                        user: triggerUser,
+                        avatar: user_triggered_avatar
+                    });
+                    user.notifications = notifs;
+                    user.save();
+                }
+                else if (type == 'comment') {
+                    notifs.push({
+                        type: 'comment',
+                        body: commentBody,
+                        post: postInfo,
+                        postID: postID,
+                        user: triggerUser,
+                        avatar: user_triggered_avatar
+                    });
+                    user.notifications = notifs;
+                    user.save();
+                }
+                else if (type == 'commentNested') {
+                    notifs.push({
+                        type: 'comment_nested',
+                        body: commentBody,
+                        post: postInfo,
+                        postID: postID,
+                        user: triggerUser,
+                        avatar: user_triggered_avatar
+                    });
+                    user.notifications = notifs;
+                    user.save();
+                }
             }
         });
     }
@@ -1283,7 +1301,8 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                     }
                 }
             }
-            notifyUsers(usersMentioned, "mention", username, id);
+            console.log(usersMentioned);
+            notifyUsers(usersMentioned, "mention", username, id, "");
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
             newComment = {
@@ -1308,24 +1327,14 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                     let user_triggered_name;
                     let notifs = userDoc.notifications;
                     let postInfo;
-                    for (let i = 0; i < users.length; i++) {
-                        if (users[i][0] == userID) {
-                            user_triggered_avatar = users[i][2];
-                            user_triggered_name = users[i][1];
+                    for (let i = 0; i < masterUserArr.length; i++) {
+                        if (masterUserArr[i][0] == userID) {
+                            user_triggered_avatar = masterUserArr[i][2];
+                            user_triggered_name = masterUserArr[i][1];
                         }
                     }
                     postInfo = await Post.findById(id, 'title').exec();
-                    notifs.push({
-                        type: 'comment_nested',
-                        body: body,
-                        comment_body: pCommentBody,
-                        post: postInfo,
-                        postID: id,
-                        user: user_triggered_name,
-                        avatar: user_triggered_avatar
-                    });
-                    userDoc.notifications = notifs;
-                    userDoc.save();
+                    notifyUsers([userDoc.name], 'commentNested', user_triggered_name, id, "pCommentBody");
                 }
             });
             res.json(newComment);
@@ -1756,9 +1765,9 @@ app.get('/api/get/search/', async (req, res) => {
                     postsonpage[i].current_user_upvoted = false;
                     postsonpage[i].current_user_downvoted = true;
                 }
-                if (users.some(x => x[0] == postsonpage[i].posterID)) {
-                    let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID);
-                    postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+                if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
+                    let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID);
+                    postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2];
                 }
                 else {
                 }
@@ -1789,9 +1798,9 @@ app.get('/api/get/search/', async (req, res) => {
                     postsonpage[i].current_user_upvoted = false;
                     postsonpage[i].current_user_downvoted = true;
                 }
-                if (users.some(x => x[0] == postsonpage[i].posterID)) {
-                    let indexOfUser = users.findIndex(x => x[0] == postsonpage[i].posterID);
-                    postsonpage[i].posterAvatarSrc = users[indexOfUser][2];
+                if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
+                    let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID);
+                    postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2];
                 }
                 else {
                 }

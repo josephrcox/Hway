@@ -113,21 +113,24 @@ const removeNotif = async(index, id) => {
     const settings = {
         method: 'PUT',
     };
-    document.getElementById(id).innerHTML = ""
-    ncount -= 1
-    notifs.splice(index,1)
-    if (ncount == 0) {
-        notifAlert.innerHTML = 'No new notifications!'
-        notifArray.innerHTML = ""
-        clearNotifButton.style.display = 'none'
-        notifAlert.style.display = 'block'
-    } 
+
+
+
     const response = await fetch('/api/put/notif/remove/'+index, settings)
     const data = await response.json()
 
    
 
     if (data.status == 'ok') {
+        ncount -= 1
+        document.getElementById(id).innerHTML = ""
+        notifs.splice(index,1)
+        if (ncount == 0) {
+            notifAlert.innerHTML = 'No new notifications!'
+            notifArray.innerHTML = ""
+            clearNotifButton.style.display = 'none'
+            notifAlert.style.display = 'block'
+        } 
         if (ncount != 0) {
             displayNotifs()
         }
