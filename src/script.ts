@@ -1512,7 +1512,7 @@ if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPage
     document.getElementById("newPost_logs").innerHTML = "";
     document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
 } 
-if (['search', 'notifications', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
+if (['search', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
     console.log("hiding")
     document.getElementById("newPost_div").style.display = 'none';
     document.getElementById("post-button").style.display = 'none';
