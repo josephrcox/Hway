@@ -13,7 +13,6 @@ const getNCount = async () => {
         ringBell();
         if ((window.location.href).indexOf('notifications') != -1) {
             getNotifs();
-            displayNotifs();
         }
     }
     else {
@@ -32,8 +31,9 @@ const getNotifs = async () => {
     console.info("Finding notifications...");
     const response = await fetch('/api/get/notifications');
     const data = await response.json();
-    ncount = data.length;
-    notifs = data;
+    ncount = await data.length;
+    notifs = await data;
+    
     if (data.status == 'error') {
         notifAlert.innerHTML = '<a href="/login">Login to view notifications </a>';
     }
@@ -69,6 +69,7 @@ function displayNotifs() {
     notifArray.innerHTML = "";
     let currentTimestamp = new Date();
     for (let i = 0; i < ncount; i++) {
+        console.log(notifs);
         let diffMs = currentTimestamp.getTime() - notifs[i].timestamp;
         let timeago = 'less than 1 minute ago';
         console.log(diffMs);

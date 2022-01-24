@@ -78,6 +78,7 @@ function displayNotifs() {
     let currentTimestamp = new Date()
 
     for (let i=0;i<ncount;i++) {
+        console.log(notifs)
         let diffMs = currentTimestamp.getTime() - notifs[i].timestamp;
         let timeago = 'less than 1 minute ago'
         console.log(diffMs)
