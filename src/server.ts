@@ -236,15 +236,23 @@ app.get('/api/get/notification_count', async(req,res) => {
 	}
 })
 
-app.get('/api/get/notifications', function(req,res) {
+app.get('/api/get/notifications/:cleared', function(req,res) {
 	if (currentUser) {
 		User.findById(currentUser, function(err,docs) {
 			if (err) {
 				res.send({status:'error'})
 			} else {
-				let notifs = (docs.notifications.filter(function(x){
-					return x.status == "active";         
-				}))
+				let notifs
+				if (req.params.cleared != "true") {
+					notifs = (docs.notifications.filter(function(x){
+						return x.status == "active";         
+					}))
+				} else {
+					notifs = notifs = (docs.notifications.filter(function(x){
+						return x.status != "active";         
+					}))
+				}
+				
 				res.send(notifs)
 			}
 		})

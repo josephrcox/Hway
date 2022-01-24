@@ -6,6 +6,7 @@ var notifArray = document.getElementById('notif_array')
 var notifAlert = document.getElementById('notif_alert')
 var clearNotifButton = document.getElementById('notif_clearall')
 var notifSorting = document.getElementById('notif_sorting')
+var notifShowCleared = document.getElementById('notif_viewcleared')
 
 const getNCount = async() => {
     const response = await fetch('/api/get/notification_count')
@@ -31,9 +32,9 @@ const getNCount = async() => {
 
 }
 
-const getNotifs = async() => {
+const getNotifs = async(cleared) => {
     console.info("Finding notifications...")
-    const response = await fetch('/api/get/notifications')
+    const response = await fetch('/api/get/notifications/'+cleared)
     const data = await response.json()
 
     ncount = data.length
@@ -72,6 +73,7 @@ function displayNotifs() {
     }
 
     notifSorting.style.display = 'block'
+    notifShowCleared.style.display = 'block'
     clearNotifButton.style.display = 'block'
     notifArray.innerHTML = ""
     let currentTimestamp = new Date()
@@ -208,7 +210,21 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         }
         displayNotifs()
     })
+
+    notifShowCleared.addEventListener('click', function() {
+        if (notifShowCleared.dataset.cleared == "false") {
+            notifShowCleared.dataset.cleared = "true"
+            notifShowCleared.innerText = "View new"
+            getNotifs(true)
+        } else {
+            notifShowCleared.dataset.cleared = "false"
+            notifShowCleared.innerText = "View cleared"
+            getNotifs(false)
+        }
+    })
 }
+
+
 
 
 getNCount()
