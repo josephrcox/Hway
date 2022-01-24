@@ -31,9 +31,8 @@ const getNotifs = async () => {
     console.info("Finding notifications...");
     const response = await fetch('/api/get/notifications');
     const data = await response.json();
-    ncount = await data.length;
-    notifs = await data;
-    
+    ncount = data.length;
+    notifs = data;
     if (data.status == 'error') {
         notifAlert.innerHTML = '<a href="/login">Login to view notifications </a>';
     }

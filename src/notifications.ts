@@ -16,7 +16,6 @@ const getNCount = async() => {
         ringBell()
         if ((window.location.href).indexOf('notifications') != -1) {
             getNotifs()
-            displayNotifs()
         }
     } else {
         ringBell()
