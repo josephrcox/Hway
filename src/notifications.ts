@@ -16,7 +16,11 @@ const getNCount = async() => {
     if (ncount >= 1) {
         ringBell()
         if ((window.location.href).indexOf('notifications') != -1) {
-            getNotifs()
+            if (notifShowCleared.dataset.cleared == "false") {
+                getNotifs(false)
+            } else {
+                getNotifs(true)
+            }
         }
     } else {
         ringBell()
@@ -32,7 +36,7 @@ const getNCount = async() => {
 
 }
 
-const getNotifs = async(cleared) => {
+const getNotifs = async(cleared:boolean) => {
     console.info("Finding notifications...")
     const response = await fetch('/api/get/notifications/'+cleared)
     const data = await response.json()

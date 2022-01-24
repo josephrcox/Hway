@@ -13,7 +13,12 @@ const getNCount = async () => {
     if (ncount >= 1) {
         ringBell();
         if ((window.location.href).indexOf('notifications') != -1) {
-            getNotifs();
+            if (notifShowCleared.dataset.cleared == "false") {
+                getNotifs(false);
+            }
+            else {
+                getNotifs(true);
+            }
         }
     }
     else {
