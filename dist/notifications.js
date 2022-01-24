@@ -130,17 +130,6 @@ function displayNotifs() {
 notifsDiv.addEventListener('click', function () {
     window.location.href = '/notifications';
 });
-notifSorting.addEventListener('click', function () {
-    if (notifSorting.dataset.sortingoption == '0') {
-        notifSorting.dataset.sortingoption = '1';
-        notifSorting.innerHTML = 'Sorting newest to oldest';
-    }
-    else {
-        notifSorting.dataset.sortingoption = '0';
-        notifSorting.innerHTML = 'Sorting oldest to newest';
-    }
-    displayNotifs();
-});
 const removeNotif = async (index, id) => {
     const settings = {
         method: 'PUT',
@@ -181,6 +170,17 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         var data = await fetchResponse.json();
         notifs = [];
         ringBell();
+    });
+    notifSorting.addEventListener('click', function () {
+        if (notifSorting.dataset.sortingoption == '0') {
+            notifSorting.dataset.sortingoption = '1';
+            notifSorting.innerHTML = 'Sorting newest to oldest';
+        }
+        else {
+            notifSorting.dataset.sortingoption = '0';
+            notifSorting.innerHTML = 'Sorting oldest to newest';
+        }
+        displayNotifs();
     });
 }
 getNCount();

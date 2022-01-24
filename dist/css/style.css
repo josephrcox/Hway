@@ -740,6 +740,7 @@ checkbox {
     color: white;
     padding: 20px;
     margin-right: -5px;
+	cursor: pointer;
 }
 
 .notif_page_flex {
