@@ -488,7 +488,7 @@ const postObject = {
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
             del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
-            del.style.color = 'green';
+            del.style.color = 'white';
             let delPostConfirmation = false;
             let delPostConfirmationId;
             del.onclick = function () {
@@ -923,6 +923,7 @@ const loadPosts = async (topic) => {
         const response = await fetch('/api/get/posts/' + postid);
         const data = await response.json();
         document.getElementById("postsArray").innerHTML = "";
+        document.getElementById("posts_and_more").style.marginTop = '-28px';
         if (data.length == 0 || data.status == 'error') {
             document.getElementById("postsArray").innerHTML = "<span style='color:white'>" + data.data + " </span>";
             document.getElementById("commentSection").style.display = 'none';
