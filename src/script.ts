@@ -814,7 +814,7 @@ const commentObject = {
             if (this.nested_comments[i].posterid == currentUserID) {
                
                 var delnc = document.createElement("span")
-                delnc.setAttribute("class", "deletePostButton")
+                // delnc.setAttribute("class", "deletePostButton")
                 delnc.setAttribute("id", "deletePostButton_"+this.nested_comments[i].id+"_"+this.id)
                 delnc.style.marginTop = '-15px'
                 delnc.style.marginRight = '10px'
