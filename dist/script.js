@@ -372,11 +372,11 @@ const postObject = {
         voteDiv.setAttribute("id", "voteDiv_" + this.id);
         voteDiv.setAttribute("class", "voteDiv");
         voteDiv.dataset.postId = this.id;
-        var openPostButton = document.createElement("img");
+        var openPostButton = document.createElement("span");
         openPostButton.setAttribute("id", "openPostButton_" + this.id);
         openPostButton.setAttribute("class", "openPostButton");
         openPostButton.dataset.postId = this.id;
-        openPostButton.src = '/assets/speech_bubble.png';
+        openPostButton.innerHTML = '<i style="font-size:24px;padding-right:10px;" class="fas fa-comment-dots"></i>';
         openPostButton.addEventListener('click', function () {
             window.location.href = '/posts/' + openPostButton.dataset.postId;
         }, false);
@@ -484,12 +484,11 @@ const postObject = {
             };
         }
         if (this.current_user_admin) {
-            var del = document.createElement("img");
+            var del = document.createElement("div");
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
-            del.src = "/assets/trash.png";
-            del.style.height = '20px';
-            del.style.width = 'auto';
+            del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
+            del.style.color = 'white';
             let delPostConfirmation = false;
             let delPostConfirmationId;
             del.onclick = function () {
@@ -498,13 +497,13 @@ const postObject = {
                         deletePost(del.id.split("_")[1]);
                     }
                     else {
-                        del.src = "/assets/trash_confirm.png";
+                        del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> <span style="font-size:18px;">Delete?</span>';
                         delPostConfirmation = true;
                         delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    del.src = "/assets/trash_confirm.png";
+                    del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                     delPostConfirmation = true;
                     delPostConfirmationId = del.id.split("_")[1];
                 }
@@ -619,11 +618,12 @@ const commentObject = {
         infoCell.setAttribute("class", "comInfoCell");
         infoCell.setAttribute("id", "comInfoCell_" + this.id);
         if (this.current_user_admin) {
-            var del = document.createElement("img");
+            var del = document.createElement("span");
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
-            del.src = "/assets/trash.png";
+            del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
             del.style.height = '20px';
+            del.style.display = 'inline';
             del.style.width = 'auto';
             del.style.paddingLeft = '10px';
             del.style.marginBottom = '-5px';
@@ -635,13 +635,13 @@ const commentObject = {
                         deleteComment(del.id.split("_")[1]);
                     }
                     else {
-                        del.src = "/assets/trash_confirm.png";
+                        del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                         delPostConfirmation = true;
                         delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    del.src = "/assets/trash_confirm.png";
+                    del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                     delPostConfirmation = true;
                     delPostConfirmationId = del.id.split("_")[1];
                 }
@@ -706,12 +706,11 @@ const commentObject = {
                 voteCom(self.nested_comments[i].id, currentPostID, true, self.id);
             };
             if (this.nested_comments[i].posterid == currentUserID) {
-                var delnc = document.createElement("img");
-                delnc.setAttribute("class", "deletePostButton");
+                var delnc = document.createElement("span");
                 delnc.setAttribute("id", "deletePostButton_" + this.nested_comments[i].id + "_" + this.id);
                 delnc.style.marginTop = '-15px';
                 delnc.style.marginRight = '10px';
-                delnc.src = "/assets/trash.png";
+                delnc.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
                 delnc.style.height = '20px';
                 delnc.style.width = 'auto';
                 delnc.style.paddingLeft = '10px';
@@ -725,13 +724,13 @@ const commentObject = {
                             deleteNestedComment(window.location.href.split('/posts/')[1], self.id.split('_')[2], self.id.split('_')[1]);
                         }
                         else {
-                            self.src = "/assets/trash_confirm.png";
+                            self.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                             delPostConfirmation = true;
                             delPostConfirmationId = self.id.split('_')[1];
                         }
                     }
                     else {
-                        self.src = "/assets/trash_confirm.png";
+                        self.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                         delPostConfirmation = true;
                         delPostConfirmationId = self.id.split('_')[1];
                     }
@@ -772,6 +771,9 @@ const commentObject = {
         if (this.nested_comments.length == 0) {
             ncContainer.style.display = 'none';
         }
+        var voteDiv = document.createElement("div");
+        voteDiv.setAttribute("id", "voteDiv_" + this.id);
+        voteDiv.setAttribute("class", "comVoteDiv");
         if (isUserLoggedIn) {
             var replyDiv = document.createElement("div");
             replyDiv.setAttribute("class", "comreplyDiv");
@@ -791,11 +793,11 @@ const commentObject = {
                 comment_nested(parentID, reply.value, replySubmit.id.split('_')[1]);
                 reply.value = "";
             };
-            var replyButton = document.createElement('img');
+            var replyButton = document.createElement('span');
             replyButton.setAttribute("class", "comreplybutton");
             replyButton.setAttribute("id", "comreplyButton_" + this.id);
-            replyButton.src = '/assets/speech_bubble.png';
-            infoRow.appendChild(replyButton);
+            replyButton.innerHTML = '<i style="color:black;font-size:24px;" class="far fa-comment-dots"></i>';
+            voteDiv.appendChild(replyButton);
             replyButton.onclick = function () {
                 document.getElementById("comreplyDiv_" + replyButton.id.split('_')[1]).scrollIntoView();
             };
@@ -803,9 +805,6 @@ const commentObject = {
             document.getElementById("comreplyDiv_" + this.id).appendChild(replyBox);
             document.getElementById("comreplyDiv_" + this.id).appendChild(replySubmit);
         }
-        var voteDiv = document.createElement("div");
-        voteDiv.setAttribute("id", "voteDiv_" + this.id);
-        voteDiv.setAttribute("class", "comVoteDiv");
         var voteCount = document.createElement("div");
         voteCount.setAttribute("id", "voteCount_" + this.id);
         voteCount.setAttribute("class", "comVoteCount");
@@ -923,6 +922,7 @@ const loadPosts = async (topic) => {
         const response = await fetch('/api/get/posts/' + postid);
         const data = await response.json();
         document.getElementById("postsArray").innerHTML = "";
+        document.getElementById("posts_and_more").style.marginTop = '-28px';
         if (data.length == 0 || data.status == 'error') {
             document.getElementById("postsArray").innerHTML = "<span style='color:white'>" + data.data + " </span>";
             document.getElementById("commentSection").style.display = 'none';
@@ -1258,27 +1258,33 @@ const comment_nested = async (postid, body, commentparentID) => {
             method: 'POST',
             body: JSON.stringify(bodyJSON)
         });
-        var data = await fetchResponse.json();
+        const data = await fetchResponse.json();
         let upcomment = document.getElementById('fullCommentContainer_' + commentparentID);
-        document.getElementById('comreplybox_' + commentparentID).outerHTML = "";
-        document.getElementById('comreplySubmit_' + commentparentID).outerHTML = "";
-        const comResponse = await fetch('/api/get/comment/' + postid + '/' + commentparentID);
-        const comData = await comResponse.json();
-        let com = Object.create(commentObject);
-        com.body = comData.body;
-        com.id = comData._id;
-        com.total_votes = comData.total_votes;
-        com.poster = comData.poster;
-        com.posterID = comData.posterID;
-        com.date = comData.date;
-        com.users_voted = comData.users_voted;
-        com.parentID = postid;
-        com.nested_comments = comData.nested_comments;
-        com.current_user_voted = comData.current_user_voted;
-        com.current_user_admin = comData.current_user_admin;
-        upcomment.innerHTML = "";
-        com.display();
-        window.scrollBy(0, 125);
+        var ncContainer = document.createElement("div");
+        ncContainer.setAttribute("class", "ncContainer");
+        ncContainer.setAttribute("id", "ncContainer_" + commentparentID);
+        document.getElementById("fullCommentContainer_" + commentparentID).appendChild(ncContainer);
+        var ncFrame = document.createElement("div");
+        ncFrame.setAttribute("class", "ncDiv");
+        ncFrame.setAttribute("id", "ncFrame_" + data.id);
+        var ncTable = document.createElement("table");
+        ncTable.setAttribute("class", "ncTable");
+        ncTable.setAttribute("id", "ncTable_" + data.id);
+        let ncTopRow = ncTable.insertRow(0);
+        ncTopRow.setAttribute("id", "ncTopRow_" + data.id);
+        ncTopRow.setAttribute("class", "ncTopRow");
+        let ncPoster = ncTopRow.insertCell(0);
+        ncPoster.innerHTML = "<span style='color:blue'>" + data.poster + "</span> says:";
+        let ncInfoRow = ncTable.insertRow(1);
+        let ncInfoCell = ncInfoRow.insertCell(0);
+        ncInfoCell.innerHTML = "<span style='font-size:15px; font-style:italic;'>" + data.date + "</span>";
+        ncInfoCell.setAttribute("class", "ncInfoCell");
+        ncInfoCell.setAttribute("id", "ncInfoCell_" + data.id);
+        let ncBottomRow = ncTable.insertRow(2);
+        let ncContent = ncBottomRow.insertCell(0);
+        ncContent.innerHTML = data.body;
+        ncFrame.append(ncTable);
+        ncContainer.appendChild(ncFrame);
     }
 };
 function ui_newPost() {
