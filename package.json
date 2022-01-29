@@ -26,7 +26,7 @@
     "path": "^0.12.7",
     "random-words": "^1.1.1",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.5"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",

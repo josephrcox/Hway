@@ -1333,7 +1333,6 @@ app.post('/api/post/comment_nested/', async (req, res) => {
                     }
                 }
             }
-            console.log(usersMentioned);
             notifyUsers(usersMentioned, "mention", username, id, "", "");
             let parentCommentIndex = docs.comments.findIndex(x => x._id == parentID);
             let randomID = Math.floor(Math.random() * Date.now()), oldComment = docs.comments[parentCommentIndex];
@@ -1402,7 +1401,6 @@ app.put('/vote/:id/:y', function (req, res) {
     }
     try {
         Post.findOne({ _id: id }, function (err, docs) {
-            console.log(docs, err);
             let upvotes = docs.upvotes;
             let downvotes = docs.downvotes;
             let total_votes = docs.total_votes;
@@ -1777,7 +1775,6 @@ app.get('/api/get/search/', async (req, res) => {
         }
     }
     var regex_q = new RegExp(req.query.query, 'i');
-    console.log(regex_q);
     if (req.query.topic) {
         var regex_t = new RegExp(req.query.topic, 'i');
         Post.find({ status: 'active', title: regex_q, topic: regex_t }, function (err, docs) {
@@ -1814,7 +1811,6 @@ app.get('/api/get/search/', async (req, res) => {
             let lastPagePosts = totalPosts % postsPerPage;
             postsonpage = await paginate(docs, postsPerPage, 1);
             postsonpage = docs;
-            console.log(postsonpage.length);
             for (let i = 0; i < docs.length; i++) {
                 if (postsonpage[i].posterID == userID) {
                     postsonpage[i].current_user_admin = true;
@@ -1846,8 +1842,6 @@ app.get('*', async (req, res) => {
 });
 function getFullDateTimeAndTimeStamp() {
     let datetime = new Date();
-    console.log(datetime);
-    console.log(datetime.getTime());
     let month = datetime.getUTCMonth() + 1;
     let day = datetime.getUTCDate();
     let year = datetime.getUTCFullYear();
