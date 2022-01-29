@@ -705,12 +705,12 @@ const commentObject = {
                 voteCom(self.nested_comments[i].id, currentPostID, true, self.id);
             };
             if (this.nested_comments[i].posterid == currentUserID) {
-                var delnc = document.createElement("img");
+                var delnc = document.createElement("span");
                 delnc.setAttribute("class", "deletePostButton");
                 delnc.setAttribute("id", "deletePostButton_" + this.nested_comments[i].id + "_" + this.id);
                 delnc.style.marginTop = '-15px';
                 delnc.style.marginRight = '10px';
-                delnc.src = "/assets/trash.png";
+                delnc.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
                 delnc.style.height = '20px';
                 delnc.style.width = 'auto';
                 delnc.style.paddingLeft = '10px';
@@ -724,13 +724,13 @@ const commentObject = {
                             deleteNestedComment(window.location.href.split('/posts/')[1], self.id.split('_')[2], self.id.split('_')[1]);
                         }
                         else {
-                            self.src = "/assets/trash_confirm.png";
+                            self.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                             delPostConfirmation = true;
                             delPostConfirmationId = self.id.split('_')[1];
                         }
                     }
                     else {
-                        self.src = "/assets/trash_confirm.png";
+                        self.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                         delPostConfirmation = true;
                         delPostConfirmationId = self.id.split('_')[1];
                     }
