@@ -224,7 +224,7 @@ tbody {
 }
 .voteCount, .commentCount {
 	padding-right: 10px;
-	margin-left:10px;
+	/*! margin-left:10px; */
 	color: white;
 	font-weight: 1000;
 	align-self: center;
@@ -232,10 +232,11 @@ tbody {
 
 
 .comVoteCount, .comnestedVoteCount {
-	padding-right: 10px;
-	padding-left: 10px;
+	/*! padding-right: 10px; */
+	/*! padding-left: 10px; */
 	color: black;
 	font-weight: 700;
+	width: 20px;
 }
 
 .comnestedVoteCount {
@@ -253,7 +254,6 @@ tbody {
 }
 
 i {
-    margin-left: -30px;
     cursor: pointer;
 }
 
@@ -262,9 +262,9 @@ textarea {
 }
 .voteUpButton, .voteDoButton, .nestedcommentUp {
 	height:20px;
-	padding-top: 4px;
-	padding-inline: 10px;
-	padding-bottom: 4px;
+	/*! padding-top: 4px; */
+	/*! padding-inline: 10px; */
+	/*! padding-bottom: 4px; */
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -342,14 +342,16 @@ label {
 
 .voteDiv {
 	background-color: var(--foreground-3);
+	padding-left: 10px;
 }
 
 .comVoteDiv {
 	display: flex;
 	flex-direction: row;
 	background-color: azure;
-	/*! border-top:1px solid black; */
 	align-items:center;
+	gap: 10px;
+	padding-right: 10px;
 }
 
 #newPost_file {
@@ -429,7 +431,6 @@ label {
 }
 
 .comVoteDiv {
-	height:55px;
 }
 
 .comInfoCell, .ncInfoCell {
@@ -442,10 +443,10 @@ label {
 	text-decoration: unset;
 	color:white;
 	height:29px;
+	margin-top: 5px;
 }
 
 .comreplybutton {
-	margin-top:-10px;
 }
 
 
@@ -465,6 +466,7 @@ a:hover { text-decoration: none; color:red; }
 
 .commentCount {
 	font-size:15px;
+	margin-right: 30px;
 }
 
 .index_item {
@@ -545,6 +547,7 @@ a:visited {
 
 .ncVoteDiv {
   padding-bottom:5px;
+	padding-right: 10px;
 }
 
 .posterRow {
@@ -555,10 +558,6 @@ a:visited {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
-}
-
-.deletePostButton {
-	align-self:center;
 }
 
 .postImgThumbDiv {

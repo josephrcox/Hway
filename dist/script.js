@@ -484,12 +484,11 @@ const postObject = {
             };
         }
         if (this.current_user_admin) {
-            var del = document.createElement("img");
+            var del = document.createElement("div");
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
-            del.src = "/assets/trash.png";
-            del.style.height = '20px';
-            del.style.width = 'auto';
+            del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
+            del.style.color = 'green';
             let delPostConfirmation = false;
             let delPostConfirmationId;
             del.onclick = function () {
@@ -498,13 +497,13 @@ const postObject = {
                         deletePost(del.id.split("_")[1]);
                     }
                     else {
-                        del.src = "/assets/trash_confirm.png";
+                        del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> <span style="font-size:18px;">Delete?</span>';
                         delPostConfirmation = true;
                         delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    del.src = "/assets/trash_confirm.png";
+                    del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                     delPostConfirmation = true;
                     delPostConfirmationId = del.id.split("_")[1];
                 }
@@ -619,10 +618,10 @@ const commentObject = {
         infoCell.setAttribute("class", "comInfoCell");
         infoCell.setAttribute("id", "comInfoCell_" + this.id);
         if (this.current_user_admin) {
-            var del = document.createElement("img");
+            var del = document.createElement("span");
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
-            del.src = "/assets/trash.png";
+            del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
             del.style.height = '20px';
             del.style.width = 'auto';
             del.style.paddingLeft = '10px';
@@ -635,13 +634,13 @@ const commentObject = {
                         deleteComment(del.id.split("_")[1]);
                     }
                     else {
-                        del.src = "/assets/trash_confirm.png";
+                        del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                         delPostConfirmation = true;
                         delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    del.src = "/assets/trash_confirm.png";
+                    del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                     delPostConfirmation = true;
                     delPostConfirmationId = del.id.split("_")[1];
                 }
@@ -1258,27 +1257,33 @@ const comment_nested = async (postid, body, commentparentID) => {
             method: 'POST',
             body: JSON.stringify(bodyJSON)
         });
-        var data = await fetchResponse.json();
+        const data = await fetchResponse.json();
         let upcomment = document.getElementById('fullCommentContainer_' + commentparentID);
-        document.getElementById('comreplybox_' + commentparentID).outerHTML = "";
-        document.getElementById('comreplySubmit_' + commentparentID).outerHTML = "";
-        const comResponse = await fetch('/api/get/comment/' + postid + '/' + commentparentID);
-        const comData = await comResponse.json();
-        let com = Object.create(commentObject);
-        com.body = comData.body;
-        com.id = comData._id;
-        com.total_votes = comData.total_votes;
-        com.poster = comData.poster;
-        com.posterID = comData.posterID;
-        com.date = comData.date;
-        com.users_voted = comData.users_voted;
-        com.parentID = postid;
-        com.nested_comments = comData.nested_comments;
-        com.current_user_voted = comData.current_user_voted;
-        com.current_user_admin = comData.current_user_admin;
-        upcomment.innerHTML = "";
-        com.display();
-        window.scrollBy(0, 125);
+        var ncContainer = document.createElement("div");
+        ncContainer.setAttribute("class", "ncContainer");
+        ncContainer.setAttribute("id", "ncContainer_" + commentparentID);
+        document.getElementById("fullCommentContainer_" + commentparentID).appendChild(ncContainer);
+        var ncFrame = document.createElement("div");
+        ncFrame.setAttribute("class", "ncDiv");
+        ncFrame.setAttribute("id", "ncFrame_" + data.id);
+        var ncTable = document.createElement("table");
+        ncTable.setAttribute("class", "ncTable");
+        ncTable.setAttribute("id", "ncTable_" + data.id);
+        let ncTopRow = ncTable.insertRow(0);
+        ncTopRow.setAttribute("id", "ncTopRow_" + data.id);
+        ncTopRow.setAttribute("class", "ncTopRow");
+        let ncPoster = ncTopRow.insertCell(0);
+        ncPoster.innerHTML = "<span style='color:blue'>" + data.poster + "</span> says:";
+        let ncInfoRow = ncTable.insertRow(1);
+        let ncInfoCell = ncInfoRow.insertCell(0);
+        ncInfoCell.innerHTML = "<span style='font-size:15px; font-style:italic;'>" + data.date + "</span>";
+        ncInfoCell.setAttribute("class", "ncInfoCell");
+        ncInfoCell.setAttribute("id", "ncInfoCell_" + data.id);
+        let ncBottomRow = ncTable.insertRow(2);
+        let ncContent = ncBottomRow.insertCell(0);
+        ncContent.innerHTML = data.body;
+        ncFrame.append(ncTable);
+        ncContainer.appendChild(ncFrame);
     }
 };
 function ui_newPost() {
