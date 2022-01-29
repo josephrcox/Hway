@@ -404,11 +404,11 @@ const postObject = {
         voteDiv.setAttribute("class", "voteDiv")
         voteDiv.dataset.postId = this.id
 
-        var openPostButton = document.createElement("img")
+        var openPostButton = document.createElement("span")
         openPostButton.setAttribute("id", "openPostButton_"+this.id)
         openPostButton.setAttribute("class", "openPostButton")
         openPostButton.dataset.postId = this.id
-        openPostButton.src = '/assets/speech_bubble.png'
+        openPostButton.innerHTML = '<i style="font-size:24px;padding-right:10px;" class="fas fa-comment-dots"></i>'
         
         openPostButton.addEventListener('click', function() {
             window.location.href = '/posts/'+openPostButton.dataset.postId
@@ -711,6 +711,7 @@ const commentObject = {
             del.setAttribute("id", "deletePostButton_"+this.id)
             del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>'
             del.style.height = '20px'
+            del.style.display = 'inline'
             del.style.width = 'auto'
             del.style.paddingLeft = '10px'
             del.style.marginBottom = '-5px'
@@ -890,6 +891,10 @@ const commentObject = {
             ncContainer.style.display = 'none'
         }
 
+        var voteDiv = document.createElement("div")
+        voteDiv.setAttribute("id", "voteDiv_"+this.id)
+        voteDiv.setAttribute("class", "comVoteDiv")
+
         if (isUserLoggedIn) {
             var replyDiv = document.createElement("div")
             replyDiv.setAttribute("class", "comreplyDiv")
@@ -906,20 +911,19 @@ const commentObject = {
             replySubmit.setAttribute("class", "comreplySubmit")
             replySubmit.setAttribute("id", "comreplySubmit_"+this.id)
             replySubmit.innerText = "Reply"
-            replySubmit.onclick = function() { // BIG TYPESCRIPT CHANGE
+            replySubmit.onclick = function() { 
                 let parentID = window.location.href.split('/posts/')[1]
                 let reply = (document.getElementById('comreplybox_'+replySubmit.id.split('_')[1]) as HTMLInputElement)
                
                 comment_nested(parentID, reply.value, replySubmit.id.split('_')[1])
                 reply.value = ""
-                //document.getElementById("comreplyDiv_"+replySubmit.id.split("_")[1]).style.display = 'none'
             }
             
-            var replyButton = document.createElement('img')
+            var replyButton = document.createElement('span')
             replyButton.setAttribute("class","comreplybutton")
             replyButton.setAttribute("id", "comreplyButton_"+this.id)
-            replyButton.src = '/assets/speech_bubble.png'
-            infoRow.appendChild(replyButton)
+            replyButton.innerHTML = '<i style="color:black;font-size:24px;" class="far fa-comment-dots"></i>'
+            voteDiv.appendChild(replyButton)
             
             replyButton.onclick = function() {
                 document.getElementById("comreplyDiv_"+replyButton.id.split('_')[1]).scrollIntoView()
@@ -932,9 +936,7 @@ const commentObject = {
             document.getElementById("comreplyDiv_"+this.id).appendChild(replySubmit)
         }
 
-        var voteDiv = document.createElement("div")
-        voteDiv.setAttribute("id", "voteDiv_"+this.id)
-        voteDiv.setAttribute("class", "comVoteDiv")
+
 
         var voteCount = document.createElement("div")
         voteCount.setAttribute("id","voteCount_"+this.id)
