@@ -315,11 +315,16 @@ const getUser = async () => {
         isUserLoggedIn = true
         await getSubscriptions()
         document.getElementById("currentUser").innerText = data.name
+        if (['home', 'all'].indexOf(currentPageType) != - 1) {
+            document.getElementById("newPost_div").style.display = 'block'
+        }
+        
         document.getElementById("logout_button").style.display = 'block'
         document.getElementById("login_button").style.display = 'none'
         document.getElementById("reg_button").style.display = 'none'
         if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
             document.getElementById("post-button").style.display = 'block'
+            document.getElementById("post-button").innerHTML = 'Collapse new post'
         }
         const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
         const data2 = await response.json();
