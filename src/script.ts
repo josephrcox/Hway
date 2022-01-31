@@ -1851,11 +1851,6 @@ document.getElementById("search_submit").onclick = function() {
     let query = (document.getElementById("search_phrase") as HTMLInputElement).value
     let topic = (document.getElementById("search_topic") as HTMLInputElement).value
 
-    // if (query == "") {
-    //     document.getElementById('search-logs').innerHTML = "Please enter search query"
-    //     return 
-    // }
-
     query.split(" ").join("+")
     query = (query.split(" ")).join("+")
     
