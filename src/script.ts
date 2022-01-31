@@ -31,6 +31,12 @@ let topic:string
 let currentUsername:string
 let all_topics_array = []
 
+// Fontawesome variables
+const fa_voteDown_filled = '<i style="color:#f9910b;" class="fas fa-arrow-alt-circle-down"></i>'
+const fa_voteDown = '<i class="far fa-arrow-alt-circle-down"></i>' 
+const fa_voteUp_filled = '<i style="color:#00ff10;" class="fas fa-arrow-alt-circle-up"></i>'
+const fa_voteUp = '<i class="far fa-arrow-alt-circle-up"></i>'
+
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0
@@ -442,10 +448,9 @@ const postObject = {
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
         voteUpButton.dataset.postId = this.id
-        voteUpButton.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+        voteUpButton.innerHTML = fa_voteUp
         if (this.current_user_upvoted) {
-            voteUpButton.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
-            voteUpButton.style.color = '#00ff10'
+            voteUpButton.innerHTML = fa_voteUp_filled
         } 
         
         voteUpButton.style.width = 'auto'
@@ -458,10 +463,9 @@ const postObject = {
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
         voteDownButton.dataset.postId = this.id
-        voteDownButton.innerHTML = '<i class="far fa-arrow-alt-circle-down"></i>'
+        voteDownButton.innerHTML = fa_voteDown
         if (this.current_user_downvoted) {
-            voteDownButton.innerHTML = '<i class="fas fa-arrow-circle-down"></i>'
-            voteDownButton.style.color = '#f9910b'
+            voteDownButton.innerHTML = fa_voteDown_filled
         }
         voteDownButton.style.width = 'auto'
         voteDownButton.addEventListener('click', function() {
@@ -808,10 +812,9 @@ const commentObject = {
             voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id+"_"+this.id)
             voteUp.setAttribute("class","nestedcommentUp")
             if (this.nested_comments[i].current_user_voted) {
-                voteUp.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
-                voteUp.style.color = '#00ff10'
+                voteUp.innerHTML = fa_voteUp_filled
             } else {
-                voteUp.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+                voteUp.innerHTML = fa_voteUp
                 voteUp.style.color = 'black'
             }
             
@@ -957,10 +960,9 @@ const commentObject = {
         voteUp.setAttribute("id","voteComUp_"+this.id)
         voteUp.setAttribute("class","voteUpButton")
         if (this.current_user_voted == true) {
-            voteUp.style.color = '#00ff10'
-            voteUp.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
+            voteUp.innerHTML = fa_voteUp_filled
         } else {
-            voteUp.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+            voteUp.innerHTML = fa_voteUp
             voteUp.style.color = 'black'
         }
         
@@ -1357,22 +1359,20 @@ const vote = async (change, id) => {
         let voteUpButtonwithID = document.getElementById('voteUpButton_'+id) as HTMLSpanElement
         let voteDoButtonwithID = document.getElementById('voteDoButton_'+id) as HTMLSpanElement
         if (data.gif == 'none') {
-            voteUpButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
-            voteDoButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-down"></i>'
+            voteUpButtonwithID.innerHTML = fa_voteUp
+            voteDoButtonwithID.innerHTML = fa_voteDown
             voteUpButtonwithID.style.color = 'white'
             voteDoButtonwithID.style.color = 'white'
         }
         if (data.gif == 'up') {
-            voteUpButtonwithID.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
-            voteDoButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-down"></i>'
-            voteUpButtonwithID.style.color = '#00ff10'
+            voteUpButtonwithID.innerHTML = fa_voteUp_filled
+            voteDoButtonwithID.innerHTML = fa_voteDown
             voteDoButtonwithID.style.color = 'white'
         }
         if (data.gif == 'down') {
-            voteUpButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
-            voteDoButtonwithID.innerHTML = '<i class="fas fa-arrow-circle-down"></i>'
+            voteUpButtonwithID.innerHTML = fa_voteUp
+            voteDoButtonwithID.innerHTML = fa_voteDown_filled
             voteUpButtonwithID.style.color = 'white'
-            voteDoButtonwithID.style.color = '#f9910b'
         }
     } 
 
@@ -1400,21 +1400,19 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
             if (nested) {
-                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLSpanElement).innerHTML = '<i class="fas fa-arrow-circle-up"></i>';
-                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLSpanElement).style.color = '#00ff10';
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLSpanElement).innerHTML = fa_voteUp_filled
             } else {
-                (document.getElementById('voteComUp_'+id) as HTMLSpanElement).innerHTML = '<i class="fas fa-arrow-circle-up"></i>';
-                (document.getElementById('voteComUp_'+id) as HTMLSpanElement).style.color = '#00ff10';
+                (document.getElementById('voteComUp_'+id) as HTMLSpanElement).innerHTML = fa_voteUp_filled;
             }
             
         }
         if (data.voted == 'no') {
             if (nested) {
-                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>';
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).innerHTML = fa_voteUp;
                 (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).style.color = 'black';
             } else {
-                (document.getElementById('voteComUp_'+id) as HTMLImageElement).innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>';
-                (document.getElementById('voteComUp_'+id) as HTMLImageElement).style.color = 'black';
+                (document.getElementById('voteComUp_'+id) as HTMLImageElement).innerHTML = fa_voteUp;
+                
             }
         }
         if (nested) {
