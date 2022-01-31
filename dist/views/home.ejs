@@ -71,6 +71,14 @@
       document.getElementById('post-button').style.display = 'block'
    }
 
+   window.onresize = function checkWindowWidth() {
+      if (window.innerWidth <= 743 && window.location.pathname != '/post') {
+         document.getElementById('newPost_div').style.display = 'none'
+         document.getElementById('post-button').innerHTML = 'Post'
+         document.getElementById('post-button').style.display = 'block'
+      }
+   }
+
 
 </script>
 
