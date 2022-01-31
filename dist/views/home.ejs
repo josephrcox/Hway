@@ -15,7 +15,7 @@
      <div id="newPost_div" style='display:none;'>
       <div class="newPost_container">
          <div id="newPost_inputs">
-            <div id='newPost_close' class='noselect' onclick='ui_newPost()'>Close</div>
+            <div id='newPost_close' class='noselect' onclick='ui_newPost()'></div>
             <div class="newPost_types_div">
               <div class="newPost_types" id="newPost_type_text" style="background-color:rgb(7, 7, 49); color:white;">Text</div>
               <div class="newPost_types" id="newPost_type_link">Link</div>
@@ -55,6 +55,12 @@
        </div>
  </div> 
 
+
+<script src="/script.js"></script>
+<script src="/subscriptions.js"></script>
+<script src="/notifications.js"></script>
+
+
 <script> 
    if (window.location.href.indexOf('/h/') != -1) {
       document.getElementById('newPost_topic').value = window.location.href.split('/')[4]
@@ -64,12 +70,10 @@
       document.getElementById('post-button').innerHTML = 'Post'
       document.getElementById('post-button').style.display = 'block'
    }
-   
+
+
 </script>
 
-<script src="/script.js"></script>
-<script src="/subscriptions.js"></script>
-<script src="/notifications.js"></script>
 
 
 </body>

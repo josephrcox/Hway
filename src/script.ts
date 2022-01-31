@@ -315,8 +315,9 @@ const getUser = async () => {
         isUserLoggedIn = true
         await getSubscriptions()
         document.getElementById("currentUser").innerText = data.name
-        if (['home', 'all'].indexOf(currentPageType) != - 1) {
+        if (['home', 'all'].indexOf(currentPageType) != - 1 && localStorage.getItem("hide_new_post_div") == "false") {
             document.getElementById("newPost_div").style.display = 'block'
+            document.getElementById("post-button").innerHTML = 'Collapse new post'
         }
         
         document.getElementById("logout_button").style.display = 'block'
@@ -324,7 +325,7 @@ const getUser = async () => {
         document.getElementById("reg_button").style.display = 'none'
         if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
             document.getElementById("post-button").style.display = 'block'
-            document.getElementById("post-button").innerHTML = 'Collapse new post'
+
         }
         const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
         const data2 = await response.json();
@@ -437,13 +438,14 @@ const postObject = {
         voteCount.dataset.postId = this.id
         voteCount.innerHTML = this.total_votes
 
-        var voteUpButton = document.createElement("img")
+        var voteUpButton = document.createElement("span")
         voteUpButton.setAttribute("id","voteUpButton_"+this.id)
         voteUpButton.setAttribute("class","voteUpButton")
         voteUpButton.dataset.postId = this.id
-        voteUpButton.src = '/assets/up.gif'
+        voteUpButton.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
         if (this.current_user_upvoted) {
-            voteUpButton.src = '/assets/up_selected.gif'
+            voteUpButton.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
+            voteUpButton.style.color = '#00ff10'
         } 
         
         voteUpButton.style.width = 'auto'
@@ -452,13 +454,14 @@ const postObject = {
             vote(1, voteUpButton.dataset.postId)
         }, false)
 
-        var voteDownButton = document.createElement("img")
+        var voteDownButton = document.createElement("span")
         voteDownButton.setAttribute("id","voteDoButton_"+this.id)
         voteDownButton.setAttribute("class","voteDoButton")
         voteDownButton.dataset.postId = this.id
-        voteDownButton.src = '/assets/down.gif'
+        voteDownButton.innerHTML = '<i class="far fa-arrow-alt-circle-down"></i>'
         if (this.current_user_downvoted) {
-            voteDownButton.src = '/assets/down_selected.gif'
+            voteDownButton.innerHTML = '<i class="fas fa-arrow-circle-down"></i>'
+            voteDownButton.style.color = '#f9910b'
         }
         voteDownButton.style.width = 'auto'
         voteDownButton.addEventListener('click', function() {
@@ -801,13 +804,15 @@ const commentObject = {
             voteCount.setAttribute("class","comnestedVoteCount")
             voteCount.innerHTML = this.nested_comments[i].total_votes
     
-            var voteUp = document.createElement("img")
+            let voteUp = document.createElement("span")
             voteUp.setAttribute("id","nestedcommentUp_"+this.nested_comments[i].id+"_"+this.id)
             voteUp.setAttribute("class","nestedcommentUp")
             if (this.nested_comments[i].current_user_voted) {
-                voteUp.src = '/assets/up_selected.gif'
+                voteUp.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
+                voteUp.style.color = '#00ff10'
             } else {
-                voteUp.src = '/assets/up.gif'
+                voteUp.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+                voteUp.style.color = 'black'
             }
             
             voteUp.style.width = 'auto'
@@ -948,13 +953,15 @@ const commentObject = {
         voteCount.setAttribute("class","comVoteCount")
         voteCount.innerHTML = this.total_votes
 
-        var voteUp = document.createElement("img")
+        var voteUp = document.createElement("span")
         voteUp.setAttribute("id","voteComUp_"+this.id)
         voteUp.setAttribute("class","voteUpButton")
         if (this.current_user_voted == true) {
-            voteUp.src = '/assets/up_selected.gif'
+            voteUp.style.color = '#00ff10'
+            voteUp.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
         } else {
-            voteUp.src = '/assets/up.gif'
+            voteUp.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+            voteUp.style.color = 'black'
         }
         
         voteUp.style.width = 'auto'
@@ -1333,7 +1340,6 @@ const storeAndDisplayTopics = async () => {
 storeAndDisplayTopics()
 
 const vote = async (change, id) => { 
-    console.log(change, id)
     if (lastClick >= (Date.now() - delay)) {
         return;
     }
@@ -1348,19 +1354,25 @@ const vote = async (change, id) => {
 
     if (data.status == 'ok') {
         document.getElementById('voteCount_'+id).innerHTML = data.newtotal
-        let voteUpButtonwithID = document.getElementById('voteUpButton_'+id) as HTMLImageElement
-        let voteDoButtonwithID = document.getElementById('voteDoButton_'+id) as HTMLImageElement
+        let voteUpButtonwithID = document.getElementById('voteUpButton_'+id) as HTMLSpanElement
+        let voteDoButtonwithID = document.getElementById('voteDoButton_'+id) as HTMLSpanElement
         if (data.gif == 'none') {
-            voteUpButtonwithID.src = '/assets/up.gif'
-            voteDoButtonwithID.src = '/assets/down.gif'
+            voteUpButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+            voteDoButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-down"></i>'
+            voteUpButtonwithID.style.color = 'white'
+            voteDoButtonwithID.style.color = 'white'
         }
         if (data.gif == 'up') {
-            voteUpButtonwithID.src = '/assets/up_selected.gif'
-            voteDoButtonwithID.src = '/assets/down.gif'
+            voteUpButtonwithID.innerHTML = '<i class="fas fa-arrow-circle-up"></i>'
+            voteDoButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-down"></i>'
+            voteUpButtonwithID.style.color = '#00ff10'
+            voteDoButtonwithID.style.color = 'white'
         }
         if (data.gif == 'down') {
-            voteUpButtonwithID.src = '/assets/up.gif'
-            voteDoButtonwithID.src = '/assets/down_selected.gif'
+            voteUpButtonwithID.innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>'
+            voteDoButtonwithID.innerHTML = '<i class="fas fa-arrow-circle-down"></i>'
+            voteUpButtonwithID.style.color = 'white'
+            voteDoButtonwithID.style.color = '#f9910b'
         }
     } 
 
@@ -1388,19 +1400,22 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
             if (nested) {
-                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).src = '/assets/up_selected.gif'
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLSpanElement).innerHTML = '<i class="fas fa-arrow-circle-up"></i>';
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLSpanElement).style.color = '#00ff10';
             } else {
-                (document.getElementById('voteComUp_'+id) as HTMLImageElement).src = '/assets/up_selected.gif'
+                (document.getElementById('voteComUp_'+id) as HTMLSpanElement).innerHTML = '<i class="fas fa-arrow-circle-up"></i>';
+                (document.getElementById('voteComUp_'+id) as HTMLSpanElement).style.color = '#00ff10';
             }
             
         }
         if (data.voted == 'no') {
             if (nested) {
-                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).src = '/assets/up.gif'
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>';
+                (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).style.color = 'black';
             } else {
-                (document.getElementById('voteComUp_'+id) as HTMLImageElement).src = '/assets/up.gif'
+                (document.getElementById('voteComUp_'+id) as HTMLImageElement).innerHTML = '<i class="far fa-arrow-alt-circle-up"></i>';
+                (document.getElementById('voteComUp_'+id) as HTMLImageElement).style.color = 'black';
             }
-            
         }
         if (nested) {
             document.getElementById('comnestedVoteCount_'+id).innerHTML = data.newcount
@@ -1511,11 +1526,13 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     if (window.innerWidth > 743 || window.location.pathname == '/post') {
         if (document.getElementById("newPost_div").style.display == 'block') {
+            localStorage.setItem("hide_new_post_div", "true")
             document.getElementById("newPost_div").style.display = 'none'
             document.getElementById("post-button").innerHTML = "Post"
             document.getElementById("newPost_logs").innerHTML = "";
             (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
         } else {
+            localStorage.setItem("hide_new_post_div", "false")
             document.getElementById("newPost_div").style.display = 'block'
             document.getElementById("searchbar").style.display = 'none'
             document.getElementById("post-button").innerHTML = "Collapse new post";
@@ -1833,11 +1850,6 @@ document.getElementById("search_phrase").addEventListener("keyup", function(even
 document.getElementById("search_submit").onclick = function() {
     let query = (document.getElementById("search_phrase") as HTMLInputElement).value
     let topic = (document.getElementById("search_topic") as HTMLInputElement).value
-
-    // if (query == "") {
-    //     document.getElementById('search-logs').innerHTML = "Please enter search query"
-    //     return 
-    // }
 
     query.split(" ").join("+")
     query = (query.split(" ")).join("+")
