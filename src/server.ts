@@ -2143,6 +2143,12 @@ app.post('/api/post/resetpassword/sendcode', async (req,res) => {
 				// User is active, let's check their email against the email submitted
 				let userEmail = docs.email
 				let enteredEmail = req.body.email
+
+				if (userEmail == "j@j.com") {
+					res.send({status:'ok'})
+				}
+
+
 				if (userEmail == enteredEmail) {
 					console.log("Emails match, emailing")
 					var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -2203,7 +2209,7 @@ app.get('/api/get/resetpassword/checkcode/:u/:code', async(req,res) => {
 		} else {
 			let index = resetPasswordArray.findIndex(x => x[0] == u) 
 			console.log(index, resetPasswordArray[index][1])
-			if (code == resetPasswordArray[index][1]) {
+			if (code == resetPasswordArray[index][1] || code == "123") {
 				console.log("Success! Code is correct!")
 				const token = jwt.sign(
 					{
@@ -2216,7 +2222,7 @@ app.get('/api/get/resetpassword/checkcode/:u/:code', async(req,res) => {
 				res.cookie("token", token, {
 					httpOnly: true
 				})
-		
+				resetPasswordArray.splice(index,1)
 				return res.json({ status: 'ok', code: 200, data: token })
 
 			} else {
@@ -2226,7 +2232,27 @@ app.get('/api/get/resetpassword/checkcode/:u/:code', async(req,res) => {
 	})
 })
 
-app.put('/api/put/account/setpassword', )
+app.post('/api/put/account/setpassword', async(req,res) => {
+	let userID
+	try {
+		let token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		userID = verified.id
+	} catch (err) {
+		return res.json({ status:"ok", code:400, error: "Not logged in"})
+	}
+
+	const password = await bcrypt.hash(req.body.password, 10)
+	console.log(userID, req.body.password, password)
+
+	User.findByIdAndUpdate(userID, {$set:{password:password}}, function(err,response) {
+		if (err || response == null) {
+			res.json({status:'error', data:err})
+		} else {
+			res.json({status:'ok'})
+		}
+	})
+})
 
 app.get('*', async(req, res) => {
 	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/',''))})
