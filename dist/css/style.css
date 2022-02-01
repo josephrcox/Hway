@@ -873,3 +873,8 @@ display: flex;
 justify-content: center;
 align-items: center;
 }
+#subscribe_topic_input {
+	font-size: 24px;
+	margin-left: 3px;
+	margin-right: 2px;
+  }
