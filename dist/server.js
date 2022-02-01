@@ -255,11 +255,17 @@ app.put('/api/put/notif/remove/:index', function (req, res) {
         let token = req.cookies.token;
         let user = jwt.verify(token, process.env.JWT_SECRET);
         User.findById(user.id, function (err, docs) {
-            let notif = docs.notifications[req.params.index];
-            notif.status = "cleared";
-            docs.notifications[req.params.index] = notif;
+            let allnotifs = docs.notifications;
+            let activenotifs = allnotifs.filter(x => x.status == "active");
+            console.log(activenotifs);
+            activenotifs[req.params.index].status = "cleared";
+            let ts = activenotifs[req.params.index].timestamp;
+            let index = allnotifs.findIndex(x => x.timestamp == ts);
+            console.log(index);
+            allnotifs[index] = activenotifs[req.params.index];
+            docs.notifications = allnotifs;
             docs.save();
-            res.send({ status: 'ok' });
+            res.json({ status: 'ok' });
         });
     }
     catch (error) {
