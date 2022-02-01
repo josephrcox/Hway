@@ -300,7 +300,7 @@ app.put('/api/put/notif/remove/:index', function(req,res) {
 		})
 	}catch(error) {
 		res.send({status:'error', data:'nojwt'})
-	}
+	} 
 })
 
 app.post('/api/post/notif/clear/', function(req,res) {
