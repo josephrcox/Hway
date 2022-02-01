@@ -30,6 +30,7 @@
                     <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
                     <a href='#' onclick="login()" id="login_button" class="user-dropdown-item">Login</a>
                     <a href='#' onclick="register()" id="reg_button" class="user-dropdown-item">Register</a>
+                    <a href='#' onclick="resetPasswordPage()" id="resetpw_button" class="user-dropdown-item">Reset password</a>
                     <a href='#' onclick="view_subscriptions()" id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
                     <div class="border-bottom"></div>
                     <div id="filter_nsfw_div">
@@ -106,6 +107,9 @@ function register() {
 }
 function view_subscriptions() {
     window.location.replace("/subscriptions")
+}
+function resetPasswordPage() {
+    window.location.replace("/account/resetpw")
 }
 
 function profile() {
