@@ -19,6 +19,7 @@ var postsonpage = [];
 var postsPerPage = 50;
 let ms_in_day = 86400000;
 let currentUser;
+let resetPasswordArray = [];
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
 app.set('layout', 'layouts/layout');
@@ -1843,9 +1844,6 @@ app.get('/api/get/search/', async (req, res) => {
         });
     }
 });
-app.get('*', async (req, res) => {
-    res.render('error.ejs', { layout: 'layouts/error.ejs', topic: "PAGE NOT FOUND", error: ((req.url).replace('/', '')) });
-});
 function getFullDateTimeAndTimeStamp() {
     let datetime = new Date();
     let month = datetime.getUTCMonth() + 1;
@@ -1869,4 +1867,99 @@ function getFullDateTimeAndTimeStamp() {
     let fulldatetime = month + "/" + day + "/" + year + " at " + hour + ":" + strminute + " " + ampm + " UTC";
     return [fulldatetime, timestamp];
 }
+const mailjet = require('node-mailjet')
+    .connect('b7943ff95bd7bb85ad51a7c9e0f46a82', 'd7a10ff44ee87ff43aba8a503ba4339b');
+app.get('/account/resetpw', (req, res) => {
+    res.render('resetpassword.ejs', { topic: "- reset password" });
+});
+app.post('/api/post/resetpassword/sendcode', async (req, res) => {
+    try {
+        User.findOne({ name: req.body.username }, function (err, docs) {
+            if (err || docs == null) {
+                console.log(err, docs);
+                res.send({ status: 'error', data: 'Error' });
+            }
+            else {
+                let userEmail = docs.email;
+                let enteredEmail = req.body.email;
+                if (userEmail == enteredEmail) {
+                    console.log("Emails match, emailing");
+                    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    let code = '';
+                    for (var i = 0; i < 5; i++) {
+                        code += characters.charAt(Math.floor(Math.random() * characters.length));
+                    }
+                    resetPasswordArray.push([req.body.username, code]);
+                    const request = mailjet
+                        .post("send", { 'version': 'v3.1' })
+                        .request({
+                        "Messages": [
+                            {
+                                "From": {
+                                    "Email": "hwayforums@gmail.com",
+                                    "Name": "Hway Support"
+                                },
+                                "To": [
+                                    {
+                                        "Email": req.body.email,
+                                        "Name": req.body.username
+                                    }
+                                ],
+                                "Subject": "Greetings from Hway.",
+                                "TextPart": "",
+                                "HTMLPart": "<h1>Hey " + req.body.username + "!</h1> I hope you are doing well! <br/> Your code is " + code,
+                                "CustomID": "Forgot password"
+                            }
+                        ]
+                    });
+                    request
+                        .then((result) => {
+                        res.send({ status: 'ok' });
+                    })
+                        .catch((err) => {
+                        console.log(err.statusCode);
+                    });
+                }
+                else {
+                    console.log(docs.email, req.body.email + " dont match");
+                    res.send({ status: 'error', data: 'email not valid' });
+                }
+            }
+        });
+    }
+    catch (error) {
+        res.send({ status: 'error', data: error });
+    }
+});
+app.get('/api/get/resetpassword/checkcode/:u/:code', async (req, res) => {
+    let u = req.params.u;
+    let code = req.params.code;
+    User.findOne({ name: u }, function (err, docs) {
+        if (err || docs == null) {
+            res.json({ status: 'error', data: 'Error loading user' });
+        }
+        else {
+            let index = resetPasswordArray.findIndex(x => x[0] == u);
+            console.log(index, resetPasswordArray[index][1]);
+            if (code == resetPasswordArray[index][1]) {
+                console.log("Success! Code is correct!");
+                const token = jwt.sign({
+                    id: docs._id,
+                    name: docs.name
+                }, JWT_SECRET, { expiresIn: "30days" });
+                res.cookie("token", token, {
+                    httpOnly: true
+                });
+                return res.json({ status: 'ok', code: 200, data: token });
+            }
+            else {
+                res.json({ status: 'error', data: 'Incorrect code' });
+            }
+        }
+    });
+});
+app.put('/api/put/account/setpassword');
+app.get('*', async (req, res) => {
+    res.render('error.ejs', { layout: 'layouts/error.ejs', topic: "PAGE NOT FOUND", error: ((req.url).replace('/', '')) });
+});
 app.listen(process.env.PORT || 3000);
