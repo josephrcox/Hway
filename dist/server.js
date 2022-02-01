@@ -182,7 +182,7 @@ app.get('/api/get/currentuser', function (req, res) {
 app.get('/api/get/notification_count', async (req, res) => {
     if (currentUser) {
         User.findById(currentUser, function (err, docs) {
-            if (err) {
+            if (err || docs == null) {
                 res.send({ status: 'error' });
             }
             else {
@@ -1052,13 +1052,14 @@ app.post('/login', async (req, res) => {
     res.json({ status: 'error', code: 400, error: 'Invalid username/password' });
 });
 app.post('/register', async (req, res) => {
-    const { name, password: plainTextPassword } = req.body;
+    const { name, password: plainTextPassword, email } = req.body;
     const password = await bcrypt.hash(plainTextPassword, 10);
     try {
         let dt = getFullDateTimeAndTimeStamp;
         const response = await User.create({
             name: name,
             password: password,
+            email: email,
             statistics: {
                 account_creation_date: [dt[0], dt[1]]
             }
@@ -1066,7 +1067,7 @@ app.post('/register', async (req, res) => {
     }
     catch (error) {
         if (error.code === 11000) {
-            return res.json({ status: 'error', code: 400, error: 'Username already in use' });
+            return res.json({ status: 'error', code: 400, error: 'Username or email already in use' });
         }
         else {
             return res.json({ status: 'error', code: 400, error: 'Unknown error code' });

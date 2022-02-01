@@ -4,6 +4,7 @@
         <form id="reg-form" >
             <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
             <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/>
+            <input type="email" autocomplete="off" id="email" name="email" placeholder="email (optional for password resets)" /><br/>
             <input type="submit" value="Register"/>
         </form>
         <div id='logs'></div>
@@ -21,10 +22,12 @@ async function registerUser(event) {
     event.preventDefault()
     name = document.getElementById("username").value
     password = document.getElementById("password").value
+    email = document.getElementById("email").value
 
     bodyJSON = {
         "name":name,
-        "password":password
+        "password":password,
+        "email":email
     }
 
     const fetchResponse = await fetch('/register', {

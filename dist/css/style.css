@@ -632,8 +632,10 @@ a:visited {
 }
 
 
-#username, #password {
+#username, #password, #email {
   font-size: large;
+  max-width: 377px;
+  width: 91vw;
 }
 
 #reg-form {
