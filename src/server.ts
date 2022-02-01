@@ -283,8 +283,6 @@ app.put('/api/put/notif/remove/:index', function(req,res) {
 		let user = jwt.verify(token, process.env.JWT_SECRET)
 	
 		User.findById(user.id, function(err,docs) {
-			// docs.notifications.splice(req.params.index, 1)
-
 			let allnotifs = docs.notifications
 			let activenotifs = allnotifs.filter(x => x.status == "active")
 			console.log(activenotifs)
