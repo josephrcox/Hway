@@ -2144,13 +2144,9 @@ app.post('/api/post/resetpassword/sendcode', async (req,res) => {
 				let userEmail = docs.email
 				let enteredEmail = req.body.email
 
-				if (userEmail == "j@j.com") {
-					res.send({status:'ok'})
-				}
-
-
 				if (userEmail == enteredEmail) {
 					console.log("Emails match, emailing")
+
 					var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 					let code = '';
 					for ( var i = 0; i < 5; i++ ) {
