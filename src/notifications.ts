@@ -77,8 +77,14 @@ function displayNotifs() {
     }
 
     notifSorting.style.display = 'block'
+
+    if (notifShowCleared.dataset.cleared == "false") {
+        clearNotifButton.style.display = 'block'
+    } else {
+        clearNotifButton.style.display = 'none'
+    }
+
     notifShowCleared.style.display = 'block'
-    clearNotifButton.style.display = 'block'
     notifArray.innerHTML = ""
     let currentTimestamp = new Date()
 
@@ -146,7 +152,12 @@ function displayNotifs() {
         }
 
         anb.append(avatar, nb)
-        c.append(anb, check);
+        if (notifShowCleared.dataset.cleared == "false") {
+            c.append(anb, check);
+        } else {
+            c.append(anb)
+        }
+        
         notifArray.append(c);
     }
 }
@@ -207,10 +218,10 @@ if ((window.location.href).split('/')[3] == 'notifications') {
     notifSorting.addEventListener('click', function() {
         if (notifSorting.dataset.sortingoption == '0') {
             notifSorting.dataset.sortingoption = '1'
-            notifSorting.innerHTML = 'Sorting newest to oldest'
+            notifSorting.innerHTML = 'Newest to oldest'
         } else {
             notifSorting.dataset.sortingoption = '0'
-            notifSorting.innerHTML = 'Sorting oldest to newest'
+            notifSorting.innerHTML = 'Oldest to newest'
         }
         displayNotifs()
     })
@@ -219,10 +230,12 @@ if ((window.location.href).split('/')[3] == 'notifications') {
         if (notifShowCleared.dataset.cleared == "false") {
             notifShowCleared.dataset.cleared = "true"
             notifShowCleared.innerText = "View new"
+
             getNotifs(true)
         } else {
             notifShowCleared.dataset.cleared = "false"
             notifShowCleared.innerText = "View cleared"
+
             getNotifs(false)
         }
     })
