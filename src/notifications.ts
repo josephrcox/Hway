@@ -55,7 +55,7 @@ const getNotifs = async(cleared:boolean) => {
                 displayNotifs()
             }
         } else {
-            ringBell()
+            notifsDiv.innerHTML = "0"
             notifAlert.innerHTML = 'No new notifications!'
         }
         if (notifAlert.innerHTML != "") {
