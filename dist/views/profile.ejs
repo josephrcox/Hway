@@ -13,6 +13,7 @@
          </div>
          
       </div>
+
       <div id='page-profile-avatar-change'>
          <label for="avatar_file" id="avatar_file_label" class="avatar_file" style="color: white;">Change Avatar</label>
          <input type="file" name="avatar_file" class="avatar_file" id="avatar_file" accept=".jpg, .jpeg, .png, .gif">
@@ -38,15 +39,19 @@
    
 
 </div>
-<script>
-   document.getElementById('sorting_options').style.display = 'none'
-
-</script>
 
 <script src="/profile.js"></script>
 <script src="/notifications.js"></script>
 <script src='/subscriptions.js'></script>
 <script src="/script.js"></script>
+
+<script defer>
+   document.getElementById('sorting_options').style.display = 'none'
+   document.getElementById('header-notifs-bell').style.display = 'none'
+   document.getElementById('header-buttons').style.display = 'none'
+</script>
+
+
 
 
 </body>

@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
     {
         name: { type:String, unique:true },
         password: { type:String },
+        email: { type:String, required:false},
         avatar: { type:String},
         show_nsfw: {type:Boolean, default:false},
         notifications: { type:Array, default:[]}, // [type (comment), string of notification heading, postID, avatar of user initiated change]

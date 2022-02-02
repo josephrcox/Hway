@@ -306,45 +306,49 @@ const getUser = async () => {
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
     
-    if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
-        isUserLoggedIn = false;
-        (document.getElementById("newPost_div") as HTMLInputElement).style.display = 'none'
-        document.getElementById("currentUser").innerText = "Login / Register"
-        document.getElementById("logout_button").style.display = 'none'
-        document.getElementById("login_button").style.display = 'block'
-        document.getElementById("reg_button").style.display = 'block'
-        document.getElementById("post-button").style.display = 'none'
-        document.getElementById('header-notifs').style.display = 'none'
-    } else {
-        currentUserID = data.id
-        currentUsername = data.name
-        isUserLoggedIn = true
-        await getSubscriptions()
-        document.getElementById("currentUser").innerText = data.name
-        if (['home', 'all'].indexOf(currentPageType) != - 1 && localStorage.getItem("hide_new_post_div") == "false") {
-            document.getElementById("newPost_div").style.display = 'block'
-            document.getElementById("post-button").innerHTML = 'Collapse new post'
-        }
-        
-        document.getElementById("logout_button").style.display = 'block'
-        document.getElementById("login_button").style.display = 'none'
-        document.getElementById("reg_button").style.display = 'none'
-        if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
-            document.getElementById("post-button").style.display = 'block'
-
-        }
-        const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
-        const data2 = await response.json();
-        let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement;
-        if (data2.show_nsfw == true) {
-            filter_nsfw.checked = true;
-        }
-        else {
-            filter_nsfw.checked = false;
-        }
-        
+    try {
+        if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
+            isUserLoggedIn = false;
+            (document.getElementById("newPost_div") as HTMLInputElement).style.display = 'none'
+            document.getElementById("currentUser").innerText = "Login / Register"
+            document.getElementById("logout_button").style.display = 'none'
+            document.getElementById("login_button").style.display = 'block'
+            document.getElementById("reg_button").style.display = 'block'
+            document.getElementById("post-button").style.display = 'none'
+            document.getElementById('header-notifs').style.display = 'none'
+        } else {
+            currentUserID = data.id
+            currentUsername = data.name
+            isUserLoggedIn = true
+            await getSubscriptions()
+            document.getElementById("currentUser").innerText = data.name
+            if (['home', 'all'].indexOf(currentPageType) != - 1 && localStorage.getItem("hide_new_post_div") == "false") {
+                document.getElementById("newPost_div").style.display = 'block'
+                document.getElementById("post-button").innerHTML = 'Collapse new post'
+            }
+            
+            document.getElementById("logout_button").style.display = 'block'
+            document.getElementById("login_button").style.display = 'none'
+            document.getElementById("reg_button").style.display = 'none'
+            if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
+                document.getElementById("post-button").style.display = 'block'
+    
+            }
+            const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
+            const data2 = await response.json();
+            let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement;
+            if (data2.show_nsfw == true) {
+                filter_nsfw.checked = true;
+            }
+            else {
+                filter_nsfw.checked = false;
+            }
+            
+        }    
+    } catch(err) {
+        console.error(err)
     }
-
+    
 
 
     changeCommentSectionVisibility()
