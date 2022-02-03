@@ -30,15 +30,12 @@ let currentUserID;
 let topic;
 let currentUsername;
 let all_topics_array = [];
-
 let info_totalPages;
 let info_totalPosts;
-
 const fa_voteDown_filled = '<i style="color:#f9910b;" class="fas fa-arrow-alt-circle-down"></i>';
 const fa_voteDown = '<i class="far fa-arrow-alt-circle-down"></i>';
 const fa_voteUp_filled = '<i style="color:#00ff10;" class="fas fa-arrow-alt-circle-up"></i>';
 const fa_voteUp = '<i class="far fa-arrow-alt-circle-up"></i>';
-
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0;
