@@ -223,7 +223,7 @@ tbody {
 }
 .voteCount, .commentCount {
 	padding-right: 10px;
-	margin-left:10px;
+	/*! margin-left:10px; */
 	color: white;
 	font-weight: 1000;
 	align-self: center;
@@ -231,10 +231,10 @@ tbody {
 
 
 .comVoteCount, .comnestedVoteCount {
-	padding-right: 10px;
 	padding-left: 10px;
 	color: black;
 	font-weight: 700;
+	width: 20px;
 }
 
 .comnestedVoteCount {
@@ -252,7 +252,6 @@ tbody {
 }
 
 i {
-    margin-left: -30px;
     cursor: pointer;
 }
 
@@ -260,14 +259,17 @@ textarea {
 	resize: none;
 }
 .voteUpButton, .voteDoButton, .nestedcommentUp {
-	height:20px;
-	padding-top: 4px;
+	height:27px;
+	padding-top: 3px;
 	padding-inline: 10px;
 	padding-bottom: 4px;
 	background: none;
 	border: none;
 	cursor: pointer;
 	order:0;
+	font-size: 24px;
+	margin-top: -6px;
+	color: white;
 }
 
 .nestedcommentUp {
@@ -341,14 +343,16 @@ label {
 
 .voteDiv {
 	background-color: var(--foreground-3);
+	padding-left: 10px;
 }
 
 .comVoteDiv {
 	display: flex;
 	flex-direction: row;
 	background-color: azure;
-	/*! border-top:1px solid black; */
 	align-items:center;
+	gap: 10px;
+	padding-right: 10px;
 }
 
 #newPost_file {
@@ -428,7 +432,6 @@ label {
 }
 
 .comVoteDiv {
-	height:55px;
 }
 
 .comInfoCell, .ncInfoCell {
@@ -444,7 +447,6 @@ label {
 }
 
 .comreplybutton {
-	margin-top:-10px;
 }
 
 
@@ -464,6 +466,7 @@ a:hover { text-decoration: none; color:red; }
 
 .commentCount {
 	font-size:15px;
+	margin-right: 10px;
 }
 
 .index_item {
@@ -544,6 +547,7 @@ a:visited {
 
 .ncVoteDiv {
   padding-bottom:5px;
+	padding-right: 10px;
 }
 
 .posterRow {
@@ -554,10 +558,6 @@ a:visited {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
-}
-
-.deletePostButton {
-	align-self:center;
 }
 
 .postImgThumbDiv {
@@ -631,8 +631,10 @@ a:visited {
 }
 
 
-#username, #password {
+#username, #password, #email {
   font-size: large;
+  max-width: 377px;
+  width: 91vw;
 }
 
 #reg-form {
@@ -761,7 +763,7 @@ checkbox {
   background-color: darkblue; /* Green */
   border: none;
   color: white;
-  padding: 12px 28px;
+  padding: 6px 25px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -858,4 +860,22 @@ checkbox {
 .notif_page_settings {
 	display: flex;
 	max-width: 1000px;
+  }
+
+  
+
+.openPostButton {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.deletePostButton {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+#subscribe_topic_input {
+	font-size: 24px;
+	margin-left: 3px;
+	margin-right: 2px;
   }

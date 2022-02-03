@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"> 
 
-    <title class="noselect">HWay v-b0.01</title>
+    <title class="noselect">HWay</title>
 
 
 </head>
@@ -30,6 +30,7 @@
                     <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
                     <a href='#' onclick="login()" id="login_button" class="user-dropdown-item">Login</a>
                     <a href='#' onclick="register()" id="reg_button" class="user-dropdown-item">Register</a>
+                    <a href='#' onclick="resetPasswordPage()" id="resetpw_button" class="user-dropdown-item">Reset password</a>
                     <a href='#' onclick="view_subscriptions()" id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
                     <div class="border-bottom"></div>
                     <div id="filter_nsfw_div">
@@ -46,7 +47,7 @@
             
             <div id="misc_header_buttons">
                 <div id="home-button" onclick='navHome()' class="cursor_pointer">Home</div>
-                <div id="post-button" style='display:block;' onclick="ui_newPost()" class="cursor_pointer">Collapse new post</div>
+                <div id="post-button" style='display:block;' onclick="ui_newPost()" class="cursor_pointer">Post</div>
                 <div id="search-button" onclick="showorhidesearch()" class="cursor_pointer">Search</div>
                 <div id="subscribe-button" style='display:none;' class="cursor_pointer"></div>
             </div>
@@ -106,6 +107,9 @@ function register() {
 }
 function view_subscriptions() {
     window.location.replace("/subscriptions")
+}
+function resetPasswordPage() {
+    window.location.replace("/account/resetpw")
 }
 
 function profile() {

@@ -30,8 +30,15 @@ let currentUserID;
 let topic;
 let currentUsername;
 let all_topics_array = [];
+
 let info_totalPages;
 let info_totalPosts;
+
+const fa_voteDown_filled = '<i style="color:#f9910b;" class="fas fa-arrow-alt-circle-down"></i>';
+const fa_voteDown = '<i class="far fa-arrow-alt-circle-down"></i>';
+const fa_voteUp_filled = '<i style="color:#00ff10;" class="fas fa-arrow-alt-circle-up"></i>';
+const fa_voteUp = '<i class="far fa-arrow-alt-circle-up"></i>';
+
 switch (currentPageCategory) {
     case 'user':
         cPageTypeIndex = 0;
@@ -282,37 +289,46 @@ async function randomizer(x) {
 const getUser = async () => {
     const response = await fetch('/api/get/currentuser/');
     const data = await response.json();
-    if (data.code == 400) {
-        isUserLoggedIn = false;
-        document.getElementById("newPost_div").style.display = 'none';
-        document.getElementById("currentUser").innerText = "Login / Register";
-        document.getElementById("logout_button").style.display = 'none';
-        document.getElementById("login_button").style.display = 'block';
-        document.getElementById("reg_button").style.display = 'block';
-        document.getElementById("post-button").style.display = 'none';
-        document.getElementById('header-notifs').style.display = 'none';
-    }
-    else {
-        currentUserID = data.id;
-        currentUsername = data.name;
-        isUserLoggedIn = true;
-        await getSubscriptions();
-        document.getElementById("currentUser").innerText = data.name;
-        document.getElementById("logout_button").style.display = 'block';
-        document.getElementById("login_button").style.display = 'none';
-        document.getElementById("reg_button").style.display = 'none';
-        if (['user', 'notifications', 'post'].indexOf(window.location.pathname) != -1) {
-            document.getElementById("post-button").style.display = 'block';
-        }
-        const response = await fetch('/api/get/user/' + data.name + '/show_nsfw');
-        const data2 = await response.json();
-        let filter_nsfw = document.getElementById('filter_nsfw');
-        if (data2.show_nsfw == true) {
-            filter_nsfw.checked = true;
+    try {
+        if (data.code == 400) {
+            isUserLoggedIn = false;
+            document.getElementById("newPost_div").style.display = 'none';
+            document.getElementById("currentUser").innerText = "Login / Register";
+            document.getElementById("logout_button").style.display = 'none';
+            document.getElementById("login_button").style.display = 'block';
+            document.getElementById("reg_button").style.display = 'block';
+            document.getElementById("post-button").style.display = 'none';
+            document.getElementById('header-notifs').style.display = 'none';
         }
         else {
-            filter_nsfw.checked = false;
+            currentUserID = data.id;
+            currentUsername = data.name;
+            isUserLoggedIn = true;
+            await getSubscriptions();
+            document.getElementById("currentUser").innerText = data.name;
+            if (['home', 'all'].indexOf(currentPageType) != -1 && localStorage.getItem("hide_new_post_div") == "false") {
+                document.getElementById("newPost_div").style.display = 'block';
+                document.getElementById("post-button").innerHTML = 'Collapse new post';
+            }
+            document.getElementById("logout_button").style.display = 'block';
+            document.getElementById("login_button").style.display = 'none';
+            document.getElementById("reg_button").style.display = 'none';
+            if (['user', 'notifications', 'post'].indexOf(window.location.pathname) != -1) {
+                document.getElementById("post-button").style.display = 'block';
+            }
+            const response = await fetch('/api/get/user/' + data.name + '/show_nsfw');
+            const data2 = await response.json();
+            let filter_nsfw = document.getElementById('filter_nsfw');
+            if (data2.show_nsfw == true) {
+                filter_nsfw.checked = true;
+            }
+            else {
+                filter_nsfw.checked = false;
+            }
         }
+    }
+    catch (err) {
+        console.error(err);
     }
     changeCommentSectionVisibility();
     loadPosts("");
@@ -374,11 +390,11 @@ const postObject = {
         voteDiv.setAttribute("id", "voteDiv_" + this.id);
         voteDiv.setAttribute("class", "voteDiv");
         voteDiv.dataset.postId = this.id;
-        var openPostButton = document.createElement("img");
+        var openPostButton = document.createElement("span");
         openPostButton.setAttribute("id", "openPostButton_" + this.id);
         openPostButton.setAttribute("class", "openPostButton");
         openPostButton.dataset.postId = this.id;
-        openPostButton.src = '/assets/speech_bubble.png';
+        openPostButton.innerHTML = '<i style="font-size:24px;padding-right:10px;" class="fas fa-comment-dots"></i>';
         openPostButton.addEventListener('click', function () {
             window.location.href = '/posts/' + openPostButton.dataset.postId;
         }, false);
@@ -396,26 +412,26 @@ const postObject = {
         voteCount.setAttribute("class", "voteCount");
         voteCount.dataset.postId = this.id;
         voteCount.innerHTML = this.total_votes;
-        var voteUpButton = document.createElement("img");
+        var voteUpButton = document.createElement("span");
         voteUpButton.setAttribute("id", "voteUpButton_" + this.id);
         voteUpButton.setAttribute("class", "voteUpButton");
         voteUpButton.dataset.postId = this.id;
-        voteUpButton.src = '/assets/up.gif';
+        voteUpButton.innerHTML = fa_voteUp;
         if (this.current_user_upvoted) {
-            voteUpButton.src = '/assets/up_selected.gif';
+            voteUpButton.innerHTML = fa_voteUp_filled;
         }
         voteUpButton.style.width = 'auto';
         voteUpButton.addEventListener('click', function () {
             console.log(voteUpButton.dataset.postId);
             vote(1, voteUpButton.dataset.postId);
         }, false);
-        var voteDownButton = document.createElement("img");
+        var voteDownButton = document.createElement("span");
         voteDownButton.setAttribute("id", "voteDoButton_" + this.id);
         voteDownButton.setAttribute("class", "voteDoButton");
         voteDownButton.dataset.postId = this.id;
-        voteDownButton.src = '/assets/down.gif';
+        voteDownButton.innerHTML = fa_voteDown;
         if (this.current_user_downvoted) {
-            voteDownButton.src = '/assets/down_selected.gif';
+            voteDownButton.innerHTML = fa_voteDown_filled;
         }
         voteDownButton.style.width = 'auto';
         voteDownButton.addEventListener('click', function () {
@@ -486,12 +502,11 @@ const postObject = {
             };
         }
         if (this.current_user_admin) {
-            var del = document.createElement("img");
+            var del = document.createElement("div");
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
-            del.src = "/assets/trash.png";
-            del.style.height = '20px';
-            del.style.width = 'auto';
+            del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
+            del.style.color = 'white';
             let delPostConfirmation = false;
             let delPostConfirmationId;
             del.onclick = function () {
@@ -500,13 +515,13 @@ const postObject = {
                         deletePost(del.id.split("_")[1]);
                     }
                     else {
-                        del.src = "/assets/trash_confirm.png";
+                        del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> <span style="font-size:18px;">Delete?</span>';
                         delPostConfirmation = true;
                         delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    del.src = "/assets/trash_confirm.png";
+                    del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                     delPostConfirmation = true;
                     delPostConfirmationId = del.id.split("_")[1];
                 }
@@ -622,11 +637,12 @@ const commentObject = {
         infoCell.setAttribute("class", "comInfoCell");
         infoCell.setAttribute("id", "comInfoCell_" + this.id);
         if (this.current_user_admin) {
-            var del = document.createElement("img");
+            var del = document.createElement("span");
             del.setAttribute("class", "deletePostButton");
             del.setAttribute("id", "deletePostButton_" + this.id);
-            del.src = "/assets/trash.png";
+            del.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
             del.style.height = '20px';
+            del.style.display = 'inline';
             del.style.width = 'auto';
             del.style.paddingLeft = '10px';
             del.style.marginBottom = '-5px';
@@ -638,13 +654,13 @@ const commentObject = {
                         deleteComment(del.id.split("_")[1]);
                     }
                     else {
-                        del.src = "/assets/trash_confirm.png";
+                        del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                         delPostConfirmation = true;
                         delPostConfirmationId = del.id.split("_")[1];
                     }
                 }
                 else {
-                    del.src = "/assets/trash_confirm.png";
+                    del.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                     delPostConfirmation = true;
                     delPostConfirmationId = del.id.split("_")[1];
                 }
@@ -694,14 +710,15 @@ const commentObject = {
             voteCount.setAttribute("id", "comnestedVoteCount_" + this.nested_comments[i].id);
             voteCount.setAttribute("class", "comnestedVoteCount");
             voteCount.innerHTML = this.nested_comments[i].total_votes;
-            var voteUp = document.createElement("img");
+            let voteUp = document.createElement("span");
             voteUp.setAttribute("id", "nestedcommentUp_" + this.nested_comments[i].id + "_" + this.id);
             voteUp.setAttribute("class", "nestedcommentUp");
             if (this.nested_comments[i].current_user_voted) {
-                voteUp.src = '/assets/up_selected.gif';
+                voteUp.innerHTML = fa_voteUp_filled;
             }
             else {
-                voteUp.src = '/assets/up.gif';
+                voteUp.innerHTML = fa_voteUp;
+                voteUp.style.color = 'black';
             }
             voteUp.style.width = 'auto';
             let self = this;
@@ -709,12 +726,11 @@ const commentObject = {
                 voteCom(self.nested_comments[i].id, currentPostID, true, self.id);
             };
             if (this.nested_comments[i].posterid == currentUserID) {
-                var delnc = document.createElement("img");
-                delnc.setAttribute("class", "deletePostButton");
+                var delnc = document.createElement("span");
                 delnc.setAttribute("id", "deletePostButton_" + this.nested_comments[i].id + "_" + this.id);
                 delnc.style.marginTop = '-15px';
                 delnc.style.marginRight = '10px';
-                delnc.src = "/assets/trash.png";
+                delnc.innerHTML = '<i style="font-size:22px;" class="far fa-trash-alt"></i>';
                 delnc.style.height = '20px';
                 delnc.style.width = 'auto';
                 delnc.style.paddingLeft = '10px';
@@ -728,13 +744,13 @@ const commentObject = {
                             deleteNestedComment(window.location.href.split('/posts/')[1], self.id.split('_')[2], self.id.split('_')[1]);
                         }
                         else {
-                            self.src = "/assets/trash_confirm.png";
+                            self.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                             delPostConfirmation = true;
                             delPostConfirmationId = self.id.split('_')[1];
                         }
                     }
                     else {
-                        self.src = "/assets/trash_confirm.png";
+                        self.innerHTML = '<i style="font-size:22px;" class="fas fa-check"></i> Delete?';
                         delPostConfirmation = true;
                         delPostConfirmationId = self.id.split('_')[1];
                     }
@@ -775,6 +791,9 @@ const commentObject = {
         if (this.nested_comments.length == 0) {
             ncContainer.style.display = 'none';
         }
+        var voteDiv = document.createElement("div");
+        voteDiv.setAttribute("id", "voteDiv_" + this.id);
+        voteDiv.setAttribute("class", "comVoteDiv");
         if (isUserLoggedIn) {
             var replyDiv = document.createElement("div");
             replyDiv.setAttribute("class", "comreplyDiv");
@@ -794,11 +813,11 @@ const commentObject = {
                 comment_nested(parentID, reply.value, replySubmit.id.split('_')[1]);
                 reply.value = "";
             };
-            var replyButton = document.createElement('img');
+            var replyButton = document.createElement('span');
             replyButton.setAttribute("class", "comreplybutton");
             replyButton.setAttribute("id", "comreplyButton_" + this.id);
-            replyButton.src = '/assets/speech_bubble.png';
-            infoRow.appendChild(replyButton);
+            replyButton.innerHTML = '<i style="color:black;font-size:24px;" class="far fa-comment-dots"></i>';
+            voteDiv.appendChild(replyButton);
             replyButton.onclick = function () {
                 document.getElementById("comreplyDiv_" + replyButton.id.split('_')[1]).scrollIntoView();
             };
@@ -806,21 +825,19 @@ const commentObject = {
             document.getElementById("comreplyDiv_" + this.id).appendChild(replyBox);
             document.getElementById("comreplyDiv_" + this.id).appendChild(replySubmit);
         }
-        var voteDiv = document.createElement("div");
-        voteDiv.setAttribute("id", "voteDiv_" + this.id);
-        voteDiv.setAttribute("class", "comVoteDiv");
         var voteCount = document.createElement("div");
         voteCount.setAttribute("id", "voteCount_" + this.id);
         voteCount.setAttribute("class", "comVoteCount");
         voteCount.innerHTML = this.total_votes;
-        var voteUp = document.createElement("img");
+        var voteUp = document.createElement("span");
         voteUp.setAttribute("id", "voteComUp_" + this.id);
         voteUp.setAttribute("class", "voteUpButton");
         if (this.current_user_voted == true) {
-            voteUp.src = '/assets/up_selected.gif';
+            voteUp.innerHTML = fa_voteUp_filled;
         }
         else {
-            voteUp.src = '/assets/up.gif';
+            voteUp.innerHTML = fa_voteUp;
+            voteUp.style.color = 'black';
         }
         voteUp.style.width = 'auto';
         voteUp.onclick = function () {
@@ -926,6 +943,7 @@ const loadPosts = async (topic) => {
         const response = await fetch('/api/get/posts/' + postid);
         const data = await response.json();
         document.getElementById("postsArray").innerHTML = "";
+        document.getElementById("posts_and_more").style.marginTop = '-28px';
         if (data.length == 0 || data.status == 'error') {
             document.getElementById("postsArray").innerHTML = "<span style='color:white'>" + data.data + " </span>";
             document.getElementById("commentSection").style.display = 'none';
@@ -1153,7 +1171,6 @@ const storeAndDisplayTopics = async () => {
 };
 storeAndDisplayTopics();
 const vote = async (change, id) => {
-    console.log(change, id);
     if (lastClick >= (Date.now() - delay)) {
         return;
     }
@@ -1168,16 +1185,20 @@ const vote = async (change, id) => {
         let voteUpButtonwithID = document.getElementById('voteUpButton_' + id);
         let voteDoButtonwithID = document.getElementById('voteDoButton_' + id);
         if (data.gif == 'none') {
-            voteUpButtonwithID.src = '/assets/up.gif';
-            voteDoButtonwithID.src = '/assets/down.gif';
+            voteUpButtonwithID.innerHTML = fa_voteUp;
+            voteDoButtonwithID.innerHTML = fa_voteDown;
+            voteUpButtonwithID.style.color = 'white';
+            voteDoButtonwithID.style.color = 'white';
         }
         if (data.gif == 'up') {
-            voteUpButtonwithID.src = '/assets/up_selected.gif';
-            voteDoButtonwithID.src = '/assets/down.gif';
+            voteUpButtonwithID.innerHTML = fa_voteUp_filled;
+            voteDoButtonwithID.innerHTML = fa_voteDown;
+            voteDoButtonwithID.style.color = 'white';
         }
         if (data.gif == 'down') {
-            voteUpButtonwithID.src = '/assets/up.gif';
-            voteDoButtonwithID.src = '/assets/down_selected.gif';
+            voteUpButtonwithID.innerHTML = fa_voteUp;
+            voteDoButtonwithID.innerHTML = fa_voteDown_filled;
+            voteUpButtonwithID.style.color = 'white';
         }
     }
     if (data.error) {
@@ -1198,18 +1219,19 @@ const voteCom = async (id, parentID, nested, commentParentID) => {
     if (data.status == 'ok') {
         if (data.voted == 'yes') {
             if (nested) {
-                document.getElementById('nestedcommentUp_' + id + '_' + commentParentID).src = '/assets/up_selected.gif';
+                document.getElementById('nestedcommentUp_' + id + '_' + commentParentID).innerHTML = fa_voteUp_filled;
             }
             else {
-                document.getElementById('voteComUp_' + id).src = '/assets/up_selected.gif';
+                document.getElementById('voteComUp_' + id).innerHTML = fa_voteUp_filled;
             }
         }
         if (data.voted == 'no') {
             if (nested) {
-                document.getElementById('nestedcommentUp_' + id + '_' + commentParentID).src = '/assets/up.gif';
+                document.getElementById('nestedcommentUp_' + id + '_' + commentParentID).innerHTML = fa_voteUp;
+                document.getElementById('nestedcommentUp_' + id + '_' + commentParentID).style.color = 'black';
             }
             else {
-                document.getElementById('voteComUp_' + id).src = '/assets/up.gif';
+                document.getElementById('voteComUp_' + id).innerHTML = fa_voteUp;
             }
         }
         if (nested) {
@@ -1269,38 +1291,46 @@ const comment_nested = async (postid, body, commentparentID) => {
             method: 'POST',
             body: JSON.stringify(bodyJSON)
         });
-        var data = await fetchResponse.json();
+        const data = await fetchResponse.json();
         let upcomment = document.getElementById('fullCommentContainer_' + commentparentID);
-        document.getElementById('comreplybox_' + commentparentID).outerHTML = "";
-        document.getElementById('comreplySubmit_' + commentparentID).outerHTML = "";
-        const comResponse = await fetch('/api/get/comment/' + postid + '/' + commentparentID);
-        const comData = await comResponse.json();
-        let com = Object.create(commentObject);
-        com.body = comData.body;
-        com.id = comData._id;
-        com.total_votes = comData.total_votes;
-        com.poster = comData.poster;
-        com.posterID = comData.posterID;
-        com.date = comData.date;
-        com.users_voted = comData.users_voted;
-        com.parentID = postid;
-        com.nested_comments = comData.nested_comments;
-        com.current_user_voted = comData.current_user_voted;
-        com.current_user_admin = comData.current_user_admin;
-        upcomment.innerHTML = "";
-        com.display();
-        window.scrollBy(0, 125);
+        var ncContainer = document.createElement("div");
+        ncContainer.setAttribute("class", "ncContainer");
+        ncContainer.setAttribute("id", "ncContainer_" + commentparentID);
+        document.getElementById("fullCommentContainer_" + commentparentID).appendChild(ncContainer);
+        var ncFrame = document.createElement("div");
+        ncFrame.setAttribute("class", "ncDiv");
+        ncFrame.setAttribute("id", "ncFrame_" + data.id);
+        var ncTable = document.createElement("table");
+        ncTable.setAttribute("class", "ncTable");
+        ncTable.setAttribute("id", "ncTable_" + data.id);
+        let ncTopRow = ncTable.insertRow(0);
+        ncTopRow.setAttribute("id", "ncTopRow_" + data.id);
+        ncTopRow.setAttribute("class", "ncTopRow");
+        let ncPoster = ncTopRow.insertCell(0);
+        ncPoster.innerHTML = "<span style='color:blue'>" + data.poster + "</span> says:";
+        let ncInfoRow = ncTable.insertRow(1);
+        let ncInfoCell = ncInfoRow.insertCell(0);
+        ncInfoCell.innerHTML = "<span style='font-size:15px; font-style:italic;'>" + data.date + "</span>";
+        ncInfoCell.setAttribute("class", "ncInfoCell");
+        ncInfoCell.setAttribute("id", "ncInfoCell_" + data.id);
+        let ncBottomRow = ncTable.insertRow(2);
+        let ncContent = ncBottomRow.insertCell(0);
+        ncContent.innerHTML = data.body;
+        ncFrame.append(ncTable);
+        ncContainer.appendChild(ncFrame);
     }
 };
 function ui_newPost() {
     if (window.innerWidth > 743 || window.location.pathname == '/post') {
         if (document.getElementById("newPost_div").style.display == 'block') {
+            localStorage.setItem("hide_new_post_div", "true");
             document.getElementById("newPost_div").style.display = 'none';
             document.getElementById("post-button").innerHTML = "Post";
             document.getElementById("newPost_logs").innerHTML = "";
             document.getElementById("newPost_topic").value = currentTopic;
         }
         else {
+            localStorage.setItem("hide_new_post_div", "false");
             document.getElementById("newPost_div").style.display = 'block';
             document.getElementById("searchbar").style.display = 'none';
             document.getElementById("post-button").innerHTML = "Collapse new post";

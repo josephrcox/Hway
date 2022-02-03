@@ -1,6 +1,7 @@
 <div class="login-reg">
     <h1 style='color:black'>Login</h1>
-    <a href="/register">Haven't signed up? <strong> Click here! </strong> </a>
+    <a href="/register">Haven't signed up? <strong> Click here! </strong> </a><br/>
+    <a href="/account/resetpw">Trouble logging in? <strong> Click here! </strong> </a>
         <form id="reg-form">
             <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
             <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/>
@@ -50,5 +51,7 @@ async function loginUser(event) {
         document.getElementById("logs").innerHTML = fetchResponse.error;
     }
 }
+
+document.getElementById("header-notifs-bell").style.display = 'none'
 
 </script>

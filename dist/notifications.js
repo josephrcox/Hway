@@ -51,7 +51,7 @@ const getNotifs = async (cleared) => {
             }
         }
         else {
-            ringBell();
+            notifsDiv.innerHTML = "0";
             notifAlert.innerHTML = 'No new notifications!';
         }
         if (notifAlert.innerHTML != "") {
@@ -70,8 +70,13 @@ function displayNotifs() {
         notifs.sort(function (a, b) { return b.timestamp - a.timestamp; });
     }
     notifSorting.style.display = 'block';
+    if (notifShowCleared.dataset.cleared == "false") {
+        clearNotifButton.style.display = 'block';
+    }
+    else {
+        clearNotifButton.style.display = 'none';
+    }
     notifShowCleared.style.display = 'block';
-    clearNotifButton.style.display = 'block';
     notifArray.innerHTML = "";
     let currentTimestamp = new Date();
     for (let i = 0; i < ncount; i++) {
@@ -130,7 +135,12 @@ function displayNotifs() {
             check.style.paddingBottom = '5px';
         }
         anb.append(avatar, nb);
-        c.append(anb, check);
+        if (notifShowCleared.dataset.cleared == "false") {
+            c.append(anb, check);
+        }
+        else {
+            c.append(anb);
+        }
         notifArray.append(c);
     }
 }
@@ -181,11 +191,11 @@ if ((window.location.href).split('/')[3] == 'notifications') {
     notifSorting.addEventListener('click', function () {
         if (notifSorting.dataset.sortingoption == '0') {
             notifSorting.dataset.sortingoption = '1';
-            notifSorting.innerHTML = 'Sorting newest to oldest';
+            notifSorting.innerHTML = 'Newest to oldest';
         }
         else {
             notifSorting.dataset.sortingoption = '0';
-            notifSorting.innerHTML = 'Sorting oldest to newest';
+            notifSorting.innerHTML = 'Oldest to newest';
         }
         displayNotifs();
     });
