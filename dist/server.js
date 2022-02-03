@@ -685,6 +685,7 @@ app.get('/api/get/:topic/q', async (req, res) => {
                                 let now = Date.now();
                                 Post.findByIdAndUpdate(posts[x].id, { last_touched_timestamp: now }, { new: true }, function (err, docs) {
                                     if (err) {
+                                        console.log(err);
                                     }
                                 });
                             }
@@ -732,7 +733,8 @@ app.get('/api/get/:topic/q', async (req, res) => {
                     else {
                     }
                 }
-                res.send(postsonpage);
+                console.log({ data: postsonpage, total_posts: totalPosts, total_pages: totalPages });
+                res.send({ data: postsonpage, total_posts: totalPosts, total_pages: totalPages });
             }
         });
     }
@@ -835,7 +837,7 @@ app.get('/api/get/:topic/q', async (req, res) => {
             else {
             }
         }
-        res.send(postsonpage);
+        res.send({ data: postsonpage, total_posts: totalPosts, total_pages: totalPages });
     }
     else {
         Post.find({ topic: req.params.topic, status: "active" }).sort({ total_votes: -1 }).exec(async function (err, posts) {
@@ -928,7 +930,7 @@ app.get('/api/get/:topic/q', async (req, res) => {
                     else {
                     }
                 }
-                res.send(postsonpage);
+                res.send({ data: postsonpage, total_posts: totalPosts, total_pages: totalPosts });
             }
         });
     }

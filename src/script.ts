@@ -30,6 +30,8 @@ let currentUserID:string
 let topic:string
 let currentUsername:string
 let all_topics_array = []
+let info_totalPages
+let info_totalPosts
 
 // Fontawesome variables
 const fa_voteDown_filled = '<i style="color:#f9910b;" class="fas fa-arrow-alt-circle-down"></i>'
@@ -657,6 +659,7 @@ const topicObject = {
             topicFrame.innerHTML = this.name + " | Posts: " + this.post_count
             topicContainer.append(topicFrame)
             document.getElementById("recommended_topics").append(topicContainer)
+            document.getElementById("recommended_topics").style.display = 'flex'
         } else if (window.location.href.indexOf('/subscriptions') != -1) {
             topicFrame.innerHTML = this.name
 
@@ -1180,7 +1183,18 @@ const loadPosts = async (topic) => {
         }  
 
         const response = await fetch(request)
-        const data = await response.json()
+        var data = await response.json()
+        if (data == null) {
+            document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
+            document.getElementById("recommended_topics").style.display = 'none'
+        }
+
+        info_totalPages = data.total_pages
+        info_totalPosts = data.total_posts
+
+        loadPageNavBar()
+
+        data = data.data
 
         let search_query_array = search_query.split('+')
         let search_similar_topics = 0
@@ -1548,8 +1562,8 @@ function ui_newPost() {
 
 if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_logs").innerHTML = "";
-    document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
-} 
+}
+   
 if (['search', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
     console.log("hiding")
     document.getElementById("newPost_div").style.display = 'none';
@@ -1796,7 +1810,7 @@ function prevPage() {
         window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
     }
 
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+ pageNumber +nextPageStr
+    loadPageNavBar()
 }
 
 function nextPage() {
@@ -1811,9 +1825,30 @@ function nextPage() {
     if (currentPageType == 'topic') {
         window.location.href = baseURL + "?sort="+pagequeries.sort+"&t="+pagequeries.t+"&page="+pageNumber
     }
+    loadPageNavBar()
     
-    document.getElementById("page-number").innerHTML = prevPageStr+"Page "+pageNumber+nextPageStr
+}
 
+function loadPageNavBar() {
+    if (info_totalPages == 1) {
+        document.getElementById("page-number").innerHTML = ""
+    } else {
+        if (pageNumber >= info_totalPages) {
+            if (pageNumber == 1) {
+                document.getElementById("page-number").innerHTML = "Page " + pageNumber;
+            } else {
+                document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber;
+            }
+           
+        } else {
+            if (pageNumber == 1) {
+                document.getElementById("page-number").innerHTML = "Page " + pageNumber + nextPageStr;
+            } else {
+                document.getElementById("page-number").innerHTML = prevPageStr + "Page " + pageNumber + nextPageStr;
+            }
+           
+        } 
+    }
     
 }
 
