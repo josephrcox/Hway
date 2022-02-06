@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node dist/server.js",
+    "start": "netlify dev",
     "devStart": "nodemon dist/server.js"
   },
   "author": "",
