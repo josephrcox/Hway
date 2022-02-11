@@ -2,3 +2,4 @@ node_modules/* linguist-vendored
 
 * linguist-vendored
 *.js linguist-vendored=false
+*.ts linguist-vendored=false
