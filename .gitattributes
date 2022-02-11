@@ -4,4 +4,4 @@ node_modules
 *.js linguist-detectable=false
 *.html linguist-detectable=false  
 *.ejs linguist-detectable=false 
-*.ts linguist-detectable=false 
+*.ts linguist-detectable=true
