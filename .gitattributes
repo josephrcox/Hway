@@ -1,5 +1,5 @@
 node_modules/* linguist-vendored
 
 * linguist-vendored
-Api.elm linguist-generated
 *.ejs linguist-detectable
+Api.elm linguist-generated
