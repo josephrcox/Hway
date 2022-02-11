@@ -1,7 +1,4 @@
 node_modules/* linguist-vendored
 
 * linguist-vendored
-*.js linguist-vendored=false
-*.ts linguist-vendored=false
-*.css linguist-vendored=false
-*.html linguist-vendored=false
+Api.elm linguist-generated
