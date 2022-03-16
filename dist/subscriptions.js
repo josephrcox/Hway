@@ -1,5 +1,5 @@
 let subbutton = document.getElementById('subscribe-button');
-let subscriptions;
+let subscriptions = [];
 const getSubscriptions = async () => {
     const response = await fetch('/api/get/user/' + currentUsername + '/subscriptions');
     const data = await response.json();
