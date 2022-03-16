@@ -92,13 +92,11 @@ if (currentPageType == 'all') {
 }
 if (currentPageType == 'post') {
     document.getElementById('sorting_options').style.display = 'none';
-    document.getElementById('page-number').style.display = 'none';
-    document.getElementById('post-button').style.display = 'none';
 }
 if (currentPageType == 'notifications') {
     document.getElementById('sorting_options').style.display = 'none';
     document.getElementById('page-number').style.display = 'none';
-    document.getElementById('post-button').style.display = 'none';
+    header_postButton.style.display = 'none';
 }
 if (currentPageType == 'search') {
     document.getElementById('sorting_options').style.display = 'none';
@@ -296,7 +294,7 @@ const getUser = async () => {
             document.getElementById("logout_button").style.display = 'none';
             document.getElementById("login_button").style.display = 'block';
             document.getElementById("reg_button").style.display = 'block';
-            document.getElementById("post-button").style.display = 'none';
+            header_postButton.style.display = 'none';
             document.getElementById('header-notifs').style.display = 'none';
         }
         else {
@@ -307,13 +305,13 @@ const getUser = async () => {
             document.getElementById("currentUser").innerText = data.name;
             if (['home', 'all'].indexOf(currentPageType) != -1 && localStorage.getItem("hide_new_post_div") == "false") {
                 document.getElementById("newPost_div").style.display = 'block';
-                document.getElementById("post-button").innerHTML = 'Collapse new post';
+                header_postButton.innerHTML = 'Collapse new post';
             }
             document.getElementById("logout_button").style.display = 'block';
             document.getElementById("login_button").style.display = 'none';
             document.getElementById("reg_button").style.display = 'none';
             if (['user', 'notifications', 'post'].indexOf(window.location.pathname) != -1) {
-                document.getElementById("post-button").style.display = 'block';
+                header_postButton.style.display = 'block';
             }
             const response = await fetch('/api/get/user/' + data.name + '/show_nsfw');
             const data2 = await response.json();
@@ -1017,6 +1015,7 @@ const loadPosts = async (topic) => {
         }
         const response = await fetch(request);
         var data = await response.json();
+        console.log(data);
         if (data == null) {
             document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>";
             document.getElementById("recommended_topics").style.display = 'none';
@@ -1024,7 +1023,9 @@ const loadPosts = async (topic) => {
         info_totalPages = data.total_pages;
         info_totalPosts = data.total_posts;
         loadPageNavBar();
-        data = data.data;
+        if (window.location.pathname.indexOf('/search/') == -1) {
+            data = data.data;
+        }
         let search_query_array = search_query.split('+');
         let search_similar_topics = 0;
         for (let x = 0; x < search_query_array.length; x++) {
@@ -1039,6 +1040,7 @@ const loadPosts = async (topic) => {
                 }
             }
         }
+        console.log(data);
         if (data.length == 0) {
             if (search_similar_topics > 0) {
                 document.getElementById("recommended_topics").style.display = 'flex';
@@ -1320,25 +1322,7 @@ const comment_nested = async (postid, body, commentparentID) => {
     }
 };
 function ui_newPost() {
-    if (window.innerWidth > 743 || window.location.pathname == '/post') {
-        if (document.getElementById("newPost_div").style.display == 'block') {
-            localStorage.setItem("hide_new_post_div", "true");
-            document.getElementById("newPost_div").style.display = 'none';
-            document.getElementById("post-button").innerHTML = "Post";
-            document.getElementById("newPost_logs").innerHTML = "";
-            document.getElementById("newPost_topic").value = currentTopic;
-        }
-        else {
-            localStorage.setItem("hide_new_post_div", "false");
-            document.getElementById("newPost_div").style.display = 'block';
-            document.getElementById("searchbar").style.display = 'none';
-            document.getElementById("post-button").innerHTML = "Collapse new post";
-            document.getElementById("newPost_topic").value = currentTopic;
-        }
-    }
-    else {
-        window.location.href = '/post';
-    }
+    window.location.href = '/post';
 }
 if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_logs").innerHTML = "";
@@ -1346,7 +1330,6 @@ if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPage
 if (['search', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
     console.log("hiding");
     document.getElementById("newPost_div").style.display = 'none';
-    document.getElementById("post-button").style.display = 'none';
 }
 if (['user', 'notifications', 'subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function () {
