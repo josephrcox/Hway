@@ -90,8 +90,9 @@ if ((["all","topic"].indexOf(currentPageType) != -1 && ((pageNumber == null || i
     window.location.href = '/'
 } 
 
-if (currentPageType == 'topic') { 
+if (['topic', 'all'].indexOf(currentPageType) != -1) { 
     document.getElementById('sorting_options').style.display = 'block'
+    console.log("On topic or all")
 }
 if (currentPageType == 'all') {    
     document.getElementById('sorting_options').style.display = 'block'

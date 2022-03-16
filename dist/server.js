@@ -1983,9 +1983,6 @@ app.post('/api/put/account/setpassword', async (req, res) => {
         }
     });
 });
-app.get('*', async (req, res) => {
-    res.render('error.ejs', { layout: 'layouts/error.ejs', topic: "PAGE NOT FOUND", error: ((req.url).replace('/', '')) });
-});
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
     console.log('Listening on port', port);
