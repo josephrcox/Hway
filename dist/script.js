@@ -1316,9 +1316,6 @@ const comment_nested = async (postid, body, commentparentID) => {
 function ui_newPost() {
     window.location.href = '/post';
 }
-if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
-    document.getElementById("newPost_logs").innerHTML = "";
-}
 if (['user', 'notifications', 'subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function () {
         let postTitle = document.getElementById("newPost_name").value;
