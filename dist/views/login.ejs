@@ -36,10 +36,8 @@ async function loginUser(event) {
         body: JSON.stringify(bodyJSON)
     });
     const data = await fetchResponse.json()
-    
+
     if (data.code == 200) {
-        //
-        //
         localStorage.clear()
         window.location.href = "/all"
     } 
