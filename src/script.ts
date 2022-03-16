@@ -1546,9 +1546,6 @@ function ui_newPost() {
 
 }
 
-if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
-    document.getElementById("newPost_logs").innerHTML = "";
-}
 
 if (['user','notifications','subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function() {
