@@ -33,6 +33,8 @@ let all_topics_array = []
 let info_totalPages
 let info_totalPosts
 
+console.log(header_postButton)
+
 // Fontawesome variables
 const fa_voteDown_filled = '<i style="color:#f9910b;" class="fas fa-arrow-alt-circle-down"></i>'
 const fa_voteDown = '<i class="far fa-arrow-alt-circle-down"></i>' 
