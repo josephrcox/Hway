@@ -292,7 +292,7 @@ app.post('/api/post/notif/clear/', function (req, res) {
     }
 });
 app.get('/login', (req, res) => {
-    res.render('login.ejs', { topic: "- login" });
+    res.render('login.ejs', { layout: 'layouts/account.ejs' });
 });
 app.get('/post', (req, res) => {
     res.render('post.ejs', { topic: "- post" });
@@ -304,7 +304,7 @@ app.get('/user/:user', (req, res) => {
     res.render('profile.ejs', { topic: "" });
 });
 app.get('/register', (req, res) => {
-    res.render('register.ejs', { topic: "- register" });
+    res.render('register.ejs', { layout: 'layouts/account.ejs' });
 });
 app.get('/subscriptions', async (req, res) => {
     let valid = false;
@@ -1873,7 +1873,7 @@ function getFullDateTimeAndTimeStamp() {
 const mailjet = require('node-mailjet')
     .connect('b7943ff95bd7bb85ad51a7c9e0f46a82', 'd7a10ff44ee87ff43aba8a503ba4339b');
 app.get('/account/resetpw', (req, res) => {
-    res.render('resetpassword.ejs', { topic: "- reset password" });
+    res.render('resetpassword.ejs', { layout: 'layouts/account.ejs' });
 });
 app.post('/api/post/resetpassword/sendcode', async (req, res) => {
     try {
@@ -1982,6 +1982,9 @@ app.post('/api/put/account/setpassword', async (req, res) => {
             res.json({ status: 'ok' });
         }
     });
+});
+app.get('*', async (req, res) => {
+    res.render('error.ejs', { layout: 'layouts/error.ejs', topic: "PAGE NOT FOUND", error: ((req.url).replace('/', '')) });
 });
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
