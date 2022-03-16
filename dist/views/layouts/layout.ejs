@@ -79,6 +79,10 @@
     
 <script>
 
+if (localStorage.getItem("currentUsername") != null) {
+    document.getElementById("currentUser").innerText = localStorage.getItem("currentUsername")
+}
+
 function currentuserDropdownClicked() {
     document.getElementById("user-dropdown").classList.toggle("show");
 }
@@ -137,8 +141,6 @@ async function getUsername() {
 function showorhidesearch() {
     search = document.getElementById("searchbar")
     if (search.style.display == "none") {
-        document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById("post-button").innerHTML = 'Post'
         search.style.display = "flex"
     } else {
         search.style.display = "none"
