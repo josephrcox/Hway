@@ -96,7 +96,6 @@ if (currentPageType == 'post') {
 if (currentPageType == 'notifications') {
     document.getElementById('sorting_options').style.display = 'none';
     document.getElementById('page-number').style.display = 'none';
-    header_postButton.style.display = 'none';
 }
 if (currentPageType == 'search') {
     document.getElementById('sorting_options').style.display = 'none';
@@ -289,7 +288,6 @@ const getUser = async () => {
     try {
         if (data.code == 400) {
             isUserLoggedIn = false;
-            document.getElementById("newPost_div").style.display = 'none';
             document.getElementById("currentUser").innerText = "Login / Register";
             document.getElementById("logout_button").style.display = 'none';
             document.getElementById("login_button").style.display = 'block';
@@ -301,18 +299,12 @@ const getUser = async () => {
             currentUserID = data.id;
             currentUsername = data.name;
             isUserLoggedIn = true;
+            localStorage.setItem("currentUsername", currentUsername);
             await getSubscriptions();
             document.getElementById("currentUser").innerText = data.name;
-            if (['home', 'all'].indexOf(currentPageType) != -1 && localStorage.getItem("hide_new_post_div") == "false") {
-                document.getElementById("newPost_div").style.display = 'block';
-                header_postButton.innerHTML = 'Collapse new post';
-            }
             document.getElementById("logout_button").style.display = 'block';
             document.getElementById("login_button").style.display = 'none';
             document.getElementById("reg_button").style.display = 'none';
-            if (['user', 'notifications', 'post'].indexOf(window.location.pathname) != -1) {
-                header_postButton.style.display = 'block';
-            }
             const response = await fetch('/api/get/user/' + data.name + '/show_nsfw');
             const data2 = await response.json();
             let filter_nsfw = document.getElementById('filter_nsfw');
@@ -448,7 +440,7 @@ const postObject = {
         infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>";
         if (isUserLoggedIn == false) {
         }
-        else if (subscriptions.includes(this.topic)) {
+        else if (subscriptions.includes(this.topic) && subscriptions.length > 0) {
             infoCell.innerHTML += '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_' + this.topic + '"></i>';
         }
         else {
@@ -1326,10 +1318,6 @@ function ui_newPost() {
 }
 if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_logs").innerHTML = "";
-}
-if (['search', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
-    console.log("hiding");
-    document.getElementById("newPost_div").style.display = 'none';
 }
 if (['user', 'notifications', 'subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function () {

@@ -103,7 +103,6 @@ if (currentPageType == 'post') {
 if (currentPageType == 'notifications') { 
     document.getElementById('sorting_options').style.display = 'none'
     document.getElementById('page-number').style.display = 'none'
-    header_postButton.style.display = 'none'
 }
 
 if (currentPageType == 'search') { 
@@ -312,7 +311,6 @@ const getUser = async () => {
     try {
         if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
             isUserLoggedIn = false;
-            (document.getElementById("newPost_div") as HTMLInputElement).style.display = 'none'
             document.getElementById("currentUser").innerText = "Login / Register"
             document.getElementById("logout_button").style.display = 'none'
             document.getElementById("login_button").style.display = 'block'
@@ -323,20 +321,14 @@ const getUser = async () => {
             currentUserID = data.id
             currentUsername = data.name
             isUserLoggedIn = true
+            localStorage.setItem("currentUsername", currentUsername)
             await getSubscriptions()
             document.getElementById("currentUser").innerText = data.name
-            if (['home', 'all'].indexOf(currentPageType) != - 1 && localStorage.getItem("hide_new_post_div") == "false") {
-                document.getElementById("newPost_div").style.display = 'block'
-                header_postButton.innerHTML = 'Collapse new post'
-            }
             
             document.getElementById("logout_button").style.display = 'block'
             document.getElementById("login_button").style.display = 'none'
             document.getElementById("reg_button").style.display = 'none'
-            if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
-                header_postButton.style.display = 'block'
-    
-            }
+            
             const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
             const data2 = await response.json();
             let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement;
@@ -499,7 +491,7 @@ const postObject = {
 
         if (isUserLoggedIn == false){
             // Don't add fancy unsub/sub button
-        } else if (subscriptions.includes(this.topic)) {
+        } else if (subscriptions.includes(this.topic) && subscriptions.length > 0) {
             infoCell.innerHTML += '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_'+this.topic+'"></i>'
         } else {
             infoCell.innerHTML += '<i class="fas fa-plus-square subscribe_inline_button" style="margin-left:0px;color:green;" id="subscribeInlineButton_'+this.topic+'"></i>'
@@ -1549,23 +1541,6 @@ const comment_nested = async (postid, body, commentparentID) => {
     
 
 function ui_newPost() {
-    // if (window.innerWidth > 743 || window.location.pathname == '/post') {
-    //     if (document.getElementById("newPost_div").style.display == 'block') {
-    //         localStorage.setItem("hide_new_post_div", "true")
-    //         document.getElementById("newPost_div").style.display = 'none'
-    //         header_postButton.innerHTML = "Post"
-    //         document.getElementById("newPost_logs").innerHTML = "";
-    //         (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
-    //     } else {
-    //         localStorage.setItem("hide_new_post_div", "false")
-    //         document.getElementById("newPost_div").style.display = 'block'
-    //         document.getElementById("searchbar").style.display = 'none'
-    //         header_postButton.innerHTML = "Collapse new post";
-    //         (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
-    //     }
-    // } else {
-    //     window.location.href = '/post'
-    // }
 
     window.location.href = '/post'
 
@@ -1573,11 +1548,6 @@ function ui_newPost() {
 
 if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_logs").innerHTML = "";
-}
-   
-if (['search', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
-    console.log("hiding")
-    document.getElementById("newPost_div").style.display = 'none';
 }
 
 if (['user','notifications','subscriptions'].indexOf(currentPageType) == -1) {
