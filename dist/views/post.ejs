@@ -4,7 +4,7 @@
 
 <body>
    
-<div id="sitebody" class="sitebody-flex" style="display: block;">
+<div id="sitebody" class="sitebody-flex">
    <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
    <div id="newPost_div" style='display:block;'>
       <div class="newPost_container">
@@ -24,7 +24,7 @@
             <label for="newPost_file" id="newPost_file_label" class="newPost_file">Media</label>
             <input type="file" name="newPost_file" class="newPost_file" id="newPost_file" accept=".jpg, .jpeg, .png, .gif">
             <label for="newPost_topic" id="newPost_topic_label" class="newPost_topic">Topic</label>
-            <input type="text" id="newPost_topic" name="topic" maxlength="15" onkeypress="return event.charCode != 32">
+            <input type="text" id="newPost_topic" name="topic" maxlength="15">
             <div style="display: flex;flex-direction: row;padding-top: 15px;">
                NSFW<input type="checkbox" id="newPost_nsfw">
             </div>
@@ -36,16 +36,17 @@
    </div>
  </div> 
 
- <script src="/script.js"></script>
  <script>
-   document.getElementById('sorting_options').style.display = 'none'
-   document.getElementById('header-buttons').style.display = 'none'
-   document.getElementById('page-number').style.display = 'none'
-   document.getElementById('post-button').style.display = 'none'
-   document.getElementById('newPost_close').style.display = 'none'
-   document.getElementsByClassName('newPost_container')[0].style.width = '100%'
-   document.getElementsByClassName('newPost_container')[0].style.max = '100%'
+    if (localStorage.getItem("currentUsername") == null){
+        window.location.href = "/login"
+    }
+
+
+    document.getElementById('sorting_options').style.display = 'none'
+    document.getElementById('header-buttons').style.display = 'none'
+    document.getElementById('page-number').style.display = 'none'
+    document.getElementById('newPost_close').style.display = 'none'
+    document.getElementsByClassName('newPost_container')[0].style.width = '100%'
+    document.getElementsByClassName('newPost_container')[0].style.max = '100%'
  </script>
- <script src='notifications.js'></script>
- <script src='subscriptions.js'></script>
 </body>

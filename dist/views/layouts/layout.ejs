@@ -11,7 +11,15 @@
 
     <title class="noselect">HWay</title>
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SKJ9WYC7S5"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
+    gtag('config', 'G-SKJ9WYC7S5');
+    </script>
 </head>
 <body>
     <div class="header">
@@ -21,10 +29,10 @@
             </div>
             
             <div class="notifs" id='header-notifs'>
-                <div class="notifs_bell cursor_pointer" id="header-notifs-bell">0</div>
+                <div class="notifs_bell cursor_pointer" id="header-notifs-bell" style="display: none;">0</div>
             </div>
             <div class="user-dropdown-div" id='user-dropdown-div'>
-                <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect"></div></div>
+                <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
                 <div id="user-dropdown" class="user-dropdown-content">
                     <a href='#' onclick="profile()" id="profile_button" class="user-dropdown-item">Profile</a>
                     <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
@@ -77,8 +85,12 @@
     <div class='page-content'>
         <%- body %>
     </div>
-
+    
 <script>
+
+if (localStorage.getItem("currentUsername") != null) {
+    document.getElementById("currentUser").innerText = localStorage.getItem("currentUsername")
+}
 
 function currentuserDropdownClicked() {
     document.getElementById("user-dropdown").classList.toggle("show");
@@ -138,8 +150,6 @@ async function getUsername() {
 function showorhidesearch() {
     search = document.getElementById("searchbar")
     if (search.style.display == "none") {
-        document.getElementById("newPost_div").style.display = 'none'
-        document.getElementById("post-button").innerHTML = 'Post'
         search.style.display = "flex"
     } else {
         search.style.display = "none"
@@ -149,6 +159,13 @@ function showorhidesearch() {
 </script>
 
 <script src="https://kit.fontawesome.com/046a6861b9.js" crossorigin="anonymous"></script>
+
+<script src="../../header.js"></script>
+<script src="../../script.js"></script>
+<script src="../../subscriptions.js"></script>
+<script src="../../notifications.js"></script>
+
+
 
 </body>
 </html>

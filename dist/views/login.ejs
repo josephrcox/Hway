@@ -11,8 +11,6 @@
     
 </div>
 <script>
-document.getElementsByClassName('header-buttons')[0].style.display = 'none'
-document.getElementById('sorting_options').style.display = 'none'
 
 const form = document.getElementById("reg-form")
 form.addEventListener('submit', loginUser)
@@ -36,10 +34,8 @@ async function loginUser(event) {
         body: JSON.stringify(bodyJSON)
     });
     const data = await fetchResponse.json()
-    
+
     if (data.code == 200) {
-        //
-        //
         localStorage.clear()
         window.location.href = "/all"
     } 
@@ -51,7 +47,5 @@ async function loginUser(event) {
         document.getElementById("logs").innerHTML = fetchResponse.error;
     }
 }
-
-document.getElementById("header-notifs-bell").style.display = 'none'
 
 </script>

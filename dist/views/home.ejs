@@ -56,28 +56,12 @@
  </div> 
 
 
-<script src="/script.js"></script>
+<!-- <script src="/script.js"></script>
 <script src="/subscriptions.js"></script>
-<script src="/notifications.js"></script>
+<script src="/notifications.js"></script> -->
 
 
 <script> 
-   if (window.location.href.indexOf('/h/') != -1) {
-      document.getElementById('newPost_topic').value = window.location.href.split('/')[4]
-   }
-   if (window.innerWidth <= 743 && window.location.pathname != '/post') {
-      document.getElementById('newPost_div').style.display = 'none'
-      document.getElementById('post-button').innerHTML = 'Post'
-      document.getElementById('post-button').style.display = 'block'
-   }
-
-   window.onresize = function checkWindowWidth() {
-      if (window.innerWidth <= 743 && window.location.pathname != '/post') {
-         document.getElementById('newPost_div').style.display = 'none'
-         document.getElementById('post-button').innerHTML = 'Post'
-         document.getElementById('post-button').style.display = 'block'
-      }
-   }
 
 
 </script>

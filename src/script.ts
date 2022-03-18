@@ -33,6 +33,8 @@ let all_topics_array = []
 let info_totalPages
 let info_totalPosts
 
+console.log(header_postButton)
+
 // Fontawesome variables
 const fa_voteDown_filled = '<i style="color:#f9910b;" class="fas fa-arrow-alt-circle-down"></i>'
 const fa_voteDown = '<i class="far fa-arrow-alt-circle-down"></i>' 
@@ -88,21 +90,19 @@ if ((["all","topic"].indexOf(currentPageType) != -1 && ((pageNumber == null || i
     window.location.href = '/'
 } 
 
-if (currentPageType == 'topic') { 
+if (['topic', 'all'].indexOf(currentPageType) != -1) { 
     document.getElementById('sorting_options').style.display = 'block'
+    console.log("On topic or all")
 }
 if (currentPageType == 'all') {    
     document.getElementById('sorting_options').style.display = 'block'
 }
 if (currentPageType == 'post') { 
     document.getElementById('sorting_options').style.display = 'none'
-    document.getElementById('page-number').style.display = 'none'
-    document.getElementById('post-button').style.display = 'none'
 }
 if (currentPageType == 'notifications') { 
     document.getElementById('sorting_options').style.display = 'none'
     document.getElementById('page-number').style.display = 'none'
-    document.getElementById('post-button').style.display = 'none'
 }
 
 if (currentPageType == 'search') { 
@@ -311,31 +311,24 @@ const getUser = async () => {
     try {
         if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
             isUserLoggedIn = false;
-            (document.getElementById("newPost_div") as HTMLInputElement).style.display = 'none'
             document.getElementById("currentUser").innerText = "Login / Register"
             document.getElementById("logout_button").style.display = 'none'
             document.getElementById("login_button").style.display = 'block'
             document.getElementById("reg_button").style.display = 'block'
-            document.getElementById("post-button").style.display = 'none'
             document.getElementById('header-notifs').style.display = 'none'
+            localStorage.clear()
         } else {
             currentUserID = data.id
             currentUsername = data.name
             isUserLoggedIn = true
+            localStorage.setItem("currentUsername", currentUsername)
             await getSubscriptions()
             document.getElementById("currentUser").innerText = data.name
-            if (['home', 'all'].indexOf(currentPageType) != - 1 && localStorage.getItem("hide_new_post_div") == "false") {
-                document.getElementById("newPost_div").style.display = 'block'
-                document.getElementById("post-button").innerHTML = 'Collapse new post'
-            }
             
             document.getElementById("logout_button").style.display = 'block'
             document.getElementById("login_button").style.display = 'none'
             document.getElementById("reg_button").style.display = 'none'
-            if (['user','notifications','post'].indexOf(window.location.pathname) != -1) {
-                document.getElementById("post-button").style.display = 'block'
-    
-            }
+            
             const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
             const data2 = await response.json();
             let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement;
@@ -493,12 +486,16 @@ const postObject = {
         infoCell.dataset.postId = this.id
 
         let href = this.topic.replace(/^"(.*)"$/, '$1');
+
+        if (this.poster_avatar_src == null) {
+            this.poster_avatar_src = "../../assets/defaultavatar.png"
+        }
         
         infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>"
 
         if (isUserLoggedIn == false){
             // Don't add fancy unsub/sub button
-        } else if (subscriptions.includes(this.topic)) {
+        } else if (subscriptions.includes(this.topic) && subscriptions.length > 0) {
             infoCell.innerHTML += '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_'+this.topic+'"></i>'
         } else {
             infoCell.innerHTML += '<i class="fas fa-plus-square subscribe_inline_button" style="margin-left:0px;color:green;" id="subscribeInlineButton_'+this.topic+'"></i>'
@@ -1184,6 +1181,7 @@ const loadPosts = async (topic) => {
 
         const response = await fetch(request)
         var data = await response.json()
+        console.log(data)
         if (data == null) {
             document.getElementById("postsArray").innerHTML = "<span style='color:white'>No posts... yet!</span>"
             document.getElementById("recommended_topics").style.display = 'none'
@@ -1194,7 +1192,12 @@ const loadPosts = async (topic) => {
 
         loadPageNavBar()
 
-        data = data.data
+        if (window.location.pathname.indexOf('/search/') == -1) {
+            // Data is sent from backend differently if we are searching vs just regular querying
+            data = data.data
+            
+        }
+        
 
         let search_query_array = search_query.split('+')
         let search_similar_topics = 0
@@ -1211,6 +1214,8 @@ const loadPosts = async (topic) => {
                 }
             }
         }
+
+        console.log(data)
 
         if (data.length == 0) {
             if (search_similar_topics > 0) {
@@ -1540,35 +1545,11 @@ const comment_nested = async (postid, body, commentparentID) => {
     
 
 function ui_newPost() {
-    if (window.innerWidth > 743 || window.location.pathname == '/post') {
-        if (document.getElementById("newPost_div").style.display == 'block') {
-            localStorage.setItem("hide_new_post_div", "true")
-            document.getElementById("newPost_div").style.display = 'none'
-            document.getElementById("post-button").innerHTML = "Post"
-            document.getElementById("newPost_logs").innerHTML = "";
-            (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
-        } else {
-            localStorage.setItem("hide_new_post_div", "false")
-            document.getElementById("newPost_div").style.display = 'block'
-            document.getElementById("searchbar").style.display = 'none'
-            document.getElementById("post-button").innerHTML = "Collapse new post";
-            (document.getElementById("newPost_topic") as HTMLInputElement).value = currentTopic
-        }
-    } else {
-        window.location.href = '/post'
-    }
+
+    window.location.href = '/post'
 
 }
 
-if (['user', 'notifications', 'subscriptions', 'createpost'].indexOf(currentPageType) == -1) {
-    document.getElementById("newPost_logs").innerHTML = "";
-}
-   
-if (['search', 'subscriptions', 'home', 'post'].indexOf(currentPageType) != -1) {
-    console.log("hiding")
-    document.getElementById("newPost_div").style.display = 'none';
-    document.getElementById("post-button").style.display = 'none';
-}
 
 if (['user','notifications','subscriptions'].indexOf(currentPageType) == -1) {
     document.getElementById("newPost_submit_button").onclick = function() {

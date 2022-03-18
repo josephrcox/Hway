@@ -42,7 +42,7 @@ const connection = mongoose.connection;
 
 connection.once("open", function(res) {
 	console.log("Connected to Mongoose!")
-});
+}); 
 
 
 const User = require('./models/user')
@@ -287,13 +287,11 @@ app.put('/api/put/notif/remove/:index', function(req,res) {
 		User.findById(user.id, function(err,docs) {
 			let allnotifs = docs.notifications
 			let activenotifs = allnotifs.filter(x => x.status == "active")
-			console.log(activenotifs)
 
 			activenotifs[req.params.index].status = "cleared"
 			let ts = activenotifs[req.params.index].timestamp
 
 			let index = allnotifs.findIndex(x => x.timestamp == ts)
-			console.log(index)
 			allnotifs[index] = activenotifs[req.params.index]
 			docs.notifications = allnotifs
 
@@ -326,7 +324,7 @@ app.post('/api/post/notif/clear/', function(req,res) {
 })
 
 app.get('/login', (req, res) => {
-    res.render('login.ejs', {topic:"- login"})
+    res.render('login.ejs', {layout: 'layouts/account.ejs'})
 })
 
 app.get('/post', (req, res) => {
@@ -342,7 +340,7 @@ app.get('/user/:user', (req, res) => {
 })
 
 app.get('/register', (req, res) => {
-    res.render('register.ejs', {topic:"- register"})
+    res.render('register.ejs', {layout: 'layouts/account.ejs'})
 })
 
 app.get('/subscriptions', async(req, res) => {
@@ -830,7 +828,6 @@ app.get('/api/get/:topic/q', async(req, res) => { // Main endpoint for loading p
 					
 
 				}
-				console.log({data: postsonpage, total_posts: totalPosts, total_pages: totalPages})
 				res.send({data: postsonpage, total_posts: totalPosts, total_pages: totalPages})
 			
 			}
@@ -2130,7 +2127,7 @@ const mailjet = require ('node-mailjet')
 .connect('b7943ff95bd7bb85ad51a7c9e0f46a82', 'd7a10ff44ee87ff43aba8a503ba4339b')
 
 app.get('/account/resetpw', (req,res) => {
-	res.render('resetpassword.ejs', {topic:"- reset password"})
+	res.render('resetpassword.ejs', {layout: 'layouts/account.ejs'})
 })
 
 app.post('/api/post/resetpassword/sendcode', async (req,res) => {
@@ -2139,7 +2136,6 @@ app.post('/api/post/resetpassword/sendcode', async (req,res) => {
 	try {
 		User.findOne({name:req.body.username}, function(err,docs) {
 			if (err || docs == null) {
-				console.log(err, docs)
 				res.send({status:'error', data:'Error'})
 			} else {
 				// User is active, let's check their email against the email submitted
@@ -2206,7 +2202,6 @@ app.get('/api/get/resetpassword/checkcode/:u/:code', async(req,res) => {
 			res.json({status:'error', data:'Error loading user'})
 		} else {
 			let index = resetPasswordArray.findIndex(x => x[0] == u) 
-			console.log(index, resetPasswordArray[index][1])
 			if (code == resetPasswordArray[index][1] || code == "123") {
 				console.log("Success! Code is correct!")
 				const token = jwt.sign(
