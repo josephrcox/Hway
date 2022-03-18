@@ -437,6 +437,9 @@ const postObject = {
         titleCell.dataset.postId = this.id;
         infoCell.dataset.postId = this.id;
         let href = this.topic.replace(/^"(.*)"$/, '$1');
+        if (this.poster_avatar_src == null) {
+            this.poster_avatar_src = "../../assets/defaultavatar.png";
+        }
         infoCell.innerHTML = "Submitted by " + "<a href='/user/" + this.poster + "'><img src='" + this.poster_avatar_src + "' class='avatarimg'>  <span style='color:blue'>" + this.poster + "</span> </a>in " + "<span style='color:blue; font-weight: 900;'><a href='/h/" + href + "'>" + this.topic + "</a></span>";
         if (isUserLoggedIn == false) {
         }
