@@ -292,8 +292,8 @@ const getUser = async () => {
             document.getElementById("logout_button").style.display = 'none';
             document.getElementById("login_button").style.display = 'block';
             document.getElementById("reg_button").style.display = 'block';
-            header_postButton.style.display = 'none';
             document.getElementById('header-notifs').style.display = 'none';
+            localStorage.clear();
         }
         else {
             currentUserID = data.id;
