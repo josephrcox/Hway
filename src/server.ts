@@ -42,7 +42,7 @@ const connection = mongoose.connection;
 
 connection.once("open", function(res) {
 	console.log("Connected to Mongoose!")
-});
+}); 
 
 
 const User = require('./models/user')
