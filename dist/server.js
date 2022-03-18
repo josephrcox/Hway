@@ -258,11 +258,9 @@ app.put('/api/put/notif/remove/:index', function (req, res) {
         User.findById(user.id, function (err, docs) {
             let allnotifs = docs.notifications;
             let activenotifs = allnotifs.filter(x => x.status == "active");
-            console.log(activenotifs);
             activenotifs[req.params.index].status = "cleared";
             let ts = activenotifs[req.params.index].timestamp;
             let index = allnotifs.findIndex(x => x.timestamp == ts);
-            console.log(index);
             allnotifs[index] = activenotifs[req.params.index];
             docs.notifications = allnotifs;
             docs.save();
@@ -733,7 +731,6 @@ app.get('/api/get/:topic/q', async (req, res) => {
                     else {
                     }
                 }
-                console.log({ data: postsonpage, total_posts: totalPosts, total_pages: totalPages });
                 res.send({ data: postsonpage, total_posts: totalPosts, total_pages: totalPages });
             }
         });
@@ -1879,7 +1876,6 @@ app.post('/api/post/resetpassword/sendcode', async (req, res) => {
     try {
         User.findOne({ name: req.body.username }, function (err, docs) {
             if (err || docs == null) {
-                console.log(err, docs);
                 res.send({ status: 'error', data: 'Error' });
             }
             else {
@@ -1943,7 +1939,6 @@ app.get('/api/get/resetpassword/checkcode/:u/:code', async (req, res) => {
         }
         else {
             let index = resetPasswordArray.findIndex(x => x[0] == u);
-            console.log(index, resetPasswordArray[index][1]);
             if (code == resetPasswordArray[index][1] || code == "123") {
                 console.log("Success! Code is correct!");
                 const token = jwt.sign({
