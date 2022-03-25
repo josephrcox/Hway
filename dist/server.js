@@ -779,7 +779,7 @@ app.get('/api/get/:topic/q', async (req, res) => {
             posts.push(topicPosts);
         }
         for (let i = 0; i < subusers_count; i++) {
-            let userPosts = await Post.find({ poster: subusers[i][0], status: 'active' });
+            let userPosts = await Post.find({ poster: subusers[i][0], topic: !subtop[i][0], status: 'active' });
             posts.push(userPosts);
         }
         try {
