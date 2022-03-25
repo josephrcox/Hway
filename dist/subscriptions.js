@@ -1,4 +1,6 @@
 let subbutton = document.getElementById('subscribe-button');
+const userCheckbox = document.getElementById("subscribe_topic_checkbox");
+const subscribeTextInput = document.getElementById("subscribe_topic_input");
 let subscriptions;
 const getSubscriptions = async () => {
     const response = await fetch('/api/get/user/' + currentUsername + '/subscriptions');
@@ -25,6 +27,12 @@ const getSubscriptions = async () => {
         for (let i = 0; i < subscriptions.length; i++) {
             var top = Object.create(topicObject);
             top.name = subscriptions[i];
+            top.display();
+        }
+        for (let i = 0; i < data.users.length; i++) {
+            var top = Object.create(topicObject);
+            top.name = data.users[i][0] + " (user)";
+            top.isUser = true;
             top.display();
         }
     }
@@ -67,3 +75,27 @@ async function addInlineSubscribeEventListeners() {
         });
     });
 }
+userCheckbox.addEventListener('click', function () {
+    if (subscribeTextInput.placeholder == "Subscribe to a topic") {
+        subscribeTextInput.placeholder = "Subscribe to a user";
+    }
+    else {
+        subscribeTextInput.placeholder = "Subscribe to a topic";
+    }
+});
+document.getElementById('sorting_options').style.display = 'none';
+document.getElementById("subscribe_topic_input").addEventListener("keyup", function (event) {
+    if (event.keyCode === 13) {
+        document.getElementById("subscribe_topic_submit").click();
+    }
+});
+document.getElementById("subscribe_topic_submit").onclick = async function () {
+    let topicToSubscribe = document.getElementById("subscribe_topic_input");
+    if (userCheckbox.checked) {
+        await subscribe(topicToSubscribe.value, "user");
+    }
+    else {
+        await subscribe(topicToSubscribe.value, "topic");
+    }
+    topicToSubscribe.value = "";
+};

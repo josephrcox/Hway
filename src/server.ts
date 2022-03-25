@@ -336,7 +336,7 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/user/:user', (req, res) => {
-    res.render('profile.ejs', {topic:""})
+    res.render('profile.ejs', {topic:"", user:req.params.user})
 })
 
 app.get('/register', (req, res) => {
@@ -668,6 +668,25 @@ app.put('/api/put/subscribe/:topic', async(req,res) => {
 	} 
 })
 
+app.put('/api/put/subscribe_user/:user', async(req,res) => {
+	if (currentUser) {
+		User.findById(currentUser, function(err,docs) {
+			if (docs.subscriptions.users.some(x => x[0] == req.params.user)) {
+				res.json({status:'error', data:'already subscribed'})
+			} else {
+				docs.subscriptions.users.push([
+					req.params.user, Date.now()
+				])
+				docs.save()
+				res.json({status:'ok'})
+			}
+
+
+		})
+		
+	} 
+})
+
 app.put('/api/put/unsubscribe/:topic', async(req,res) => {
 	if (currentUser) {
 		User.findById(currentUser, function(err,docs) {
@@ -676,6 +695,24 @@ app.put('/api/put/unsubscribe/:topic', async(req,res) => {
 			} else {
 				let index = docs.subscriptions.topics.findIndex(x => x[0] == req.params.topic)
 				docs.subscriptions.topics.splice(index,1)
+				docs.save()
+				res.json({status:'ok'})
+			}
+
+
+		})
+		
+	} 
+})
+
+app.put('/api/put/unsubscribe_user/:user', async(req,res) => {
+	if (currentUser) {
+		User.findById(currentUser, function(err,docs) {
+			if (!docs.subscriptions.users.some(x => x[0] == req.params.user)) {
+				res.json({status:'error', data:'already unsubscribed'})
+			} else {
+				let index = docs.subscriptions.users.findIndex(x => x[0] == req.params.user)
+				docs.subscriptions.users.splice(index,1)
 				docs.save()
 				res.json({status:'ok'})
 			}
@@ -843,16 +880,16 @@ app.get('/api/get/:topic/q', async(req, res) => { // Main endpoint for loading p
 
 		let subscriptions_query = {}
 
-		// for (let i=0;i<subtop_count;i++) {
-		// 	let topicStr = subtop[i][0].replace('"','')
-		// 	let topicObject = {topic:topicStr}
-		// 	subscriptions_query.push(topicObject)
-		// }
-
 		let posts = []
 		for (let i=0;i<subtop_count;i++) {
 			let topicPosts = await Post.find({topic:subtop[i][0], status:'active'})
 			posts.push(topicPosts)
+            
+		}
+        for (let i=0;i<subusers_count;i++) {
+			let userPosts = await Post.find({poster:subusers[i][0], status:'active'})
+			posts.push(userPosts)
+            
 		}
 		
 		try {

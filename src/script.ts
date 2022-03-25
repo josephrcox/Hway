@@ -636,6 +636,7 @@ const postObject = {
 const topicObject = {
     name: "",
     post_count: "",
+    isUser:false,
 
     display() {
         if (this.name == "") {
@@ -648,9 +649,16 @@ const topicObject = {
         var topicFrame = document.createElement("div")
         topicFrame.setAttribute("id", "topicFrame_"+this.name)
         topicFrame.setAttribute("class", "topicFrame postFrame")
-        topicFrame.onclick = function() {
-            window.location.href = '/h/'+topicFrame.id.split('_')[1]
+        if (!this.isUser) {
+            topicFrame.onclick = function() {
+                window.location.href = '/h/'+topicFrame.id.split('_')[1]
+            }
+        } else if (this.isUser){
+            topicFrame.onclick = function() {
+                window.location.href = '/user/'+topicFrame.id.split('_')[1].split(" ")[0]
+            }
         }
+        
 
         if (this.post_count != "") {
             topicFrame.innerHTML = this.name + " | Posts: " + this.post_count
@@ -664,10 +672,18 @@ const topicObject = {
             topicUnsub.innerHTML = '<i class="far fa-minus-square subscribe_inline_button" style="margin-left:0px;color:red;" id="unsubscribeInlineButton_'+this.name+'"></i>'
             topicUnsub.style.marginTop = '20px'
             topicUnsub.setAttribute("id", "topicUnsub_"+this.name)
-            topicUnsub.onclick = function() {
-                unsubscribe(topicUnsub.id.split('_')[1], "topic")
-                topicContainer.outerHTML = ""
+            if (this.isUser) {
+                topicUnsub.onclick = function() {
+                    unsubscribe(topicUnsub.id.split('_')[1].split(" ")[0], "user")
+                    topicContainer.outerHTML = ""
+                }
+            } else {
+                topicUnsub.onclick = function() {
+                    unsubscribe(topicUnsub.id.split('_')[1], "topic")
+                    topicContainer.outerHTML = ""
+                }
             }
+
 
             topicContainer.append(topicFrame)
             topicContainer.append(topicUnsub)
@@ -1037,36 +1053,45 @@ const deleteNestedComment = async(postID, commentID, nestedCommentID) => {
 }
 
 const subscribe = async(x, type) => { // x is the topic or user, type is 'topic' or 'user'
-    if (type == 'topic') {
-        const settings = {
-            method: 'PUT',
-        };
+    const settings = {
+        method: 'PUT',
+    };
+    var fetchResponse
+    if (type == "topic") {
+        fetchResponse = await fetch('/api/put/subscribe/'+x, settings); 
+    } else if (type == "user"){
+        fetchResponse = await fetch('/api/put/subscribe_user/'+x, settings); 
+    }
     
-        const fetchResponse = await fetch('/api/put/subscribe/'+x, settings); 
-        const data = await fetchResponse.json()
-        if (fetchResponse.status != 200) {
-            alert(fetchResponse.status)
+    const data = await fetchResponse.json()
+    if (fetchResponse.status != 200) {
+        alert(fetchResponse.status)
+    }
+    if (window.location.href.indexOf('/subscriptions') != -1) {
+        var top = Object.create(topicObject);
+        top.name = x;
+        if (type == "user") {
+            top.name += " (user)"
         }
-        if (window.location.href.indexOf('/subscriptions') != -1) {
-            var top = Object.create(topicObject);
-            top.name = x;
-            top.display();
-        }
+        
+        top.display();
     }
 }
 
 const unsubscribe = async(x, type) => { // x is the topic or user, type is 'topic' or 'user'
-    if (type == 'topic') {
-        const settings = {
-            method: 'PUT',
-        };
+    const settings = {
+        method: 'PUT',
+    };
+    var fetchResponse
+    if (type == "topic") {
+        fetchResponse = await fetch('/api/put/unsubscribe/'+x, settings); 
+    } else if (type == "user"){
+        fetchResponse = await fetch('/api/put/unsubscribe_user/'+x, settings); 
+    }
     
-        const fetchResponse = await fetch('/api/put/unsubscribe/'+x, settings); 
-        const data = await fetchResponse.json()
-        console.log(fetchResponse)
-        if (fetchResponse.status != 200) {
-            alert(fetchResponse.status)
-        }
+    const data = await fetchResponse.json()
+    if (fetchResponse.status != 200) {
+        alert(fetchResponse.status)
     }
 }
 

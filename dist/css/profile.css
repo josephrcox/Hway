@@ -22,3 +22,7 @@
 	font-size:45px;
 }
 
+
+#user-subscribeInlineButton, #user-unsubscribeInlineButton {
+	margin-top: 35px;
+}
