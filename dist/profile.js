@@ -4,6 +4,7 @@ var admin = false;
 comment_count = [];
 let commentParentPair = [];
 commentBodies = [];
+var browserUser;
 const getUserInfo = async (user) => {
     const response = await fetch('/api/get/user/' + user + '/none');
     const data = await response.json();
@@ -13,10 +14,11 @@ const getUserInfo = async (user) => {
 const isThisUserAdmin = async () => {
     const response = await fetch('/api/get/currentuser/');
     const data = await response.json();
-    if (data.name == user) {
-        admin = true;
-    }
-    else {
+    if (data.code != 400) {
+        if (data.name == user) {
+            admin = true;
+        }
+        isSubscribed(data.name);
     }
     displayInfo();
 };
@@ -191,3 +193,28 @@ function collapse(x) {
         heading.innerHTML = x + ' (+)';
     }
 }
+const unsubscribeFromUser = document.getElementById("user-unsubscribeInlineButton");
+const subscribeToUser = document.getElementById("user-subscribeInlineButton");
+async function isSubscribed(name) {
+    const response = await fetch('/api/get/user/' + name + '/subscriptions');
+    const data = await response.json();
+    console.log(data);
+    subscribeToUser.style.display = 'block';
+    for (let i = 0; i < data.users.length; i++) {
+        if (data.users[i][0] == user) {
+            unsubscribeFromUser.style.display = 'block';
+            subscribeToUser.style.display = 'none';
+            break;
+        }
+    }
+}
+subscribeToUser.addEventListener('click', async function () {
+    subscribe(user, "user");
+    subscribeToUser.style.display = 'none';
+    unsubscribeFromUser.style.display = 'block';
+});
+unsubscribeFromUser.addEventListener('click', function () {
+    unsubscribe(user, "user");
+    subscribeToUser.style.display = 'block';
+    unsubscribeFromUser.style.display = 'none';
+});

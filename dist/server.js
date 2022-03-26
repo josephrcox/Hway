@@ -299,7 +299,7 @@ app.get('/users', (req, res) => {
     res.render('users.ejs', { topic: "- users" });
 });
 app.get('/user/:user', (req, res) => {
-    res.render('profile.ejs', { topic: "" });
+    res.render('profile.ejs', { topic: "", user: req.params.user });
 });
 app.get('/register', (req, res) => {
     res.render('register.ejs', { layout: 'layouts/account.ejs' });
@@ -399,58 +399,63 @@ app.get('/api/get/all_users/:sorting', async (req, res) => {
 });
 app.get('/api/get/user/:user/:options', async (req, res) => {
     let comments = [];
-    if (req.params.options == "show_nsfw") {
-        try {
-            User.findOne({ name: req.params.user }, function (err, user) {
-                return res.send({ show_nsfw: user.show_nsfw });
-            });
+    if (req.params.user != null && req.params.user != "undefined") {
+        if (req.params.options == "show_nsfw") {
+            try {
+                User.findOne({ name: req.params.user }, function (err, user) {
+                    return res.send({ show_nsfw: user.show_nsfw });
+                });
+            }
+            catch (err) {
+                res.json({ status: 'error', data: err });
+            }
         }
-        catch (err) {
-            res.json({ status: 'error', data: err });
+        else if (req.params.options == "subscriptions") {
+            try {
+                User.findOne({ name: req.params.user }, function (err, user) {
+                    return res.json(user.subscriptions);
+                });
+            }
+            catch (err) {
+                res.json({ status: 'error', data: err });
+            }
         }
-    }
-    else if (req.params.options == "subscriptions") {
-        try {
-            User.findOne({ name: req.params.user }, function (err, user) {
-                return res.json(user.subscriptions);
-            });
-        }
-        catch (err) {
-            res.json({ status: 'error', data: err });
-        }
-    }
-    else if (req.params.options == "all_comments") {
-        Post.find({ status: 'active' }, function (err, posts) {
-            for (let i = 0; i < posts.length; i++) {
-                for (let x = 0; x < posts[i].comments.length; x++) {
-                    if (posts[i].comments[x].poster == req.params.user) {
-                        posts[i].comments[x].parentPostID = posts[i].id;
-                        comments.push(posts[i].comments[x]);
+        else if (req.params.options == "all_comments") {
+            Post.find({ status: 'active' }, function (err, posts) {
+                for (let i = 0; i < posts.length; i++) {
+                    for (let x = 0; x < posts[i].comments.length; x++) {
+                        if (posts[i].comments[x].poster == req.params.user) {
+                            posts[i].comments[x].parentPostID = posts[i].id;
+                            comments.push(posts[i].comments[x]);
+                        }
                     }
                 }
-            }
-            res.json(comments);
-        });
+                res.json(comments);
+            });
+        }
+        else {
+            User.findOne({ name: req.params.user }, function (err, user) {
+                user.password = null;
+                user._id = null;
+                user.statistics.posts.viewed_array = null;
+                user.statistics.posts.viewed_num = null;
+                user.statistics.posts.votedOn_array = null;
+                user.statistics.posts.votedOn_num = null;
+                user.statistics.topics.visited_array = null;
+                user.statistics.comments.votedOn_array = null;
+                user.statistics.comments.votedOn_num = null;
+                user.statistics.misc.login_num = null;
+                user.statistics.misc.login_array = null;
+                user.statistics.misc.logout_num = null;
+                user.statistics.misc.logout_array = null;
+                user.statistics.misc.ip_address = null;
+                user.statistics.misc.approximate_location = null;
+                res.send(user);
+            });
+        }
     }
     else {
-        User.findOne({ name: req.params.user }, function (err, user) {
-            user.password = null;
-            user._id = null;
-            user.statistics.posts.viewed_array = null;
-            user.statistics.posts.viewed_num = null;
-            user.statistics.posts.votedOn_array = null;
-            user.statistics.posts.votedOn_num = null;
-            user.statistics.topics.visited_array = null;
-            user.statistics.comments.votedOn_array = null;
-            user.statistics.comments.votedOn_num = null;
-            user.statistics.misc.login_num = null;
-            user.statistics.misc.login_array = null;
-            user.statistics.misc.logout_num = null;
-            user.statistics.misc.logout_array = null;
-            user.statistics.misc.ip_address = null;
-            user.statistics.misc.approximate_location = null;
-            res.send(user);
-        });
+        res.json({ code: 400 });
     }
 });
 app.put('/api/put/user/:user/:change/', async (req, res) => {
@@ -582,6 +587,22 @@ app.put('/api/put/subscribe/:topic', async (req, res) => {
         });
     }
 });
+app.put('/api/put/subscribe_user/:user', async (req, res) => {
+    if (currentUser) {
+        User.findById(currentUser, function (err, docs) {
+            if (docs.subscriptions.users.some(x => x[0] == req.params.user)) {
+                res.json({ status: 'error', data: 'already subscribed' });
+            }
+            else {
+                docs.subscriptions.users.push([
+                    req.params.user, Date.now()
+                ]);
+                docs.save();
+                res.json({ status: 'ok' });
+            }
+        });
+    }
+});
 app.put('/api/put/unsubscribe/:topic', async (req, res) => {
     if (currentUser) {
         User.findById(currentUser, function (err, docs) {
@@ -591,6 +612,21 @@ app.put('/api/put/unsubscribe/:topic', async (req, res) => {
             else {
                 let index = docs.subscriptions.topics.findIndex(x => x[0] == req.params.topic);
                 docs.subscriptions.topics.splice(index, 1);
+                docs.save();
+                res.json({ status: 'ok' });
+            }
+        });
+    }
+});
+app.put('/api/put/unsubscribe_user/:user', async (req, res) => {
+    if (currentUser) {
+        User.findById(currentUser, function (err, docs) {
+            if (!docs.subscriptions.users.some(x => x[0] == req.params.user)) {
+                res.json({ status: 'error', data: 'already unsubscribed' });
+            }
+            else {
+                let index = docs.subscriptions.users.findIndex(x => x[0] == req.params.user);
+                docs.subscriptions.users.splice(index, 1);
                 docs.save();
                 res.json({ status: 'ok' });
             }
@@ -746,6 +782,10 @@ app.get('/api/get/:topic/q', async (req, res) => {
         for (let i = 0; i < subtop_count; i++) {
             let topicPosts = await Post.find({ topic: subtop[i][0], status: 'active' });
             posts.push(topicPosts);
+        }
+        for (let i = 0; i < subusers_count; i++) {
+            let userPosts = await Post.find({ poster: subusers[i][0], topic: !subtop[i][0], status: 'active' });
+            posts.push(userPosts);
         }
         try {
             if (userID != null) {

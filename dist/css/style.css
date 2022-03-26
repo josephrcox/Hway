@@ -103,6 +103,9 @@
 	.newPost_container {
 		  width:400px;
    }
+   #subscriptions_header_queries {
+        flex-direction: row;
+    }
 
 }
 @media screen and (max-width: 743px) {
@@ -126,6 +129,10 @@
 	#sitebody {
 		flex-direction: column;
 	}
+
+    #subscriptions_header_queries {
+        flex-direction: column;
+    }
 }
 #sitebody {
 	width: 100%;
@@ -877,3 +884,4 @@ align-items: center;
 	margin-left: 3px;
 	margin-right: 2px;
   }
+

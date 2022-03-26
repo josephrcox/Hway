@@ -7,9 +7,11 @@
 <div id="sitebody" class="sitebody-flex" style="display: block;">
    <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
  
-   <div style="display: flex;flex-direction: column;">
-      <input type='text' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off" onkeypress="return event.charCode != 32">
+   <div id="subscriptions_header_queries" style="display: flex;">
+      <input type='text' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off" style="flex-grow: 5;margin-inline:5px;">
+      <div><label for="subscribe_topic_checkbox" style="color: white;margin-inline:5px;" >User?</label> <input type="checkbox" id="subscribe_topic_checkbox"></div>
       <button class='button' id='subscribe_topic_submit'>Subscribe </button>
+     
    </div>
 
 
@@ -21,19 +23,7 @@
 </div> 
 
  <script>
-   document.getElementById('sorting_options').style.display = 'none'
-   document.getElementById('header-buttons').style.display = 'none'
-
-   document.getElementById("subscribe_topic_input").addEventListener("keyup", function(event) {
-      if (event.keyCode === 13) {
-         document.getElementById("subscribe_topic_submit").click()
-      }
-   })
-
-   document.getElementById("subscribe_topic_submit").onclick = async function() {
-      let topicToSubscribe = document.getElementById("subscribe_topic_input").value
-      await subscribe(topicToSubscribe, "topic")
-      document.getElementById("subscribe_topic_input").value = ""
-   }
+     document.getElementById("subscribe_topic_checkbox").checked = false
+     document.getElementById('sorting_options').style.display = 'none'
  </script>
 </body>
