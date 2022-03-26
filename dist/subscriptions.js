@@ -3,37 +3,40 @@ const userCheckbox = document.getElementById("subscribe_topic_checkbox");
 const subscribeTextInput = document.getElementById("subscribe_topic_input");
 let subscriptions;
 const getSubscriptions = async () => {
-    const response = await fetch('/api/get/user/' + currentUsername + '/subscriptions');
-    const data = await response.json();
-    let str = '';
-    for (let i = 0; i < data.topics.length; i++) {
-        str += data.topics[i][0] + ',';
-    }
-    localStorage.setItem("subscriptions", str);
-    subscriptions = localStorage.getItem('subscriptions').split(',');
-    if (window.location.href.indexOf('/h/') != -1) {
-        subbutton.style.display = 'block';
-        if (subscriptions.includes(window.location.href.split('/')[4])) {
-            console.log(subscriptions.includes(currentTopic), window.location.href.split('/')[4]);
-            subbutton.innerHTML = 'Unsubscribe';
+    console.log(currentUsername);
+    if (currentUsername) {
+        const response = await fetch('/api/get/user/' + currentUsername + '/subscriptions');
+        const data = await response.json();
+        let str = '';
+        for (let i = 0; i < data.topics.length; i++) {
+            str += data.topics[i][0] + ',';
         }
-        else {
-            subbutton.innerHTML = 'Subscribe';
+        localStorage.setItem("subscriptions", str);
+        subscriptions = localStorage.getItem('subscriptions').split(',');
+        if (window.location.href.indexOf('/h/') != -1) {
+            subbutton.style.display = 'block';
+            if (subscriptions.includes(window.location.href.split('/')[4])) {
+                console.log(subscriptions.includes(currentTopic), window.location.href.split('/')[4]);
+                subbutton.innerHTML = 'Unsubscribe';
+            }
+            else {
+                subbutton.innerHTML = 'Subscribe';
+            }
         }
-    }
-    if (window.location.href.indexOf('/subscriptions') != -1) {
-        let subscriptions_page_container = document.getElementById('subscriptions_page_container');
-        subscriptions_page_container.innerHTML = "";
-        for (let i = 0; i < subscriptions.length; i++) {
-            var top = Object.create(topicObject);
-            top.name = subscriptions[i];
-            top.display();
-        }
-        for (let i = 0; i < data.users.length; i++) {
-            var top = Object.create(topicObject);
-            top.name = data.users[i][0] + " (user)";
-            top.isUser = true;
-            top.display();
+        if (window.location.href.indexOf('/subscriptions') != -1) {
+            let subscriptions_page_container = document.getElementById('subscriptions_page_container');
+            subscriptions_page_container.innerHTML = "";
+            for (let i = 0; i < subscriptions.length; i++) {
+                var top = Object.create(topicObject);
+                top.name = subscriptions[i];
+                top.display();
+            }
+            for (let i = 0; i < data.users.length; i++) {
+                var top = Object.create(topicObject);
+                top.name = data.users[i][0] + " (user)";
+                top.isUser = true;
+                top.display();
+            }
         }
     }
 };
@@ -75,27 +78,32 @@ async function addInlineSubscribeEventListeners() {
         });
     });
 }
-userCheckbox.addEventListener('click', function () {
-    if (subscribeTextInput.placeholder == "Subscribe to a topic") {
-        subscribeTextInput.placeholder = "Subscribe to a user";
-    }
-    else {
-        subscribeTextInput.placeholder = "Subscribe to a topic";
-    }
-});
-document.getElementById('sorting_options').style.display = 'none';
-document.getElementById("subscribe_topic_input").addEventListener("keyup", function (event) {
-    if (event.keyCode === 13) {
-        document.getElementById("subscribe_topic_submit").click();
-    }
-});
-document.getElementById("subscribe_topic_submit").onclick = async function () {
-    let topicToSubscribe = document.getElementById("subscribe_topic_input");
-    if (userCheckbox.checked) {
-        await subscribe(topicToSubscribe.value, "user");
-    }
-    else {
-        await subscribe(topicToSubscribe.value, "topic");
-    }
-    topicToSubscribe.value = "";
-};
+if (userCheckbox) {
+    userCheckbox.addEventListener('click', function () {
+        if (subscribeTextInput.placeholder == "Subscribe to a topic") {
+            subscribeTextInput.placeholder = "Subscribe to a user";
+        }
+        else {
+            subscribeTextInput.placeholder = "Subscribe to a topic";
+        }
+    });
+}
+if (document.getElementById("subscribe_topic_input")) {
+    document.getElementById("subscribe_topic_input").addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+            document.getElementById("subscribe_topic_submit").click();
+        }
+    });
+}
+if (document.getElementById("subscribe_topic_submit")) {
+    document.getElementById("subscribe_topic_submit").onclick = async function () {
+        let topicToSubscribe = document.getElementById("subscribe_topic_input");
+        if (userCheckbox.checked) {
+            await subscribe(topicToSubscribe.value, "user");
+        }
+        else {
+            await subscribe(topicToSubscribe.value, "topic");
+        }
+        topicToSubscribe.value = "";
+    };
+}

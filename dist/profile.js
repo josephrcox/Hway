@@ -14,10 +14,12 @@ const getUserInfo = async (user) => {
 const isThisUserAdmin = async () => {
     const response = await fetch('/api/get/currentuser/');
     const data = await response.json();
-    if (data.name == user) {
-        admin = true;
+    if (data.code != 400) {
+        if (data.name == user) {
+            admin = true;
+        }
+        isSubscribed(data.name);
     }
-    isSubscribed(data.name);
     displayInfo();
 };
 getUserInfo(user);

@@ -293,9 +293,11 @@ const getUser = async () => {
             document.getElementById("login_button").style.display = 'block';
             document.getElementById("reg_button").style.display = 'block';
             document.getElementById('header-notifs').style.display = 'none';
+            currentUsername = null;
             localStorage.clear();
         }
         else {
+            console.log("test");
             currentUserID = data.id;
             currentUsername = data.name;
             isUserLoggedIn = true;
