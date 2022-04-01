@@ -25,7 +25,7 @@ const postSchema = new mongoose.Schema(
         comments: { type: Array},
         special_attributes: { type: Array},
     },
-    { collection: 'posts'}
+    { collection: 'posts', timestamps:true}
 )
 
 const model = mongoose.model('PostSchema', postSchema)
