@@ -7,5 +7,34 @@ body {
 	min-height: 50px;
 	border: 1px solid gray;
 	margin-bottom: 2px;
-	padding-inline: 5px;
+	flex-direction: row;
+}
+
+.post-details-container {
+    display: flex;
+	flex-direction: column;
+    flex-grow: 10;
+    padding-inline-start: 5px;
+    padding-inline-end: 5px;
+}
+
+.post-title {
+    font-size: 24px;
+}
+
+.post-subtitle {
+    font-size: 12px;
+}
+
+.post-vote-container {
+	border: 1px solid black;
+	width: 30px;
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+.post-vote-button {
+	height: 24px;
 }

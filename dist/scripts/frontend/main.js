@@ -54,18 +54,14 @@ window.onload = function () {
 };
 function getPostsByTopic(topic) {
     return __awaiter(this, void 0, void 0, function () {
-        var posts, i, post;
+        var posts;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, apiGetPostsByTopic(topic)];
                 case 1:
                     posts = _a.sent();
                     console.log(posts);
-                    for (i = 0; i < posts.length; i++) {
-                        post = Object.create(postObject);
-                        post.title = posts[i].title;
-                        post.display();
-                    }
+                    loadPostOrPostObjects(posts);
                     return [2 /*return*/];
             }
         });
@@ -73,24 +69,37 @@ function getPostsByTopic(topic) {
 }
 function getPostByID(ID) {
     return __awaiter(this, void 0, void 0, function () {
-        var post, p, i, c;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, apiGetPostByID(ID)];
+        var post, _a, _b, i, c;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    post = [];
+                    _a = post;
+                    _b = 0;
+                    return [4 /*yield*/, apiGetPostByID(ID)];
                 case 1:
-                    post = _a.sent();
+                    _a[_b] = _c.sent();
                     console.log(post);
-                    p = Object.create(postObject);
-                    p.title = post.title;
-                    p.display();
-                    for (i = 0; i < post.comments.length; i++) {
+                    loadPostOrPostObjects(post);
+                    for (i = 0; i < post[0].comments.length; i++) {
                         c = Object.create(commentObject);
-                        c.body = post.comments[i].body;
+                        c.body = post[0].comments[i].body;
                         c.display();
                     }
                     return [2 /*return*/];
             }
         });
     });
+}
+function loadPostOrPostObjects(posts) {
+    for (var i = 0; i < posts.length; i++) {
+        var post = Object.create(postObject);
+        post.title = posts[i].title;
+        post.poster_name = posts[i].poster;
+        var d = new Date(posts[i].createdAt);
+        post.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString();
+        post.id = posts[i]._id;
+        post.display();
+    }
 }
 //# sourceMappingURL=main.js.map

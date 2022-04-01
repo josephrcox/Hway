@@ -3,7 +3,6 @@ import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js"
 import { commentObject } from "./modules/objects/comment.js";
 
-
 window.onload = function() {
     let x:Array<string> = getPageType() || []
 
@@ -21,28 +20,34 @@ window.onload = function() {
     }
 }
 
-
-
 async function getPostsByTopic(topic:string) {
     var posts = await apiGetPostsByTopic(topic)
     console.log(posts)
-    for (let i=0;i<posts.length;i++) {
-        var post = Object.create(postObject)
-        post.title = posts[i].title
-        post.display()
-    }
+    loadPostOrPostObjects(posts)
 }
 
 async function getPostByID(ID:string) {
-    var post = await apiGetPostByID(ID)
+    var post = []
+    post[0] = await apiGetPostByID(ID)
     console.log(post)
-    var p = Object.create(postObject)
-    p.title = post.title
-    p.display()
     
-    for (let i=0;i<post.comments.length;i++) {
+    loadPostOrPostObjects(post)
+    
+    for (let i=0;i<post[0].comments.length;i++) {
         var c = Object.create(commentObject)
-        c.body = post.comments[i].body
+        c.body = post[0].comments[i].body
         c.display()
+    }
+}
+
+function loadPostOrPostObjects(posts:Array<{title:"",poster:"",createdAt:"",_id:""}>) {
+    for (let i=0;i<posts.length;i++) {
+        var post = Object.create(postObject)
+        post.title = posts[i].title
+        post.poster_name = posts[i].poster
+        var d = new Date(posts[i].createdAt)
+        post.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
+        post.id = posts[i]._id
+        post.display()
     }
 }
