@@ -1,36 +1,31 @@
 {
-  "name": "loginprogram",
+  "name": "hway-rewrite",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node dist/server.js",
-    "devStart": "nodemon dist/server.js"
+    "devStart": "nodemon dist/scripts/backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^17.0.23",
+    "typescript": "^4.6.3"
+  },
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
+    "body-parser": "^1.19.2",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-ejs-layouts": "^2.5.1",
     "fs": "^0.0.1-security",
-    "geoip-lite": "^1.4.2",
+    "geoip-lite": "^1.4.4",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.12",
-    "node-mailjet": "^3.3.5",
-    "path": "^0.12.7",
-    "random-words": "^1.1.1",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.5"
-  },
-  "devDependencies": {
-    "dotenv": "^10.0.0",
-    "nodemon": "^2.0.15"
+    "mongoose": "^6.2.9",
+    "node-mailjet": "^3.3.7",
+    "path": "^0.12.7"
   }
 }
