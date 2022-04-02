@@ -1,3 +1,5 @@
+const supportEmail = "josephrobertcox@gmail.com"
+
 export const postObject = {
     title:"",
     poster_name:"",
@@ -58,12 +60,51 @@ export const postObject = {
             vote(-1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
         }
 
+        var subPostDetails = document.createElement('div')
+        var viewComments = document.createElement('a')
+        viewComments.classList.add('post-subpost-element')
+        viewComments.innerText = "comments"
+        viewComments.onclick = function() {
+            window.location.href = '/p/'+container.dataset.postid
+        }
+        subPostDetails.appendChild(viewComments)
+        
+        var shareButton = document.createElement('a')
+        shareButton.classList.add('post-subpost-element')
+        shareButton.innerText = "copy link"
+        shareButton.onclick = function() {
+            let link = window.location.origin + '/p/'+container.dataset.postid
+            navigator.clipboard.writeText(link);
+            shareButton.innerText = "copied"
+            setTimeout(function(){ shareButton.innerText = "copy link" }, 3000);
+        }
+        subPostDetails.appendChild(shareButton)
+
+        var reportButton = document.createElement('a')
+        reportButton.classList.add('post-subpost-element')
+        reportButton.innerText = "report post"
+        reportButton.onclick = function() {
+            window.open("mailto:"+supportEmail+"?Subject=" + encodeURIComponent("Report a post on HWay") + "&body=" + encodeURIComponent("Post ID:"+container.dataset.postid));
+        }
+        subPostDetails.appendChild(reportButton)
+
+        if (this.currentUserAdmin) {
+            let d = document.createElement('a')
+            d.classList.add('post-subpost-element')
+            d.innerText = "delete"
+            d.onclick = function() {
+                deletePost(container.dataset.postid+"")
+            }
+            subPostDetails.appendChild(d)
+        }
+
         postDetailsContainer.append(title, subtitle)
         voteContainer.append(voteUpButton, voteDownButton)
         voteCountContainer.append(voteCount)
         container.append(postDetailsContainer, voteCountContainer, voteContainer)
 
         document.body.appendChild(container)
+        document.body.appendChild(subPostDetails)
     }
 }
 
@@ -103,4 +144,8 @@ const vote = async (change:number, id:string, voteCountElement:HTMLSpanElement, 
         }
     }
 
+}
+
+function deletePost(id:string) {
+    console.log(id)
 }

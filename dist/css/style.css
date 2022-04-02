@@ -53,3 +53,15 @@ body {
 .downvoted {
     filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(-27deg) brightness(118%) contrast(119%)
 }
+
+a {
+    cursor: pointer;
+}
+
+.post-subpost-element{
+    border-right: 1px dotted black;
+    padding-inline:5px;
+}
+.post-subpost-element:last-child{
+    border: 0;
+}

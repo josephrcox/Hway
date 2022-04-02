@@ -34,6 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var supportEmail = "josephrobertcox@gmail.com";
 export var postObject = {
     title: "",
     poster_name: "",
@@ -83,11 +84,46 @@ export var postObject = {
         voteDownButton.onclick = function () {
             vote(-1, container.dataset.postid + "", voteCount, voteUpButton, voteDownButton);
         };
+        var subPostDetails = document.createElement('div');
+        var viewComments = document.createElement('a');
+        viewComments.classList.add('post-subpost-element');
+        viewComments.innerText = "comments";
+        viewComments.onclick = function () {
+            window.location.href = '/p/' + container.dataset.postid;
+        };
+        subPostDetails.appendChild(viewComments);
+        var shareButton = document.createElement('a');
+        shareButton.classList.add('post-subpost-element');
+        shareButton.innerText = "copy link";
+        shareButton.onclick = function () {
+            var link = window.location.origin + '/p/' + container.dataset.postid;
+            navigator.clipboard.writeText(link);
+            shareButton.innerText = "copied";
+            setTimeout(function () { shareButton.innerText = "copy link"; }, 3000);
+        };
+        subPostDetails.appendChild(shareButton);
+        var reportButton = document.createElement('a');
+        reportButton.classList.add('post-subpost-element');
+        reportButton.innerText = "report post";
+        reportButton.onclick = function () {
+            window.open("mailto:" + supportEmail + "?Subject=" + encodeURIComponent("Report a post on HWay") + "&body=" + encodeURIComponent("Post ID:" + container.dataset.postid));
+        };
+        subPostDetails.appendChild(reportButton);
+        if (this.currentUserAdmin) {
+            var d = document.createElement('a');
+            d.classList.add('post-subpost-element');
+            d.innerText = "delete";
+            d.onclick = function () {
+                deletePost(container.dataset.postid + "");
+            };
+            subPostDetails.appendChild(d);
+        }
         postDetailsContainer.append(title, subtitle);
         voteContainer.append(voteUpButton, voteDownButton);
         voteCountContainer.append(voteCount);
         container.append(postDetailsContainer, voteCountContainer, voteContainer);
         document.body.appendChild(container);
+        document.body.appendChild(subPostDetails);
     }
 };
 var lastClick = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
@@ -134,4 +170,7 @@ var vote = function (change, id, voteCountElement, up, down) { return __awaiter(
         }
     });
 }); };
+function deletePost(id) {
+    console.log(id);
+}
 //# sourceMappingURL=post.js.map
