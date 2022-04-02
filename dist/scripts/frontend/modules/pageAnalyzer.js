@@ -27,6 +27,10 @@ export function getPageType() {
     else if (pathname.includes('/subscriptions')) {
         // user is on subscriptions page
     }
+    else if (pathname.includes('/post/')) {
+        // user is creating a new post
+        return ['createnewpost'];
+    }
 }
 export function getPageTopic() {
     return pathname.split('/h/')[1].split('/')[0];

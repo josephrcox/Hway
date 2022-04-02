@@ -38,6 +38,7 @@ import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js";
 import { commentObject } from "./modules/objects/comment.js";
+import { newPost } from "./modules/createPost.js";
 window.onload = function () {
     localStorage.setItem("deletepostconfirmid", "");
     var x = getPageType() || [];
@@ -50,6 +51,12 @@ window.onload = function () {
             break;
         case "post":
             getPostByID(x[1]);
+            break;
+        case "createnewpost":
+            var submit_new_post = document.getElementById("newPost_submit_button");
+            submit_new_post.onclick = function () {
+                newPost();
+            };
             break;
     }
 };

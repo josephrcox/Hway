@@ -20,6 +20,9 @@ export function getPageType() {
         // user is on notifications
     } else if (pathname.includes('/subscriptions')) {
         // user is on subscriptions page
+    } else if (pathname.includes('/post/')) {
+        // user is creating a new post
+        return ['createnewpost']
     }
 }
 

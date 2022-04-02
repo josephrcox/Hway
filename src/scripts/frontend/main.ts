@@ -2,6 +2,7 @@ import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js"
 import { commentObject } from "./modules/objects/comment.js";
+import { newPost } from "./modules/createPost.js"
 
 window.onload = function() {
     localStorage.setItem("deletepostconfirmid","")
@@ -16,6 +17,12 @@ window.onload = function() {
             break;
         case "post":
             getPostByID(x[1])
+            break;
+        case "createnewpost":
+            const submit_new_post = document.getElementById("newPost_submit_button") as HTMLButtonElement
+            submit_new_post.onclick = function() {
+                newPost()
+            }
             break;
         
     }
@@ -66,3 +73,4 @@ function loadPostOrPostObjects(posts:any) {
         post.display()
     }
 }
+
