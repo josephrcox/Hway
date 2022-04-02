@@ -1,5 +1,6 @@
 export async function apiGetPostsByTopic(topic:string) {
-    const response = await fetch('/api/get/'+topic+'/q?sort=hot&t=all&page=1')
+    let query:string = window.location.search
+    const response = await fetch('/api/get/'+topic+'/q'+query)
     const data = await response.json()
 
     return data.data
