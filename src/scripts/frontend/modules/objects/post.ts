@@ -93,7 +93,7 @@ export const postObject = {
             d.classList.add('post-subpost-element')
             d.innerText = "delete"
             d.onclick = function() {
-                deletePost(container.dataset.postid+"")
+                deletePost(container.dataset.postid+"", container, subPostDetails, this)
             }
             subPostDetails.appendChild(d)
         }
@@ -146,6 +146,24 @@ const vote = async (change:number, id:string, voteCountElement:HTMLSpanElement, 
 
 }
 
-function deletePost(id:string) {
-    console.log(id)
+const deletePost = async(id:string, containerE:HTMLDivElement, containerSub:HTMLDivElement, deleteSpan:any) => {
+    if (localStorage.getItem("deletepostconfirmid") == id) {
+        const settings = {
+            method: 'PUT',
+        };
+        const response = await fetch('/api/put/post/delete/'+id, settings)
+        const data = await response.json()
+    
+        if (data.status == 'ok') {
+            containerE.innerHTML = "<span>The post was permanantly deleted.</span>"
+            containerSub.innerHTML = ""
+        }
+        if (data.status == 'error') {
+            alert(data.error)
+        }
+    } else {
+        localStorage.setItem("deletepostconfirmid", id)
+        deleteSpan.innerText = "Are you sure?"
+    }
+
 }

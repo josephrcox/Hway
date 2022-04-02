@@ -39,6 +39,7 @@ import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js";
 import { commentObject } from "./modules/objects/comment.js";
 window.onload = function () {
+    localStorage.setItem("deletepostconfirmid", "");
     var x = getPageType() || [];
     switch (x[0]) {
         case "all":

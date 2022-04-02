@@ -114,7 +114,7 @@ export var postObject = {
             d.classList.add('post-subpost-element');
             d.innerText = "delete";
             d.onclick = function () {
-                deletePost(container.dataset.postid + "");
+                deletePost(container.dataset.postid + "", container, subPostDetails, this);
             };
             subPostDetails.appendChild(d);
         }
@@ -170,7 +170,35 @@ var vote = function (change, id, voteCountElement, up, down) { return __awaiter(
         }
     });
 }); };
-function deletePost(id) {
-    console.log(id);
-}
+var deletePost = function (id, containerE, containerSub, deleteSpan) { return __awaiter(void 0, void 0, void 0, function () {
+    var settings, response_1, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!(localStorage.getItem("deletepostconfirmid") == id)) return [3 /*break*/, 3];
+                settings = {
+                    method: 'PUT',
+                };
+                return [4 /*yield*/, fetch('/api/put/post/delete/' + id, settings)];
+            case 1:
+                response_1 = _a.sent();
+                return [4 /*yield*/, response_1.json()];
+            case 2:
+                data = _a.sent();
+                if (data.status == 'ok') {
+                    containerE.innerHTML = "<span>The post was permanantly deleted.</span>";
+                    containerSub.innerHTML = "";
+                }
+                if (data.status == 'error') {
+                    alert(data.error);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                localStorage.setItem("deletepostconfirmid", id);
+                deleteSpan.innerText = "Are you sure?";
+                _a.label = 4;
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
 //# sourceMappingURL=post.js.map
