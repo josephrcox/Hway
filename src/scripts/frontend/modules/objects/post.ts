@@ -1,7 +1,8 @@
-const supportEmail = "josephrobertcox@gmail.com"
+export const supportEmail = "josephrobertcox@gmail.com"
 
 export const postObject = {
     title:"",
+    body:"",
     poster_name:"",
     createdAt:"",
     id:"",
@@ -21,12 +22,26 @@ export const postObject = {
         var postDetailsContainer = document.createElement('div') as HTMLDivElement
         postDetailsContainer.classList.add('post-details-container')
 
+        var body = document.createElement('p') as HTMLParagraphElement
+        body.classList.add('post-body')
+        body.innerText = this.body
+        body.style.display = "none"
+
         var title = document.createElement('span') as HTMLSpanElement
         title.classList.add('post-title')
-        title.innerText = this.title
+        title.dataset.title = this.title
+        title.innerHTML = this.title + " <span style='font-size:8px'>[+]</span>"
         title.onclick = function() {
-            window.location.href = '/p/'+container.dataset.postid
+            if (body.style.display == "none") {
+                body.style.display = "block"
+                title.innerHTML = title.dataset.title + " <span style='font-size:8px'>[-]</span>"
+            } else {
+                body.style.display = "none"
+                title.innerHTML = title.dataset.title + " <span style='font-size:8px'>[+]</span>"
+            }
         }
+
+        
 
         var subtitle = document.createElement('span') as HTMLSpanElement
         subtitle.classList.add('post-subtitle')
@@ -63,6 +78,7 @@ export const postObject = {
         }
 
         var subPostDetails = document.createElement('div')
+        subPostDetails.classList.add("post-subpost-details-container")
         var viewComments = document.createElement('a')
         viewComments.classList.add('post-subpost-element')
         viewComments.innerText = "comments ("+this.commentCount+")"
@@ -100,7 +116,7 @@ export const postObject = {
             subPostDetails.appendChild(d)
         }
 
-        postDetailsContainer.append(title, subtitle)
+        postDetailsContainer.append(title, body, subtitle)
         voteContainer.append(voteUpButton, voteDownButton)
         voteCountContainer.append(voteCount)
         container.append(postDetailsContainer, voteCountContainer, voteContainer)

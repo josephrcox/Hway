@@ -37,6 +37,11 @@ async function getPostByID(ID:string) {
     for (let i=0;i<post[0].comments.length;i++) {
         var c = Object.create(commentObject)
         c.body = post[0].comments[i].body
+        c.poster_name = post[0].comments[i].poster
+        var d = new Date(post[0].comments[i].createdAt)
+        c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
+        c.id = post[0].comments[i]._id
+        c.total_votes = post[0].comments[i].total_votes
         c.display()
     }
 }
@@ -45,6 +50,7 @@ function loadPostOrPostObjects(posts:any) {
     for (let i=0;i<posts.length;i++) {
         var post = Object.create(postObject)
         post.title = posts[i].title
+        post.body = posts[i].body
         post.poster_name = posts[i].poster
         var d = new Date(posts[i].createdAt)
         post.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
@@ -53,7 +59,7 @@ function loadPostOrPostObjects(posts:any) {
         post.currentUserDownvoted = posts[i].current_user_downvoted
         post.currentUserAdmin = posts[i].current_user_admin
         post.totalVotes = posts[i].total_votes
-        post.commentCount = posts[i].comments.length
+        post.commentCount = 0 + posts[i].comments.length
         post.topic = posts[i].topic
         post.display()
     }

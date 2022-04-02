@@ -2,7 +2,7 @@ body {
     background-color: lightgray;
 }
 
-.post-container {
+.post-container, .comment-container {
 	display: flex;
 	min-height: 50px;
 	border: 1px solid gray;
@@ -10,23 +10,39 @@ body {
 	flex-direction: row;
 }
 
-.post-details-container {
+.comment-container {
+    min-height: 25px;
+}
+
+.post-details-container, .comment-details-container {
     display: flex;
 	flex-direction: column;
     flex-grow: 10;
     padding-inline-start: 5px;
     padding-inline-end: 5px;
+    justify-content: space-around;
+}
+
+.comment-details-container  {
 }
 
 .post-title {
     font-size: 24px;
 }
 
-.post-subtitle {
-    font-size: 12px;
+.comment-title {
+    font-size: 13px;
 }
 
-.post-vote-container {
+.post-subtitle {
+    font-size: 10px;
+    margin-top: 5px;
+    border-top: 1px solid gray;
+    padding-top: 1px;
+    padding-bottom: 3px;
+}
+
+.post-vote-container, .comment-vote-container {
 	border: 1px solid black;
 	width: 30px;
 
@@ -41,7 +57,11 @@ body {
 	height: 24px;
 }
 
-.post-vote-count-container {
+.comment-vote-button {
+    height: 20px;
+}
+
+.post-vote-count-container, .comment-vote-count-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -67,3 +87,26 @@ a {
 .post-subpost-element:last-child{
     border: 0;
 }
+
+
+.comment-subtitle {
+    font-size: 9px;
+  }
+
+.post-subpost-details-container {
+    margin-bottom: 25px;
+    display: flex;
+    font-size: 12px;
+    justify-content: flex-end;
+}
+
+.post-body {
+	font-size: smaller;
+}
+
+span {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }

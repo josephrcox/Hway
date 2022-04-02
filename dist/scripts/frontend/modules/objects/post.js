@@ -34,9 +34,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var supportEmail = "josephrobertcox@gmail.com";
+export var supportEmail = "josephrobertcox@gmail.com";
 export var postObject = {
     title: "",
+    body: "",
     poster_name: "",
     createdAt: "",
     id: "",
@@ -52,11 +53,23 @@ export var postObject = {
         container.dataset.postid = this.id;
         var postDetailsContainer = document.createElement('div');
         postDetailsContainer.classList.add('post-details-container');
+        var body = document.createElement('p');
+        body.classList.add('post-body');
+        body.innerText = this.body;
+        body.style.display = "none";
         var title = document.createElement('span');
         title.classList.add('post-title');
-        title.innerText = this.title;
+        title.dataset.title = this.title;
+        title.innerHTML = this.title + " <span style='font-size:8px'>[+]</span>";
         title.onclick = function () {
-            window.location.href = '/p/' + container.dataset.postid;
+            if (body.style.display == "none") {
+                body.style.display = "block";
+                title.innerHTML = title.dataset.title + " <span style='font-size:8px'>[-]</span>";
+            }
+            else {
+                body.style.display = "none";
+                title.innerHTML = title.dataset.title + " <span style='font-size:8px'>[+]</span>";
+            }
         };
         var subtitle = document.createElement('span');
         subtitle.classList.add('post-subtitle');
@@ -87,6 +100,7 @@ export var postObject = {
             vote(-1, container.dataset.postid + "", voteCount, voteUpButton, voteDownButton);
         };
         var subPostDetails = document.createElement('div');
+        subPostDetails.classList.add("post-subpost-details-container");
         var viewComments = document.createElement('a');
         viewComments.classList.add('post-subpost-element');
         viewComments.innerText = "comments (" + this.commentCount + ")";
@@ -120,7 +134,7 @@ export var postObject = {
             };
             subPostDetails.appendChild(d);
         }
-        postDetailsContainer.append(title, subtitle);
+        postDetailsContainer.append(title, body, subtitle);
         voteContainer.append(voteUpButton, voteDownButton);
         voteCountContainer.append(voteCount);
         container.append(postDetailsContainer, voteCountContainer, voteContainer);

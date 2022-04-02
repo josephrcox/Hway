@@ -70,7 +70,7 @@ function getPostsByTopic(topic) {
 }
 function getPostByID(ID) {
     return __awaiter(this, void 0, void 0, function () {
-        var post, _a, _b, i, c;
+        var post, _a, _b, i, c, d;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -85,6 +85,11 @@ function getPostByID(ID) {
                     for (i = 0; i < post[0].comments.length; i++) {
                         c = Object.create(commentObject);
                         c.body = post[0].comments[i].body;
+                        c.poster_name = post[0].comments[i].poster;
+                        d = new Date(post[0].comments[i].createdAt);
+                        c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString();
+                        c.id = post[0].comments[i]._id;
+                        c.total_votes = post[0].comments[i].total_votes;
                         c.display();
                     }
                     return [2 /*return*/];
@@ -96,6 +101,7 @@ function loadPostOrPostObjects(posts) {
     for (var i = 0; i < posts.length; i++) {
         var post = Object.create(postObject);
         post.title = posts[i].title;
+        post.body = posts[i].body;
         post.poster_name = posts[i].poster;
         var d = new Date(posts[i].createdAt);
         post.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString();
@@ -104,7 +110,7 @@ function loadPostOrPostObjects(posts) {
         post.currentUserDownvoted = posts[i].current_user_downvoted;
         post.currentUserAdmin = posts[i].current_user_admin;
         post.totalVotes = posts[i].total_votes;
-        post.commentCount = posts[i].comments.length;
+        post.commentCount = 0 + posts[i].comments.length;
         post.topic = posts[i].topic;
         post.display();
     }
