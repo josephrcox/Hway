@@ -6,6 +6,8 @@ export const postObject = {
     createdAt:"",
     id:"",
     totalVotes:0,
+    commentCount:0,
+    topic:"",
 
     currentUserUpvoted:false,
     currentUserDownvoted:false,
@@ -28,7 +30,7 @@ export const postObject = {
 
         var subtitle = document.createElement('span') as HTMLSpanElement
         subtitle.classList.add('post-subtitle')
-        subtitle.innerText = "@"+this.poster_name + " — " + this.createdAt
+        subtitle.innerHTML = "@"+this.poster_name + " — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
 
         var voteContainer = document.createElement('div')
         voteContainer.classList.add('post-vote-container')
@@ -63,7 +65,7 @@ export const postObject = {
         var subPostDetails = document.createElement('div')
         var viewComments = document.createElement('a')
         viewComments.classList.add('post-subpost-element')
-        viewComments.innerText = "comments"
+        viewComments.innerText = "comments ("+this.commentCount+")"
         viewComments.onclick = function() {
             window.location.href = '/p/'+container.dataset.postid
         }
@@ -157,8 +159,7 @@ const deletePost = async(id:string, containerE:HTMLDivElement, containerSub:HTML
         if (data.status == 'ok') {
             containerE.innerHTML = "<span>The post was permanantly deleted.</span>"
             containerSub.innerHTML = ""
-        }
-        if (data.status == 'error') {
+        } else if (data.status == 'error') {
             alert(data.error)
         }
     } else {
@@ -167,3 +168,4 @@ const deletePost = async(id:string, containerE:HTMLDivElement, containerSub:HTML
     }
 
 }
+

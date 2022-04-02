@@ -104,6 +104,8 @@ function loadPostOrPostObjects(posts) {
         post.currentUserDownvoted = posts[i].current_user_downvoted;
         post.currentUserAdmin = posts[i].current_user_admin;
         post.totalVotes = posts[i].total_votes;
+        post.commentCount = posts[i].comments.length;
+        post.topic = posts[i].topic;
         post.display();
     }
 }
