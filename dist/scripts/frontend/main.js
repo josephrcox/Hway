@@ -99,6 +99,10 @@ function loadPostOrPostObjects(posts) {
         var d = new Date(posts[i].createdAt);
         post.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString();
         post.id = posts[i]._id;
+        post.currentUserUpvoted = posts[i].current_user_upvoted;
+        post.currentUserDownvoted = posts[i].current_user_downvoted;
+        post.currentUserAdmin = posts[i].current_user_admin;
+        post.totalVotes = posts[i].total_votes;
         post.display();
     }
 }

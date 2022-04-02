@@ -3,6 +3,11 @@ export const postObject = {
     poster_name:"",
     createdAt:"",
     id:"",
+    totalVotes:0,
+
+    currentUserUpvoted:false,
+    currentUserDownvoted:false,
+    currentUserAdmin:false,
 
     display() {
         var container = document.createElement('div') as HTMLDivElement
@@ -26,6 +31,13 @@ export const postObject = {
         var voteContainer = document.createElement('div')
         voteContainer.classList.add('post-vote-container')
 
+        var voteCountContainer = document.createElement('div')
+        voteCountContainer.classList.add('post-vote-count-container')
+
+        var voteCount = document.createElement('span') as HTMLSpanElement
+        voteCount.classList.add('post-vote-count')
+        voteCount.innerText = ""+this.totalVotes
+
         var voteUpButton = document.createElement('img')
         var voteDownButton = document.createElement('img')
         voteUpButton.src = "/dist/images/angle-up-solid.svg"
@@ -33,10 +45,62 @@ export const postObject = {
         voteUpButton.classList.add('post-vote-button')
         voteDownButton.classList.add('post-vote-button')
 
+        if (this.currentUserUpvoted) {
+            voteUpButton.classList.add('upvoted')
+        } else if (this.currentUserDownvoted) {
+            voteDownButton.classList.add('downvoted')
+        }
+
+        voteUpButton.onclick = function() {
+            vote(1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
+        }
+        voteDownButton.onclick = function() {
+            vote(-1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
+        }
+
         postDetailsContainer.append(title, subtitle)
         voteContainer.append(voteUpButton, voteDownButton)
-        container.append(postDetailsContainer, voteContainer)
+        voteCountContainer.append(voteCount)
+        container.append(postDetailsContainer, voteCountContainer, voteContainer)
 
         document.body.appendChild(container)
     }
+}
+
+var lastClick:number = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms
+const delay:number = 400;
+
+const vote = async (change:number, id:string, voteCountElement:HTMLSpanElement, up:HTMLImageElement, down:HTMLImageElement) => { 
+    if (lastClick >= (Date.now() - delay)) {
+        return;
+    }
+    lastClick = Date.now();
+
+    const settings = {
+        method: 'PUT',
+    };
+
+    const fetchResponse = await fetch('/vote/'+id+'/'+change, settings); 
+    const data = await fetchResponse.json()
+
+    if (data.status == 'ok') {
+        voteCountElement.innerText = data.newtotal
+        if (data.gif == "up") {
+            up.classList.add('upvoted')
+            down.classList.remove('downvoted')
+        } else if (data.gif == "none") {
+            up.classList.remove('upvoted')
+            down.classList.remove('downvoted')
+        } else if (data.gif == "down") {
+            up.classList.remove('upvoted')
+            down.classList.add('downvoted')
+        }
+    } 
+
+    if (data.error) {
+        if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+            window.location.href = '/login'
+        }
+    }
+
 }

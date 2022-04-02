@@ -38,3 +38,18 @@ body {
 .post-vote-button {
 	height: 24px;
 }
+
+.post-vote-count-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-right: 10px;
+}
+
+.upvoted {
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+}
+
+.downvoted {
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(-27deg) brightness(118%) contrast(119%)
+}
