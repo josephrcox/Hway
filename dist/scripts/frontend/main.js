@@ -90,6 +90,8 @@ function getPostByID(ID) {
                         c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString();
                         c.id = post[0].comments[i]._id;
                         c.total_votes = post[0].comments[i].total_votes;
+                        c.currentUserUpvoted = post[0].comments[i].current_user_upvoted;
+                        c.currentUserAdmin = post[0].comments[i].current_user_admin;
                         c.display();
                     }
                     return [2 /*return*/];

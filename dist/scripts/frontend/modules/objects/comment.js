@@ -28,16 +28,10 @@ export var commentObject = {
         voteCount.classList.add('comment-vote-count');
         voteCount.innerText = "" + this.totalVotes;
         var voteUpButton = document.createElement('img');
-        var voteDownButton = document.createElement('img');
         voteUpButton.src = "/dist/images/angle-up-solid.svg";
-        voteDownButton.src = "/dist/images/angle-down-solid.svg";
         voteUpButton.classList.add('comment-vote-button');
-        voteDownButton.classList.add('comment-vote-button');
         if (this.currentUserUpvoted) {
             voteUpButton.classList.add('upvoted');
-        }
-        else if (this.currentUserDownvoted) {
-            voteDownButton.classList.add('downvoted');
         }
         // voteUpButton.onclick = function() {
         //     vote(1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
@@ -46,9 +40,10 @@ export var commentObject = {
         //     vote(-1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
         // }
         var subPostDetails = document.createElement('div');
+        subPostDetails.classList.add('post-subpost-details-container');
         var reportButton = document.createElement('a');
         reportButton.classList.add('post-subcomment-element');
-        reportButton.innerText = "report post";
+        reportButton.innerText = "report";
         reportButton.onclick = function () {
             window.open("mailto:" + supportEmail + "?Subject=" + encodeURIComponent("Report a post on HWay") + "&body=" + encodeURIComponent("Post ID:" + container.dataset.postid));
         };
@@ -63,7 +58,7 @@ export var commentObject = {
         //     subPostDetails.appendChild(d)
         // }
         comDetailsContainer.append(title, subtitle);
-        voteContainer.append(voteUpButton, voteDownButton);
+        voteContainer.append(voteUpButton);
         voteCountContainer.append(voteCount);
         container.append(comDetailsContainer, voteCountContainer, voteContainer);
         document.body.appendChild(container);

@@ -80,11 +80,11 @@ a {
     cursor: pointer;
 }
 
-.post-subpost-element{
+.post-subpost-element, .post-subcomment-element{
     border-right: 1px dotted black;
     padding-inline:5px;
 }
-.post-subpost-element:last-child{
+.post-subpost-element:last-child, .post-subcomment-element:last-child{
     border: 0;
 }
 

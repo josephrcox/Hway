@@ -100,7 +100,7 @@ export const postObject = {
 
         var reportButton = document.createElement('a')
         reportButton.classList.add('post-subpost-element')
-        reportButton.innerText = "report post"
+        reportButton.innerText = "report"
         reportButton.onclick = function() {
             window.open("mailto:"+supportEmail+"?Subject=" + encodeURIComponent("Report a post on HWay") + "&body=" + encodeURIComponent("Post ID:"+container.dataset.postid));
         }

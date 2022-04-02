@@ -7,7 +7,9 @@ const nestedCommentSchema = new mongoose.Schema(
         posterID: { type:String, required:true },
         status: { type:String, required:true, default:"active "},
         total_votes: { type:Number, required:true, default:0 },
-        users_voted: { type:Array, required:true, default:[]}
+        users_voted: { type:Array, required:true, default:[]},
+        current_user_upvoted: { type: Boolean},
+        current_user_admin: { type: Boolean},
     }, {timestamps:true}
 )
 
@@ -19,7 +21,9 @@ const commentSchema = new mongoose.Schema(
         posterID: { type:String, required:true },
         status: { type:String, required:true, default:"active "},
         total_votes: { type:Number, required:true, default:0 },
-        users_voted: { type:Array, required:true, default:[]}
+        users_voted: { type:Array, required:true, default:[]},
+        current_user_upvoted: { type: Boolean},
+        current_user_admin: { type: Boolean},
     }, {timestamps:true}
 )
 
