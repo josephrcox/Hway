@@ -17,8 +17,8 @@ export const commentObject = {
     display() {
         var container = document.createElement('div') as HTMLDivElement
         container.classList.add('comment-container')
-        container.dataset.id = ""
-        container.dataset.id += this.id
+        container.dataset.id = this.id
+        container.dataset.postid = this.parentid
 
         var comDetailsContainer = document.createElement('div') as HTMLDivElement
         comDetailsContainer.classList.add('comment-details-container')
@@ -51,7 +51,7 @@ export const commentObject = {
         }
 
         voteUpButton.onclick = function() {
-            voteCom(container.dataset.id, voteUpButton.dataset.parentID, false, "", voteCount, voteUpButton)
+            voteComment(container.dataset.id, voteUpButton.dataset.parentID, false, "", voteCount, voteUpButton)
         }
 
         var subPostDetails = document.createElement('div')
@@ -64,15 +64,15 @@ export const commentObject = {
         }
         subPostDetails.appendChild(reportButton)
 
-        // if (this.currentUserAdmin) {
-        //     let d = document.createElement('a')
-        //     d.classList.add('post-subpost-element')
-        //     d.innerText = "delete"
-        //     d.onclick = function() {
-        //         deletePost(container.dataset.postid+"", container, subPostDetails, this)
-        //     }
-        //     subPostDetails.appendChild(d)
-        // }
+        if (this.currentUserAdmin) {
+            let d = document.createElement('a')
+            d.classList.add('post-subpost-element')
+            d.innerText = "delete"
+            d.onclick = function() {
+                deleteComment(container.dataset.postid!, container.dataset.id!, container, d)
+            }
+            subPostDetails.appendChild(d)
+        }
 
         comDetailsContainer.append(title, subtitle)
         voteContainer.append(voteUpButton)
@@ -84,7 +84,7 @@ export const commentObject = {
     }
 }
 
-const voteCom = async (id:any, parentID:any, nested:boolean, commentParentID:string, voteCountElement:HTMLSpanElement, voteUpImg:HTMLImageElement) => { 
+const voteComment = async (id:any, parentID:any, nested:boolean, commentParentID:string, voteCountElement:HTMLSpanElement, voteUpImg:HTMLImageElement) => { 
    
     if (commentParentID == null || commentParentID == "") {
         commentParentID = "0"
@@ -130,6 +130,27 @@ const voteCom = async (id:any, parentID:any, nested:boolean, commentParentID:str
     //     }
     // }
     }
+}
+
+const deleteComment = async(parentID:string, commentID:string, containerElement:HTMLDivElement, deleteSpan:HTMLAnchorElement) => {
+    if (localStorage.getItem("deletecommentconfirmid") == commentID) {
+        const settings = {
+            method: 'PUT',
+        };
+        const response = await fetch('/api/put/comment/delete/'+parentID+"/"+commentID, settings)
+        const data = await response.json()
+    
+        if (data.status == 'ok') {
+            containerElement.innerHTML = "This comment has been permanantly deleted"
+        }
+        if (data.status == 'error') {
+            alert(data.error)
+        }
+    } else {
+        localStorage.setItem("deletecommentconfirmid", commentID)
+        deleteSpan.innerText = "Are you sure?"
+    }
+
 }
 
 export const newCommentInputArea = document.getElementById('commentSection') as HTMLDivElement

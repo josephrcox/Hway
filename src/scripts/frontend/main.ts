@@ -8,6 +8,7 @@ import { getUser, currentUserID } from "./modules/auth.js"
 
 window.onload = async function() {
     localStorage.setItem("deletepostconfirmid","")
+    localStorage.setItem("deletecommentconfirmid","")
     let x:Array<string> = getPageType() || []
     await getUser()
 

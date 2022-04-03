@@ -48,6 +48,7 @@ window.onload = function () {
             switch (_a.label) {
                 case 0:
                     localStorage.setItem("deletepostconfirmid", "");
+                    localStorage.setItem("deletecommentconfirmid", "");
                     x = getPageType() || [];
                     return [4 /*yield*/, getUser()];
                 case 1:

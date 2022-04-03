@@ -49,8 +49,8 @@ export var commentObject = {
     display: function () {
         var container = document.createElement('div');
         container.classList.add('comment-container');
-        container.dataset.id = "";
-        container.dataset.id += this.id;
+        container.dataset.id = this.id;
+        container.dataset.postid = this.parentid;
         var comDetailsContainer = document.createElement('div');
         comDetailsContainer.classList.add('comment-details-container');
         var title = document.createElement('span');
@@ -74,7 +74,7 @@ export var commentObject = {
             voteUpButton.classList.add('upvoted');
         }
         voteUpButton.onclick = function () {
-            voteCom(container.dataset.id, voteUpButton.dataset.parentID, false, "", voteCount, voteUpButton);
+            voteComment(container.dataset.id, voteUpButton.dataset.parentID, false, "", voteCount, voteUpButton);
         };
         var subPostDetails = document.createElement('div');
         subPostDetails.classList.add('post-subpost-details-container');
@@ -85,15 +85,15 @@ export var commentObject = {
             window.open("mailto:" + supportEmail + "?Subject=" + encodeURIComponent("Report a post on HWay") + "&body=" + encodeURIComponent("Post ID:" + container.dataset.postid));
         };
         subPostDetails.appendChild(reportButton);
-        // if (this.currentUserAdmin) {
-        //     let d = document.createElement('a')
-        //     d.classList.add('post-subpost-element')
-        //     d.innerText = "delete"
-        //     d.onclick = function() {
-        //         deletePost(container.dataset.postid+"", container, subPostDetails, this)
-        //     }
-        //     subPostDetails.appendChild(d)
-        // }
+        if (this.currentUserAdmin) {
+            var d_1 = document.createElement('a');
+            d_1.classList.add('post-subpost-element');
+            d_1.innerText = "delete";
+            d_1.onclick = function () {
+                deleteComment(container.dataset.postid, container.dataset.id, container, d_1);
+            };
+            subPostDetails.appendChild(d_1);
+        }
         comDetailsContainer.append(title, subtitle);
         voteContainer.append(voteUpButton);
         voteCountContainer.append(voteCount);
@@ -102,7 +102,7 @@ export var commentObject = {
         postsArray.appendChild(subPostDetails);
     }
 };
-var voteCom = function (id, parentID, nested, commentParentID, voteCountElement, voteUpImg) { return __awaiter(void 0, void 0, void 0, function () {
+var voteComment = function (id, parentID, nested, commentParentID, voteCountElement, voteUpImg) { return __awaiter(void 0, void 0, void 0, function () {
     var settings, fetchResponse, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -153,6 +153,36 @@ var voteCom = function (id, parentID, nested, commentParentID, voteCountElement,
                     // }
                 }
                 return [2 /*return*/];
+        }
+    });
+}); };
+var deleteComment = function (parentID, commentID, containerElement, deleteSpan) { return __awaiter(void 0, void 0, void 0, function () {
+    var settings, response_1, data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!(localStorage.getItem("deletecommentconfirmid") == commentID)) return [3 /*break*/, 3];
+                settings = {
+                    method: 'PUT',
+                };
+                return [4 /*yield*/, fetch('/api/put/comment/delete/' + parentID + "/" + commentID, settings)];
+            case 1:
+                response_1 = _a.sent();
+                return [4 /*yield*/, response_1.json()];
+            case 2:
+                data = _a.sent();
+                if (data.status == 'ok') {
+                    containerElement.innerHTML = "This comment has been permanantly deleted";
+                }
+                if (data.status == 'error') {
+                    alert(data.error);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                localStorage.setItem("deletecommentconfirmid", commentID);
+                deleteSpan.innerText = "Are you sure?";
+                _a.label = 4;
+            case 4: return [2 /*return*/];
         }
     });
 }); };
