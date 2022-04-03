@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js";
-import { commentObject, newCommentInputArea } from "./modules/objects/comment.js";
+import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
 import { newPost } from "./modules/createPost.js";
 import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID } from "./modules/auth.js";
@@ -130,6 +130,7 @@ function getPostByID(ID) {
                         c.display();
                     }
                     newCommentInputArea.style.display = 'flex';
+                    commentSection.style.display = 'flex';
                     return [2 /*return*/];
             }
         });

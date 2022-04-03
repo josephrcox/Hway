@@ -1,25 +1,22 @@
 <body>
     <div id="sitebody" class="sitebody-flex">
-       <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
-
      <div class="posts_and_more" id="posts_and_more">
+
       <div class="recommended_topics_div" id="recommended_topics" style="display: none;"></div>
       <div id="postsArray">
          
-        </div>
+       </div>
+       <div class="newComContainer" style="display: none;">
+        <label for="name" id="newCom_body_label">Comment</label><br>
+         <button id="commentSection_login_button" onclick="login()">Login to comment</button>
+         <textarea id="newCom_body" name="name" size="50" rows="2" cols="60" autocomplete="off"></textarea> <br>
+         <input type="submit" value="Submit new comment" id="newCom_submit"><br>
+         <div id="newCom_logs"></div>
+      </div>
      </div>
      
     </div>
-    <div id="commentSection" style='display:none;'>
-       <div class="newComContainer">
-         <label for="name" id="newCom_body_label">Comment</label><br>
-          <button id="commentSection_login_button" onclick="login()">Login to comment</button>
-          <textarea id="newCom_body" name="name" size="50" rows="2" cols="60" autocomplete="off"></textarea> <br>
-          <input type="submit" value="Submit new comment" id="newCom_submit"><br>
-          <div id="newCom_logs"></div>
-       </div>
-       <div id="comments">
+       <div id="comments" style="display: none;">
           <!-- comments go here from js -->
        </div>
- </div> 
 </body>

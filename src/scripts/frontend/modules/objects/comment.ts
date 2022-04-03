@@ -1,6 +1,7 @@
 import { supportEmail } from "./post.js"
 
 const postsArray = document.getElementById('postsArray') as HTMLDivElement
+export const commentSection = document.getElementById('comments') as HTMLDivElement
 
 export const commentObject = {
     body:"",
@@ -79,8 +80,8 @@ export const commentObject = {
         voteCountContainer.append(voteCount)
         container.append(comDetailsContainer, voteCountContainer, voteContainer)
 
-        postsArray.appendChild(container)
-        postsArray.appendChild(subPostDetails)
+        commentSection.appendChild(container)
+        commentSection.appendChild(subPostDetails)
     }
 }
 
@@ -153,4 +154,4 @@ const deleteComment = async(parentID:string, commentID:string, containerElement:
 
 }
 
-export const newCommentInputArea = document.getElementById('commentSection') as HTMLDivElement
+export const newCommentInputArea = document.getElementsByClassName('newComContainer')[0] as HTMLDivElement

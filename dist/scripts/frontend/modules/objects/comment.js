@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { supportEmail } from "./post.js";
 var postsArray = document.getElementById('postsArray');
+export var commentSection = document.getElementById('comments');
 export var commentObject = {
     body: "",
     poster_name: "",
@@ -98,8 +99,8 @@ export var commentObject = {
         voteContainer.append(voteUpButton);
         voteCountContainer.append(voteCount);
         container.append(comDetailsContainer, voteCountContainer, voteContainer);
-        postsArray.appendChild(container);
-        postsArray.appendChild(subPostDetails);
+        commentSection.appendChild(container);
+        commentSection.appendChild(subPostDetails);
     }
 };
 var voteComment = function (id, parentID, nested, commentParentID, voteCountElement, voteUpImg) { return __awaiter(void 0, void 0, void 0, function () {
@@ -186,5 +187,5 @@ var deleteComment = function (parentID, commentID, containerElement, deleteSpan)
         }
     });
 }); };
-export var newCommentInputArea = document.getElementById('commentSection');
+export var newCommentInputArea = document.getElementsByClassName('newComContainer')[0];
 //# sourceMappingURL=comment.js.map

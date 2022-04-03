@@ -22,150 +22,48 @@
 </head>
 <body>
     <div class="header">
-        <div class="flex-container">
+        <div class="header_top">
             <div class="header-title noselect">
-                    <a href='/all'><div id="title" class="cursor_pointer">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
+                <a href='/all'><div class="header-title cursor_pointer">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
             </div>
             
-            <div class="notifs" id='header-notifs'>
-                <div class="notifs_bell cursor_pointer" id="header-notifs-bell" style="display: none;">0</div>
+            <div class="header-notifications">
+                <div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;">0</div>
             </div>
-            <div class="user-dropdown-div" id='user-dropdown-div'>
-                <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
-                <div id="user-dropdown" class="user-dropdown-content">
-                    <a href='#' onclick="profile()" id="profile_button" class="user-dropdown-item">Profile</a>
-                    <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
-                    <a href='#' onclick="login()" id="login_button" class="user-dropdown-item">Login</a>
-                    <a href='#' onclick="register()" id="reg_button" class="user-dropdown-item">Register</a>
-                    <a href='#' onclick="resetPasswordPage()" id="resetpw_button" class="user-dropdown-item">Reset password</a>
-                    <a href='#' onclick="view_subscriptions()" id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
-                    <div class="border-bottom"></div>
-                    <div id="filter_nsfw_div">
-                        NSFW
-                    <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
-                    </div>
-                    
-                </div>
-            </div>
-    
-         </div>
-    
-         <div class="header-buttons noselect" id="header-buttons">
-            
-            <div id="misc_header_buttons">
-                <div id="home-button" onclick='navHome()' class="cursor_pointer">Home</div>
-                <a href="/post/" id="post-button" style='display:block;' class="cursor_pointer">Post</div>
-                <div id="search-button" onclick="showorhidesearch()" class="cursor_pointer">Search</div>
-                <div id="subscribe-button" style='display:none;' class="cursor_pointer"></div>
-            </div>
-            
-        </div>   
-        <div id="searchbar" style="display:none;">
-            <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
-            <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
-            <button id="search_submit" class="button">Search</button>
-            <div id="search-logs"></div>
         </div>
+
     
-        <div id="sorting_options" class="sorting_options noselect">
-            <a id="sorting_options_new" class="sorting_options" href="#">New</a>
-            <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
-            <a id="sorting_options_top_today" class="sorting_options" href="#">Top (day)</a>
-            <a id="sorting_options_top_week" class="sorting_options" href="#">Top (week)</a>
-            <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
-            <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
-            
+         <div class="header-buttons noselect">
+            <a href="/home/" class="header-home cursor_pointer">Home</a>
+            <span id="search-button" onclick="showorhidesearch()" class="cursor_pointer">Search</span>
+            <span id="subscribe-button" style='display:none;' class="cursor_pointer"></span>
+            <a href="/post/" id="post-button" class="header-post cursor_pointer">Post</a>
         </div>
-    
-        <div id="page-number" class="noselect"></div> 
     </div>
+    <div id="searchbar" style="display:none;">
+        <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
+        <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
+        <button id="search_submit" class="button">Search</button>
+        <div id="search-logs"></div>
+    </div>
+
+    <div id="sorting_options" class="sorting_options noselect">
+        <a id="sorting_options_new" class="sorting_options" href="#">New</a>
+        <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
+        <a id="sorting_options_top_today" class="sorting_options" href="#">Top (day)</a>
+        <a id="sorting_options_top_week" class="sorting_options" href="#">Top (week)</a>
+        <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
+        <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
+    </div>
+
+    <div id="page-number" class="noselect"></div> 
 
     
     <div class='page-content'>
         <%- body %>
     </div>
-    
-<script>
-
-if (localStorage.getItem("currentUsername") != null) {
-    document.getElementById("currentUser").innerText = localStorage.getItem("currentUsername")
-}
-
-function currentuserDropdownClicked() {
-    document.getElementById("user-dropdown").classList.toggle("show");
-}
-  
-document.onclick = function(e){
-    if(e.target.id !== 'currentUser'){
-        if (document.getElementById('user-dropdown').classList.contains('show')) {
-            document.getElementById('user-dropdown').classList.remove('show');
-        }
-    }
-};
-
-async function logout() {
-    const response = await fetch('/logout')
-    window.location.replace("/");
-}
-function navHome() {
-    window.location.href = '/home'
-}
-function login() {
-    window.location.replace("/login");
-}
-function register() {
-    window.location.replace("/register");
-}
-function view_subscriptions() {
-    window.location.replace("/subscriptions")
-}
-function resetPasswordPage() {
-    window.location.replace("/account/resetpw")
-}
-
-function profile() {
-    username = document.getElementById("currentUser").innerHTML
-    if (username == null || username == 'Account') {
-        window.location.replace('/login')
-    } else {
-        window.location.replace('/user/'+username)
-    }
-    
-}
-
-async function getUsername() {
-    const response = await fetch('/api/get/currentuser')
-    const data = await response.json()
-
-    if (data.status != "error") {
-        document.getElementById("currentUser").innerHTML = data.name
-    } else {
-        if (data.error.name == "TokenExpiredError") {
-            document.getElementById("currentUser").innerHTML = "token expired"
-        }
-    }
-}
-
-function showorhidesearch() {
-    search = document.getElementById("searchbar")
-    if (search.style.display == "none") {
-        search.style.display = "flex"
-    } else {
-        search.style.display = "none"
-    }
-}
-
-</script>
-
-<script src="https://kit.fontawesome.com/046a6861b9.js" crossorigin="anonymous"></script>
 
 <script src="/dist/scripts/frontend/main.js" type="module"></script>
-<!-- <script src="../../header.js"></script>
-<script src="../../script.js" type="module"></script> -->
-<!-- <script src="../../subscriptions.js"></script> -->
-<!-- <script src="../../notifications.js"></script> -->
-
-
 
 </body>
 </html>
