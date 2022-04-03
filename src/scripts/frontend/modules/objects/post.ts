@@ -1,5 +1,7 @@
 export const supportEmail = "josephrobertcox@gmail.com"
 
+const postsArray = document.getElementById('postsArray') as HTMLDivElement
+
 export const postObject = {
     title:"",
     body:"",
@@ -121,8 +123,8 @@ export const postObject = {
         voteCountContainer.append(voteCount)
         container.append(postDetailsContainer, voteCountContainer, voteContainer)
 
-        document.body.appendChild(container)
-        document.body.appendChild(subPostDetails)
+        postsArray.appendChild(container)
+        postsArray.appendChild(subPostDetails)
     }
 }
 

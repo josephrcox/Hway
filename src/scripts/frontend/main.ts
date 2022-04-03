@@ -1,12 +1,15 @@
 import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js"
-import { commentObject } from "./modules/objects/comment.js";
+import { commentObject, newCommentInputArea } from "./modules/objects/comment.js";
 import { newPost } from "./modules/createPost.js"
+import { newComment } from "./modules/createComment.js";
+import { getUser, currentUserID } from "./modules/auth.js"
 
-window.onload = function() {
+window.onload = async function() {
     localStorage.setItem("deletepostconfirmid","")
     let x:Array<string> = getPageType() || []
+    await getUser()
 
     switch(x[0]) {
         case "all":
@@ -17,6 +20,10 @@ window.onload = function() {
             break;
         case "post":
             getPostByID(x[1])
+            const submit_new_comment = document.getElementById("newCom_submit") as HTMLButtonElement
+            submit_new_comment.onclick = function() {
+                newComment(x[1])
+            }
             break;
         case "createnewpost":
             const submit_new_post = document.getElementById("newPost_submit_button") as HTMLButtonElement
@@ -41,6 +48,10 @@ async function getPostByID(ID:string) {
     
     loadPostOrPostObjects(post)
     
+    //sorts comments by most votes to least votes
+    post[0].comments.sort((a:any, b:any) => (a.total_votes < b.total_votes) ? 1 : -1)
+    //
+
     for (let i=0;i<post[0].comments.length;i++) {
         var c = Object.create(commentObject)
         c.body = post[0].comments[i].body
@@ -48,11 +59,21 @@ async function getPostByID(ID:string) {
         var d = new Date(post[0].comments[i].createdAt)
         c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
         c.id = post[0].comments[i]._id
-        c.total_votes = post[0].comments[i].total_votes
-        c.currentUserUpvoted = post[0].comments[i].current_user_upvoted
+        c.totalVotes = post[0].comments[i].total_votes
+        if (post[0].comments[i].users_voted.includes(currentUserID)) {
+            c.currentUserUpvoted = true
+        } else {
+            c.currentUserUpvoted = false
+        }
         c.currentUserAdmin = post[0].comments[i].current_user_admin
+        c.parentid = post[0]._id
         c.display()
     }
+
+    newCommentInputArea!.style.display = 'flex'
+
+    
+
 }
 
 function loadPostOrPostObjects(posts:any) {
@@ -73,4 +94,3 @@ function loadPostOrPostObjects(posts:any) {
         post.display()
     }
 }
-

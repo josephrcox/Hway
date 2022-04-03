@@ -1,11 +1,14 @@
 import { supportEmail } from "./post.js"
 
+const postsArray = document.getElementById('postsArray') as HTMLDivElement
+
 export const commentObject = {
     body:"",
     poster_name:"",
     createdAt:"",
     id:"",
-    totalVotes:0,
+    parentid:"",
+    totalVotes:null,
 
     currentUserUpvoted:false,
     currentUserDownvoted:false,
@@ -14,7 +17,8 @@ export const commentObject = {
     display() {
         var container = document.createElement('div') as HTMLDivElement
         container.classList.add('comment-container')
-        container.dataset.postid = this.id
+        container.dataset.id = ""
+        container.dataset.id += this.id
 
         var comDetailsContainer = document.createElement('div') as HTMLDivElement
         comDetailsContainer.classList.add('comment-details-container')
@@ -40,17 +44,15 @@ export const commentObject = {
         var voteUpButton = document.createElement('img')
         voteUpButton.src = "/dist/images/angle-up-solid.svg"
         voteUpButton.classList.add('comment-vote-button')
+        voteUpButton.dataset.parentID = this.parentid
 
         if (this.currentUserUpvoted) {
             voteUpButton.classList.add('upvoted')
         }
 
-        // voteUpButton.onclick = function() {
-        //     vote(1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
-        // }
-        // voteDownButton.onclick = function() {
-        //     vote(-1, container.dataset.postid+"", voteCount, voteUpButton, voteDownButton)
-        // }
+        voteUpButton.onclick = function() {
+            voteCom(container.dataset.id, voteUpButton.dataset.parentID, false, "", voteCount, voteUpButton)
+        }
 
         var subPostDetails = document.createElement('div')
         subPostDetails.classList.add('post-subpost-details-container')
@@ -77,7 +79,57 @@ export const commentObject = {
         voteCountContainer.append(voteCount)
         container.append(comDetailsContainer, voteCountContainer, voteContainer)
 
-        document.body.appendChild(container)
-        document.body.appendChild(subPostDetails)
+        postsArray.appendChild(container)
+        postsArray.appendChild(subPostDetails)
     }
 }
+
+const voteCom = async (id:any, parentID:any, nested:boolean, commentParentID:string, voteCountElement:HTMLSpanElement, voteUpImg:HTMLImageElement) => { 
+   
+    if (commentParentID == null || commentParentID == "") {
+        commentParentID = "0"
+    }
+
+    const settings = {
+        method: 'PUT',
+    };
+
+    const fetchResponse = await fetch('/votecomment/'+parentID+'/'+id+'/'+nested+'/'+commentParentID, settings); 
+    const data = await fetchResponse.json()
+
+    if (data.status == 'ok') {
+        voteCountElement.innerText = data.newcount
+        if (data.voted == 'yes') {
+            if (nested) {
+                //(document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLSpanElement).innerHTML = fa_voteUp_filled
+            } else {
+                //(document.getElementById('voteComUp_'+id) as HTMLSpanElement).innerHTML = fa_voteUp_filled;
+            }
+            voteUpImg.classList.add('upvoted')
+
+        } else {
+            voteUpImg.classList.remove('upvoted')
+        }
+    //     if (data.voted == 'no') {
+    //         if (nested) {
+    //             (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).innerHTML = fa_voteUp;
+    //             (document.getElementById('nestedcommentUp_'+id+'_'+commentParentID) as HTMLImageElement).style.color = 'black';
+    //         } else {
+    //             (document.getElementById('voteComUp_'+id) as HTMLImageElement).innerHTML = fa_voteUp;
+                
+    //         }
+    //     }
+    //     if (nested) {
+    //         document.getElementById('comnestedVoteCount_'+id).innerHTML = data.newcount
+    //     } else {
+    //         document.getElementById('voteCount_'+id).innerHTML = data.newcount
+    //     }
+    // } else {
+    //     if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
+    //         window.location.href = '/login'
+    //     }
+    // }
+    }
+}
+
+export const newCommentInputArea = document.getElementById('commentSection') as HTMLDivElement

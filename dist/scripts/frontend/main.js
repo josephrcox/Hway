@@ -37,28 +37,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js";
-import { commentObject } from "./modules/objects/comment.js";
+import { commentObject, newCommentInputArea } from "./modules/objects/comment.js";
 import { newPost } from "./modules/createPost.js";
+import { newComment } from "./modules/createComment.js";
+import { getUser, currentUserID } from "./modules/auth.js";
 window.onload = function () {
-    localStorage.setItem("deletepostconfirmid", "");
-    var x = getPageType() || [];
-    switch (x[0]) {
-        case "all":
-            getPostsByTopic("all");
-            break;
-        case "topic":
-            getPostsByTopic(x[1]);
-            break;
-        case "post":
-            getPostByID(x[1]);
-            break;
-        case "createnewpost":
-            var submit_new_post = document.getElementById("newPost_submit_button");
-            submit_new_post.onclick = function () {
-                newPost();
-            };
-            break;
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var x, submit_new_comment, submit_new_post;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    localStorage.setItem("deletepostconfirmid", "");
+                    x = getPageType() || [];
+                    return [4 /*yield*/, getUser()];
+                case 1:
+                    _a.sent();
+                    switch (x[0]) {
+                        case "all":
+                            getPostsByTopic("all");
+                            break;
+                        case "topic":
+                            getPostsByTopic(x[1]);
+                            break;
+                        case "post":
+                            getPostByID(x[1]);
+                            submit_new_comment = document.getElementById("newCom_submit");
+                            submit_new_comment.onclick = function () {
+                                newComment(x[1]);
+                            };
+                            break;
+                        case "createnewpost":
+                            submit_new_post = document.getElementById("newPost_submit_button");
+                            submit_new_post.onclick = function () {
+                                newPost();
+                            };
+                            break;
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
 };
 function getPostsByTopic(topic) {
     return __awaiter(this, void 0, void 0, function () {
@@ -89,6 +107,9 @@ function getPostByID(ID) {
                     _a[_b] = _c.sent();
                     console.log(post);
                     loadPostOrPostObjects(post);
+                    //sorts comments by most votes to least votes
+                    post[0].comments.sort(function (a, b) { return (a.total_votes < b.total_votes) ? 1 : -1; });
+                    //
                     for (i = 0; i < post[0].comments.length; i++) {
                         c = Object.create(commentObject);
                         c.body = post[0].comments[i].body;
@@ -96,11 +117,18 @@ function getPostByID(ID) {
                         d = new Date(post[0].comments[i].createdAt);
                         c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString();
                         c.id = post[0].comments[i]._id;
-                        c.total_votes = post[0].comments[i].total_votes;
-                        c.currentUserUpvoted = post[0].comments[i].current_user_upvoted;
+                        c.totalVotes = post[0].comments[i].total_votes;
+                        if (post[0].comments[i].users_voted.includes(currentUserID)) {
+                            c.currentUserUpvoted = true;
+                        }
+                        else {
+                            c.currentUserUpvoted = false;
+                        }
                         c.currentUserAdmin = post[0].comments[i].current_user_admin;
+                        c.parentid = post[0]._id;
                         c.display();
                     }
+                    newCommentInputArea.style.display = 'flex';
                     return [2 /*return*/];
             }
         });

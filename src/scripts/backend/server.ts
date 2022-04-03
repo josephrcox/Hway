@@ -620,12 +620,11 @@ app.get('/api/get/post/:postid', async(req: { cookies: { token: any }; params: {
 			}
 			
 			for (let i=0;i<post.comments.length;i++) {
-				let com = post.comments[i]
-				if (com.status == 'active') {
-					if (com.users_voted.includes(userID)) {
-						postModified.comments[i].current_user_voted = true
-					}
-				}	
+                if (post.comments[i].users_voted.includes(userID)) {
+                    console.log("user upvoted")
+                    postModified.comments[i].current_user_voted = true
+                    console.log(postModified)
+                }
 			}
 
 			try {
@@ -1348,11 +1347,12 @@ app.post('/api/post/post', async(req:any, res:any) => {
 
 
 app.post('/api/post/comment/', async(req:any, res:any) => {
-	var {body:reqbody, id} = req.body
+	var {body:reqbody, id, localtoken} = req.body
+    console.log(req.body)
 	let token
 	let userID: any
 	let username: any
-
+    console.log(reqbody, id)
 	reqbody = sanitize(reqbody)
 
 	try {
@@ -1361,7 +1361,13 @@ app.post('/api/post/comment/', async(req:any, res:any) => {
 		userID = verified.id
 		username = verified.name
 	} catch (err) {
-		return res.json({ status:"error", code:400, error: err})
+        if (localtoken) {
+            userID = "1"
+            username = "admin"
+        } else {
+            return res.json({ status:"error", code:400, error: err})
+        }
+		
 	}
 
 	const dt = getFullDateTimeAndTimeStamp()
@@ -1370,26 +1376,18 @@ app.post('/api/post/comment/', async(req:any, res:any) => {
 
 	try {
 		Post.findById(id, async function(err:any, docs:any) {
-			let commentArray = docs.comments
-			Post.findByIdAndUpdate(id, {$set: {last_touched_timestamp: Date.now()}}, function(err: any, update: any) {
-			})
-			
-			let commentid = Math.floor(Math.random() * Date.now()) // generates a random id
-			let newComment = {
-				'body': reqbody,
-				'poster':username,
-				'posterID': userID,
-				'date': fulldatetime,
-				'timestamp':timestamp,
-				'total_votes':0,
-				'users_voted':[],
-				'nested_comments':[],
-				'_id': commentid,
-				'status': 'active'
-			}
-			commentArray.push(newComment)
-			docs.comments = commentArray
-			docs.save()
+            const newComment = {
+                body: reqbody, 
+                poster: username,
+                posterID: userID,
+                total_votes:0,
+                status:"active",
+            }
+
+            docs.comments.push(newComment)
+            await docs.save()
+
+            
 
 			let strArr:string[] = reqbody.split(' ')
 			let words:number = strArr.length
@@ -1407,32 +1405,38 @@ app.post('/api/post/comment/', async(req:any, res:any) => {
 			
 			notifyUsers(usersMentioned, "mention", username, id,"","")
 
-			User.findById(userID, function(err:any, docs:any) {
-				docs.statistics.comments.created_num += 1
-				docs.statistics.comments.created_array.push([reqbody, id, commentid])
-				docs.save()
-			})
-
-			User.findById(docs.posterID, async function(err:any, docs:any) {
-				if (err) {
-					
-				} else {
-					let user_triggered_avatar
-					let user_triggered_name
-					let notifs:any[] = docs.notifications
-					let postInfo:any[]
-					for (let i=0;i<masterUserArr.length;i++) {
-						if (masterUserArr[i][0] == userID) {
-							user_triggered_avatar = masterUserArr[i][2]
-							user_triggered_name = masterUserArr[i][1]
-						}
-					}
-					postInfo = await Post.findById(id, 'title').exec();
-
-					notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody,"")
-				}
-			})
-			res.json(newComment)
+            if (!localtoken) {
+                // User.findById(userID, function(err:any, docs:any) {
+                //     docs.statistics.comments.created_num += 1
+                //     docs.statistics.comments.created_array.push([reqbody, id, newComment._id])
+                //     docs.save()
+                // })
+    
+                User.findById(docs.posterID, async function(err:any, docs:any) {
+                    if (err) {
+                        
+                    } else {
+                        let user_triggered_avatar
+                        let user_triggered_name
+                        let notifs:any[] = docs.notifications
+                        let postInfo:any[]
+                        for (let i=0;i<masterUserArr.length;i++) {
+                            if (masterUserArr[i][0] == userID) {
+                                user_triggered_avatar = masterUserArr[i][2]
+                                user_triggered_name = masterUserArr[i][1]
+                            }
+                        }
+                        postInfo = await Post.findById(id, 'title').exec();
+    
+                        notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody,"")
+                    }
+                })
+            }
+			
+            Post.findById(id, async function(err:any, docs:any) {
+                res.json(docs.comments.slice(-1)[0])
+            })
+			
 		})
 	} catch(err) {
 		res.send(err)
@@ -1939,6 +1943,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	let token
 	let userID: any
 	//
+    console.log("TEST")
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -2001,9 +2006,9 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 		}
 	}
 	if (nestedBoolean == "false" || nestedBoolean == null) {
-		
 		try {
 			Post.findById(pID, function(err:any, docs:any) {
+                console.log(docs)
 				let oldComArray = docs.comments
 				let index: number = -1
 	

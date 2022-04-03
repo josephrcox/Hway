@@ -35,6 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 export var supportEmail = "josephrobertcox@gmail.com";
+var postsArray = document.getElementById('postsArray');
 export var postObject = {
     title: "",
     body: "",
@@ -138,8 +139,8 @@ export var postObject = {
         voteContainer.append(voteUpButton, voteDownButton);
         voteCountContainer.append(voteCount);
         container.append(postDetailsContainer, voteCountContainer, voteContainer);
-        document.body.appendChild(container);
-        document.body.appendChild(subPostDetails);
+        postsArray.appendChild(container);
+        postsArray.appendChild(subPostDetails);
     }
 };
 var lastClick = 0; // These two are used to prevent vote-mashing of posts and comments by placing a delay of Xms

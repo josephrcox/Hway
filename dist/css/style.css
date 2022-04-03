@@ -110,3 +110,13 @@ span {
     -webkit-user-select: none;
     -ms-user-select: none;
   }
+
+#newPost_inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+.newComContainer {
+	display: flex;
+	flex-direction: column;
+}

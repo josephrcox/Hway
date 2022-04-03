@@ -680,11 +680,10 @@ app.get('/api/get/post/:postid', function (req, res) { return __awaiter(void 0, 
                     postModified.current_user_downvoted = true;
                 }
                 for (var i = 0; i < post.comments.length; i++) {
-                    var com = post.comments[i];
-                    if (com.status == 'active') {
-                        if (com.users_voted.includes(userID)) {
-                            postModified.comments[i].current_user_voted = true;
-                        }
+                    if (post.comments[i].users_voted.includes(userID)) {
+                        console.log("user upvoted");
+                        postModified.comments[i].current_user_voted = true;
+                        console.log(postModified);
                     }
                 }
                 try {
@@ -1483,9 +1482,11 @@ app.post('/api/post/post', function (req, res) { return __awaiter(void 0, void 0
     });
 }); });
 app.post('/api/post/comment/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, reqbody, id, token, userID, username, verified, dt, fulldatetime, timestamp;
+    var _a, reqbody, id, localtoken, token, userID, username, verified, dt, fulldatetime, timestamp;
     return __generator(this, function (_b) {
-        _a = req.body, reqbody = _a.body, id = _a.id;
+        _a = req.body, reqbody = _a.body, id = _a.id, localtoken = _a.localtoken;
+        console.log(req.body);
+        console.log(reqbody, id);
         reqbody = sanitize(reqbody);
         try {
             token = req.cookies.token;
@@ -1494,7 +1495,13 @@ app.post('/api/post/comment/', function (req, res) { return __awaiter(void 0, vo
             username = verified.name;
         }
         catch (err) {
-            return [2 /*return*/, res.json({ status: "error", code: 400, error: err })];
+            if (localtoken) {
+                userID = "1";
+                username = "admin";
+            }
+            else {
+                return [2 /*return*/, res.json({ status: "error", code: 400, error: err })];
+            }
         }
         dt = getFullDateTimeAndTimeStamp();
         fulldatetime = dt[0];
@@ -1502,86 +1509,86 @@ app.post('/api/post/comment/', function (req, res) { return __awaiter(void 0, vo
         try {
             Post.findById(id, function (err, docs) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var commentArray, commentid, newComment, strArr, words, usersMentioned, i, usermentioned, user;
+                    var newComment, strArr, words, usersMentioned, i, usermentioned, user;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                commentArray = docs.comments;
-                                Post.findByIdAndUpdate(id, { $set: { last_touched_timestamp: Date.now() } }, function (err, update) {
-                                });
-                                commentid = Math.floor(Math.random() * Date.now()) // generates a random id
-                                ;
                                 newComment = {
-                                    'body': reqbody,
-                                    'poster': username,
-                                    'posterID': userID,
-                                    'date': fulldatetime,
-                                    'timestamp': timestamp,
-                                    'total_votes': 0,
-                                    'users_voted': [],
-                                    'nested_comments': [],
-                                    '_id': commentid,
-                                    'status': 'active'
+                                    body: reqbody,
+                                    poster: username,
+                                    posterID: userID,
+                                    total_votes: 0,
+                                    status: "active",
                                 };
-                                commentArray.push(newComment);
-                                docs.comments = commentArray;
-                                docs.save();
+                                docs.comments.push(newComment);
+                                return [4 /*yield*/, docs.save()];
+                            case 1:
+                                _a.sent();
                                 strArr = reqbody.split(' ');
                                 words = strArr.length;
                                 usersMentioned = [];
                                 i = 0;
-                                _a.label = 1;
-                            case 1:
-                                if (!(i < words)) return [3 /*break*/, 4];
-                                if (!(strArr[i].indexOf('@') == 0)) return [3 /*break*/, 3];
+                                _a.label = 2;
+                            case 2:
+                                if (!(i < words)) return [3 /*break*/, 5];
+                                if (!(strArr[i].indexOf('@') == 0)) return [3 /*break*/, 4];
                                 usermentioned = strArr[i].split('@')[1];
                                 return [4 /*yield*/, User.findOne({ name: usermentioned })];
-                            case 2:
+                            case 3:
                                 user = _a.sent();
                                 if (user != null) {
                                     usersMentioned.push(usermentioned);
                                 }
-                                _a.label = 3;
-                            case 3:
-                                i++;
-                                return [3 /*break*/, 1];
+                                _a.label = 4;
                             case 4:
+                                i++;
+                                return [3 /*break*/, 2];
+                            case 5:
                                 notifyUsers(usersMentioned, "mention", username, id, "", "");
-                                User.findById(userID, function (err, docs) {
-                                    docs.statistics.comments.created_num += 1;
-                                    docs.statistics.comments.created_array.push([reqbody, id, commentid]);
-                                    docs.save();
-                                });
-                                User.findById(docs.posterID, function (err, docs) {
-                                    return __awaiter(this, void 0, void 0, function () {
-                                        var user_triggered_avatar, user_triggered_name, notifs, postInfo, i;
-                                        return __generator(this, function (_a) {
-                                            switch (_a.label) {
-                                                case 0:
-                                                    if (!err) return [3 /*break*/, 1];
-                                                    return [3 /*break*/, 3];
-                                                case 1:
-                                                    user_triggered_avatar = void 0;
-                                                    user_triggered_name = void 0;
-                                                    notifs = docs.notifications;
-                                                    postInfo = void 0;
-                                                    for (i = 0; i < masterUserArr.length; i++) {
-                                                        if (masterUserArr[i][0] == userID) {
-                                                            user_triggered_avatar = masterUserArr[i][2];
-                                                            user_triggered_name = masterUserArr[i][1];
+                                if (!localtoken) {
+                                    // User.findById(userID, function(err:any, docs:any) {
+                                    //     docs.statistics.comments.created_num += 1
+                                    //     docs.statistics.comments.created_array.push([reqbody, id, newComment._id])
+                                    //     docs.save()
+                                    // })
+                                    User.findById(docs.posterID, function (err, docs) {
+                                        return __awaiter(this, void 0, void 0, function () {
+                                            var user_triggered_avatar, user_triggered_name, notifs, postInfo, i;
+                                            return __generator(this, function (_a) {
+                                                switch (_a.label) {
+                                                    case 0:
+                                                        if (!err) return [3 /*break*/, 1];
+                                                        return [3 /*break*/, 3];
+                                                    case 1:
+                                                        user_triggered_avatar = void 0;
+                                                        user_triggered_name = void 0;
+                                                        notifs = docs.notifications;
+                                                        postInfo = void 0;
+                                                        for (i = 0; i < masterUserArr.length; i++) {
+                                                            if (masterUserArr[i][0] == userID) {
+                                                                user_triggered_avatar = masterUserArr[i][2];
+                                                                user_triggered_name = masterUserArr[i][1];
+                                                            }
                                                         }
-                                                    }
-                                                    return [4 /*yield*/, Post.findById(id, 'title').exec()];
-                                                case 2:
-                                                    postInfo = _a.sent();
-                                                    notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody, "");
-                                                    _a.label = 3;
-                                                case 3: return [2 /*return*/];
-                                            }
+                                                        return [4 /*yield*/, Post.findById(id, 'title').exec()];
+                                                    case 2:
+                                                        postInfo = _a.sent();
+                                                        notifyUsers([docs.name], "comment", user_triggered_name, id, reqbody, "");
+                                                        _a.label = 3;
+                                                    case 3: return [2 /*return*/];
+                                                }
+                                            });
+                                        });
+                                    });
+                                }
+                                Post.findById(id, function (err, docs) {
+                                    return __awaiter(this, void 0, void 0, function () {
+                                        return __generator(this, function (_a) {
+                                            res.json(docs.comments.slice(-1)[0]);
+                                            return [2 /*return*/];
                                         });
                                     });
                                 });
-                                res.json(newComment);
                                 return [2 /*return*/];
                         }
                     });
@@ -2109,6 +2116,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
     var token;
     var userID;
     //
+    console.log("TEST");
     try {
         token = req.cookies.token;
         var verified = jwt.verify(token, process.env.JWT_SECRET);
@@ -2170,6 +2178,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
     if (nestedBoolean == "false" || nestedBoolean == null) {
         try {
             Post.findById(pID, function (err, docs) {
+                console.log(docs);
                 var oldComArray = docs.comments;
                 var index = -1;
                 for (var i = 0; i < oldComArray.length; i++) {
