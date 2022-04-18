@@ -29,9 +29,8 @@ body {
     display: flex;
 	flex-direction: column;
     flex-grow: 10;
-    padding-inline-start: 5px;
-    padding-inline-end: 5px;
-    justify-content: space-around;
+    /*! padding-inline-start: 5px; */
+    /*! justify-content: space-around; */
     background-color: white;
 }
 
@@ -42,6 +41,7 @@ body {
     font-size: 20px;
     font-weight: 700;
     word-wrap: anywhere;
+    padding-right: 5px;
 }
 
 .comment-title {
@@ -54,6 +54,8 @@ body {
     border-top: 1px solid gray;
     padding-top: 1px;
     padding-bottom: 3px;
+    background-color: #c6c3fcbf;
+    padding-inline-start: 3px;
 }
 
 .post-vote-container, .comment-vote-container {
@@ -70,7 +72,7 @@ body {
 }
 
 .post-vote-button {
-	height: 24px;
+	height: 16.7px;
 }
 
 .comment-vote-button {
@@ -83,6 +85,10 @@ body {
 	align-items: center;
 	padding-right: 10px;
 	background-color: white;
+}
+
+.post-vote-count {
+    font-size: 12px;
 }
 
 .upvoted {
@@ -174,7 +180,7 @@ span {
 	border-right: 1px solid black;
 	border-left: 1px solid black;
 	border-top: 1px solid black;
-	background-color: var(--foreground-2);
+	background-color: #104563;
     color: white;
 	width: calc(100% - 3px);
 	overflow-x: auto;

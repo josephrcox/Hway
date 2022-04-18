@@ -52,9 +52,6 @@ export const postObject = {
         var voteContainer = document.createElement('div')
         voteContainer.classList.add('post-vote-container')
 
-        var voteCountContainer = document.createElement('div')
-        voteCountContainer.classList.add('post-vote-count-container')
-
         var voteCount = document.createElement('span') as HTMLSpanElement
         voteCount.classList.add('post-vote-count')
         voteCount.innerText = ""+this.totalVotes
@@ -119,9 +116,8 @@ export const postObject = {
         }
 
         postDetailsContainer.append(title, body, subtitle)
-        voteContainer.append(voteUpButton, voteDownButton)
-        voteCountContainer.append(voteCount)
-        container.append(postDetailsContainer, voteCountContainer, voteContainer)
+        voteContainer.append(voteUpButton,voteCount,voteDownButton)
+        container.append(postDetailsContainer, voteContainer)
 
         postsArray.appendChild(container)
         postsArray.appendChild(subPostDetails)

@@ -77,8 +77,6 @@ export var postObject = {
         subtitle.innerHTML = "@" + this.poster_name + " — " + this.createdAt + " — <a href='/h/" + this.topic + "'>" + this.topic + "</a>";
         var voteContainer = document.createElement('div');
         voteContainer.classList.add('post-vote-container');
-        var voteCountContainer = document.createElement('div');
-        voteCountContainer.classList.add('post-vote-count-container');
         var voteCount = document.createElement('span');
         voteCount.classList.add('post-vote-count');
         voteCount.innerText = "" + this.totalVotes;
@@ -136,9 +134,8 @@ export var postObject = {
             subPostDetails.appendChild(d);
         }
         postDetailsContainer.append(title, body, subtitle);
-        voteContainer.append(voteUpButton, voteDownButton);
-        voteCountContainer.append(voteCount);
-        container.append(postDetailsContainer, voteCountContainer, voteContainer);
+        voteContainer.append(voteUpButton, voteCount, voteDownButton);
+        container.append(postDetailsContainer, voteContainer);
         postsArray.appendChild(container);
         postsArray.appendChild(subPostDetails);
     }
