@@ -177,7 +177,7 @@ app.get('/logout', (req:any, res:any) => {
 		return res.json({ status:"error", code:400, error: err})
 	}
 	res.cookie('token', '', { maxAge: 1 })
-	res.render('index.ejs', {topic:""})
+	res.redirect('/all')
 })
 
 app.get('/api/get/currentuser', function (req:any, res:any) {
@@ -185,6 +185,7 @@ app.get('/api/get/currentuser', function (req:any, res:any) {
 		let token = req.cookies.token
 		let verified = jwt.verify(token, process.env.JWT_SECRET)
 		currentUser = verified.id
+		
 		var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 			if (ip.includes("ffff")) {
 			} else {

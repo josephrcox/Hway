@@ -34,4 +34,35 @@ export const getUser = async () => {
     }
 
     console.log(isUserLoggedIn, currentUsername, currentUserID)
+    modifyHeader(isUserLoggedIn, currentUsername + "")
+}
+
+const dd_username = document.getElementById("currentUser") as HTMLSpanElement
+const dd_profile = document.getElementById("profile_button") as HTMLAnchorElement
+const dd_logout = document.getElementById("logout_button") as HTMLAnchorElement
+const dd_login = document.getElementById("login_button") as HTMLAnchorElement
+const dd_reg = document.getElementById("reg_button") as HTMLAnchorElement
+const dd_resetpw = document.getElementById("resetpw_button") as HTMLAnchorElement
+const dd_subscriptions = document.getElementById("view_subs_button") as HTMLAnchorElement
+const dd_nsfw = document.getElementById("filter_nsfw_div") as HTMLDivElement
+
+function modifyHeader(loggedin:Boolean, name:string) {
+    if (loggedin) {
+        dd_username.innerText = name
+        dd_login.style.display = 'none'
+        dd_reg.style.display = 'none'
+        dd_resetpw.style.display = 'none'
+        dd_logout.style.display = 'block'
+        dd_profile.style.display = 'block'
+        dd_nsfw.style.display = 'block'
+        dd_subscriptions.style.display = 'block'
+    } else {
+        dd_username.innerText = 'Login / Register'
+        dd_login.style.display = 'block'
+        dd_reg.style.display = 'block'
+        dd_subscriptions.style.display = 'none'
+        dd_logout.style.display = 'none'
+        dd_profile.style.display = 'none'
+        dd_nsfw.style.display = 'none'
+    }
 }

@@ -82,8 +82,38 @@ export var getUser = function () { return __awaiter(void 0, void 0, void 0, func
                 return [3 /*break*/, 9];
             case 9:
                 console.log(isUserLoggedIn, currentUsername, currentUserID);
+                modifyHeader(isUserLoggedIn, currentUsername + "");
                 return [2 /*return*/];
         }
     });
 }); };
+var dd_username = document.getElementById("currentUser");
+var dd_profile = document.getElementById("profile_button");
+var dd_logout = document.getElementById("logout_button");
+var dd_login = document.getElementById("login_button");
+var dd_reg = document.getElementById("reg_button");
+var dd_resetpw = document.getElementById("resetpw_button");
+var dd_subscriptions = document.getElementById("view_subs_button");
+var dd_nsfw = document.getElementById("filter_nsfw_div");
+function modifyHeader(loggedin, name) {
+    if (loggedin) {
+        dd_username.innerText = name;
+        dd_login.style.display = 'none';
+        dd_reg.style.display = 'none';
+        dd_resetpw.style.display = 'none';
+        dd_logout.style.display = 'block';
+        dd_profile.style.display = 'block';
+        dd_nsfw.style.display = 'block';
+        dd_subscriptions.style.display = 'block';
+    }
+    else {
+        dd_username.innerText = 'Login / Register';
+        dd_login.style.display = 'block';
+        dd_reg.style.display = 'block';
+        dd_subscriptions.style.display = 'none';
+        dd_logout.style.display = 'none';
+        dd_profile.style.display = 'none';
+        dd_nsfw.style.display = 'none';
+    }
+}
 //# sourceMappingURL=auth.js.map

@@ -195,7 +195,7 @@ app.get('/logout', function (req, res) {
         return res.json({ status: "error", code: 400, error: err });
     }
     res.cookie('token', '', { maxAge: 1 });
-    res.render('index.ejs', { topic: "" });
+    res.redirect('/all');
 });
 app.get('/api/get/currentuser', function (req, res) {
     try {

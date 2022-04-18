@@ -33,8 +33,26 @@
             <div class="header-notifications">
                 <div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;">0</div>
             </div>
+            <div class="user-dropdown-div" id='user-dropdown-div'>
+                <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
+                <div id="user-dropdown" class="user-dropdown-content">
+                    <a href='/user/' id="profile_button" class="user-dropdown-item">Profile</a>
+                    <a href='/logout' id="logout_button" class="user-dropdown-item">Logout</a>
+                    <a href='/login'  id="login_button" class="user-dropdown-item">Login</a>
+                    <a href='/register'  id="reg_button" class="user-dropdown-item">Register</a>
+                    <a href='/resetpassword' id="resetpw_button" class="user-dropdown-item">Reset password</a>
+                    <a href='/subscriptions' id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
+                    <div class="border-bottom"></div>
+                    <div id="filter_nsfw_div">
+                            NSFW
+                        <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
+                    </div>
+                </div>
+    
+            </div>
         </div>
 
+        
     
          <div class="header-buttons noselect">
             <a href="/home/" class="header-home cursor_pointer">Home</a>
@@ -65,6 +83,30 @@
     <div class='page-content'>
         <%- body %>
     </div>
+
+    <script> 
+        const header_currentUser = document.getElementById("currentUser")
+        const header_dd_profile = document.getElementById("profile_button") 
+        const header_dd = document.getElementById("user-dropdown")
+
+        if (localStorage.getItem("currentUsername") != null) {
+            header_currentUser.innerText = localStorage.getItem("currentUsername") + ""
+
+            header_dd_profile.href = "/user/"+ localStorage.getItem("currentUsername")
+        }
+
+        function currentuserDropdownClicked() {
+            header_dd.classList.toggle("show");
+        }
+
+        document.onclick = function(e){
+            if(e.target.id !== 'currentUser'){
+                if (header_dd.classList.contains('show')) {
+                    header_dd.classList.remove('show');
+                }
+            }
+        };
+    </script>
 
 <script src="/dist/scripts/frontend/main.js" type="module"></script>
 
