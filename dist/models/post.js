@@ -29,7 +29,7 @@ const commentSchema = new mongoose.Schema(
 
 const postSchema = new mongoose.Schema(
     {
-        type: { type:Number, required:true }, // 1=text, 2=link, 3=media
+        type: { type:Number, required:true }, // 1=text, 2=link, 3=media 4=poll
         status: { type:String, required:true, default:"active"}, //active, deleted, removed
         title: { type:String, required:true },
         body: { type:String },

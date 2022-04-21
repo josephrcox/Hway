@@ -145,4 +145,44 @@ var createNewPost = function (posttype) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
+var np_types = document.getElementsByClassName('np_type');
+var title = document.getElementsByClassName('np-title')[1];
+var body = document.getElementsByClassName('np-body')[1];
+var link = document.getElementsByClassName('np-link')[1];
+var submit = document.getElementsByClassName('np_submit')[0];
+var newNewPostSubmit = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var post_type, i;
+    return __generator(this, function (_a) {
+        for (i = 0; i < np_types.length; i++) {
+            if (np_types[i].getAttribute('data-selected') == "true") {
+                post_type = i + 1; // model starts index at 1
+                i = np_types.length + 1;
+            }
+        }
+        if (post_type == 1) {
+        }
+        else if (post_type == 2) {
+        }
+        else if (post_type == 3) {
+        }
+        else if (post_type == 4) {
+        }
+        else {
+            console.error("Invalid post type of " + post_type);
+        }
+        return [2 /*return*/];
+    });
+}); };
+var _loop_1 = function (i) {
+    np_types[i].addEventListener('click', function () {
+        for (var j = 0; j < np_types.length; j++) {
+            np_types[j].setAttribute("data-selected", "false");
+        }
+        np_types[i].setAttribute("data-selected", "true");
+    });
+};
+for (var i = 0; i < np_types.length; i++) {
+    _loop_1(i);
+}
+submit.addEventListener('click', newNewPostSubmit, false);
 //# sourceMappingURL=createPost.js.map

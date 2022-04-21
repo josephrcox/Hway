@@ -107,3 +107,45 @@ const createNewPost = async (posttype:number) => {
         window.location.href = '/h/' + topic;
     }
 };
+
+const np_types = document.getElementsByClassName('np_type')
+const title = document.getElementsByClassName('np-title')[1]
+const body = document.getElementsByClassName('np-body')[1]
+const link = document.getElementsByClassName('np-link')[1]
+const submit = document.getElementsByClassName('np_submit')[0]
+
+
+const newNewPostSubmit = async () => {
+    let post_type
+    for (let i=0;i<np_types.length;i++) {
+        if (np_types[i].getAttribute('data-selected') == "true") {
+            post_type = i + 1 // model starts index at 1
+            i = np_types.length + 1
+        }
+    }
+
+    if (post_type == 1) {
+
+    } else if (post_type == 2) {
+
+    } else if (post_type == 3) {
+        
+    } else if (post_type == 4) {
+        
+    } else {
+        console.error("Invalid post type of "+post_type)
+    }
+
+}
+
+for (let i=0;i<np_types.length;i++) {
+    np_types[i].addEventListener('click', function() {
+        for (let j=0;j<np_types.length;j++) {
+            np_types[j].setAttribute("data-selected", "false")
+        }
+        np_types[i].setAttribute("data-selected", "true")
+
+    })
+}
+
+submit.addEventListener('click', newNewPostSubmit, false)

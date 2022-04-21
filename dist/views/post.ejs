@@ -1,52 +1,81 @@
 <head>
-    
+    <link rel="stylesheet" href="/dist/css/post.css">
 </head>
 
 <body>
-   
+<!--    
 <div id="sitebody" class="sitebody-flex">
-   <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
-   <div id="newPost_div" style='display:block;'>
-      <div class="newPost_container">
-         <div id="newPost_inputs">
-            <div id='newPost_close' class='noselect' onclick='ui_newPost()'>Close</div>
-            <div class="newPost_types_div">
-              <div class="newPost_types" id="newPost_type_text" style="background-color:rgb(7, 7, 49); color:white;">Text</div>
-              <div class="newPost_types" id="newPost_type_link">Link</div>
-              <div class="newPost_types" id="newPost_type_media">Media</div>
-           </div>
-            <label for="name" id="newPost_name_label" class="newPost_name">Title</label>
-            <textarea id="newPost_name" name="name" size="50" rows="1" cols="30" autocomplete="off" maxlength="150"></textarea>
-            <label for="desc" id="newPost_desc_label" class="newPost_desc">Description</label>
-            <textarea id="newPost_desc" name="desc" rows="8" cols="30" autocomplete="off" aria-multiline="true" maxlength="1500"></textarea>
-            <label for="link" id="newPost_link_label" class="newPost_link">Link</label>
-            <textarea id="newPost_link" class="newPost_link" name="link" rows="1" cols="30" autocomplete="off" ></textarea>
-            <label for="newPost_file" id="newPost_file_label" class="newPost_file">Media</label>
-            <input type="file" name="newPost_file" class="newPost_file" id="newPost_file" accept=".jpg, .jpeg, .png, .gif">
-            <label for="newPost_topic" id="newPost_topic_label" class="newPost_topic">Topic</label>
-            <input type="text" id="newPost_topic" name="topic" maxlength="15">
-            <div style="display: flex;flex-direction: row;padding-top: 15px;">
-               NSFW<input type="checkbox" id="newPost_nsfw">
-            </div>
-            
-            <input type="submit" value="Submit new post" id="newPost_submit_button" class='button'><br>
-            <div id="newPost_logs"></div>
-      </div>
-       </div>
+<button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
+<div id="newPost_div" style='display:block;'>
+   <div class="newPost_container">
+      <div id="newPost_inputs">
+         <div id='newPost_close' class='noselect' onclick='ui_newPost()'>Close</div>
+         <div class="newPost_types_div">
+            <div class="newPost_types" id="newPost_type_text" style="background-color:rgb(7, 7, 49); color:white;">Text</div>
+            <div class="newPost_types" id="newPost_type_link">Link</div>
+            <div class="newPost_types" id="newPost_type_media">Media</div>
+         </div>
+         <label for="name" id="newPost_name_label" class="newPost_name">Title</label>
+         <textarea id="newPost_name" name="name" size="50" rows="1" cols="30" autocomplete="off" maxlength="150"></textarea>
+         <label for="desc" id="newPost_desc_label" class="newPost_desc">Description</label>
+         <textarea id="newPost_desc" name="desc" rows="8" cols="30" autocomplete="off" aria-multiline="true" maxlength="1500"></textarea>
+         <label for="link" id="newPost_link_label" class="newPost_link">Link</label>
+         <textarea id="newPost_link" class="newPost_link" name="link" rows="1" cols="30" autocomplete="off" ></textarea>
+         <label for="newPost_file" id="newPost_file_label" class="newPost_file">Media</label>
+         <input type="file" name="newPost_file" class="newPost_file" id="newPost_file" accept=".jpg, .jpeg, .png, .gif">
+         <label for="newPost_topic" id="newPost_topic_label" class="newPost_topic">Topic</label>
+         <input type="text" id="newPost_topic" name="topic" maxlength="15">
+         <div style="display: flex;flex-direction: row;padding-top: 15px;">
+            NSFW<input type="checkbox" id="newPost_nsfw">
+         </div>
+         
+         <input type="submit" value="Submit new post" id="newPost_submit_button" class='button'><br>
+         <div id="newPost_logs"></div>
    </div>
- </div> 
+      </div>
+</div>
+</div>  -->
 
- <script>
-    // if (localStorage.getItem("currentUsername") == null){
-    //     window.location.href = "/login"
-    // }
+<div class="post_creation_container">
+   <div class="np_types">
+      <div class="np_types-text np_type" data-selected="true">
+         <span class="np_types_title">Text</span>
+      </div>
+      <div class="np_types-link np_type" data-selected="false">
+         <span class="np_types_title">Link</span>
+      </div>
+      <div class="np_types-photo np_type" data-selected="false">
+         <span class="np_types_title">Photo</span>
+      </div>
+      <div class="np_types-poll np_type" data-selected="false">
+         <span class="np_types_title">Poll</span>
+      </div>
+   </div>
+   <div class="np_inputs">
+      <div class="np-title np_input" >
+         <label class="np_input_label">Title</label>
+         <input type="text" autocomplete="off">
+      </div>
+      <div class="np-body np_input">
+         <label class="np_input_label">Body</label>
+         <textarea autocomplete="off"></textarea>
+      </div>
+      <div class="np-link np_input">
+         <label class="np_input_label">Link</label>
+         <input type="url" autocomplete="off">
+      </div>
+      <div class="np_submit">
+         <div class="np_submit_bttn button">
+            Submit
+         </div>
+      </div>
+   </div>
 
 
-    document.getElementById('sorting_options').style.display = 'none'
-    document.getElementById('header-buttons').style.display = 'none'
-    document.getElementById('page-number').style.display = 'none'
-    document.getElementById('newPost_close').style.display = 'none'
-    document.getElementsByClassName('newPost_container')[0].style.width = '100%'
-    document.getElementsByClassName('newPost_container')[0].style.max = '100%'
- </script>
+
+
+</div>
+
+
+
 </body>
