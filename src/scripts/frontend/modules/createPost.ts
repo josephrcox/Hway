@@ -108,15 +108,22 @@ const createNewPost = async (posttype:number) => {
     }
 };
 
+const logs = document.getElementsByClassName('np_logs')[0] as HTMLDivElement
 const np_types = document.getElementsByClassName('np_type')
-const title = document.getElementsByClassName('np-title')[1]
-const body = document.getElementsByClassName('np-body')[1]
-const link = document.getElementsByClassName('np-link')[1]
-const submit = document.getElementsByClassName('np_submit')[0]
+const title = document.getElementsByClassName('np-title')[0].children[1] as HTMLInputElement
+const body = document.getElementsByClassName('np-body')[0].children[1] as HTMLTextAreaElement
+var link = document.getElementsByClassName('np-link')[0].children[1] as HTMLInputElement
+const file = document.getElementsByClassName('np-file')[0].children[1] as HTMLInputElement
+const topic = document.getElementsByClassName('np-topic')[0].children[1] as HTMLInputElement
+const nsfw = document.getElementsByClassName('np-nsfw')[0].children[1] as HTMLInputElement
+const submit = document.getElementsByClassName('np_submit')[0] as HTMLDivElement
+
+
+let uploadedImageUrls:string[] = []
 
 
 const newNewPostSubmit = async () => {
-    let post_type
+    let post_type = 1
     for (let i=0;i<np_types.length;i++) {
         if (np_types[i].getAttribute('data-selected') == "true") {
             post_type = i + 1 // model starts index at 1
@@ -124,18 +131,61 @@ const newNewPostSubmit = async () => {
         }
     }
 
-    if (post_type == 1) {
+    var check = postBouncer(post_type)
 
-    } else if (post_type == 2) {
-
-    } else if (post_type == 3) {
-        
-    } else if (post_type == 4) {
-        
+    if (check != "") {
+        logs.innerText = check
+        logs.style.display = "block"
     } else {
-        console.error("Invalid post type of "+post_type)
+        logs.style.display = "none"
+        logs.innerText = ""
+        
+        if (post_type == 4) {
+            //link = uploadedImageUrls.pop(),
+        }
+    
+        let bodyJSON = {
+            "title": title.value,
+            "body": body.innerText,
+            "topic": topic.value,
+            "type": post_type,
+            "nsfw": nsfw.value,
+            "link": link.value,
+        };
+    
+        console.log(bodyJSON)
     }
 
+    
+
+}
+
+function postBouncer(post_type:number) {
+    let msg = ""
+
+    var myRegEx = /[^a-z\d]/i;
+    if ((myRegEx.test(topic.value))) {
+        msg = "Please enter valid topic. No spaces or characters allowed.";
+    }
+    if (topic.value == "") {
+        topic.value = "all"
+    }
+    if (title.value.length < 1) {
+        // all post types require a title and a topic, which defaults to "all"
+        msg = "Please enter a title."
+    }
+    if (post_type == 2) { // link post
+        // requires a link
+        if (link.value.length < 1 || isValidUrl(link.value) == false) {
+            msg = "Please enter valid link."
+        }
+    } else if (post_type == 3) { // photo post
+        // requires a photo URL
+
+    }
+
+
+    return msg 
 }
 
 for (let i=0;i<np_types.length;i++) {
@@ -149,3 +199,38 @@ for (let i=0;i<np_types.length;i++) {
 }
 
 submit.addEventListener('click', newNewPostSubmit, false)
+
+function isValidUrl(string:string) {
+    const matchpattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
+    return matchpattern.test(string);
+}
+
+function readFile(event:any) {
+    
+    console.log(event.target.result);
+    const formdata = new FormData()
+    formdata.append("image", event.target.result)
+    uploadImage(formdata)
+}
+  
+function changeFile() {
+    var f = file.files[0];
+    var reader = new FileReader();
+    reader.addEventListener('load', readFile);
+    reader.readAsText(f);
+}
+  
+
+file.addEventListener("change", changeFile)
+
+
+const uploadImage = async (x:any) => { 
+    const fetchResponse = await fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
+        method: 'POST',
+        body: x
+    })
+    const data = await fetchResponse.json();
+    const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
+
+    uploadedImageUrls.push(url)
+}

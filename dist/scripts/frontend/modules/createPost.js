@@ -145,34 +145,74 @@ var createNewPost = function (posttype) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
+var logs = document.getElementsByClassName('np_logs')[0];
 var np_types = document.getElementsByClassName('np_type');
-var title = document.getElementsByClassName('np-title')[1];
-var body = document.getElementsByClassName('np-body')[1];
-var link = document.getElementsByClassName('np-link')[1];
+var title = document.getElementsByClassName('np-title')[0].children[1];
+var body = document.getElementsByClassName('np-body')[0].children[1];
+var link = document.getElementsByClassName('np-link')[0].children[1];
+var file = document.getElementsByClassName('np-file')[0].children[1];
+var topic = document.getElementsByClassName('np-topic')[0].children[1];
+var nsfw = document.getElementsByClassName('np-nsfw')[0].children[1];
 var submit = document.getElementsByClassName('np_submit')[0];
+var uploadedImageUrls = [];
 var newNewPostSubmit = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var post_type, i;
+    var post_type, i, check, bodyJSON;
     return __generator(this, function (_a) {
+        post_type = 1;
         for (i = 0; i < np_types.length; i++) {
             if (np_types[i].getAttribute('data-selected') == "true") {
                 post_type = i + 1; // model starts index at 1
                 i = np_types.length + 1;
             }
         }
-        if (post_type == 1) {
-        }
-        else if (post_type == 2) {
-        }
-        else if (post_type == 3) {
-        }
-        else if (post_type == 4) {
+        check = postBouncer(post_type);
+        if (check != "") {
+            logs.innerText = check;
+            logs.style.display = "block";
         }
         else {
-            console.error("Invalid post type of " + post_type);
+            logs.style.display = "none";
+            logs.innerText = "";
+            if (post_type == 4) {
+                //link = uploadedImageUrls.pop(),
+            }
+            bodyJSON = {
+                "title": title.value,
+                "body": body.innerText,
+                "topic": topic.value,
+                "type": post_type,
+                "nsfw": nsfw.value,
+                "link": link.value,
+            };
+            console.log(bodyJSON);
         }
         return [2 /*return*/];
     });
 }); };
+function postBouncer(post_type) {
+    var msg = "";
+    var myRegEx = /[^a-z\d]/i;
+    if ((myRegEx.test(topic.value))) {
+        msg = "Please enter valid topic. No spaces or characters allowed.";
+    }
+    if (topic.value == "") {
+        topic.value = "all";
+    }
+    if (title.value.length < 1) {
+        // all post types require a title and a topic, which defaults to "all"
+        msg = "Please enter a title.";
+    }
+    if (post_type == 2) { // link post
+        // requires a link
+        if (link.value.length < 1 || isValidUrl(link.value) == false) {
+            msg = "Please enter valid link.";
+        }
+    }
+    else if (post_type == 3) { // photo post
+        // requires a photo URL
+    }
+    return msg;
+}
 var _loop_1 = function (i) {
     np_types[i].addEventListener('click', function () {
         for (var j = 0; j < np_types.length; j++) {
@@ -185,4 +225,40 @@ for (var i = 0; i < np_types.length; i++) {
     _loop_1(i);
 }
 submit.addEventListener('click', newNewPostSubmit, false);
+function isValidUrl(string) {
+    var matchpattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
+    return matchpattern.test(string);
+}
+function readFile(event) {
+    console.log(event.target.result);
+    var formdata = new FormData();
+    formdata.append("image", event.target.result);
+    uploadImage(formdata);
+}
+function changeFile() {
+    var f = file.files[0];
+    var reader = new FileReader();
+    reader.addEventListener('load', readFile);
+    reader.readAsText(f);
+}
+file.addEventListener("change", changeFile);
+var uploadImage = function (x) { return __awaiter(void 0, void 0, void 0, function () {
+    var fetchResponse, data, url;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
+                    method: 'POST',
+                    body: x
+                })];
+            case 1:
+                fetchResponse = _a.sent();
+                return [4 /*yield*/, fetchResponse.json()];
+            case 2:
+                data = _a.sent();
+                url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '');
+                uploadedImageUrls.push(url);
+                return [2 /*return*/];
+        }
+    });
+}); };
 //# sourceMappingURL=createPost.js.map
