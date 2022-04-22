@@ -39,7 +39,7 @@ import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js";
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
 import { newComment } from "./modules/createComment.js";
-import { getUser, currentUserID } from "./modules/auth.js";
+import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js";
 window.onload = function () {
     return __awaiter(this, void 0, void 0, function () {
         var x, submit_new_comment;
@@ -89,6 +89,9 @@ function getPostsByTopic(topic) {
         });
     });
 }
+var new_comment_login = document.getElementById("commentSection_login_button");
+var new_comment_textarea = document.getElementById("newCom_body");
+var new_comment_submit = document.getElementById("newCom_submit");
 function getPostByID(ID) {
     return __awaiter(this, void 0, void 0, function () {
         var post, _a, _b, i, c, d;
@@ -103,6 +106,16 @@ function getPostByID(ID) {
                     _a[_b] = _c.sent();
                     console.log(post);
                     loadPostOrPostObjects(post);
+                    if (isUserLoggedIn) {
+                        new_comment_login.style.display = 'none';
+                        new_comment_textarea.style.display = 'flex';
+                        new_comment_submit.style.display = 'flex';
+                    }
+                    else {
+                        new_comment_login.style.display = 'block';
+                        new_comment_textarea.style.display = 'none';
+                        new_comment_submit.style.display = 'none';
+                    }
                     //sorts comments by most votes to least votes
                     post[0].comments.sort(function (a, b) { return (a.total_votes < b.total_votes) ? 1 : -1; });
                     //

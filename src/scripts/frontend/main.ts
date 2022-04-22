@@ -3,7 +3,7 @@ import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js"
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
 import { newComment } from "./modules/createComment.js";
-import { getUser, currentUserID } from "./modules/auth.js"
+import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
 
 window.onload = async function() {
     localStorage.setItem("deletepostconfirmid","")
@@ -38,12 +38,26 @@ async function getPostsByTopic(topic:string) {
     loadPostOrPostObjects(posts)
 }
 
+const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
+const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
+const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
+
 async function getPostByID(ID:string) {
     var post = []
     post[0] = await apiGetPostByID(ID)
     console.log(post)
     
     loadPostOrPostObjects(post)
+
+    if (isUserLoggedIn) {
+        new_comment_login.style.display = 'none'
+        new_comment_textarea.style.display = 'flex'
+        new_comment_submit.style.display = 'flex'
+    }  else {
+        new_comment_login.style.display = 'block'
+        new_comment_textarea.style.display = 'none'
+        new_comment_submit.style.display = 'none'
+    }
     
     //sorts comments by most votes to least votes
     post[0].comments.sort((a:any, b:any) => (a.total_votes < b.total_votes) ? 1 : -1)

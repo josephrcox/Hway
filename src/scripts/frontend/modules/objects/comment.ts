@@ -35,9 +35,6 @@ export const commentObject = {
         var voteContainer = document.createElement('div')
         voteContainer.classList.add('comment-vote-container')
 
-        var voteCountContainer = document.createElement('div')
-        voteCountContainer.classList.add('comment-vote-count-container')
-
         var voteCount = document.createElement('span') as HTMLSpanElement
         voteCount.classList.add('comment-vote-count')
         voteCount.innerText = ""+this.totalVotes
@@ -76,9 +73,8 @@ export const commentObject = {
         }
 
         comDetailsContainer.append(title, subtitle)
-        voteContainer.append(voteUpButton)
-        voteCountContainer.append(voteCount)
-        container.append(comDetailsContainer, voteCountContainer, voteContainer)
+        voteContainer.append(voteUpButton, voteCount)
+        container.append(comDetailsContainer, voteContainer)
 
         commentSection.appendChild(container)
         commentSection.appendChild(subPostDetails)

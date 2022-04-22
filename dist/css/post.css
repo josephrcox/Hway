@@ -6,20 +6,20 @@
 }
 
 .np_type {
-  transition: all 0.1s ease 0s;
-  width: 65px;
+	transition: all 0.1s ease 0s;
+	width: 45px;
 	background-color: white;
-	height: 65px;
-	margin-inline: 15px;
-	margin-bottom: 20px;
+	height: 45px;
+	margin-inline: 8px;
+	margin-bottom: 10px;
 	text-align: center;
-  display: flex;
+	display: flex;
 	justify-content: center;
 	align-items: center;
-	
-  border-radius: 20px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+	border-radius: 20px;
+	box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 	cursor: pointer;
+	padding: 4px;
 }
 
 .np_type:hover[data-selected="false"] {
@@ -48,21 +48,6 @@
 	font-size: 16px;
 }
 
-.np_input textarea {
-  font-size: 12px;
-  resize: none;
-  height: 113px;
-}
-
-.np_input_label {
-	color: white;
-	font-size: 14px;
-	text-align: center;
-	font-variant: all-petite-caps;
-	border-bottom: 1px solid gray;
-	margin-bottom: 3px;
-}
-
 .post_creation_container {
 	display: flex;
 	flex-direction: row;
@@ -78,23 +63,6 @@
 	 color: white;
 }
 
-.button {
-	background-color: black;
-	border: none;
-	color: white;
-	padding-top: 3px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	font-size: 14px;
-	margin: 4px 2px;
-	cursor: pointer;
-	font-family: inherit;
-	font-style: inherit;
-	width: 80%;
-	padding-bottom: 4px;
-	border-radius: 19px;
-}
 
 .np_submit {
     display: flex;
@@ -123,3 +91,9 @@
     display: flex;
     justify-content: center;
 }
+
+.np_input textarea {
+	font-size: 12px;
+	resize: none;
+	height: 113px;
+  }
