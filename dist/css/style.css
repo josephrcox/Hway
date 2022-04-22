@@ -14,9 +14,7 @@ body {
 
 .post-container, .comment-container {
 	display: flex;
-	min-height: 50px;
 	flex-direction: row;
-	margin-bottom: -3px;
 }
 
 .comment-container {
@@ -123,7 +121,7 @@ body {
   }
 
 .post-subpost-details-container {
-    margin-bottom: 5px;
+    padding-bottom: 5px;
     display: flex;
     font-size: 12px;
     justify-content: flex-end;
