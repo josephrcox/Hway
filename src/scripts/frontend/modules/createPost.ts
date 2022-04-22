@@ -114,6 +114,9 @@ const title = document.getElementsByClassName('np-title')[0].children[1] as HTML
 const body = document.getElementsByClassName('np-body')[0].children[1] as HTMLTextAreaElement
 var link = document.getElementsByClassName('np-link')[0].children[1] as HTMLInputElement
 const file = document.getElementsByClassName('np-file')[0].children[1] as HTMLInputElement
+const body_d = document.getElementsByClassName('np-body')[0] as HTMLDivElement
+var link_d = document.getElementsByClassName('np-link')[0] as HTMLDivElement
+const file_d = document.getElementsByClassName('np-file')[0] as HTMLDivElement
 const topic = document.getElementsByClassName('np-topic')[0].children[1] as HTMLInputElement
 const nsfw = document.getElementsByClassName('np-nsfw')[0].children[1] as HTMLInputElement
 const submit = document.getElementsByClassName('np_submit')[0] as HTMLDivElement
@@ -181,7 +184,9 @@ function postBouncer(post_type:number) {
         }
     } else if (post_type == 3) { // photo post
         // requires a photo URL
-
+        if (isValidUrl(uploadedImageUrls.pop() + "") == false) {
+            msg = "Please upload a photo."
+        }
     }
 
 
@@ -195,6 +200,27 @@ for (let i=0;i<np_types.length;i++) {
         }
         np_types[i].setAttribute("data-selected", "true")
 
+        switch(i+1) {
+            case 1:
+                // text post, requires body
+                body_d.style.display = 'flex'
+                link_d.style.display = 'none'
+                file_d.style.display = 'none'
+                break;
+            case 2:
+                // link post, requires link
+                body_d.style.display = 'none'
+                link_d.style.display = 'flex'
+                file_d.style.display = 'none'
+                break;
+            case 3:
+                // photo post, requires file
+                body_d.style.display = 'none'
+                link_d.style.display = 'none'
+                file_d.style.display = 'flex'
+                break;
+            
+        }
     })
 }
 
@@ -205,32 +231,17 @@ function isValidUrl(string:string) {
     return matchpattern.test(string);
 }
 
-function readFile(event:any) {
-    
-    console.log(event.target.result);
-    const formdata = new FormData()
-    formdata.append("image", event.target.result)
-    uploadImage(formdata)
-}
-  
-function changeFile() {
-    var f = file.files[0];
-    var reader = new FileReader();
-    reader.addEventListener('load', readFile);
-    reader.readAsText(f);
-}
-  
+file.addEventListener("change", async function() {
+    let body = new FormData()
+    body.set('key', 'e23bc3a1c5f2ec99cc1aa7676dc0f3fb')
+    body.append('image', file.files[0])
 
-file.addEventListener("change", changeFile)
-
-
-const uploadImage = async (x:any) => { 
-    const fetchResponse = await fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
+    const fetchResponse = await fetch('https://api.imgbb.com/1/upload', {
         method: 'POST',
-        body: x
+        body: body
     })
     const data = await fetchResponse.json();
     const url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '')
 
     uploadedImageUrls.push(url)
-}
+})

@@ -151,6 +151,9 @@ var title = document.getElementsByClassName('np-title')[0].children[1];
 var body = document.getElementsByClassName('np-body')[0].children[1];
 var link = document.getElementsByClassName('np-link')[0].children[1];
 var file = document.getElementsByClassName('np-file')[0].children[1];
+var body_d = document.getElementsByClassName('np-body')[0];
+var link_d = document.getElementsByClassName('np-link')[0];
+var file_d = document.getElementsByClassName('np-file')[0];
 var topic = document.getElementsByClassName('np-topic')[0].children[1];
 var nsfw = document.getElementsByClassName('np-nsfw')[0].children[1];
 var submit = document.getElementsByClassName('np_submit')[0];
@@ -210,6 +213,9 @@ function postBouncer(post_type) {
     }
     else if (post_type == 3) { // photo post
         // requires a photo URL
+        if (isValidUrl(uploadedImageUrls.pop() + "") == false) {
+            msg = "Please upload a photo.";
+        }
     }
     return msg;
 }
@@ -219,6 +225,26 @@ var _loop_1 = function (i) {
             np_types[j].setAttribute("data-selected", "false");
         }
         np_types[i].setAttribute("data-selected", "true");
+        switch (i + 1) {
+            case 1:
+                // text post, requires body
+                body_d.style.display = 'flex';
+                link_d.style.display = 'none';
+                file_d.style.display = 'none';
+                break;
+            case 2:
+                // link post, requires link
+                body_d.style.display = 'none';
+                link_d.style.display = 'flex';
+                file_d.style.display = 'none';
+                break;
+            case 3:
+                // photo post, requires file
+                body_d.style.display = 'none';
+                link_d.style.display = 'none';
+                file_d.style.display = 'flex';
+                break;
+        }
     });
 };
 for (var i = 0; i < np_types.length; i++) {
@@ -229,36 +255,29 @@ function isValidUrl(string) {
     var matchpattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
     return matchpattern.test(string);
 }
-function readFile(event) {
-    console.log(event.target.result);
-    var formdata = new FormData();
-    formdata.append("image", event.target.result);
-    uploadImage(formdata);
-}
-function changeFile() {
-    var f = file.files[0];
-    var reader = new FileReader();
-    reader.addEventListener('load', readFile);
-    reader.readAsText(f);
-}
-file.addEventListener("change", changeFile);
-var uploadImage = function (x) { return __awaiter(void 0, void 0, void 0, function () {
-    var fetchResponse, data, url;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, fetch('https://api.imgbb.com/1/upload?key=e23bc3a1c5f2ec99cc1aa7676dc0f3fb', {
-                    method: 'POST',
-                    body: x
-                })];
-            case 1:
-                fetchResponse = _a.sent();
-                return [4 /*yield*/, fetchResponse.json()];
-            case 2:
-                data = _a.sent();
-                url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '');
-                uploadedImageUrls.push(url);
-                return [2 /*return*/];
-        }
+file.addEventListener("change", function () {
+    return __awaiter(this, void 0, void 0, function () {
+        var body, fetchResponse, data, url;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    body = new FormData();
+                    body.set('key', 'e23bc3a1c5f2ec99cc1aa7676dc0f3fb');
+                    body.append('image', file.files[0]);
+                    return [4 /*yield*/, fetch('https://api.imgbb.com/1/upload', {
+                            method: 'POST',
+                            body: body
+                        })];
+                case 1:
+                    fetchResponse = _a.sent();
+                    return [4 /*yield*/, fetchResponse.json()];
+                case 2:
+                    data = _a.sent();
+                    url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '');
+                    uploadedImageUrls.push(url);
+                    return [2 /*return*/];
+            }
+        });
     });
-}); };
+});
 //# sourceMappingURL=createPost.js.map
