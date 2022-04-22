@@ -1424,9 +1424,6 @@ app.post('/api/post/post', function (req, res) { return __awaiter(void 0, void 0
                 if (body) {
                     body = sanitize(body);
                 }
-                if (link) {
-                    link = sanitize(link);
-                }
                 special_attributes = { nsfw: nsfw };
                 if (bannedTopics.includes(topic.toLowerCase())) {
                     res.status(400);

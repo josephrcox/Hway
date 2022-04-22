@@ -2,7 +2,6 @@ import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js"
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
-import { newPost } from "./modules/createPost.js"
 import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID } from "./modules/auth.js"
 
@@ -27,10 +26,7 @@ window.onload = async function() {
             }
             break;
         case "createnewpost":
-            const submit_new_post = document.getElementById("newPost_submit_button") as HTMLButtonElement
-            submit_new_post.onclick = function() {
-                newPost()
-            }
+
             break;
         
     }
@@ -92,6 +88,8 @@ function loadPostOrPostObjects(posts:any) {
         post.totalVotes = posts[i].total_votes
         post.commentCount = 0 + posts[i].comments.length
         post.topic = posts[i].topic
+        post.post_type = posts[i].type
+        post.link = posts[i].link
         post.display()
     }
 }

@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,117 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-export var newPost = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var postTitle, topic, logs, newPost_type, myRegEx;
-    return __generator(this, function (_a) {
-        postTitle = document.getElementById("newPost_name").value;
-        topic = document.getElementById("newPost_topic").value;
-        logs = document.getElementById("newPost_logs");
-        newPost_type = 1;
-        if (topic.replace(" ", "") == "" || topic.replace(" ", "") == null || topic.replace(" ", "") == undefined) {
-            topic = "all";
-        }
-        myRegEx = /[^a-z\d]/i;
-        if ((myRegEx.test(topic))) {
-            return [2 /*return*/, logs.innerHTML = "Please enter valid topic. No spaces or characters allowed."];
-        }
-        switch (newPost_type) {
-            case 1:
-                if (postTitle == "" || postTitle == null || !postTitle.replace(/\s/g, '').length) {
-                    logs.innerHTML = "Please enter title.";
-                }
-                else {
-                    createNewPost(1);
-                }
-                break;
-            case 2:
-            // if (postTitle == "" || postTitle == null) {
-            //     logs.innerHTML = "Please enter title.";
-            // }
-            // else {
-            //     if (document.getElementById("newPost_link").value.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g) != null) {
-            //         createNewPost(2);
-            //     }
-            //     else {
-            //         logs.innerHTML = "Please enter valid URL.";
-            //     }
-            // }
-            // break;
-            case 3:
-            // if (postTitle == "" || postTitle == null) {
-            //     document.getElementById("newPost_logs").innerHTML = "Please enter title.";
-            // }
-            // else {
-            //     createNewPost(3);
-            // }
-            // break;
-        }
-        return [2 /*return*/];
-    });
-}); };
-var createNewPost = function (posttype) { return __awaiter(void 0, void 0, void 0, function () {
-    var title, body, nsfw, myRegEx, topic, link, logs, bodyJSON, fetchResponse, data;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                title = document.getElementById("newPost_name").value;
-                body = document.getElementById("newPost_desc").value;
-                nsfw = document.getElementById("newPost_nsfw").checked;
-                myRegEx = /[^a-z\d]/i;
-                topic = document.getElementById("newPost_topic").value;
-                link = document.getElementById("newPost_link").value;
-                logs = document.getElementById("newPost_logs");
-                if ((myRegEx.test(topic))) {
-                    return [2 /*return*/, logs.innerHTML = "Please enter valid topic. No spaces or characters allowed."];
-                }
-                if (topic == "" || topic == null) {
-                    topic = "all";
-                }
-                if (posttype == 1) {
-                    bodyJSON = {
-                        "title": title,
-                        "body": body,
-                        "topic": topic,
-                        "type": posttype,
-                        "nsfw": nsfw
-                    };
-                }
-                if (posttype == 2) {
-                    bodyJSON = {
-                        "title": title,
-                        "link": link,
-                        "topic": topic,
-                        "type": posttype,
-                        "nsfw": nsfw
-                    };
-                }
-                return [4 /*yield*/, fetch('/api/post/post', {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        method: 'POST',
-                        body: JSON.stringify(bodyJSON)
-                    })];
-            case 1:
-                fetchResponse = _a.sent();
-                return [4 /*yield*/, fetchResponse.json()];
-            case 2:
-                data = _a.sent();
-                if (data.code != 200) {
-                    logs.innerHTML = data.error;
-                }
-                // title.innerHTML = "";
-                // body.innerHTML = "";
-                // topic.innerHTML = "";
-                // link.innerHTML = "";
-                if (data.code == 200) {
-                    window.location.href = '/h/' + topic;
-                }
-                return [2 /*return*/];
-        }
-    });
-}); };
 var logs = document.getElementsByClassName('np_logs')[0];
 var np_types = document.getElementsByClassName('np_type');
 var title = document.getElementsByClassName('np-title')[0].children[1];
@@ -159,37 +49,65 @@ var nsfw = document.getElementsByClassName('np-nsfw')[0].children[1];
 var submit = document.getElementsByClassName('np_submit')[0];
 var uploadedImageUrls = [];
 var newNewPostSubmit = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var post_type, i, check, bodyJSON;
+    var post_type, i, check, templink, bodyJSON, fetchResponse, data;
     return __generator(this, function (_a) {
-        post_type = 1;
-        for (i = 0; i < np_types.length; i++) {
-            if (np_types[i].getAttribute('data-selected') == "true") {
-                post_type = i + 1; // model starts index at 1
-                i = np_types.length + 1;
-            }
+        switch (_a.label) {
+            case 0:
+                post_type = 1;
+                for (i = 0; i < np_types.length; i++) {
+                    if (np_types[i].getAttribute('data-selected') == "true") {
+                        post_type = i + 1; // model starts index at 1
+                        i = np_types.length + 1;
+                    }
+                }
+                check = postBouncer(post_type);
+                if (!(check != "")) return [3 /*break*/, 1];
+                logs.innerText = check;
+                logs.style.display = "block";
+                return [3 /*break*/, 4];
+            case 1:
+                logs.style.display = "none";
+                logs.innerText = "";
+                templink = "";
+                if (post_type == 1) {
+                    link.value = "";
+                }
+                else if (post_type == 2) {
+                    body.value = "";
+                    templink = link.value;
+                }
+                else if (post_type == 3) {
+                    templink = localStorage.getItem("lastuploadedimage") + "";
+                    body.value = "";
+                }
+                bodyJSON = {
+                    "title": title.value,
+                    "body": body.value,
+                    "topic": topic.value,
+                    "type": post_type,
+                    "nsfw": nsfw.value,
+                    "link": templink,
+                };
+                console.log(bodyJSON);
+                return [4 /*yield*/, fetch('/api/post/post', {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        method: 'POST',
+                        body: JSON.stringify(bodyJSON)
+                    })];
+            case 2:
+                fetchResponse = _a.sent();
+                return [4 /*yield*/, fetchResponse.json()];
+            case 3:
+                data = _a.sent();
+                if (data.code != 200) {
+                    logs.innerHTML = data.error;
+                }
+                _a.label = 4;
+            case 4: return [2 /*return*/];
         }
-        check = postBouncer(post_type);
-        if (check != "") {
-            logs.innerText = check;
-            logs.style.display = "block";
-        }
-        else {
-            logs.style.display = "none";
-            logs.innerText = "";
-            if (post_type == 4) {
-                //link = uploadedImageUrls.pop(),
-            }
-            bodyJSON = {
-                "title": title.value,
-                "body": body.innerText,
-                "topic": topic.value,
-                "type": post_type,
-                "nsfw": nsfw.value,
-                "link": link.value,
-            };
-            console.log(bodyJSON);
-        }
-        return [2 /*return*/];
     });
 }); };
 function postBouncer(post_type) {
@@ -275,6 +193,8 @@ file.addEventListener("change", function () {
                     data = _a.sent();
                     url = (JSON.stringify(data.data.image.url)).replace(/["]+/g, '');
                     uploadedImageUrls.push(url);
+                    localStorage.setItem("lastuploadedimage", url);
+                    console.log(uploadedImageUrls);
                     return [2 /*return*/];
             }
         });

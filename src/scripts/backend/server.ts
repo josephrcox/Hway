@@ -1289,9 +1289,9 @@ app.post('/api/post/post', async(req:any, res:any) => {
 	if (body) {
 		body = sanitize(body)
 	}
-	if (link) {
-		link = sanitize(link)
-	}
+	// if (link) {
+	// 	link = sanitize(link)
+	// }
 	
 	// 
 

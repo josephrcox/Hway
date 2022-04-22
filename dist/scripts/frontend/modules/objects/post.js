@@ -39,6 +39,8 @@ var postsArray = document.getElementById('postsArray');
 export var postObject = {
     title: "",
     body: "",
+    link: "",
+    post_type: 0,
     poster_name: "",
     createdAt: "",
     id: "",
@@ -58,20 +60,42 @@ export var postObject = {
         body.classList.add('post-body');
         body.innerText = this.body;
         body.style.display = "none";
-        var title = document.createElement('span');
+        var title = document.createElement('div');
         title.classList.add('post-title');
         title.dataset.title = this.title;
-        title.innerHTML = this.title + " <span style='font-size:8px'>[+]</span>";
-        title.onclick = function () {
-            if (body.style.display == "none") {
-                body.style.display = "block";
-                title.innerHTML = title.dataset.title + " <span style='font-size:8px'>[-]</span>";
-            }
-            else {
-                body.style.display = "none";
-                title.innerHTML = title.dataset.title + " <span style='font-size:8px'>[+]</span>";
-            }
-        };
+        title.dataset.link = this.link;
+        if (this.post_type == 1 && this.body.length > 0) {
+            title.innerHTML = this.title + " <span style='font-size:8px'> [+]</span>";
+            title.onclick = function () {
+                if (body.style.display == "none") {
+                    body.style.display = "block";
+                    title.innerHTML = title.dataset.title + " <span style='font-size:8px'> [-]</span>";
+                }
+                else {
+                    body.style.display = "none";
+                    title.innerHTML = title.dataset.title + " <span style='font-size:8px'> [+]</span>";
+                }
+            };
+        }
+        else if (this.post_type == 2) {
+            title.innerHTML = this.title + " <span style='font-size:8px'> [🔗]</span>";
+            title.onclick = function () {
+                window.open(title.dataset.link);
+            };
+        }
+        else if (this.post_type == 3) {
+            title.innerHTML = "<img src='" + title.dataset.link + "' class='post-img-thumb'> " + this.title;
+            title.onclick = function () {
+                if (body.style.display == "none") {
+                    body.style.display = "block";
+                    body.innerHTML = "<img class='post-img' src='" + title.dataset.link + "'>";
+                }
+                else {
+                    body.style.display = "none";
+                    body.innerHTML = "";
+                }
+            };
+        }
         var subtitle = document.createElement('span');
         subtitle.classList.add('post-subtitle');
         subtitle.innerHTML = "@" + this.poster_name + " — " + this.createdAt + " — <a href='/h/" + this.topic + "'>" + this.topic + "</a>";

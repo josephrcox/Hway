@@ -38,12 +38,11 @@ import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
 import { getPageType } from "./modules/pageAnalyzer.js";
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
-import { newPost } from "./modules/createPost.js";
 import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID } from "./modules/auth.js";
 window.onload = function () {
     return __awaiter(this, void 0, void 0, function () {
-        var x, submit_new_comment, submit_new_post;
+        var x, submit_new_comment;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -68,10 +67,6 @@ window.onload = function () {
                             };
                             break;
                         case "createnewpost":
-                            submit_new_post = document.getElementById("newPost_submit_button");
-                            submit_new_post.onclick = function () {
-                                newPost();
-                            };
                             break;
                     }
                     return [2 /*return*/];
@@ -151,6 +146,8 @@ function loadPostOrPostObjects(posts) {
         post.totalVotes = posts[i].total_votes;
         post.commentCount = 0 + posts[i].comments.length;
         post.topic = posts[i].topic;
+        post.post_type = posts[i].type;
+        post.link = posts[i].link;
         post.display();
     }
 }
