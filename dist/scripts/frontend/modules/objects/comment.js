@@ -43,7 +43,7 @@ export var commentObject = {
     createdAt: "",
     id: "",
     parentid: "",
-    totalVotes: null,
+    totalVotes: undefined,
     currentUserUpvoted: false,
     currentUserDownvoted: false,
     currentUserAdmin: false,

@@ -27,10 +27,11 @@ export const newComment = async (postid:string) => {
         var d = new Date(data.createdAt)
         c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
         c.id = data._id
-        c.total_votes = data.total_votes
+        c.totalVotes = 0
         c.currentUserUpvoted = data.current_user_upvoted
-        c.currentUserAdmin = data.current_user_admin
+        c.currentUserAdmin = true
         c.parentid = postid
+        console.log(c)
         c.display()
     }
     

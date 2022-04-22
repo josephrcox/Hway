@@ -9,7 +9,7 @@ export const commentObject = {
     createdAt:"",
     id:"",
     parentid:"",
-    totalVotes:null,
+    totalVotes:undefined,
 
     currentUserUpvoted:false,
     currentUserDownvoted:false,
