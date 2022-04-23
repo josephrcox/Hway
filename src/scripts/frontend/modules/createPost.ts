@@ -141,7 +141,7 @@ function isValidUrl(string:string) {
 file.addEventListener("change", async function() {
     let body = new FormData()
     body.set('key', 'e23bc3a1c5f2ec99cc1aa7676dc0f3fb')
-    body.append('image', file.files[0])
+    body.append('image', file.files![0])
 
     const fetchResponse = await fetch('https://api.imgbb.com/1/upload', {
         method: 'POST',
