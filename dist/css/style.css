@@ -103,7 +103,7 @@ body {
 }
 
 .upvoted {
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+	filter: brightness(0) saturate(100%) invert(35%) sepia(91%) saturate(2026%) hue-rotate(203deg) brightness(92%) contrast(97%);
 }
 
 .downvoted {
@@ -391,4 +391,11 @@ font-size: 12px;
 	display: flex;
 	align-items: center;
 	margin-left: 20px;
+}
+
+.post-vote-button {
+	height: 17px;
+	cursor: pointer;
+	width: inherit;
+	scale: 1.7;
 }
