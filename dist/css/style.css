@@ -386,3 +386,9 @@ font-size: 12px;
 #user-dropdown-div {
   display: flex;
 }
+
+#user-dropdown-button {
+	display: flex;
+	align-items: center;
+	margin-left: 20px;
+}
