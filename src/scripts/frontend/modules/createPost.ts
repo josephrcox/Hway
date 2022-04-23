@@ -11,11 +11,9 @@ const topic = document.getElementsByClassName('np-topic')[0].children[1] as HTML
 const nsfw = document.getElementsByClassName('np-nsfw')[0].children[1] as HTMLInputElement
 const submit = document.getElementsByClassName('np_submit')[0] as HTMLDivElement
 
-
 let uploadedImageUrls:string[] = []
 
-
-const newNewPostSubmit = async () => {
+const newPost = async () => {
     let post_type = 1
     for (let i=0;i<np_types.length;i++) {
         if (np_types[i].getAttribute('data-selected') == "true") {
@@ -131,7 +129,7 @@ for (let i=0;i<np_types.length;i++) {
     })
 }
 
-submit.addEventListener('click', newNewPostSubmit, false)
+submit.addEventListener('click', newPost, false)
 
 function isValidUrl(string:string) {
     const matchpattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;

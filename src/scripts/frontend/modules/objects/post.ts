@@ -137,6 +137,9 @@ export const postObject = {
             subPostDetails.appendChild(d)
         }
 
+        container.classList.add('animated_entry')
+        subPostDetails.classList.add('animated_entry')
+
         postDetailsContainer.append(title, body, subtitle)
         voteContainer.append(voteUpButton,voteCount,voteDownButton)
         container.append(postDetailsContainer, voteContainer)

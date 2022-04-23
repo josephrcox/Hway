@@ -13,20 +13,24 @@ window.onload = async function() {
 
     switch(x[0]) {
         case "all":
-            getPostsByTopic("all")
+            await getPostsByTopic("all")
+            subheader.style.display = 'block'
             break;
         case "topic":
-            getPostsByTopic(x[1])
+            await getPostsByTopic(x[1])
+            subheader.style.display = 'block'
             break;
         case "post":
-            getPostByID(x[1])
+            await getPostByID(x[1])
+            
+            subheader.style.display = 'none'
             const submit_new_comment = document.getElementById("newCom_submit") as HTMLButtonElement
             submit_new_comment.onclick = function() {
                 newComment(x[1])
             }
             break;
         case "createnewpost":
-
+            
             break;
         
     }
@@ -34,13 +38,16 @@ window.onload = async function() {
 
 async function getPostsByTopic(topic:string) {
     var posts = await apiGetPostsByTopic(topic)
-    console.log(posts)
+    
     loadPostOrPostObjects(posts)
+    
 }
 
 const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
 const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
 const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
+const subheader = document.getElementById("sub_header_options") as HTMLDivElement
+const loaders = document.getElementsByClassName("loader")
 
 async function getPostByID(ID:string) {
     var post = []
@@ -80,6 +87,8 @@ async function getPostByID(ID:string) {
         c.parentid = post[0]._id
         c.display()
     }
+    stopLoaders()
+
     newCommentInputArea.style.display = 'flex'
     commentSection!.style.display = 'flex'
 
@@ -104,6 +113,17 @@ function loadPostOrPostObjects(posts:any) {
         post.topic = posts[i].topic
         post.post_type = posts[i].type
         post.link = posts[i].link
+        
         post.display()
+    }
+    stopLoaders()
+    
+    
+}
+
+function stopLoaders() {
+    for (let i=0;i<loaders.length;i++) {
+        let l = loaders[i] as HTMLDivElement
+        l.style.display = 'none'
     }
 }

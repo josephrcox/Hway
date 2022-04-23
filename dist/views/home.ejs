@@ -1,12 +1,26 @@
 <body>
+    <div id="sub_header_options" style="display: none;">
+        <div id="sorting_options" class="sorting_options noselect">
+            <a id="sorting_options_new" class="sorting_options" href="#">New</a>
+            <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
+            <a id="sorting_options_top_today" class="sorting_options" href="#">Top (day)</a>
+            <a id="sorting_options_top_week" class="sorting_options" href="#">Top (week)</a>
+            <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
+            <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
+        </div>
+    
+        <div id="page-number" class="noselect"></div> 
+    </div>
+
+
     <div id="sitebody" class="sitebody-flex">
      <div class="posts_and_more" id="posts_and_more">
 
       <div class="recommended_topics_div" id="recommended_topics" style="display: none;"></div>
       <div id="postsArray">
-         
+         <div class="loader"></div>
        </div>
-       <div class="newComContainer" style="display: none;">
+       <div class="newComContainer animated_entry" style="display: none;">
         <label for="name" class="np_input_label">Comment</label><br>
          <a href="/login" id="commentSection_login_button">Login to comment</a>
          <textarea id="newCom_body" name="name" size="50" rows="2" cols="60" autocomplete="off" class="np_input"></textarea> <br>
@@ -17,6 +31,7 @@
      
     </div>
        <div id="comments" style="display: none;">
+        <div class="loader"></div>
           <!-- comments go here from js -->
        </div>
 </body>

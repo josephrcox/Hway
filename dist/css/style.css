@@ -252,6 +252,16 @@ a:active {
 	margin-top: 5px;
 }
 
+@-webkit-keyframes animated_entry {
+    from { left:-100px; opacity:0 } 
+    to { left:0px; opacity:1 }
+  }
+  
+  @keyframes animated_entry { 
+    from{ left:-100px; opacity:0 } 
+    to{ left:0; opacity:1 }
+  }
+
 .sorting_options {
 	color: white;
 	padding-inline: 3px;
@@ -398,4 +408,33 @@ font-size: 12px;
 	cursor: pointer;
 	width: inherit;
 	scale: 1.7;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 45px;
+    height: 45px;
+    -webkit-animation: spin 1s linear infinite; /* Safari */
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+.animated_entry {
+    position: relative;
+    -webkit-animation-name: animated_entry;
+    -webkit-animation-duration: 0.5s;
+    animation-name: animated_entry;
+    animation-duration: 0.5s
 }
