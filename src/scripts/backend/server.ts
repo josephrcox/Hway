@@ -360,11 +360,17 @@ app.post('/api/post/notif/clear/', function(req: { cookies: { token: any } },res
 })
 
 app.get('/login', (req:any, res:any) => {
-    res.render('login.ejs', {layout: 'layouts/account.ejs'})
+    //res.render('login.ejs', {layout: 'layouts/layout.ejs'})
+    res.render('login.ejs', {topic:"- login"})
 })
 
 app.get('/post', (req:any, res:any) => {
-    res.render('post.ejs', {topic:"- post"})
+    if (currentUser) {
+        res.render('post.ejs', {topic:"- post"})
+    } else {
+        res.redirect('/login')
+    }
+    
 })
 
 app.get('/users', (req:any, res:any) => {
@@ -1223,7 +1229,7 @@ app.post('/login', async(req:any, res:any) => {
 	const user = await User.findOne({ name }).lean()
 
 	if (!user) {
-		return res.json({ status: 'error', error: 'Invalid username/password' })
+		return res.status(500).json({ status: 'error', error: 'Invalid username/password' })
 	}
 
 	if (await bcrypt.compare(password, user.password)) {
@@ -1250,8 +1256,8 @@ app.post('/login', async(req:any, res:any) => {
 
 		return res.json({ status: 'ok', code: 200, data: token })
 	}
+    res.status(500).json({ status: 'error', error: 'Invalid username/password' })
 
-	res.json({ status: 'error', code: 400, error: 'Invalid username/password' })
 })
 
 app.post('/register', async(req:any, res:any) => {

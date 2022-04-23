@@ -1,11 +1,16 @@
+<head>
+    <link rel="stylesheet" href="dist/css/login.css">
+</head>
+
 <div class="login-reg">
-    <h1 style='color:black'>Login</h1>
+    <div>Login</div>
     <a href="/register">Haven't signed up? <strong> Click here! </strong> </a><br/>
     <a href="/account/resetpw">Trouble logging in? <strong> Click here! </strong> </a>
+    <br>
         <form id="reg-form">
-            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
-            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/>
-            <input type="submit" value="Login"/>
+            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" class="general_input"/><br/>
+            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" class="general_input"/><br/>
+            <input type="submit" value="Login" class="button_submit"/>
         </form>
         <div id='logs'></div>
     
@@ -34,17 +39,14 @@ async function loginUser(event) {
         body: JSON.stringify(bodyJSON)
     });
     const data = await fetchResponse.json()
+    console.log(data)
 
     if (data.code == 200) {
         localStorage.clear()
         window.location.href = "/all"
     } 
-    if (data.code == 400) {
+    else {
         document.getElementById("logs").innerHTML = data.error
-    }
-
-    if (fetchResponse.status != '200' || fetchResponse.status != 200) {
-        document.getElementById("logs").innerHTML = fetchResponse.error;
     }
 }
 

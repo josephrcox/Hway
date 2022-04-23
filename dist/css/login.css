@@ -1,0 +1,34 @@
+.login-reg div {
+    color:white;
+    font-size: 36px;
+}
+
+.login-reg a {
+    text-decoration: none;
+    color: rgb(255, 12, 12);
+    font-style: italic;
+}
+
+.general_input {
+	border-radius: 10px;
+	padding: 9px;
+	border: 0;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	font-family: inherit;
+	font-style: inherit;
+	font-size: 16px;
+}
+
+#logs {
+	color: yellow;
+	font-variant:all-petite-caps;
+	width: fit-content;
+	padding: 4px;
+    margin-top: 5px;
+}
+
+
+#reg-form {
+    margin-top: 6px;
+}
