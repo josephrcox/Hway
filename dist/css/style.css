@@ -39,7 +39,7 @@ body {
 }
 
 .post-title {
-    font-size: 15px;
+    font-size: 21px;
     font-weight: 498;
     word-wrap: anywhere;
     padding-right: 5px;
@@ -48,11 +48,11 @@ body {
 }
 
 .comment-title {
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .post-subtitle {
-    font-size: 9px;
+    font-size: 13px;
     margin-top: 5px;
     border-top: 1px solid gray;
     padding-top: 1px;
@@ -97,7 +97,7 @@ body {
 }
 
 .post-vote-count {
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .upvoted {
@@ -114,7 +114,7 @@ body {
     border-right: 1px dotted black;
     padding-inline:5px;
     color: #8c8c8c;
-    font-size: 10px;
+    font-size: 15px;
 }
 .post-subpost-element:last-child, .post-subcomment-element:last-child{
     border: 0;
@@ -122,18 +122,18 @@ body {
 
 
 .comment-subtitle {
-    font-size: 7px;
+    font-size: 11px;
   }
 
 .post-subpost-details-container {
     padding-bottom: 5px;
     display: flex;
-    font-size: 12px;
+    font-size: 15px;
     justify-content: flex-end;
 }
 
 .post-body {
-	font-size: 9px;
+	font-size: 14px;
 	padding-left: 5px;
 	padding-right: 5px;
 }
@@ -175,17 +175,18 @@ span {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    border-radius: ;
+    border-radius: 3px;
 }
 
 .header-title {
     color: white;
     padding-left: 2px;
     flex-grow: 1;
+    font-size: 36px;
 }
 
 .header-home, .header-post {
-    margin-right: 10px;
+    margin-right: 21px;
     color: white;
     margin-left: 3px;
 }
@@ -219,7 +220,7 @@ span {
 	white-space: nowrap;
     text-decoration: none;
     padding-left: 3px;
-    font-size: 10px;
+    font-size: 15px;
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 	margin-top: -3px;
@@ -252,7 +253,7 @@ a:active {
 .sorting_options {
 	color: white;
 	padding-inline: 3px;
-	font-size: 8px;
+	font-size: 16px;
 	width: 97%;
 	overflow-x: auto;
 	white-space: nowrap;
@@ -309,7 +310,7 @@ a:active {
 
 #header-notifs-bell {
 	color: white;
-	font-size: 11px;
+	font-size: 14px;
   }
 .header-notifications {
 align-items: center;
@@ -317,7 +318,7 @@ display: flex;
 }
 
 .comment-vote-count {
-font-size: 10px;
+font-size: 12px;
 }
 
 
@@ -329,7 +330,7 @@ font-size: 10px;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
-	font-size: 14px;
+	font-size: 16px;
 	margin: 4px 2px;
 	cursor: pointer;
 	font-family: inherit;
@@ -341,7 +342,7 @@ font-size: 10px;
 
 #newCom_body_label {
 	color: white;
-	font-size: 11px;
+	font-size: 13px;
 }
 
 .button_submit {
@@ -349,7 +350,7 @@ font-size: 10px;
 	width: max-content;
 	padding-inline: 13px;
 	border-radius: 0px;
-	font-size: 12px;
+	font-size: 16px;
 	
 	border: none;
 	color: white;
@@ -366,7 +367,7 @@ font-size: 10px;
 
 .np_input_label {
 	color: white;
-	font-size: 14px;
+	font-size: 15px;
 	text-align: center;
 	font-variant: all-petite-caps;
 	border-bottom: 1px solid gray;
@@ -374,7 +375,12 @@ font-size: 10px;
 }
 
 #newCom_body {
-	font-size: 12px;
+	font-size: 13px;
 	resize: none;
 	height: 50px;
   }
+
+
+#user-dropdown-div {
+  display: flex;
+}
