@@ -1,14 +1,16 @@
 import { postObject } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
-import { getPageType } from "./modules/pageAnalyzer.js"
+import { getPageType, getPageSearchQueries } from "./modules/pageAnalyzer.js"
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
 import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
+import { addSortingEvents, addPageNavigation } from "./modules/pageNavigator.js"
 
 window.onload = async function() {
     localStorage.setItem("deletepostconfirmid","")
     localStorage.setItem("deletecommentconfirmid","")
     let x:Array<string> = getPageType() || []
+    addSortingEvents()
     await getUser()
 
     switch(x[0]) {
@@ -34,10 +36,12 @@ window.onload = async function() {
             break;
         
     }
+    addPageNavigation()
 }
 
 async function getPostsByTopic(topic:string) {
-    var posts = await apiGetPostsByTopic(topic)
+    var posts = await apiGetPostsByTopic(topic, getPageSearchQueries())
+    console.log(posts)
     
     loadPostOrPostObjects(posts)
     

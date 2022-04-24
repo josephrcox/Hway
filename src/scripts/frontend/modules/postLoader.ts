@@ -1,8 +1,9 @@
-export async function apiGetPostsByTopic(topic:string) {
-    let query:string = window.location.search
-    const response = await fetch('/api/get/'+topic+'/q'+query)
+export async function apiGetPostsByTopic(topic:string, search:string) {
+    const response = await fetch('/api/get/'+topic+'/q'+search)
     const data = await response.json()
+    localStorage.setItem("total_pages", data.total_pages)
 
+    
     return data.data
 }
 

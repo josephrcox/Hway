@@ -63,6 +63,8 @@ export const postObject = {
                 }
                 
             }
+        } else if (this.post_type == 1) {
+            title.innerText = this.title
         }
 
 

@@ -1,4 +1,6 @@
 var pathname = window.location.pathname
+var search = window.location.search
+export const page_queries = Object.fromEntries((new URLSearchParams(window.location.search)).entries()); 
 
 export function getPageType() {
     if (pathname.includes('/all/')) {
@@ -28,4 +30,8 @@ export function getPageType() {
 
 export function getPageTopic() {
     return pathname.split('/h/')[1].split('/')[0]
+}
+
+export function getPageSearchQueries() {
+    return search
 }

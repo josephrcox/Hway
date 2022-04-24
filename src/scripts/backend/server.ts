@@ -54,7 +54,7 @@ var IDs = []
 var topicArray: any[] = []
 var topicCount: any[] = []
 var postsonpage: any[] = []
-var postsPerPage = 50;
+var postsPerPage = 10;
 let ms_in_day = 86400000;
 let currentUser: any;
 
@@ -771,6 +771,7 @@ app.put('/api/put/unsubscribe_user/:user', async(req: { params: { user: any } },
 
 
 app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for loading posts
+	// queries: nsfw, page, sort, t
 	postsonpage = []
 
 	let queries = req.query
