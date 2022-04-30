@@ -2,6 +2,8 @@ export var isUserLoggedIn = false
 export var currentUsername = null
 export var currentUserID = null
 
+import { apiGetNotificationCount } from "../modules/notifications.js";
+
 export const getUser = async () => {
     const response = await fetch('/api/get/currentuser/')
     const data = await response.json()
@@ -12,7 +14,7 @@ export const getUser = async () => {
             currentUsername = null
             localStorage.clear()
         } else {
-            console.log("test")
+            apiGetNotificationCount()
             currentUserID = data.id
             currentUsername = data.name
             isUserLoggedIn = true
@@ -32,8 +34,7 @@ export const getUser = async () => {
     } catch(err) {
         console.error(err)
     }
-
-    console.log(isUserLoggedIn, currentUsername, currentUserID)
+    
     modifyHeader(isUserLoggedIn, currentUsername + "")
 }
 

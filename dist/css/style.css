@@ -491,3 +491,61 @@ font-size: 12px;
 	font-size: 20px;
 	width: 50vw;
 }
+
+#header-notifs-bell.active {
+	color: white;
+	background-color: red;
+	padding: 3px;
+}
+
+.notif_array {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	color: white;
+}
+
+
+.notifBody {
+	font-size: 20px;
+	padding: 3px;
+}
+
+.notifContainer {
+	background-color: whitesmoke;
+	display: flex;
+	justify-content: space-between;
+	padding-inline: 5px;
+	border-bottom: 1px solid black;
+}
+
+.notif_container {
+	display: flex;
+	justify-content: center;
+	margin-left: 3px;
+	
+}
+
+.notifCheck {
+	background-color: green;
+    color: white;
+    padding: 20px;
+    margin-right: -5px;
+	cursor: pointer;
+}
+
+.notif_page_flex {
+	display: flex;
+	flex-direction: column;
+	margin-left: 3px;
+	max-width: 1000px;
+}
+
+.notif_page_settings {
+	display: flex;
+	max-width: 1000px;
+  }
+
+.notif_sorting, .notif_clearall {
+	display: none;
+}

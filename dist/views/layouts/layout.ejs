@@ -27,11 +27,11 @@
     <div class="header">
         <div class="header_top">
             <div class="header-title noselect">
-                <a href='/all'><div class="header-title cursor_pointer">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
+                <a href='/all'><div class="header-title cursor_pointer">HWay <span style="font-size:8px"><%= topic %></div></a>   </span>
             </div>
             
             <div class="header-notifications">
-                <div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;">0</div>
+                <a href="/notifications"><div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;"></div></a>
             </div>
             <div class="user-dropdown-div" id='user-dropdown-div'>
                 <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
@@ -43,7 +43,7 @@
                     <a href='/resetpassword' id="resetpw_button" class="user-dropdown-item">Reset password</a>
                     <a href='/subscriptions' id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
                     <div class="border-bottom"></div>
-                    <div id="filter_nsfw_div">
+                    <div id="filter_nsfw_div" style="padding-inline: 7px;">
                             NSFW
                         <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
                     </div>

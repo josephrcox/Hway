@@ -7,6 +7,12 @@ import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
 import { addSortingEvents, addPageNavigation, pageNum } from "./modules/pageNavigator.js"
 import { init, phrase, topic, bar } from "./modules/search.js"
 
+const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
+const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
+const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
+export const subheader = document.getElementById("sub_header_options") as HTMLDivElement
+const loaders = document.getElementsByClassName("loader")
+
 export async function loadMain() {
     localStorage.setItem("deletepostconfirmid","")
     localStorage.setItem("deletecommentconfirmid","")
@@ -61,13 +67,6 @@ async function getPostsByTopic(topic:string) {
     loadPostOrPostObjects(posts)
     
 }
-
-const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
-const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
-const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
-export const subheader = document.getElementById("sub_header_options") as HTMLDivElement
-const loaders = document.getElementsByClassName("loader")
-
 async function getPostByID(ID:string) {
     var post = []
     post[0] = await apiGetPostByID(ID)

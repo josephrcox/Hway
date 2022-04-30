@@ -253,7 +253,7 @@ app.get('/api/get/currentuser', function (req:any, res:any) {
 
 })
 
-app.get('/api/get/notification_count', async(req: { cookies: { token: any } },res: { send: (arg0: { status?: string; length?: any; data?: string }) => void }) => {
+app.get('/api/get/notification_count', async(req: { cookies: { token: any } },res: { send: (arg0: { status?: string; count?: any; data?: string }) => void }) => {
 	if (currentUser) {
 		User.findById(currentUser, function(err: any,docs: { notifications: any[] } | null) {
 			if (err || docs == null) {
@@ -263,7 +263,7 @@ app.get('/api/get/notification_count', async(req: { cookies: { token: any } },re
 					return x.status == "active";         
 				}))
 
-				res.send({length:notifs.length})
+				res.send({count:notifs.length})
 			}
 		})
 	} else {
@@ -275,7 +275,7 @@ app.get('/api/get/notification_count', async(req: { cookies: { token: any } },re
 				if (err) {
 					res.send({status:'error'})
 				} else {
-					res.send({length:docs.notifications.length})
+					res.send({count:docs.notifications.length})
 				}
 			})
 		}catch(error) {
