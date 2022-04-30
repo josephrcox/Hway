@@ -57,6 +57,7 @@ var postsonpage: any[] = []
 var postsPerPage = 5;
 let ms_in_day = 86400000;
 let currentUser: any;
+let connectedToDB = false
 
 let resetPasswordArray: any[][] = []
 
@@ -77,6 +78,7 @@ const connection = mongoose.connection;
 
 connection.once("open", function(res: any) {
 	console.log("Connected to Mongoose!")
+	connectedToDB = true
 }); 
 
 
@@ -98,6 +100,14 @@ let usersArr: { Name?: any; Score?: any; Account_creation_date?: any; Location?:
 
 const bannedTopics:string[] = ['home','notifications','profile','login','logout','signup','admin','post']
 const bannedUsernames:string[] = ['joey','admin',]
+
+let waitInterval:any
+
+async function wait(x:number) {
+	waitInterval = setInterval(function() {
+		console.log("waiting for "+x+" seconds")
+	}, x * 1000)
+}
 
 async function get_all_avatars() {
 	let tempUsers = await User.find({})
@@ -505,6 +515,10 @@ app.get('/api/get/all_users/:sorting', async(req:any, res:any) =>{
 })
 
 app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
+	if (!connectedToDB) {
+		await wait(3)
+		clearInterval(waitInterval)
+	}
 	let comments: any[] = []
 	console.log(req.params)
     if (req.params.user != null && req.params.user != "undefined") {
