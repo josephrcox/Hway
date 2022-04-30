@@ -267,6 +267,7 @@ a:active {
 	overflow-x: auto;
 	white-space: nowrap;
 	margin-bottom: 6px;
+	margin-top: 3px;
 }
 
 #comments {
@@ -444,6 +445,7 @@ font-size: 12px;
 	max-height: 15px;
 	object-fit: cover;
 	filter: brightness(0) invert(1);
+	margin-bottom: 17px;
 }
 
 .page_nav_arrow {
@@ -454,4 +456,31 @@ font-size: 12px;
 
 .rotate180 {
 	transform: rotate(180deg);
+}
+
+#searchbar {
+	display: flex;
+	flex-direction: column;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 0px;
+	overflow: hidden;
+	margin: 0px;
+
+	-webkit-transition: height 0.2s linear;
+	-moz-transition: height 0.2s linear;
+	 -ms-transition: height 0.2s linear;
+	  -o-transition: height 0.2s linear;
+		 transition: height 0.2s linear;
+}
+
+
+
+#searchbar.open {
+	height: 100px;
+	-webkit-transition: height 0.2s linear;
+	   -moz-transition: height 0.2s linear;
+		-ms-transition: height 0.2s linear;
+		 -o-transition: height 0.2s linear;
+			transition: height 0.2s linear;
 }

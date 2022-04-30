@@ -1,16 +1,19 @@
 import { postObject } from "./modules/objects/post.js";
-import { apiGetPostsByTopic, apiGetPostByID } from "./modules/postLoader.js";
+import { apiGetPostsByTopic, apiGetPostByID, apiGetPostsBySearchQuery } from "./modules/postLoader.js";
 import { getPageType, getPageSearchQueries } from "./modules/pageAnalyzer.js"
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
 import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
-import { addSortingEvents, addPageNavigation } from "./modules/pageNavigator.js"
+import { addSortingEvents, addPageNavigation, pageNum } from "./modules/pageNavigator.js"
+import { init } from "./modules/search.js"
 
 window.onload = async function() {
     localStorage.setItem("deletepostconfirmid","")
     localStorage.setItem("deletecommentconfirmid","")
-    let x:Array<string> = getPageType() || []
+    let x:Array<any> = getPageType() || []
+    console.log(x)
     addSortingEvents()
+    init()
     await getUser()
 
     switch(x[0]) {
@@ -33,6 +36,10 @@ window.onload = async function() {
             break;
         case "createnewpost":
             
+            break;
+        case "search":
+            pageNum.style.display = 'none'
+            apiGetPostsBySearchQuery(x[1].split('?query=')[1])
             break;
         
     }
@@ -100,7 +107,7 @@ async function getPostByID(ID:string) {
 
 }
 
-function loadPostOrPostObjects(posts:any) {
+export function loadPostOrPostObjects(posts:any) {
     for (let i=0;i<posts.length;i++) {
         var post = Object.create(postObject)
         post.title = posts[i].title

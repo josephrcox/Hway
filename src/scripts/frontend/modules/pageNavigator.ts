@@ -2,7 +2,7 @@ console.log("pageNavigator.js loaded")
 
 export const sorting_options = document.getElementsByClassName("sorting_options sort_option")
 import { page_queries  } from "../modules/pageAnalyzer.js"
-const pageNum = document.getElementById("page-number") as HTMLDivElement
+export const pageNum = document.getElementById("page-number") as HTMLDivElement
 
 export function addSortingEvents() {
     for (let i=0;i<sorting_options?.length;i++) {
@@ -53,17 +53,21 @@ export function addPageNavigation() {
     let total_pages = parseInt(localStorage.getItem("total_pages")+"")
     let current_page = parseInt(page_queries.page)
     let futurePage:number
+    console.log(current_page, total_pages)
 
-    if (total_pages > current_page) {
+    if (total_pages >= current_page) {
         if (current_page > 1) {
             futurePage = current_page - 1
             let back_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
             pageNum.innerHTML += "<a href='"+back_href+"'><img class='page_nav_arrow' src='../dist/images/page_backarrow.svg'></a>"
         } 
+
         futurePage = current_page + 1
         let forward_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
         pageNum.innerHTML += "<span style='margin-top:-5px'>Page "+current_page+"/"+total_pages+"</span>"
-        pageNum.innerHTML += "<a href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg'></a>"
         
+        if (total_pages != current_page) {
+            pageNum.innerHTML += "<a href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg'></a>"
+        }
     }
 }

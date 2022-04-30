@@ -1,6 +1,6 @@
 export const supportEmail = "josephrobertcox@gmail.com"
 
-const postsArray = document.getElementById('postsArray') as HTMLDivElement
+export const postsArray = document.getElementById('postsArray') as HTMLDivElement
 
 export const postObject = {
     title:"",

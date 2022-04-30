@@ -1,3 +1,5 @@
+import { loadPostOrPostObjects } from "../main.js"
+
 export async function apiGetPostsByTopic(topic:string, search:string) {
     const response = await fetch('/api/get/'+topic+'/q'+search)
     const data = await response.json()
@@ -13,3 +15,15 @@ export async function apiGetPostByID(ID:string) {
 
     return data
 }
+
+export async function apiGetPostsBySearchQuery(query:string) {
+    window.history.replaceState("Search", "Search: "+query, '/search/?query='+query )
+    const response = await fetch('/api/get/search/q?query='+query)
+    const data = await response.json()
+    console.log(data)
+
+    loadPostOrPostObjects(data.data)
+}
+
+
+

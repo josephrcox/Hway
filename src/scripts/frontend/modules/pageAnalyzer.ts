@@ -25,6 +25,8 @@ export function getPageType() {
     } else if (pathname.includes('/post/')) {
         // user is creating a new post
         return ['createnewpost']
+    } else if (pathname.includes('/search/')) {
+        return ['search', search]
     }
 }
 
