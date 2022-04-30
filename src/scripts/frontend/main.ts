@@ -5,9 +5,9 @@ import { commentObject, newCommentInputArea, commentSection } from "./modules/ob
 import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
 import { addSortingEvents, addPageNavigation, pageNum } from "./modules/pageNavigator.js"
-import { init } from "./modules/search.js"
+import { init, phrase, topic, bar } from "./modules/search.js"
 
-window.onload = async function() {
+export async function loadMain() {
     localStorage.setItem("deletepostconfirmid","")
     localStorage.setItem("deletecommentconfirmid","")
     let x:Array<any> = getPageType() || []
@@ -39,12 +39,20 @@ window.onload = async function() {
             break;
         case "search":
             pageNum.style.display = 'none'
-            apiGetPostsBySearchQuery(x[1].split('?query=')[1])
+            let queries = window.location.search
+            let params = new URLSearchParams(queries)
+            phrase.value = params.get('query')+""
+            topic.value = params.get("topic")+""
+            bar.classList.add('open')
+            bar.style.margin = ''
+            apiGetPostsBySearchQuery(params.get('query')+"", params.get("topic")+"")
             break;
         
     }
     addPageNavigation()
 }
+
+loadMain()
 
 async function getPostsByTopic(topic:string) {
     var posts = await apiGetPostsByTopic(topic, getPageSearchQueries())
@@ -57,7 +65,7 @@ async function getPostsByTopic(topic:string) {
 const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
 const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
 const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
-const subheader = document.getElementById("sub_header_options") as HTMLDivElement
+export const subheader = document.getElementById("sub_header_options") as HTMLDivElement
 const loaders = document.getElementsByClassName("loader")
 
 async function getPostByID(ID:string) {
@@ -132,9 +140,18 @@ export function loadPostOrPostObjects(posts:any) {
     
 }
 
-function stopLoaders() {
+export function stopLoaders() {
+    console.info("finished loading")
     for (let i=0;i<loaders.length;i++) {
         let l = loaders[i] as HTMLDivElement
         l.style.display = 'none'
+    }
+}
+
+export function startLoaders() {
+    console.info("loading")
+    for (let i=0;i<loaders.length;i++) {
+        let l = loaders[i] as HTMLDivElement
+        l.style.display = 'block'
     }
 }

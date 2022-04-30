@@ -54,7 +54,7 @@ var IDs = []
 var topicArray: any[] = []
 var topicCount: any[] = []
 var postsonpage: any[] = []
-var postsPerPage = 50;
+var postsPerPage = 5;
 let ms_in_day = 86400000;
 let currentUser: any;
 
@@ -506,10 +506,12 @@ app.get('/api/get/all_users/:sorting', async(req:any, res:any) =>{
 
 app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
 	let comments: any[] = []
+	console.log(req.params)
     if (req.params.user != null && req.params.user != "undefined") {
         if (req.params.options == "show_nsfw") {
             try {
                 User.findOne({name:req.params.user}, function(err: any, user: { show_nsfw: any }) {
+					if (user.show_nsfw == undefined) return res.json({status:'error'})
                     return res.send({show_nsfw: user.show_nsfw})
                 })
             } catch(err) {
@@ -816,7 +818,7 @@ app.get('/api/get/search/q', async function(req:any,res:any) {
 					
 				}
 			}
-			res.send(postsonpage)
+			res.send({data:postsonpage})
 		})
 	} else {
 		Post.find({status:'active', title: regex_q}, async function(err:any, docs:any) {
