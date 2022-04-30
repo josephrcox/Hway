@@ -29,3 +29,15 @@ submit.onclick = async function() {
     await apiGetPostsBySearchQuery(phrase.value+"", topic.value+"")
     stopLoaders()
 }
+
+phrase.addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+        submit.click()
+    }
+})
+
+topic.addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+        submit.click()
+    }
+})

@@ -789,74 +789,35 @@ app.get('/api/get/search/q', async function(req:any,res:any) {
 	}
 
 	var regex_q = new RegExp(req.query.query, 'i');
+	var regex_t = new RegExp(req.query.topic, 'i');
+
+	Post.find({status:'active', title: regex_q, topic: regex_t}, function(err:any, docs:any) {
+		postsonpage = docs
+		for (let i=0;i<docs.length;i++) {
+			if (postsonpage[i].posterID == userID) {
+				// postsonpage[i] = posts[i]
+				postsonpage[i].current_user_admin = true
+			} else {
+				// postsonpage[i] = posts[i]
+				postsonpage[i].current_user_admin = false
+			}
+			if (postsonpage[i].users_upvoted.includes(userID)) {
+				postsonpage[i].current_user_upvoted = true
+				postsonpage[i].current_user_downvoted = false
+			}
+			if (postsonpage[i].users_downvoted.includes(userID)) {
+				postsonpage[i].current_user_upvoted = false
+				postsonpage[i].current_user_downvoted = true
+			}
+			
+			if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
+				let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
+				postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
+			}
+		}
+		res.send({data:postsonpage})
+	})
 	
-	if (req.query.topic) {
-		var regex_t = new RegExp(req.query.topic, 'i');
-		Post.find({status:'active', title: regex_q, topic: regex_t}, function(err:any, docs:any) {
-			postsonpage = docs
-			for (let i=0;i<docs.length;i++) {
-				if (postsonpage[i].posterID == userID) {
-					// postsonpage[i] = posts[i]
-					postsonpage[i].current_user_admin = true
-				} else {
-					// postsonpage[i] = posts[i]
-					postsonpage[i].current_user_admin = false
-				}
-				if (postsonpage[i].users_upvoted.includes(userID)) {
-					postsonpage[i].current_user_upvoted = true
-					postsonpage[i].current_user_downvoted = false
-				}
-				if (postsonpage[i].users_downvoted.includes(userID)) {
-					postsonpage[i].current_user_upvoted = false
-					postsonpage[i].current_user_downvoted = true
-				}
-				
-				if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
-					let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
-					postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
-				} else {
-					
-				}
-			}
-			res.send({data:postsonpage})
-		})
-	} else {
-		Post.find({status:'active', title: regex_q}, async function(err:any, docs:any) {
-			let totalPosts = docs.length
-			let totalPages = Math.ceil((totalPosts)/postsPerPage)
-			let lastPagePosts = totalPosts % postsPerPage
-
-			postsonpage = await paginate(docs, postsPerPage, 1)
-
-			postsonpage = docs
-
-			for (let i=0;i<docs.length;i++) {
-				if (postsonpage[i].posterID == userID) {
-					// postsonpage[i] = posts[i]
-					postsonpage[i].current_user_admin = true
-				} else {
-					// postsonpage[i] = posts[i]
-					postsonpage[i].current_user_admin = false
-				}
-				if (postsonpage[i].users_upvoted.includes(userID)) {
-					postsonpage[i].current_user_upvoted = true
-					postsonpage[i].current_user_downvoted = false
-				}
-				if (postsonpage[i].users_downvoted.includes(userID)) {
-					postsonpage[i].current_user_upvoted = false
-					postsonpage[i].current_user_downvoted = true
-				}
-				
-				if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
-					let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
-					postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
-				} else {
-					
-				}
-			}
-			res.send({data:postsonpage})
-		})
-	}
 
 })
 
