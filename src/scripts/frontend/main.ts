@@ -6,6 +6,7 @@ import { newComment } from "./modules/createComment.js";
 import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
 import { addSortingEvents, addPageNavigation, pageNum } from "./modules/pageNavigator.js"
 import { init, phrase, topic, bar } from "./modules/search.js"
+import { apiGetNotifications } from "./modules/notifications.js";
 
 const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
 const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
@@ -52,6 +53,10 @@ export async function loadMain() {
             bar.classList.add('open')
             bar.style.margin = ''
             apiGetPostsBySearchQuery(params.get('query')+"", params.get("topic")+"")
+            break;
+        case "notifications":
+            console.log("notifs page")
+            apiGetNotifications("false")
             break;
         
     }

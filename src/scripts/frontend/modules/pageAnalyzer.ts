@@ -18,7 +18,7 @@ export function getPageType() {
         // user is on login page
     } else if (pathname.includes('/register/')) {
         // user is on registration page
-    } else if (pathname.includes('/notifications/')) {
+    } else if (pathname.includes('/notifications')) {
         // user is on notifications
         return ['notifications']
     } else if (pathname.includes('/subscriptions')) {

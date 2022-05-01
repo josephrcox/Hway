@@ -23,7 +23,7 @@ function setBell(x:number) {
     }
 }
 
-async function apiGetNotifications(cleared:string) {
+export async function apiGetNotifications(cleared:string) {
     startLoaders()
     const response = await fetch('/api/get/notifications/'+cleared)
     const data = await response.json()
@@ -80,11 +80,6 @@ if (pt[0] == 'notifications') {
             method: 'POST'
         }); 
     })
-
-    
-    window.onload = function() {
-        apiGetNotifications("false")
-    }
 }
 
 
