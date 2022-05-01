@@ -1,4 +1,5 @@
 import { startLoaders, stopLoaders } from "../main.js"
+import { getPageType } from "./pageAnalyzer.js"
 
 const notifsBell = document.getElementById("header-notifs-bell") as HTMLDivElement
 const viewCleared = document.getElementById("notif_viewcleared") as HTMLButtonElement
@@ -22,7 +23,7 @@ function setBell(x:number) {
     }
 }
 
-const apiGetNotifications = async(cleared:string) => {
+async function apiGetNotifications(cleared:string) {
     startLoaders()
     const response = await fetch('/api/get/notifications/'+cleared)
     const data = await response.json()
@@ -39,32 +40,53 @@ const apiGetNotifications = async(cleared:string) => {
     
 }
 
-viewCleared.addEventListener('click', function() {
-    if (viewCleared.dataset.cleared == "true") {
-        viewCleared.dataset.cleared = "false"
-        viewCleared.innerText = "View cleared"
-    } else {
-        viewCleared.dataset.cleared = "true"
-        viewCleared.innerText = "View new"
+let pt = getPageType() + ""
+if (pt[0] == 'notifications') {
+    viewCleared.addEventListener('click', function() {
+        if (viewCleared.dataset.cleared == "true") {
+            viewCleared.dataset.cleared = "false"
+            viewCleared.innerText = "View cleared"
+        } else {
+            viewCleared.dataset.cleared = "true"
+            viewCleared.innerText = "View new"
+            
+        }
+        notifArray.innerHTML = ""
         
-    }
-    notifArray.innerHTML = ""
-    
-    apiGetNotifications(viewCleared.dataset.cleared)
-})
+        apiGetNotifications(viewCleared.dataset.cleared)
+    })
+        
+    sorting.addEventListener('click', function() {
+        if (sorting.dataset.sortingoption == "0") {
+            sorting.dataset.sortingoption = "1"
+            sorting.innerText = "Newest to oldest"
+            
+        } else {
+            sorting.dataset.sortingoption = "0"
+            sorting.innerText = "Oldest to newest"
+        }
+        notifArray.innerHTML = ""
+        apiGetNotifications(sorting.dataset.sortingoption+"")
+    })
+    clearAll.addEventListener('click', async() => {
+        notifArray.innerHTML = 'No new notifications!'
+        clearAll.style.display = 'none'
+        sorting.style.display = 'none'
+        const fetchResponse = await fetch('/api/post/notif/clear/', {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+            method: 'POST'
+        }); 
+    })
 
-sorting.addEventListener('click', function() {
-    if (sorting.dataset.sortingoption == "0") {
-        sorting.dataset.sortingoption = "1"
-        sorting.innerText = "Newest to oldest"
-        
-    } else {
-        sorting.dataset.sortingoption = "0"
-        sorting.innerText = "Oldest to newest"
+    
+    window.onload = function() {
+        apiGetNotifications("false")
     }
-    notifArray.innerHTML = ""
-    apiGetNotifications(sorting.dataset.sortingoption+"")
-})
+}
+
 
 function displayNotifs(n:Array<any>, sorting:string) {
     let s = parseInt(sorting)
@@ -168,21 +190,4 @@ const removeNotif = async(index:any, id:string) => {
             sorting.style.display = 'none'
         } 
     }
-}
-
-clearAll.addEventListener('click', async() => {
-    notifArray.innerHTML = 'No new notifications!'
-    clearAll.style.display = 'none'
-    sorting.style.display = 'none'
-    const fetchResponse = await fetch('/api/post/notif/clear/', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST'
-    }); 
-})
-
-window.onload = function() {
-    apiGetNotifications(viewCleared.dataset.cleared+"")
 }

@@ -1,8 +1,10 @@
-export var isUserLoggedIn = false
-export var currentUsername = null
-export var currentUserID = null
+export let isUserLoggedIn = false
+export let currentUsername = null
+export let currentUserID = null
+export let currentUserSubscriptions = []
 
 import { apiGetNotificationCount } from "../modules/notifications.js";
+import { apiGetSubscriptions } from "./subscriptions.js";
 
 export const getUser = async () => {
     const response = await fetch('/api/get/currentuser/')
@@ -29,6 +31,7 @@ export const getUser = async () => {
             else {
                 filter_nsfw.checked = false;
             }
+            apiGetSubscriptions(currentUsername+"")
             
         }    
     } catch(err) {
@@ -67,3 +70,4 @@ function modifyHeader(loggedin:Boolean, name:string) {
         dd_nsfw.style.display = 'none'
     }
 }
+
