@@ -22,12 +22,14 @@ export function getPageType() {
         // user is on notifications
         return ['notifications']
     } else if (pathname.includes('/subscriptions')) {
-        // user is on subscriptions page
+        return ['subscriptions']
     } else if (pathname.includes('/post/')) {
         // user is creating a new post
         return ['createnewpost']
     } else if (pathname.includes('/search/')) {
         return ['search', search]
+    } else if ('/home') {
+        return ['home']
     }
 }
 

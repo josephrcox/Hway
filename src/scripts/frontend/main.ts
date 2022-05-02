@@ -1,4 +1,4 @@
-import { postObject } from "./modules/objects/post.js";
+import { postObject, postsArray } from "./modules/objects/post.js";
 import { apiGetPostsByTopic, apiGetPostByID, apiGetPostsBySearchQuery } from "./modules/postLoader.js";
 import { getPageType, getPageSearchQueries } from "./modules/pageAnalyzer.js"
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
@@ -13,6 +13,7 @@ const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextA
 const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
 export const subheader = document.getElementById("sub_header_options") as HTMLDivElement
 const loaders = document.getElementsByClassName("loader")
+const postsAndMore = document.getElementById('posts_and_more') as HTMLDivElement
 
 export async function loadMain() {
     localStorage.setItem("deletepostconfirmid","")
@@ -55,11 +56,15 @@ export async function loadMain() {
             apiGetPostsBySearchQuery(params.get('query')+"", params.get("topic")+"")
             break;
         case "notifications":
-            console.log("notifs page")
             apiGetNotifications("false")
             initNotificationButtons()
             break;
-        
+        case "home":
+            await getPostsByTopic('home')
+            break;
+        case "subscriptions":
+            
+            break;
     }
     addPageNavigation()
 }
@@ -68,11 +73,18 @@ loadMain()
 
 async function getPostsByTopic(topic:string) {
     var posts = await apiGetPostsByTopic(topic, getPageSearchQueries())
-    console.log(posts)
     
-    loadPostOrPostObjects(posts)
+    if (posts.length > 0) {
+        loadPostOrPostObjects(posts)
+        subheader.style.display = 'block'
+    } else {
+        postsAndMore.innerHTML = "<br/><a href='/post' style='color:blue;text-decoration:none;background-color:white;padding:10px;margin-top:10px;'>Start the conversation! :) </a>"
+        subheader.style.display = 'none'
+        stopLoaders()
+    }
     
 }
+
 async function getPostByID(ID:string) {
     var post = []
     post[0] = await apiGetPostByID(ID)

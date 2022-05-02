@@ -1,5 +1,9 @@
+import { startLoaders, stopLoaders } from "../main.js"
+
 let subscribedTopics:Array<string> = []
 let subscribedUsers:Array<string> = []
+const subscribe_input = document.getElementById('subscribe_topic_input') as HTMLInputElement
+const subscribe_submit = document.getElementById("subscribe_topic_submit") as HTMLButtonElement
 
 export async function apiGetSubscriptions(x:string) {
     subscribedTopics = []
@@ -9,10 +13,18 @@ export async function apiGetSubscriptions(x:string) {
 
     console.log(data)
     for (let i=0;i<data.topics.length;i++) {
-        subscribedTopics.push(data.topics[i][0].toLowerCase())
+        if (!subscribedTopics.includes(data.topics[i][0].toLowerCase())) {
+            subscribedTopics.push(data.topics[i][0].toLowerCase())
+        }
+        
     }
     for (let i=0;i<data.users.length;i++) {
-        subscribedUsers.push(data.users[i][0].toLowerCase())
+        if (!subscribedUsers.includes(data.users[i][0].toLowerCase())) {
+            subscribedUsers.push(data.users[i][0].toLowerCase())
+        }
+    }
+    if (window.location.href.includes('/subscriptions')) {
+        showSubscriptions()
     }
 }
 
@@ -25,7 +37,7 @@ export function isSubscribed(x:string) {
 
 }
 
-export const subscribeTo = async(x:string, type:string, elemID:string) => { // x is the topic or user, type is 'topic' or 'user'
+export const subscribeTo = async(x:string, type:string) => { // x is the topic or user, type is 'topic' or 'user'
     const settings = {
         method: 'PUT',
     };
@@ -68,3 +80,77 @@ function subscriptionToggle() {
     }
 
 }
+
+function showSubscriptions() {
+    (document.getElementById("subscriptions_page_container") as HTMLDivElement).innerHTML = ""
+    startLoaders()
+    console.log(subscribedTopics, subscribedUsers)
+    for (let i=0;i<subscribedTopics.length;i++) {
+        let t = Object.create(topicObject)
+        t.name = subscribedTopics[i]
+        t.isUser = false
+        t.display()
+    }
+    for (let i=0;i<subscribedUsers.length;i++) {
+        let t = Object.create(topicObject)
+        t.name = subscribedUsers[i]
+        t.isUser = true
+        t.display()
+    }
+    stopLoaders()
+    
+}
+
+
+const topicObject = {
+    name: "",
+    isUser:false,
+
+    display() {
+        var topicContainer = document.createElement("div")
+        topicContainer.setAttribute("id","topicContainer_"+this.name)
+        topicContainer.setAttribute("class","topicContainer postContainer")
+        topicContainer.classList.add('animated_entry')
+
+        var topicFrame = document.createElement("div")
+        topicFrame.setAttribute("id", "topicFrame_"+this.name)
+        topicFrame.setAttribute("class", "topicFrame postFrame")
+
+        let href = ""
+        if (!this.isUser) {
+            href= '/h/'+topicFrame.id.split('_')[1]
+        } else if (this.isUser){
+            href = '/user/'+topicFrame.id.split('_')[1].split(" ")[0]
+        }
+        
+        topicFrame.innerHTML = "<a href='"+href+"'>"+this.name+"</a>"
+
+        let unsub = document.createElement('img')
+        unsub.src = "/dist/images/square-minus-solid.svg"
+        unsub.classList.add('filter_purple')
+        unsub.classList.remove('filter_green')
+        unsub.classList.add('post-subscription-button')
+        unsub.dataset.topic = this.name
+        unsub.onclick = async function() {
+
+            await subscribeTo(unsub.dataset.topic+"", "topic")
+            topicContainer.classList.add('animated_exit')
+        }
+
+        topicFrame.append(unsub)
+        topicContainer.append(topicFrame);
+    
+        (document.getElementById("subscriptions_page_container") as HTMLDivElement).append(topicContainer)
+
+        
+    }
+}
+
+subscribe_submit.addEventListener('click', function() {
+    if (subscribe_input.value.length > 0) {
+        
+        subscribeTo(subscribe_input.value.toLowerCase(), 'topic')
+    }
+    
+    apiGetSubscriptions(localStorage.getItem('currentUsername')+"")
+})

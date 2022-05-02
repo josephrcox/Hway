@@ -4,26 +4,17 @@
 
 <body>
    
-<div id="sitebody" class="sitebody-flex" style="display: block;">
-   <button onclick="topFunction()" id="button_sendtotop" title="Go to top">Top</button>
- 
-   <div id="subscriptions_header_queries" style="display: flex;">
-      <input type='text' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off" style="flex-grow: 5;margin-inline:5px;">
-      <div><label for="subscribe_topic_checkbox" style="color: white;margin-inline:5px;" >User?</label> <input type="checkbox" id="subscribe_topic_checkbox"></div>
+   <div id="subscriptions_header_queries">
+      <label class="np_input_label">Subscribe to the topic...</label>
+      <input type='text' class='general_input' placeholder="Subscribe to a topic" id='subscribe_topic_input' autocomplete="off">
       <button class='button' id='subscribe_topic_submit'>Subscribe </button>
-     
    </div>
+   
+   <div class="loader" id="primary_loader"></div>
 
 
    <div id="subscriptions_page_container">
 
    </div>
 
-
-</div> 
-
- <script>
-     document.getElementById("subscribe_topic_checkbox").checked = false
-     document.getElementById('sorting_options').style.display = 'none'
- </script>
 </body> 

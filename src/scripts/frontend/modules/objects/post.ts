@@ -86,7 +86,7 @@ export const postObject = {
             subscriptionButton.classList.add('filter_green')
         }
         subscriptionButton.onclick = function() {
-            subscribeTo(subscriptionButton.dataset.topic+"", "topic", subscriptionButton.id)
+            subscribeTo(subscriptionButton.dataset.topic+"", "topic")
         }
         subscriptionButton.classList.add('post-subscription-button')
         subtitle.append(subscriptionButton)
