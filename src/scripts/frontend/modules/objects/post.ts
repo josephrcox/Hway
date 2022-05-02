@@ -1,4 +1,4 @@
-import { isSubscribed } from "../subscriptions.js"
+import { isSubscribed, subscribeTo } from "../subscriptions.js"
 
 export const supportEmail = "josephrobertcox@gmail.com"
 
@@ -76,12 +76,17 @@ export const postObject = {
         subtitle.innerHTML = "@"+this.poster_name + " — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
 
         var subscriptionButton = document.createElement('img')
+        subscriptionButton.dataset.topic = this.topic.toLowerCase()
+        subscriptionButton.setAttribute('id','post-subscribe-button_'+this.id)
         if (isSubscribed(this.topic.toLowerCase())) {
             subscriptionButton.src = "/dist/images/square-minus-solid.svg"
             subscriptionButton.classList.add('filter_purple')
         } else {
             subscriptionButton.src = "/dist/images/square-plus-solid.svg"
             subscriptionButton.classList.add('filter_green')
+        }
+        subscriptionButton.onclick = function() {
+            subscribeTo(subscriptionButton.dataset.topic+"", "topic", subscriptionButton.id)
         }
         subscriptionButton.classList.add('post-subscription-button')
         subtitle.append(subscriptionButton)

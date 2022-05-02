@@ -134,7 +134,7 @@ export function loadPostOrPostObjects(posts:any) {
         post.currentUserAdmin = posts[i].current_user_admin
         post.totalVotes = posts[i].total_votes
         post.commentCount = 0 + posts[i].comments.length
-        post.topic = posts[i].topic
+        post.topic = posts[i].topic.toLowerCase()
         post.post_type = posts[i].type
         post.link = posts[i].link
         

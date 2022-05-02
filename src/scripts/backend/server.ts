@@ -536,7 +536,6 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
         } else if(req.params.options == "subscriptions") {
             try {
                 User.findOne({name:req.params.user}, function(err: any, user: { subscriptions: any }) {
-                    
                     return res.json(user.subscriptions)
                 })
             } catch(err) {
@@ -708,14 +707,16 @@ app.get('/api/get/post/:postid', async(req: { cookies: { token: any }; params: {
 })
 
 app.put('/api/put/subscribe/:topic', async(req: { params: { topic: string } },res: { status: (arg0: number) => void; send: (arg0: { status: string; data: string }) => any; json: (arg0: { status: string; data?: string }) => void }) => {
+	req.params.topic = req.params.topic.toLowerCase()
+	
 	if (bannedTopics.includes(req.params.topic.toLowerCase())) {
 		res.status(400)
 		return res.send({status:'error', data:'This topic is not available to subscribe'})
 	}
 
 	if (currentUser) {
-		User.findById(currentUser, function(err: any,docs: { subscriptions: { topics: any[][] }; save: () => void }) {
-			if (docs.subscriptions.topics.some((x: any[]) => x[0] == req.params.topic)) {
+		User.findById(currentUser, function(err: any,docs:any) {
+			if (docs.subscriptions.topics.some((x: any[]) => x[0] == req.params.topic.toLowerCase())) {
 				res.json({status:'error', data:'already subscribed'})
 			} else {
 				docs.subscriptions.topics.push([
