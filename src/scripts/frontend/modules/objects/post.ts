@@ -75,14 +75,16 @@ export const postObject = {
         subtitle.classList.add('post-subtitle')
         subtitle.innerHTML = "@"+this.poster_name + " — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
 
-        var add = document.createElement('img')
+        var subscriptionButton = document.createElement('img')
         if (isSubscribed(this.topic.toLowerCase())) {
-            add.src = "/dist/images/square-minus-solid.svg"
+            subscriptionButton.src = "/dist/images/square-minus-solid.svg"
+            subscriptionButton.classList.add('filter_purple')
         } else {
-            add.src = "/dist/images/square-plus-solid.svg"
+            subscriptionButton.src = "/dist/images/square-plus-solid.svg"
+            subscriptionButton.classList.add('filter_green')
         }
-        add.classList.add('post-vote-button')
-        subtitle.append(add)
+        subscriptionButton.classList.add('post-subscription-button')
+        subtitle.append(subscriptionButton)
         
 
         var voteContainer = document.createElement('div')

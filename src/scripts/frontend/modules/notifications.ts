@@ -40,8 +40,7 @@ export async function apiGetNotifications(cleared:string) {
     
 }
 
-let pt = getPageType() + ""
-if (pt[0] == 'notifications') {
+export function initNotificationButtons() {
     viewCleared.addEventListener('click', function() {
         if (viewCleared.dataset.cleared == "true") {
             viewCleared.dataset.cleared = "false"
@@ -85,6 +84,7 @@ if (pt[0] == 'notifications') {
 
 function displayNotifs(n:Array<any>, sorting:string) {
     let s = parseInt(sorting)
+    console.log(n)
 
     if (sorting == '0') {
         n.sort(function(a, b){return a.timestamp - b.timestamp}); 
@@ -119,6 +119,7 @@ function displayNotifs(n:Array<any>, sorting:string) {
 
         let c = document.createElement("div");
         c.setAttribute("class", "notifContainer");
+        c.classList.add('animated_entry')
         c.setAttribute("id", "notifContainer_" + i);
         
         let anb = document.createElement("div")
@@ -129,33 +130,36 @@ function displayNotifs(n:Array<any>, sorting:string) {
         nb.setAttribute("class", "notifBody");
         nb.style.paddingLeft = '10px'
 
-        let avatar = document.createElement("img")
-        avatar.src = n[i].avatar
-        avatar.style.width = '50px'
-        avatar.style.height = 'auto'
-        avatar.style.marginLeft = '-6px'
-        avatar.style.objectFit = 'contain'
+        if (n[i].avatar) {
+            let avatar = document.createElement("img")
+            avatar.src = n[i].avatar
+            avatar.style.width = '50px'
+            avatar.style.height = 'auto'
+            avatar.style.marginLeft = '-6px'
+            avatar.style.objectFit = 'contain'
+            anb.append(avatar)
+        }
+
 
         let check = document.createElement("span");
         check.setAttribute("class", "notifCheck noselect");
         check.innerHTML = "✔";
+        check.dataset.timestamp = n[i].timestamp
 
         check.onclick = function () {
-            removeNotif(i, "notifContainer_" + i);
+            removeNotif(i, "notifContainer_" + i, check.dataset.timestamp+"");
         };
         if (n[i].type == 'comment') {
-            nb.innerHTML = "<span style='font-size:14px;color:gray;'>"+timeago+" — </span> <span style='font-size:16px;color:gray;font-style:normal;'>" + n[i].user + " replied to '<a href='/posts/" + n[i].postID + "'>" + n[i].post.title + "</a>':</span><br/> " + n[i].body;
+            nb.innerHTML = "<span style='font-size:14px;color:gray;'>"+timeago+" — </span> <span style='font-size:16px;color:gray;font-style:normal;'>" + n[i].user + " replied to '<a href='/p/" + n[i].postID + "'>" + n[i].post.title + "</a>':</span><br/> " + n[i].body;
         }
         if (n[i].type == 'comment_nested') {
-            nb.innerHTML = "<span style='font-size:14px;color:gray;'>"+timeago+" — </span><span style='font-size:16px;color:gray;font-style:normal;'>" + n[i].user + " replied to '<a href='/posts/" + n[i].postID + "'>" + n[i].comment_body + "' in '" + n[i].post.title + "</a>':</span><br/> " + n[i].body;
+            nb.innerHTML = "<span style='font-size:14px;color:gray;'>"+timeago+" — </span><span style='font-size:16px;color:gray;font-style:normal;'>" + n[i].user + " replied to '<a href='/p/" + n[i].postID + "'>" + n[i].comment_body + "' in '" + n[i].post.title + "</a>':</span><br/> " + n[i].body;
         }
         if (n[i].type == 'mention') {
-            nb.innerHTML = "<span style='font-size:14px;color:gray;'>"+timeago+" — </span> <span style='font-size:16px;color:gray;font-style:normal;'>" + n[i].user + " mentioned you in '<a href='/posts/" + n[i].postID + "'>" + n[i].post.title + "</a>'";
-            check.style.paddingTop = '5px';
-            check.style.paddingBottom = '5px';
+            nb.innerHTML = "<span style='font-size:14px;color:gray;'>"+timeago+" — </span> <span style='font-size:16px;color:gray;font-style:normal;'>" + n[i].user + " mentioned you in '<a href='/p/" + n[i].postID + "'>" + n[i].post.title + "</a>'" + ":</span><br/> " + n[i].body;
         }
 
-        anb.append(avatar, nb)
+        anb.append(nb)
         if (viewCleared.dataset.cleared == "false") {
             c.append(anb, check);
         } else {
@@ -168,12 +172,14 @@ function displayNotifs(n:Array<any>, sorting:string) {
 }
 
 
-const removeNotif = async(index:any, id:string) => {
+const removeNotif = async(index:any, id:string, timestamp:string) => {
+
+
     const settings = {
         method: 'PUT',
     };
 
-    const response = await fetch('/api/put/notif/remove/'+index, settings)
+    const response = await fetch('/api/put/notif/remove/'+timestamp, settings)
     const data = await response.json()
 
     if (data.status == 'ok') {

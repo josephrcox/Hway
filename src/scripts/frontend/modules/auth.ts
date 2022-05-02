@@ -31,7 +31,7 @@ export const getUser = async () => {
             else {
                 filter_nsfw.checked = false;
             }
-            apiGetSubscriptions(currentUsername+"")
+            await apiGetSubscriptions(currentUsername+"")
             
         }    
     } catch(err) {

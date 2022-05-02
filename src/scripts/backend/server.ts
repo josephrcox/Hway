@@ -325,26 +325,27 @@ app.get('/api/get/notifications/:cleared', function(req: { params: { cleared: st
 	
 })
 
-app.put('/api/put/notif/remove/:index', function(req: { cookies: { token: any }; params: { index: string | number } },res: { json: (arg0: { status: string }) => void; send: (arg0: { status: string; data: string }) => void }) {
+app.put('/api/put/notif/remove/:timestamp', function(req:any, res:any) {
 	try {
-		let token = req.cookies.token
-		let user = jwt.verify(token, process.env.JWT_SECRET)
-	
-		User.findById(user.id, function(err: any,docs: { notifications: any; save: () => void }) {
-			let allnotifs = docs.notifications
-			let activenotifs = allnotifs.filter((x: { status: string }) => x.status == "active")
+        User.findById(currentUser, async function (err:any, docs:any) {
+            try {
+                console.log(docs.name)
+                for (let i=0;i<docs.notifications.length;i++) {
+                    if (docs.notifications[i].timestamp == req.params.timestamp) {
+                        docs.notifications.splice(i,1)
+                        await docs.save()
+                        return res.json({status:'ok'})
+                    }
+    
+                }
+            } catch (err) {
+                return res.json({status:'error', data:'Too fast'})
+            }
 
-			activenotifs[req.params.index].status = "cleared"
-			let ts = activenotifs[req.params.index].timestamp
+            
 
-			let index = allnotifs.findIndex((x: { timestamp: any }) => x.timestamp == ts)
-			allnotifs[index] = activenotifs[req.params.index]
-			docs.notifications = allnotifs
-
-			docs.save()
-			res.json({status:'ok'})
-		})
-	}catch(error) {
+        });
+	} catch(error) {
 		res.send({status:'error', data:'nojwt'})
 	} 
 })
@@ -1356,6 +1357,7 @@ app.post('/api/post/post', async(req:any, res:any) => {
 	var {title, body, link, topic, type, nsfw} = req.body
 	let userID
 	let poster
+    topic = topic.toLowerCase()
 
 	// SANITIZING DON'T MODIFY - FOR SECURITY PURPOSES!!!
 	title = sanitize(title)
@@ -1477,15 +1479,9 @@ app.post('/api/post/comment/', async(req:any, res:any) => {
 			}
 
 			
-			notifyUsers(usersMentioned, "mention", username, id,"","")
+			notifyUsers(usersMentioned, "mention", username, id,reqbody,"")
 
             if (!localtoken) {
-                // User.findById(userID, function(err:any, docs:any) {
-                //     docs.statistics.comments.created_num += 1
-                //     docs.statistics.comments.created_array.push([reqbody, id, newComment._id])
-                //     docs.save()
-                // })
-    
                 User.findById(docs.posterID, async function(err:any, docs:any) {
                     if (err) {
                         
@@ -1551,7 +1547,7 @@ function notifyUsers(users: any[], type: string, triggerUser: any, postID: any, 
 				if (type == 'mention') {
 					notifs.push({
 						type:'mention', 
-						body: '', 
+						body: commentBody, 
 						post: postInfo,
 						postID: postID,
 						user: triggerUser,
@@ -1661,7 +1657,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 				}
 			}
 
-			notifyUsers(usersMentioned, "mention", username, id,"","" )
+			notifyUsers(usersMentioned, "mention", username, id, body,"" )
 
 			// docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)
 			let parentCommentIndex = docs.comments.findIndex((x: { _id: any }) => x._id == parentID)

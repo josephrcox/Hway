@@ -59,6 +59,8 @@ body {
     padding-bottom: 3px;
     background-color: #c6c3fcbf;
     padding-inline-start: 3px;
+    display: flex;
+    align-items: center;
 }
 
 .post-vote-container, .comment-vote-container {
@@ -496,6 +498,9 @@ font-size: 12px;
 	color: white;
 	background-color: red;
 	padding: 3px;
+	padding-inline: 12px;
+	border-radius: 5px;
+	font-size: 21px;
 }
 
 .notif_array {
@@ -508,7 +513,7 @@ font-size: 12px;
 
 .notifBody {
 	font-size: 20px;
-	padding: 3px;
+	color: black;
 }
 
 .notifContainer {
@@ -548,4 +553,20 @@ font-size: 12px;
 
 .notif_sorting, .notif_clearall {
 	display: none;
+}
+
+.post-subscription-button {
+  height: 13px;
+  margin-left: 3px;
+	cursor: pointer;
+}
+
+
+.filter_purple {
+  filter: brightness(0%) saturate(100%) invert(35%) sepia(91%) saturate(2026%) hue-rotate(971deg) brightness(92%) contrast(97%);
+}
+
+
+.filter_green {
+  filter: brightness(0%) saturate(100%) invert(35%) sepia(91%) saturate(1506%) hue-rotate(111deg) brightness(92%) contrast(97%);
 }
