@@ -87,6 +87,8 @@ body {
 .comment-vote-button {
     height: 14px;
     cursor: pointer;
+    scale: 1.7;
+    overflow: auto;
 }
 
 .post-vote-count-container, .comment-vote-count-container {
