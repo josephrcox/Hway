@@ -371,7 +371,6 @@ app.post('/api/post/notif/clear/', function(req: { cookies: { token: any } },res
 })
 
 app.get('/login', (req:any, res:any) => {
-    //res.render('login.ejs', {layout: 'layouts/layout.ejs'})
     res.render('login.ejs', {topic:"- login"})
 })
 
@@ -404,7 +403,7 @@ app.get('/subscriptions', async(req:any, res:any) => {
 	if (valid) {
 		res.render('subscriptions.ejs', {topic:"- subscriptions"})
 	} else {
-		res.render('login.ejs', {topic:"- login"})
+		res.redirect('/login')
 	}
     
 })
@@ -417,7 +416,7 @@ app.get('/all/q', async(req:any, res:any) => {
 	if (valid || allowUsersToBrowseAsGuests) {
 		res.render('home.ejs', {topic: "- all"})
 	} else {
-		res.render('login.ejs', {topic:"- login"})
+		res.redirect('/login')
 	}
 	
 })
@@ -438,7 +437,7 @@ app.get('/home/q', async(req:any, res:any) => {
 	if (valid) {
 		res.render('home.ejs', {topic: "- home"})
 	} else {
-		res.render('login.ejs', {topic:"- login"})
+		res.redirect('/login')
 	}
 	
 })
@@ -451,7 +450,7 @@ app.get('/all/:queries', async(req:any, res:any) => {
 	if (valid || allowUsersToBrowseAsGuests) {
 		res.render('home.ejs', {topic: "- all"})
 	} else {
-		res.render('login.ejs', {topic:"- login"})
+		res.redirect('/login')
 	}
 })
 
@@ -989,6 +988,9 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 			}
 		})
 	} else if (req.params.topic == 'home') {
+		if (userID != null) {
+			return res.json({ status:"ok", code:400, error: "Not logged in"})
+		}
 		let user = await User.findById(userID)
 		let subtop = user.subscriptions.topics
 		let subusers = user.subscriptions.users

@@ -61,10 +61,10 @@ export async function loadMain() {
             initNotificationButtons()
             break;
         case "home":
-            getPostsByTopic("home")
-            // for (let i=0;i<subscribedTopics.length;i++) {
-            //     await getPostsByTopic(subscribedTopics[i])
-            // }
+            if (isUserLoggedIn) {
+                getPostsByTopic("home")
+            }
+
             
             break;
         case "subscriptions":
