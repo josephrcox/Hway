@@ -1,7 +1,7 @@
 import { startLoaders, stopLoaders } from "../main.js"
 
-let subscribedTopics:Array<string> = []
-let subscribedUsers:Array<string> = []
+export let subscribedTopics:Array<string> = []
+export let subscribedUsers:Array<string> = []
 const subscribe_input = document.getElementById('subscribe_topic_input') as HTMLInputElement
 const subscribe_submit = document.getElementById("subscribe_topic_submit") as HTMLButtonElement
 
@@ -146,11 +146,14 @@ const topicObject = {
     }
 }
 
-subscribe_submit.addEventListener('click', function() {
-    if (subscribe_input.value.length > 0) {
+export function subscribe_init() {
+
+    subscribe_submit.addEventListener('click', function() {
+        if (subscribe_input.value.length > 0) {
+            
+            subscribeTo(subscribe_input.value.toLowerCase(), 'topic')
+        }
         
-        subscribeTo(subscribe_input.value.toLowerCase(), 'topic')
-    }
-    
-    apiGetSubscriptions(localStorage.getItem('currentUsername')+"")
-})
+        apiGetSubscriptions(localStorage.getItem('currentUsername')+"")
+    })
+}

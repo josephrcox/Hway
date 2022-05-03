@@ -866,13 +866,15 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 	}
 	
 	let sortingJSON = {}
+	let msnow = await Date.now()
 	let timestamp24hoursago: number = 0
 	let timestamp1weekago: number = 0
 	let timestamp1monthago: number = 0
+	console.log("sorting:"+sorting, " duration:"+duration)
 
 	if (sorting == "top") {
 		if (duration == "day") {
-			timestamp24hoursago = (Date.now() - ms_in_day)
+			timestamp24hoursago = (msnow - ms_in_day)
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "week") {
 			timestamp1weekago = (Date.now() - (ms_in_day*7))
@@ -882,13 +884,15 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "all") {
 			sortingJSON = {total_votes: -1}
+		} else {
+			console.error("ERROR:"+sorting)
 		}
-		
 	} else if (sorting == "new") {
 		sortingJSON = {timestamp: -1}
 	} else if (sorting == "hot") {
 		sortingJSON = {total_votes: -1}
 	}
+
 	
 	if (req.params.topic == "all") {
 		Post.find({status:'active'}).sort(sortingJSON).exec(async function(err: any, posts: any[]){
@@ -985,7 +989,6 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 			}
 		})
 	} else if (req.params.topic == 'home') {
-
 		let user = await User.findById(userID)
 		let subtop = user.subscriptions.topics
 		let subusers = user.subscriptions.users
@@ -997,36 +1000,41 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 
 		let posts = []
 		for (let i=0;i<subtop_count;i++) {
-			let topicPosts = await Post.find({topic:subtop[i][0], status:'active'})
-			posts.push(topicPosts)
+			let topicPosts = await Post.find({status:'active', topic:subtop[i][0]}).sort(sortingJSON)
+			console.log(topicPosts[0].title)
+			
+			console.log(topicPosts[0].title)
+			posts.push(topicPosts[0])
             
 		}
         for (let i=0;i<subusers_count;i++) {
 			let userPosts = await Post.find({poster:subusers[i][0],topic:!subtop[i][0], status:'active'})
-			posts.push(userPosts)
+			posts.push(userPosts[0])
 		}
+		
 		
 		try {
 			if (userID != null) {
-				User.findById(userID, async function(err:any, docs:any) {
-					if (docs.statistics.topics.visited_array.some((x: any[]) => x[0] == req.params.topic)) {
-						let index = docs.statistics.topics.visited_array.findIndex((x: any[]) => x[0] == req.params.topic)
-						let currentCount = docs.statistics.topics.visited_array[index][2]
-						docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
+			// 	User.findById(userID, async function(err:any, docs:any) {
+			// 		if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
+			// 			let index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
+			// 			let currentCount = docs.statistics.topics.visited_array[index][2]
+			// 			docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
 
-					} else {
-						let array = docs.statistics.topics.visited_array
-						array.push([req.params.topic, Date.now(), 1])
-						docs.statistics.topics.visited_array = array
-					}
+			// 		} else {
+			// 			let array = docs.statistics.topics.visited_array
+			// 			array.push([req.params.topic, Date.now(), 1])
+			// 			docs.statistics.topics.visited_array = array
+			// 		}
 					
-					docs.update()
-			})
+			// 		docs.update()
+			// })
 		}
 		} catch(err) {
 			
 		}
-
+		
+	
 		let filteredPosts = []
 
 		for (let x=0;x<posts.length;x++) {
@@ -1036,6 +1044,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 				if (sorting == "top" && duration == "day") {
 					if (posts[x].timestamp >= timestamp24hoursago) {
 						filteredPosts.push(posts[x])
+					} else {
 					}
 				} else if (sorting == "top" && duration == "week"){
 					if (posts[x].timestamp >= timestamp1weekago) {
@@ -1058,22 +1067,30 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 							}
 						})
 					}
-					if (posts.length > 1) {
-						posts.sort( compare );
-					}
+					// if (posts.length > 1) {
+					// 	posts.sort( compare );
+					// }
 					filteredPosts = posts
 				}
 			}
 		}
+		if (sorting == "top") {
+			filteredPosts.sort((a:any, b:any) => b.total_votes - a.total_votes)
+		} else if (sorting == "new") {
+			filteredPosts.sort((a:any, b:any) => b.timestamp - a.timestamp)
+		}
 		
+
 		let totalPosts = filteredPosts.length
 		let totalPages = Math.ceil((totalPosts)/postsPerPage)
 		let lastPagePosts = totalPosts % postsPerPage
 
+
 		postsonpage = await paginate(filteredPosts, postsPerPage, page)
+
 		
-		for (let i=0;i<postsonpage.length;i++) {
-			postsonpage[i] = postsonpage[i][0]
+		for (let i=0;i<postsonpage.length-1;i++) {
+			postsonpage[i] = postsonpage[i]
 			if (postsonpage[i].posterID == userID) {
 				postsonpage[i].current_user_admin = true
 			} else {
@@ -1096,7 +1113,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 			}
 		}
 		res.send({data:postsonpage, total_posts:totalPosts, total_pages:totalPages})
-	} else {
+	}  else {
 		Post.find({topic: req.params.topic, status:"active"}).sort({total_votes: -1}).exec(async function(err: any, posts: any[]){
 			if(err){
 			} else{
@@ -1193,7 +1210,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 		})
 	}
 
-	
+	 
 })
 
 function paginate(array: any[], page_size: number, page_number: number) {

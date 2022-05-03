@@ -7,6 +7,7 @@ import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
 import { addSortingEvents, addPageNavigation, pageNum } from "./modules/pageNavigator.js"
 import { init, phrase, topic, bar } from "./modules/search.js"
 import { apiGetNotifications, initNotificationButtons } from "./modules/notifications.js";
+import { subscribe_init, subscribedTopics, subscribedUsers } from "./modules/subscriptions.js";
 
 const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
 const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
@@ -60,10 +61,14 @@ export async function loadMain() {
             initNotificationButtons()
             break;
         case "home":
-            await getPostsByTopic('home')
+            getPostsByTopic("home")
+            // for (let i=0;i<subscribedTopics.length;i++) {
+            //     await getPostsByTopic(subscribedTopics[i])
+            // }
+            
             break;
         case "subscriptions":
-            
+            subscribe_init()
             break;
     }
     addPageNavigation()
@@ -79,7 +84,7 @@ async function getPostsByTopic(topic:string) {
         subheader.style.display = 'block'
     } else {
         postsAndMore.innerHTML = "<br/><a href='/post' style='color:blue;text-decoration:none;background-color:white;padding:10px;margin-top:10px;'>Start the conversation! :) </a>"
-        subheader.style.display = 'none'
+        subheader.style.display = 'block'
         stopLoaders()
     }
     
