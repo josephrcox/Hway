@@ -631,3 +631,8 @@ font-size: 12px;
 	padding-inline: 20px;
 	border-radius: 10px;
 }
+
+
+#user-dropdown {
+  top: 10vh;
+}

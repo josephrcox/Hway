@@ -82,6 +82,7 @@ async function getPostsByTopic(topic:string) {
     if (posts.length > 0) {
         loadPostOrPostObjects(posts)
         subheader.style.display = 'block'
+        addPageNavigation()
     } else {
         postsAndMore.innerHTML = "<br/><a href='/post' style='color:blue;text-decoration:none;background-color:white;padding:10px;margin-top:10px;'>Start the conversation! :) </a>"
         subheader.style.display = 'block'

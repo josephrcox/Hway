@@ -1,39 +1,3 @@
-// if (process.env.NODE_ENV !== 'production') {
-//     require('dotenv').config()
-// }
-// const express = require('express');
-// const app = express();
-// const port = 3000;
-// const expressLayouts = require('express-ejs-layouts');
-
-// const path = require('path')
-// app.use(express.static(path.join(__dirname, '../../')));
-// app.set('views',path.join(__dirname, '../../', '/views'))
-
-// app.set('view engine', 'ejs');
-// app.use(expressLayouts);
-
-// const mongoose = require('mongoose')
-// mongoose.connect(process.env.DATEBASE_URL, {
-// })
-// const connection = mongoose.connection;
-
-// connection.once("open", function(res:any) {
-// 	console.log("Connected to Mongoose!")
-// }); 
-
-// app.get('/api/v1/get/all', (req:any, res:any) => {
-//     res.send([
-//         {title:'Apples are great'},
-//         {title:'Bananas are great'},
-//         {title:'Grapes rock'},
-//     ])
-// })
- 
-// app.get('/', (req:any, res:any) => {
-//     res.render('index', { layout: 'layouts/layout' });
-// });
-
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
@@ -54,7 +18,7 @@ var IDs = []
 var topicArray: any[] = []
 var topicCount: any[] = []
 var postsonpage: any[] = []
-var postsPerPage = 5;
+var postsPerPage = 15;
 let ms_in_day = 86400000;
 let currentUser: any;
 let connectedToDB = false
@@ -604,19 +568,8 @@ app.put('/api/put/user/:user/:change/', async(req:any, res:any) => {
 	}
 })
 
-app.get('/api/get/post/:postid', async(req: { cookies: { token: any }; params: { postid: any } },res: { json: (arg0: { status: string; code: number; error: string }) => any; send: (arg0: { status: string; data: string }) => void }) => {
-	try {
-		let token = req.cookies.token
-		const verified = jwt.verify(token, process.env.JWT_SECRET)
-		var userID = verified.id
-		
-	} catch (err) {
-		if (!allowUsersToBrowseAsGuests) {
-			return res.json({ status:"ok", code:400, error: "Not logged in"})
-		} else {
-			userID = null
-		}
-	}
+app.get('/api/get/post/:postid', async(req:any, res:any) => {
+
 	
 	let postModified = []
 	Post.findById(req.params.postid, function (err: any, post: { status: string; posterID: any; users_upvoted: string | any[]; users_downvoted: string | any[]; comments: string | any[]; title: any; topic: any; id: any } | null) {
@@ -627,22 +580,22 @@ app.get('/api/get/post/:postid', async(req: { cookies: { token: any }; params: {
 		} else if(post.status == 'deleted') {
 			return res.send({status:'error', data:'This post was deleted by the creator.'})
 		} else {
-			if (post.posterID == userID) {
+			if (post.posterID == currentUser) {
 				postModified.current_user_admin = true
 			} else {
 				postModified.current_user_admin = false
 			}
-			if (post.users_upvoted.includes(userID)) {
+			if (post.users_upvoted.includes(currentUser)) {
 				postModified.current_user_upvoted = true
 				postModified.current_user_downvoted = false
 			}
-			if (post.users_downvoted.includes(userID)) {
+			if (post.users_downvoted.includes(currentUser)) {
 				postModified.current_user_upvoted = false
 				postModified.current_user_downvoted = true
 			}
 			
 			for (let i=0;i<post.comments.length;i++) {
-                if (post.comments[i].users_voted.includes(userID)) {
+                if (post.comments[i].users_voted.includes(currentUser)) {
                     console.log("user upvoted")
                     postModified.comments[i].current_user_voted = true
                     console.log(postModified)
@@ -650,7 +603,7 @@ app.get('/api/get/post/:postid', async(req: { cookies: { token: any }; params: {
 			}
 
 			try {
-				User.findById(userID, function(err:any, docs:any) {
+				User.findById(currentUser, function(err:any, docs:any) {
 					if (docs != null) {
 						const dt = getFullDateTimeAndTimeStamp()
 						let fulldatetime = dt[0]
@@ -673,15 +626,15 @@ app.get('/api/get/post/:postid', async(req: { cookies: { token: any }; params: {
 				if (post.comments[i].status == 'active') {
 					if (post.comments[i].nested_comments.length != 0) {
 						for (let x=0;x<post.comments[i].nested_comments.length;x++) {
-							if (post.comments[i].nested_comments[x].posterid == userID) {
+							if (post.comments[i].nested_comments[x].posterid == currentUser) {
 								postModified.comments[i].nested_comments[x].current_user_admin = true
 							}
-							if (post.comments[i].nested_comments[x].users_voted.includes(userID)) {
+							if (post.comments[i].nested_comments[x].users_voted.includes(currentUser)) {
 								postModified.comments[i].nested_comments[x].current_user_voted = true
 							}
 						}
 					}
-					if (post.comments[i].posterID == userID) {
+					if (post.comments[i].posterID == currentUser) {
 						postModified.comments[i].current_user_admin = true
 					} else {
 						postModified.comments[i].current_user_admin = false
@@ -866,6 +819,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 	
 	let sortingJSON = {}
 	let msnow = await Date.now()
+	var timestamp_since:number = 0
 	let timestamp24hoursago: number = 0
 	let timestamp1weekago: number = 0
 	let timestamp1monthago: number = 0
@@ -873,13 +827,13 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 
 	if (sorting == "top") {
 		if (duration == "day") {
-			timestamp24hoursago = (msnow - ms_in_day)
+			timestamp_since = (msnow - ms_in_day)
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "week") {
-			timestamp1weekago = (Date.now() - (ms_in_day*7))
+			timestamp_since = (msnow- (ms_in_day*7))
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "month") {
-			timestamp1monthago = (Date.now() - (ms_in_day*30))
+			timestamp_since = (msnow- (ms_in_day*30))
 			sortingJSON = {total_votes: -1}
 		} else if (duration == "all") {
 			sortingJSON = {total_votes: -1}
@@ -889,330 +843,64 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 	} else if (sorting == "new") {
 		sortingJSON = {timestamp: -1}
 	} else if (sorting == "hot") {
-		sortingJSON = {total_votes: -1}
+		sortingJSON = {updatedAt: -1}
 	}
 
-	
+	let posts = []
+	let filteredPosts = []
+
 	if (req.params.topic == "all") {
-		Post.find({status:'active'}).sort(sortingJSON).exec(async function(err: any, posts: any[]){
+		posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}}).sort(sortingJSON)
+		filteredPosts = posts
 
-			if(err){
-			} else{
-				let filteredPosts = []
-
-				for (let x=0;x<posts.length;x++) {
-					if (filteredPosts.length >= postsPerPage) {
-
-					} else {
-						if (sorting == "top" && duration == "day") {
-							if (posts[x].timestamp >= timestamp24hoursago) {
-								filteredPosts.push(posts[x])
-							}
-						} else if (sorting == "top" && duration == "week"){
-							if (posts[x].timestamp >= timestamp1weekago) {
-								filteredPosts.push(posts[x])
-							}
-						} else if (sorting == "top" && duration == "month"){
-							if (posts[x].timestamp >= timestamp1monthago) {
-								filteredPosts.push(posts[x])
-							}
-						} else if (sorting == "top" && duration == "all") {
-							filteredPosts.push(posts[x])
-						} else if (sorting == "new") {
-							filteredPosts.push(posts[x])
-						} else if (sorting == "hot") {
-							if (posts[x].last_touched_timestamp == null) {
-								let now = Date.now()
-								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err:any, docs:any) {
-									if (err){
-										console.log(err)
-									}
-								})
-							}
-							if (posts.length > 1) {
-								posts.sort( compare );
-							}
-							filteredPosts = posts
-						}
-					}
-					
-				}
-				for(let i=0;i<filteredPosts.length;i++) {
-					try {
-						if (filteredPosts[i].special_attributes[0].nsfw == true) {
-							if (queries.nsfw != 'true') {
-								filteredPosts.splice(i,1)
-							}
-						}
-					} catch(err) {
-
-					}
-					
-					
-				}
-
-				let totalPosts = filteredPosts.length
-				let totalPages = Math.ceil((totalPosts)/postsPerPage)
-				let lastPagePosts = totalPosts % postsPerPage
-
-				postsonpage = await paginate(filteredPosts, postsPerPage, page)
-
-				for (let i=0;i<postsonpage.length;i++) {
-					if (postsonpage[i].posterID == userID) {
-						// postsonpage[i] = posts[i]
-						postsonpage[i].current_user_admin = true
-					} else {
-						// postsonpage[i] = posts[i]
-						postsonpage[i].current_user_admin = false
-					}
-					if (postsonpage[i].users_upvoted.includes(userID)) {
-						postsonpage[i].current_user_upvoted = true
-						postsonpage[i].current_user_downvoted = false
-					}
-					if (postsonpage[i].users_downvoted.includes(userID)) {
-						postsonpage[i].current_user_upvoted = false
-						postsonpage[i].current_user_downvoted = true
-					}
-					
-					if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
-						let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
-						postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
-					} else {
-						
-					}
-					
-
-				}
-				res.send({data: postsonpage, total_posts: totalPosts, total_pages: totalPages})
-			
-			}
-		})
-	} else if (req.params.topic == 'home') {
-		if (userID != null) {
-			return res.json({ status:"ok", code:400, error: "Not logged in"})
+	} else if (req.params.topic == "home") {
+		let user_subscribed_topics:any = []
+		let temp_user = await User.findById(currentUser)
+		for (let i=0;i<temp_user.subscriptions.topics.length;i++) {
+			user_subscribed_topics.push(temp_user.subscriptions.topics[i][0])
 		}
-		let user = await User.findById(userID)
-		let subtop = user.subscriptions.topics
-		let subusers = user.subscriptions.users
-		
-		let subtop_count = subtop.length
-		let subusers_count = subusers.length
-
-		let subscriptions_query = {}
-
-		let posts = []
-		for (let i=0;i<subtop_count;i++) {
-			let topicPosts = await Post.find({status:'active', topic:subtop[i][0]}).sort(sortingJSON)
-			console.log(topicPosts[0].title)
-			
-			console.log(topicPosts[0].title)
-			posts.push(topicPosts[0])
-            
-		}
-        for (let i=0;i<subusers_count;i++) {
-			let userPosts = await Post.find({poster:subusers[i][0],topic:!subtop[i][0], status:'active'})
-			posts.push(userPosts[0])
-		}
-		
-		
-		try {
-			if (userID != null) {
-			// 	User.findById(userID, async function(err:any, docs:any) {
-			// 		if (docs.statistics.topics.visited_array.some(x => x[0] == req.params.topic)) {
-			// 			let index = docs.statistics.topics.visited_array.findIndex(x => x[0] == req.params.topic)
-			// 			let currentCount = docs.statistics.topics.visited_array[index][2]
-			// 			docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
-
-			// 		} else {
-			// 			let array = docs.statistics.topics.visited_array
-			// 			array.push([req.params.topic, Date.now(), 1])
-			// 			docs.statistics.topics.visited_array = array
-			// 		}
-					
-			// 		docs.update()
-			// })
-		}
-		} catch(err) {
-			
-		}
-		
-	
-		let filteredPosts = []
-
-		for (let x=0;x<posts.length;x++) {
-			if (filteredPosts.length >= postsPerPage) {
-
-			} else {
-				if (sorting == "top" && duration == "day") {
-					if (posts[x].timestamp >= timestamp24hoursago) {
-						filteredPosts.push(posts[x])
-					} else {
-					}
-				} else if (sorting == "top" && duration == "week"){
-					if (posts[x].timestamp >= timestamp1weekago) {
-						filteredPosts.push(posts[x])
-					}
-				} else if (sorting == "top" && duration == "month"){
-					if (posts[x].timestamp >= timestamp1monthago) {
-						filteredPosts.push(posts[x])
-					}
-				} else if (sorting == "top" && duration == "all") {
-					filteredPosts.push(posts[x])
-				} else if (sorting == "new") {
-					filteredPosts.push(posts[x])
-				} else if (sorting == "hot") {
-					if (posts[x].last_touched_timestamp == null) {
-						let now = Date.now()
-						Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err:any, docs:any) {
-							if (err){
-								
-							}
-						})
-					}
-					// if (posts.length > 1) {
-					// 	posts.sort( compare );
-					// }
-					filteredPosts = posts
-				}
+		// console.log(user_subscribed_topics)
+		posts = await Post.find({timestamp : { $gt : timestamp_since}})
+		for (let i=0;i<posts.length;i++) {
+			if (user_subscribed_topics.indexOf(posts[i].topic) != -1 && posts[i].status == 'active') {
+				filteredPosts.push(posts[i])
 			}
 		}
-		if (sorting == "top") {
-			filteredPosts.sort((a:any, b:any) => b.total_votes - a.total_votes)
-		} else if (sorting == "new") {
-			filteredPosts.sort((a:any, b:any) => b.timestamp - a.timestamp)
-		}
 		
+		// console.log(posts.length)
+		// console.log(filteredPosts)
 
-		let totalPosts = filteredPosts.length
-		let totalPages = Math.ceil((totalPosts)/postsPerPage)
-		let lastPagePosts = totalPosts % postsPerPage
-
-
-		postsonpage = await paginate(filteredPosts, postsPerPage, page)
-
-		
-		for (let i=0;i<postsonpage.length-1;i++) {
-			postsonpage[i] = postsonpage[i]
-			if (postsonpage[i].posterID == userID) {
-				postsonpage[i].current_user_admin = true
-			} else {
-				postsonpage[i].current_user_admin = false
-			}
-			if (postsonpage[i].users_upvoted.includes(userID)) {
-				postsonpage[i].current_user_upvoted = true
-				postsonpage[i].current_user_downvoted = false
-			}
-			if (postsonpage[i].users_downvoted.includes(userID)) {
-				postsonpage[i].current_user_upvoted = false
-				postsonpage[i].current_user_downvoted = true
-			}
-
-			if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
-				let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
-				postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
-			} else {
-				
-			}
-		}
-		res.send({data:postsonpage, total_posts:totalPosts, total_pages:totalPages})
-	}  else {
-		Post.find({topic: req.params.topic, status:"active"}).sort({total_votes: -1}).exec(async function(err: any, posts: any[]){
-			if(err){
-			} else{
-				try {
-					if (userID != null) {
-						User.findById(userID, async function(err:any, docs:any) {
-							if (docs.statistics.topics.visited_array.some((x: any[]) => x[0] == req.params.topic)) {
-								let index = docs.statistics.topics.visited_array.findIndex((x: any[]) => x[0] == req.params.topic)
-								let currentCount = docs.statistics.topics.visited_array[index][2]
-								docs.statistics.topics.visited_array[index] = [req.params.topic, Date.now(),(currentCount+1)]
-		
-							} else {
-								let array = docs.statistics.topics.visited_array
-								array.push([req.params.topic, Date.now(), 1])
-								docs.statistics.topics.visited_array = array
-							}
-							
-							docs.update()
-					})
-				}
-				} catch(err) {
-					
-				}
-
-				let filteredPosts = []
-
-				for (let x=0;x<posts.length;x++) {
-					if (filteredPosts.length >= postsPerPage) {
-
-					} else {
-						if (sorting == "top" && duration == "day") {
-							if (posts[x].timestamp >= timestamp24hoursago) {
-								filteredPosts.push(posts[x])
-							}
-						} else if (sorting == "top" && duration == "week"){
-							if (posts[x].timestamp >= timestamp1weekago) {
-								filteredPosts.push(posts[x])
-							}
-						} else if (sorting == "top" && duration == "month"){
-							if (posts[x].timestamp >= timestamp1monthago) {
-								filteredPosts.push(posts[x])
-							}
-						} else if (sorting == "top" && duration == "all") {
-							filteredPosts.push(posts[x])
-						} else if (sorting == "new") {
-							filteredPosts.push(posts[x])
-						} else if (sorting == "hot") {
-							if (posts[x].last_touched_timestamp == null) {
-								let now = Date.now()
-								Post.findByIdAndUpdate(posts[x].id, {last_touched_timestamp: now},{new:true}, function(err:any, docs:any) {
-									if (err){
-										
-									}
-								})
-							}
-							if (posts.length > 1) {
-								posts.sort( compare );
-							}
-							filteredPosts = posts
-						}
-					}
-				}
-				
-				let totalPosts = filteredPosts.length
-				let totalPages = Math.ceil((totalPosts)/postsPerPage)
-				let lastPagePosts = totalPosts % postsPerPage
-
-				postsonpage = await paginate(filteredPosts, postsPerPage, page)
-				
-				for (let i=0;i<postsonpage.length;i++) {
-					if (postsonpage[i].posterID == userID) {
-						postsonpage[i].current_user_admin = true
-					} else {
-						postsonpage[i].current_user_admin = false
-					}
-					if (postsonpage[i].users_upvoted.includes(userID)) {
-						postsonpage[i].current_user_upvoted = true
-						postsonpage[i].current_user_downvoted = false
-					}
-					if (postsonpage[i].users_downvoted.includes(userID)) {
-						postsonpage[i].current_user_upvoted = false
-						postsonpage[i].current_user_downvoted = true
-					}
-
-					if (masterUserArr.some(x => x[0] == postsonpage[i].posterID)) {
-						let indexOfUser = masterUserArr.findIndex(x => x[0] == postsonpage[i].posterID)
-						postsonpage[i].posterAvatarSrc = masterUserArr[indexOfUser][2]
-					} else {
-						
-					}
-				}
-				res.send({data: postsonpage, total_posts:totalPosts, total_pages:totalPosts})
-			}
-		})
+	} else {
+		posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}, topic:req.params.topic}).sort(sortingJSON)
+		filteredPosts = posts
 	}
 
-	 
+	let totalPosts = filteredPosts.length
+	filteredPosts = await paginate(filteredPosts, postsPerPage, page)
+	let totPages = Math.ceil((posts.length)/postsPerPage)
+
+	for (let i=0;i<filteredPosts.length;i++) {
+		if (filteredPosts[i].users_upvoted.indexOf(currentUser) != -1) {
+			filteredPosts[i].current_user_upvoted = true
+		} else {
+			filteredPosts[i].current_user_upvoted = false
+		}
+		
+		if (filteredPosts[i].users_downvoted.indexOf(currentUser) != -1) {
+			filteredPosts[i].current_user_downvoted = true
+		} else {
+			filteredPosts[i].current_user_downvoted = false
+		}
+		
+		if (filteredPosts[i].posterID == currentUser) {
+			filteredPosts[i].current_user_admin = true
+		} else {
+			filteredPosts[i].current_user_admin = false
+		}
+	}
+
+	res.json({data: filteredPosts, total_posts:totalPosts, total_pages:totPages})
+
 })
 
 function paginate(array: any[], page_size: number, page_number: number) {

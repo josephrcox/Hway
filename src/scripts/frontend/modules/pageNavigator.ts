@@ -17,25 +17,25 @@ export function addSortingEvents() {
 }
 
 function refreshSortingOptionStyling() {
-    // for (let z=0;z<sorting_options.length;z++) {
-    //     let y = sorting_options[z] as HTMLDivElement
-    //     y.style.color = 'white'
-    // }
-    // if (page_queries.sort == "new") {
-    //     (sorting_options[0] as HTMLDivElement).style.color = '#00ff58'
-    // } else if (page_queries.sort == "hot") {
-    //     (sorting_options[1] as HTMLDivElement).style.color = '#00ff58'
-    // } else if (page_queries.sort == "top") {
-    //     if (page_queries.t == "day") {
-    //         (sorting_options[2] as HTMLDivElement).style.color = '#00ff58'
-    //     } else if (page_queries.t == "week") {
-    //         (sorting_options[3] as HTMLDivElement).style.color = '#00ff58'
-    //     } else if (page_queries.t == "month") {
-    //         (sorting_options[4] as HTMLDivElement).style.color = '#00ff58'
-    //     } else if (page_queries.t == "all") {
-    //         (sorting_options[5] as HTMLDivElement).style.color = '#00ff58'
-    //     }
-    // } 
+    for (let z=0;z<sorting_options.length;z++) {
+        let y = sorting_options[z] as HTMLDivElement
+        y.style.color = 'white'
+    }
+    if (page_queries.sort == "new") {
+        (sorting_options[0] as HTMLDivElement).style.color = '#00ff58'
+    } else if (page_queries.sort == "hot") {
+        (sorting_options[1] as HTMLDivElement).style.color = '#00ff58'
+    } else if (page_queries.sort == "top") {
+        if (page_queries.t == "day") {
+            (sorting_options[2] as HTMLDivElement).style.color = '#00ff58'
+        } else if (page_queries.t == "week") {
+            (sorting_options[3] as HTMLDivElement).style.color = '#00ff58'
+        } else if (page_queries.t == "month") {
+            (sorting_options[4] as HTMLDivElement).style.color = '#00ff58'
+        } else if (page_queries.t == "all") {
+            (sorting_options[5] as HTMLDivElement).style.color = '#00ff58'
+        }
+    } 
 
 }
 
@@ -50,6 +50,7 @@ function changeSortingOption(x:string) {
 }
 
 export function addPageNavigation() {
+    pageNum.innerHTML = ""
     let total_pages = parseInt(localStorage.getItem("total_pages")+"")
     let current_page = parseInt(page_queries.page)
     let futurePage:number
