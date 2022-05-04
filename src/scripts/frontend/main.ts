@@ -28,11 +28,11 @@ export async function loadMain() {
     switch(x[0]) {
         case "all":
             await getPostsByTopic("all")
-            subheader.style.display = 'block'
+            subheader.style.display = 'flex'
             break;
         case "topic":
             await getPostsByTopic(x[1])
-            subheader.style.display = 'block'
+            subheader.style.display = 'flex'
             break;
         case "post":
             await getPostByID(x[1])
@@ -81,11 +81,11 @@ async function getPostsByTopic(topic:string) {
     
     if (posts.length > 0) {
         loadPostOrPostObjects(posts)
-        subheader.style.display = 'block'
+        subheader.style.display = 'flex'
         addPageNavigation()
     } else {
         postsAndMore.innerHTML = "<br/><a href='/post' style='color:blue;text-decoration:none;background-color:white;padding:10px;margin-top:10px;'>Start the conversation! :) </a>"
-        subheader.style.display = 'block'
+        subheader.style.display = 'flex'
         stopLoaders()
     }
     

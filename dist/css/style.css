@@ -278,12 +278,11 @@ a:active {
 .sorting_options {
 	color: white;
 	padding-inline: 3px;
-	font-size: 16px;
-	width: 97%;
+	font-size: 12px;
+	width: auto;
 	overflow-x: auto;
 	white-space: nowrap;
-	margin-bottom: 6px;
-	margin-top: 3px;
+	inline-size: max-content;
 }
 
 #comments {
@@ -465,19 +464,22 @@ font-size: 12px;
 
 #page-number {
 	text-align: center;
-	margin-block: 8px;
 	text-decoration: none;
 	color: white;
 	max-height: 15px;
 	object-fit: cover;
 	filter: brightness(0) invert(1);
-	margin-bottom: 17px;
+	font-size: 12px;
+	display: flex;
+	flex-direction: inherit;
+	align-items: center;
+	flex-wrap: nowrap;
 }
 
 .page_nav_arrow {
 	height: 17px;
-	padding-inline: 20px;
-	margin-bottom: -3px;
+	padding-inline: 6px;
+	margin-top: 4px;
 }
 
 .rotate180 {
@@ -635,4 +637,16 @@ font-size: 12px;
 
 #user-dropdown {
   top: 10vh;
+}
+
+#sub_header_options {
+  display: flex;
+  align-items: center;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+#page_pageNumber {
+	inline-size: max-content;
+	padding-left: 3px;
 }

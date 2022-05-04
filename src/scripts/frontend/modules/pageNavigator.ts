@@ -65,7 +65,7 @@ export function addPageNavigation() {
 
         futurePage = current_page + 1
         let forward_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
-        pageNum.innerHTML += "<span style='margin-top:-5px'>Page "+current_page+"/"+total_pages+"</span>"
+        pageNum.innerHTML += "<span id='page_pageNumber'>Page "+current_page+"/"+total_pages+"</span>"
         
         if (total_pages != current_page) {
             pageNum.innerHTML += "<a href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg'></a>"

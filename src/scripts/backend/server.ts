@@ -801,9 +801,6 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 	let duration = queries.t
 	let userID: null
 
-	if (req.params.topic == "all_users") {
-		return
-	}
 	// Commenting out this part below allows for users to view without being logged in
 	try {
 		let token = req.cookies.token
@@ -877,7 +874,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 
 	let totalPosts = filteredPosts.length
 	filteredPosts = await paginate(filteredPosts, postsPerPage, page)
-	let totPages = Math.ceil((posts.length)/postsPerPage)
+	let totPages = Math.ceil((totalPosts)/postsPerPage)
 
 	for (let i=0;i<filteredPosts.length;i++) {
 		if (filteredPosts[i].users_upvoted.indexOf(currentUser) != -1) {
