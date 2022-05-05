@@ -150,11 +150,11 @@ body {
 }
 
 .post-img-thumb {
-	width: 27px;
+	width: 20px;
 	object-fit: cover;
 	border-radius: 3px;
 	margin-right: 3px;
-	height: auto;
+	height: 20px;
 }
 
 span {
