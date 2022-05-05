@@ -52,7 +52,7 @@ body {
 }
 
 .post-subtitle {
-    font-size: 13px;
+    font-size: 11px;
     margin-top: 5px;
     border-top: 1px solid gray;
     padding-top: 1px;
@@ -149,11 +149,11 @@ body {
 }
 
 .post-img-thumb {
-	width: 20px;
-	object-fit: contain;
+	width: 27px;
+	object-fit: cover;
 	border-radius: 3px;
-	margin-bottom: -8px;
 	margin-right: 3px;
+	height: auto;
 }
 
 span {
@@ -649,4 +649,21 @@ font-size: 12px;
 #page_pageNumber {
 	inline-size: max-content;
 	padding-left: 3px;
+}
+
+#username:invalid {
+	color: red;
+}
+
+#username:valid {
+	color: black;
+}
+
+.nsfw_post_label {
+	background-color: red;
+	color: white;
+	padding-inline: 3px;
+	border-radius: 7px;
+	font-size: 9px;
+	margin-right: 4px;
 }

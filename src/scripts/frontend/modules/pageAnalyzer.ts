@@ -14,11 +14,12 @@ export function getPageType() {
         return ['post', pathname.split('/p/')[1]]
     } else if (pathname.includes('/user/')) {
         // user is on a user profile page
-    } else if (pathname.includes('/login/')) {
+    } else if (pathname.includes('/login')) {
         // user is on login page
         return ['login']
-    } else if (pathname.includes('/register/')) {
+    } else if (pathname.includes('/register')) {
         // user is on registration page
+        return ['register']
     } else if (pathname.includes('/notifications')) {
         // user is on notifications
         return ['notifications']

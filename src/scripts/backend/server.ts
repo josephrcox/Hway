@@ -67,6 +67,19 @@ const bannedUsernames:string[] = ['joey','admin',]
 
 let waitInterval:any
 
+async function deleteTestingPosts() {
+	Post.find({poster:'joey'}, function(err:any,docs:any) {
+		for (let i=0;i<docs.length;i++) {
+			Post.findByIdAndDelete(docs[i]._id, function(e:any,d:any) {
+				console.log(e, d)
+			})
+		}
+	})
+
+}
+
+// deleteTestingPosts()
+
 async function wait(x:number) {
 	waitInterval = setInterval(function() {
 		console.log("waiting for "+x+" seconds")
@@ -356,7 +369,7 @@ app.get('/user/:user', (req:any, res:any) => {
 })
 
 app.get('/register', (req:any, res:any) => {
-    res.render('register.ejs', {layout: 'layouts/account.ejs'})
+    res.render('register.ejs', {topic:"- register"})
 })
 
 app.get('/subscriptions', async(req:any, res:any) => {
@@ -1033,7 +1046,7 @@ app.post('/login', async(req:any, res:any) => {
 
 })
 
-app.post('/register', async(req:any, res:any) => {
+app.post('/api/post/register', async(req:any, res:any) => {
     const { name, password: plainTextPassword, email} = req.body
     const password = await bcrypt.hash(plainTextPassword, 10)
 
@@ -1832,22 +1845,6 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	
 
 })
-
-function deleteTestPosts() {
-	try {
-		Post.find({poster:'robot'}, function(err:any, docs:any) {
-			for (let i=0;i<docs.length;i++) {
-				Post.findByIdAndDelete(docs[i].id, function(err: any, response: any) {
-				})
-			}
-		})
-	} catch(err) {
-	}
-
-	
-}
-
-deleteTestPosts()
 
 function compare( a: { last_touched_timestamp: number }, b: { last_touched_timestamp: number } ) {
 	if ( a.last_touched_timestamp < b.last_touched_timestamp ){

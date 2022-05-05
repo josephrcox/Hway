@@ -21,6 +21,12 @@ const newPost = async () => {
             i = np_types.length + 1
         }
     }
+    let isNSFW:boolean
+    if (nsfw.checked){
+        isNSFW = true
+    } else {
+        isNSFW = false
+    }
 
     var check = postBouncer(post_type)
 
@@ -47,7 +53,7 @@ const newPost = async () => {
             "body": body.value,
             "topic": topic.value,
             "type": post_type,
-            "nsfw": nsfw.value,
+            "nsfw": isNSFW,
             "link": templink,
         };
     

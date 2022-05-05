@@ -5,49 +5,13 @@
 <div class="login-reg">
     <div>Login</div>
     <a href="/register">Haven't signed up? <strong> Click here! </strong> </a><br/>
-    <a href="/account/resetpw">Trouble logging in? <strong> Click here! </strong> </a>
-    <br>
-        <form id="reg-form">
-            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" class="general_input"/><br/>
+    <!-- <a href="/account/resetpw">Trouble logging in? <strong> Click here! </strong> </a> -->
+        <div id="reg-form" autocomplete="off">
+            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" class="general_input" /><br/>
             <input type="password" autocomplete="off" id="password" name="password" placeholder="password" class="general_input"/><br/>
-            <input type="submit" value="Login" class="button_submit"/>
-        </form>
+            <input type="button" value="Login" id='login_submit' class="button_submit"/>
+        </div>
         <div id='logs'></div>
     
 </div>
-<script>
-
-const form = document.getElementById("reg-form")
-form.addEventListener('submit', loginUser)
-
-async function loginUser(event) {
-    event.preventDefault()
-    name = document.getElementById("username").value
-    password = document.getElementById("password").value
-
-    bodyJSON = {
-        "name":name,
-        "password":password
-    }
-
-    const fetchResponse = await fetch('/login', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    });
-    const data = await fetchResponse.json()
-    console.log(data)
-
-    if (data.code == 200) {
-        localStorage.clear()
-        window.location.href = "/all"
-    } 
-    else {
-        document.getElementById("logs").innerHTML = data.error
-    }
-}
-
-</script>
+<script src="/dist/scripts/frontend/modules/login.js" type="module">

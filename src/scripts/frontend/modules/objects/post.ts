@@ -15,6 +15,7 @@ export const postObject = {
     totalVotes:0,
     commentCount:0,
     topic:"",
+    nsfw:"",
 
     currentUserUpvoted:false,
     currentUserDownvoted:false,
@@ -37,6 +38,7 @@ export const postObject = {
         title.classList.add('post-title')
         title.dataset.title = this.title
         title.dataset.link = this.link
+
         if (this.post_type == 1 && this.body.length > 0) {
             title.innerHTML = this.title + " <span style='font-size:8px'> [+]</span>"
             title.onclick = function() {
@@ -73,7 +75,10 @@ export const postObject = {
 
         var subtitle = document.createElement('span') as HTMLSpanElement
         subtitle.classList.add('post-subtitle')
-        subtitle.innerHTML = "@"+this.poster_name + " — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
+        if (this.nsfw) {
+            subtitle.innerHTML = "<span class='nsfw_post_label'>NSFW</span>"
+        } 
+        subtitle.innerHTML += "<span style='text-transform: uppercase;'>"+this.poster_name + "</span> — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
 
         var subscriptionButton = document.createElement('img')
         subscriptionButton.dataset.topic = this.topic.toLowerCase()
@@ -90,7 +95,6 @@ export const postObject = {
         }
         subscriptionButton.classList.add('post-subscription-button')
         subtitle.append(subscriptionButton)
-        
 
         var voteContainer = document.createElement('div')
         voteContainer.classList.add('post-vote-container')

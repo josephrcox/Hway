@@ -1,84 +1,20 @@
+<head>
+    <link rel="stylesheet" href="dist/css/login.css">
+</head>
+
 <div class="login-reg">
-    <h1 style='color:black'>Sign up</h1>
+    <div>Sign up</div>
     <a href="/login">Already signed up? <strong>Click here!</strong></a>
-        <form id="reg-form" >
-            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
-            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/>
-            <input type="email" autocomplete="off" id="email" name="email" placeholder="email (optional for password resets)" /><br/>
-            <input type="submit" value="Register"/>
-        </form>
+        <div id="reg-form" autocomplete="off">
+            <!-- <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
+            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/> -->
+            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" class="general_input" pattern="[a-zA-Z0-9,_-]*" minlength="3" maxlength="30" /><br/>
+            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" class="general_input" minlength="8" maxlength="50"/><br/>
+            <input type="email" autocomplete="off" id="email" name="email" placeholder="email (optional for password resets)" class="general_input"/><br/>
+            <input type="button" value="Register" id='register_submit' class="button_submit"/>
+        </div>
         <div id='logs'></div>
     
 </div>
-<script>
 
-const form = document.getElementById("reg-form")
-form.addEventListener('submit', registerUser)
-
-async function registerUser(event) {
-    event.preventDefault()
-    name = document.getElementById("username").value
-    password = document.getElementById("password").value
-    email = document.getElementById("email").value
-
-    bodyJSON = {
-        "name":name,
-        "password":password,
-        "email":email
-    }
-
-    const fetchResponse = await fetch('/register', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    });
-    const data = await fetchResponse.json()
-    
-    if (data.code == 200) {
-        //
-        loginUser(name, password)
-    } 
-    if (data.code == 400) {
-        document.getElementById("logs").innerHTML = data.error
-    }
-
-    if (fetchResponse.status != '200' || fetchResponse.status != 200) {
-        document.getElementById("logs").innerHTML = fetchResponse.error;
-    }
-}
-
-async function loginUser(name, password) {
-    bodyJSON = {
-        "name":name,
-        "password":password
-    }
-
-    const fetchResponse = await fetch('/login', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    });
-    const data = await fetchResponse.json()
-    
-    if (data.code == 200) {
-        //
-        //
-        localStorage.clear()
-        window.location.href = "/all"
-    } 
-    if (data.code == 400) {
-        document.getElementById("logs").innerHTML = data.error
-    }
-
-    if (fetchResponse.status != '200' || fetchResponse.status != 200) {
-        document.getElementById("logs").innerHTML = fetchResponse.error;
-    }
-}
-
-</script>
+<script src="/dist/scripts/frontend/modules/register.js" type="module"></script>

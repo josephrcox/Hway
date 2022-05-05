@@ -2,7 +2,7 @@ console.log("pageNavigator.js loaded")
 
 export const sorting_options = document.getElementsByClassName("sorting_options sort_option")
 import { page_queries  } from "../modules/pageAnalyzer.js"
-export const pageNum = document.getElementById("page-number") as HTMLDivElement
+export let pageNum:any
 
 export function addSortingEvents() {
     for (let i=0;i<sorting_options?.length;i++) {
@@ -50,6 +50,7 @@ function changeSortingOption(x:string) {
 }
 
 export function addPageNavigation() {
+    pageNum = document.getElementById("page-number") as HTMLDivElement
     pageNum.innerHTML = ""
     let total_pages = parseInt(localStorage.getItem("total_pages")+"")
     let current_page = parseInt(page_queries.page)

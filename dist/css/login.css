@@ -22,10 +22,11 @@
 
 #logs {
 	color: yellow;
-	font-variant:all-petite-caps;
+	font-variant:;
 	width: fit-content;
 	padding: 4px;
     margin-top: 5px;
+	font-size: 12px;
 }
 
 

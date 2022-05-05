@@ -71,7 +71,6 @@ export async function loadMain() {
             subscribe_init()
             break;
     }
-    addPageNavigation()
 }
 
 loadMain()
@@ -117,7 +116,7 @@ async function getPostByID(ID:string) {
         c.body = post[0].comments[i].body
         c.poster_name = post[0].comments[i].poster
         var d = new Date(post[0].comments[i].createdAt)
-        c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
+        c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
         c.id = post[0].comments[i]._id
         c.totalVotes = post[0].comments[i].total_votes
         if (post[0].comments[i].users_voted.includes(currentUserID)) {
@@ -145,7 +144,7 @@ export function loadPostOrPostObjects(posts:any) {
         post.body = posts[i].body
         post.poster_name = posts[i].poster
         var d = new Date(posts[i].createdAt)
-        post.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
+        post.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
         post.id = posts[i]._id
         post.currentUserUpvoted = posts[i].current_user_upvoted
         post.currentUserDownvoted = posts[i].current_user_downvoted
@@ -155,6 +154,7 @@ export function loadPostOrPostObjects(posts:any) {
         post.topic = posts[i].topic.toLowerCase()
         post.post_type = posts[i].type
         post.link = posts[i].link
+        post.nsfw = posts[i].special_attributes[0].nsfw
         
         post.display()
     }
