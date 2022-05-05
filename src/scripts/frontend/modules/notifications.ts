@@ -33,7 +33,6 @@ export async function apiGetNotifications(cleared:string) {
         sorting.style.display = 'none'
         stopLoaders()
     } else {
-        clearAll.style.display = 'block'
         sorting.style.display = 'block'
         displayNotifs(data, sorting.dataset.sortingoption+"")
     }
@@ -41,14 +40,18 @@ export async function apiGetNotifications(cleared:string) {
 }
 
 export function initNotificationButtons() {
+    if (viewCleared.dataset.cleared == "false") {
+        clearAll.style.display = 'block'
+    }
     viewCleared.addEventListener('click', function() {
         if (viewCleared.dataset.cleared == "true") {
             viewCleared.dataset.cleared = "false"
             viewCleared.innerText = "View cleared"
+            clearAll.style.display = 'block'
         } else {
             viewCleared.dataset.cleared = "true"
             viewCleared.innerText = "View new"
-            
+            clearAll.style.display = 'none'
         }
         notifArray.innerHTML = ""
         
