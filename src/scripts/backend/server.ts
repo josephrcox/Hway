@@ -860,7 +860,12 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 	let filteredPosts = []
 
 	if (req.params.topic == "all") {
-		posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}}).sort(sortingJSON)
+		if (queries.nsfw == "false") {
+			posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}, nsfw:queries.nsfw}).sort(sortingJSON)
+		} else {
+			posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}}).sort(sortingJSON)
+		}
+		
 		filteredPosts = posts
 
 	} else if (req.params.topic == "home") {
@@ -870,7 +875,14 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 			user_subscribed_topics.push(temp_user.subscriptions.topics[i][0])
 		}
 		// console.log(user_subscribed_topics)
-		posts = await Post.find({timestamp : { $gt : timestamp_since}})
+		
+
+		if (queries.nsfw == "false") {
+			posts = await Post.find({timestamp : { $gt : timestamp_since}, nsfw:queries.nsfw})
+		} else {
+			posts = await Post.find({timestamp : { $gt : timestamp_since}})
+		}
+
 		for (let i=0;i<posts.length;i++) {
 			if (user_subscribed_topics.indexOf(posts[i].topic) != -1 && posts[i].status == 'active') {
 				filteredPosts.push(posts[i])
@@ -881,7 +893,12 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 		// console.log(filteredPosts)
 
 	} else {
-		posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}, topic:req.params.topic}).sort(sortingJSON)
+		if (queries.nsfw == "false") {
+			posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}, topic:req.params.topic, nsfw:queries.nsfw}).sort(sortingJSON)
+		} else {
+			posts = await Post.find({status:'active', timestamp : { $gt : timestamp_since}, topic:req.params.topic}).sort(sortingJSON)
+		}
+		
 		filteredPosts = posts
 	}
 
@@ -907,6 +924,8 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 		} else {
 			filteredPosts[i].current_user_admin = false
 		}
+
+
 	}
 
 	res.json({data: filteredPosts, total_posts:totalPosts, total_pages:totPages})
@@ -1120,7 +1139,7 @@ app.post('/api/post/post', async(req:any, res:any) => {
 			date: fulldatetime,
 			timestamp:timestamp,
 			status:"active",
-			special_attributes: special_attributes
+			nsfw: nsfw,
 		})
 		if (body != null) {
 			if (body.indexOf('mpwknd199999999') == -1) {
@@ -1561,7 +1580,7 @@ app.put('/api/put/post/delete/:postid', function(req: { params: { postid: any };
 	
 })
 
-app.put('/api/put/filter_nsfw/:show/', function(req: { params: { show: any }; cookies: { token: any } },res: { json: (arg0: { status: string; code?: number; error?: any }) => void }) {
+app.put('/api/put/filter_nsfw/:show/', function(req:any, res:any) {
 	let show = req.params.show
 	let token
 	let userID

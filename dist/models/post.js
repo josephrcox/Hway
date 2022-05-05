@@ -50,7 +50,7 @@ const postSchema = new mongoose.Schema(
         current_user_downvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
         comments: [commentSchema],
-        special_attributes: { type: Array},
+        nsfw: { type:Boolean }
     },
     { collection: 'posts', timestamps:true}
 )

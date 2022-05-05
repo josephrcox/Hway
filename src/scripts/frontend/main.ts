@@ -15,6 +15,8 @@ const new_comment_submit = document.getElementById("newCom_submit") as HTMLInput
 export const subheader = document.getElementById("sub_header_options") as HTMLDivElement
 const loaders = document.getElementsByClassName("loader")
 const postsAndMore = document.getElementById('posts_and_more') as HTMLDivElement
+let filter_nsfw_checkbox = document.getElementById("filter_nsfw") as HTMLInputElement
+
 
 export async function loadMain() {
     localStorage.setItem("deletepostconfirmid","")
@@ -76,7 +78,7 @@ export async function loadMain() {
 loadMain()
 
 async function getPostsByTopic(topic:string) {
-    var posts = await apiGetPostsByTopic(topic, getPageSearchQueries())
+    var posts = await apiGetPostsByTopic(topic, getPageSearchQueries(), filter_nsfw_checkbox.checked)
     
     if (posts.length > 0) {
         loadPostOrPostObjects(posts)
@@ -154,14 +156,34 @@ export function loadPostOrPostObjects(posts:any) {
         post.topic = posts[i].topic.toLowerCase()
         post.post_type = posts[i].type
         post.link = posts[i].link
-        post.nsfw = posts[i].special_attributes[0].nsfw
+        post.nsfw = posts[i].nsfw
         
         post.display()
     }
     stopLoaders()
-    
-    
 }
+
+filter_nsfw_checkbox.addEventListener('change', async function() {
+    if (!isUserLoggedIn) {
+        window.location.href = '/login'
+    }
+    let show = filter_nsfw_checkbox.checked
+
+    const settings = {
+        method: 'PUT',
+    };
+    const response = await fetch('/api/put/filter_nsfw/'+show, settings)
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        postsArray.innerHTML = ""
+        startLoaders()
+        loadMain()
+    }
+    if (data.status == 'error') {
+        alert(data.error)
+    }
+})
 
 export function stopLoaders() {
     console.info("finished loading")
