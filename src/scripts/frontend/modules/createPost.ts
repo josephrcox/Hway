@@ -68,8 +68,11 @@ const newPost = async () => {
             body: JSON.stringify(bodyJSON)
         });
         const data = await fetchResponse.json();
+        
         if (data.code != 200) {
             logs.innerHTML = data.error;
+        } else {
+             window.location.href = '/p/'+data.data._id
         }
 
     }
