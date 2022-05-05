@@ -61,6 +61,7 @@ body {
     padding-inline-start: 3px;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .post-vote-container, .comment-vote-container {
