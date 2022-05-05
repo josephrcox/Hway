@@ -506,7 +506,7 @@ font-size: 12px;
 
 
 #searchbar.open {
-	height: 149px;
+	height: auto;
 	-webkit-transition: height 0.2s linear;
 	   -moz-transition: height 0.2s linear;
 		-ms-transition: height 0.2s linear;

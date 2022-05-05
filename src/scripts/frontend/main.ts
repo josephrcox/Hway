@@ -49,7 +49,6 @@ export async function loadMain() {
             
             break;
         case "search":
-            pageNum.style.display = 'none'
             let queries = window.location.search
             let params = new URLSearchParams(queries)
             phrase.value = params.get('query')+""
