@@ -2,13 +2,18 @@ const login_form = document.getElementById("reg-form") as HTMLDivElement
 let login_username = document.getElementById("username") as HTMLInputElement
 let login_password = document.getElementById("password") as HTMLInputElement
 let login_logs = document.getElementById("logs") as HTMLDivElement
+let login_submit:any
 
 if (window.location.pathname.includes("/login")) {
-    let login_submit = document.getElementById('login_submit') as HTMLInputElement
+    login_submit = document.getElementById('login_submit') as HTMLInputElement
     login_submit.addEventListener('click', loginUser)
 }
 
-
+login_password.addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+        login_submit.click()
+    }
+})
 
 export async function loginUser() {
     let bodyJSON = {
