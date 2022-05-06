@@ -1360,8 +1360,12 @@ app.get('/notifications', async(req: any,res: { render: (arg0: string, arg1: { t
 })
 
 app.post('/api/post/comment_nested/', async(req:any, res:any) => {
-	const {id, parentID} = req.body // parentID is the id of the comment, id is the id of the post
+	 // parentID is the id of the comment, id is the id of the post
 	let body = sanitize(req.body.body)
+	const id = req.body.id
+	const parentID = req.body.parentID
+
+	console.log(id, parentID, body)
 
 	let token
 	let userID: any
@@ -1381,6 +1385,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 	let fulldatetime = dt[0]
 	try {
 		Post.findById(id, async function(err:any, docs:any) {
+			console.log(docs)
 			let strArr:string[] = body.split(' ')
 			let words:number = strArr.length
 			let usersMentioned: string[] = []
@@ -1403,7 +1408,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 			newComment = {
 				body:body,
 				poster:username,
-				posterid:userID,
+				posterID:userID,
 				date:fulldatetime,
 				total_votes:0,
 				users_voted:[],
@@ -1436,11 +1441,14 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 					notifyUsers([userDoc.name], 'commentNested',user_triggered_name, id, body, pCommentBody)
 				}
 			})
+			Post.findById(id, async function(err:any, docs:any) {
+				let nc = docs.comments[parentCommentIndex].nested_comments[docs.comments[parentCommentIndex].nested_comments.length - 1]
+				
+				res.json(nc)
+			})
 
-			
-
-			res.json(newComment) 
 		})
+
 
 		
 	} catch(err) {
@@ -1779,7 +1787,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 
 				let nc = oldComArray[comIndex].nested_comments[ncIndex]
 
-				let nestedCommentPosterId = nc.posterid
+				let nestedCommentPosterId = nc.posterID
 				if (!nc.users_voted.includes(userID)) { // user has not voted
 					nc.users_voted.push(userID)
 					nc.total_votes += 1

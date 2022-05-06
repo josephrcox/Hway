@@ -10,6 +10,7 @@ const nestedCommentSchema = new mongoose.Schema(
         users_voted: { type:Array, required:true, default:[]},
         current_user_upvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
+        id:{ type:String }
     }, {timestamps:true}
 )
 

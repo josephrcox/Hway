@@ -114,12 +114,16 @@ async function getPostByID(ID:string) {
 
     for (let i=0;i<post[0].comments.length;i++) {
         var c = Object.create(commentObject)
+        c.is_nested = false
         c.body = post[0].comments[i].body
         c.poster_name = post[0].comments[i].poster
+        c.posterID = post[0].comments[i].posterID
         var d = new Date(post[0].comments[i].createdAt)
         c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
         c.id = post[0].comments[i]._id
+        c.parentid = post[0]._id
         c.totalVotes = post[0].comments[i].total_votes
+        c.nested_comments = post[0].comments[i].nested_comments
         if (post[0].comments[i].users_voted.includes(currentUserID)) {
             c.currentUserUpvoted = true
         } else {
@@ -128,6 +132,34 @@ async function getPostByID(ID:string) {
         c.currentUserAdmin = post[0].comments[i].current_user_admin
         c.parentid = post[0]._id
         c.display()
+
+        for (let x=0;x<post[0].comments[i].nested_comments.length;x++) {
+            var c = Object.create(commentObject)
+            c.is_nested = true
+            c.body = post[0].comments[i].nested_comments[x].body
+            c.poster_name = post[0].comments[i].nested_comments[x].poster
+            var d = new Date(post[0].comments[i].nested_comments[x].createdAt)
+            c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
+            c.id = post[0].comments[i].nested_comments[x]._id
+            c.parentid = post[0]._id
+            c.posterID = post[0].comments[i].nested_comments[x].posterID
+            c.nested_comment_parent_id = post[0].comments[i]._id
+            c.totalVotes = post[0].comments[i].nested_comments[x].total_votes
+            if (post[0].comments[i].nested_comments[x].users_voted.includes(currentUserID)) {
+                c.currentUserUpvoted = true
+            } else {
+                c.currentUserUpvoted = false
+            }
+            console.log(post[0].comments[i].nested_comments[x].posterID, currentUserID)
+            if (post[0].comments[i].nested_comments[x].posterID == currentUserID) {
+                c.currentUserAdmin = true
+                console.log("true")
+            } else {
+                c.currentUserAdmin = false
+            }
+            //c.currentUserAdmin = post[0].comments[i].nested_comments[x].current_user_admin
+            c.display()
+        }
     }
     stopLoaders()
 

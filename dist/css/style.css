@@ -76,8 +76,8 @@ body {
 	border-left: 1px solid #71716bbf;
 	margin-left: 5px;
 	width: 30px;
-    height: min-content;
     border-radius: 5px;
+    max-height: 100px;
 }
 
 .post-vote-button {
@@ -667,4 +667,39 @@ font-size: 12px;
 	border-radius: 7px;
 	font-size: 9px;
 	margin-right: 4px;
+}
+
+#commentSection_login_button {
+	color: #9898ff;
+	text-decoration: none;
+	font-size: 24px;
+}
+
+
+.post-comment-reply-input.general_input {
+	width: 88vw;
+	max-width: 300px;
+  }
+  .button_submit.post-comment-reply-submit {
+	width: fit-content;
+  }
+
+  .comment-details-container.nested {
+	margin-left: 25px;
+}
+
+.post-expand {
+	width: 10px;
+	background-color: red;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 15px;
+	margin-right: 5px;
+	color: white;
+	font-size: 19px;
+}
+
+.post-expand.expanded {
+	background-color: green;
 }
