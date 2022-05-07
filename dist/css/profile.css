@@ -56,3 +56,12 @@
 .profile_left {
   margin-top: 10px;
 }
+
+@media only screen and (max-width: 600px) {
+	.profile_container {
+		flex-direction: column;
+	}
+	.profile_left, .profile_right {
+		width: unset;
+	}
+}
