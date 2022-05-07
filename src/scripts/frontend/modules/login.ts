@@ -33,7 +33,11 @@ export async function loginUser() {
     
     if (data.code == 200) {
         localStorage.clear()
-        window.location.href = "/"
+        let ref = window.location.search.split('ref=')[1]
+        if (ref == undefined) {
+            ref = "/"
+        } 
+        window.location.href = ref
     } 
     if (data.code == 400) {
         login_logs.innerHTML = data.error

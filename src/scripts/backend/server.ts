@@ -347,7 +347,7 @@ app.post('/api/post/notif/clear/', function(req: { cookies: { token: any } },res
 	}
 })
 
-app.get('/login', (req:any, res:any) => {
+app.get('/login/', (req:any, res:any) => {
     res.render('login.ejs', {topic:"- login"})
 })
 
@@ -819,13 +819,16 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 		let token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
+		console.log(verified)
 	} catch (err) {
 		if (!allowUsersToBrowseAsGuests) {
 			return res.json({ status:"ok", code:400, error: "Not logged in"})
 		} else {
 			userID = null
+			currentUser = null
 		}
 	}
+
 	
 	let sortingJSON = {}
 	let msnow = await Date.now()

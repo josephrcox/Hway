@@ -202,12 +202,8 @@ const vote = async (change:number, id:string, voteCountElement:HTMLSpanElement, 
             up.classList.remove('upvoted')
             down.classList.add('downvoted')
         }
-    } 
-
-    if (data.error) {
-        if (data.error.name == 'JsonWebTokenError') { // no user is detected, redirect to login page
-            window.location.href = '/login'
-        }
+    } else {
+        window.location.href = '/login/?ref=/p/'+id
     }
 
 }

@@ -104,8 +104,10 @@ async function getPostByID(ID:string) {
         new_comment_submit.style.display = 'flex'
     }  else {
         new_comment_login.style.display = 'block'
+        new_comment_login.href = '/login/?ref=/p/'+ID
         new_comment_textarea.style.display = 'none'
         new_comment_submit.style.display = 'none'
+        
     }
     
     //sorts comments by most votes to least votes
