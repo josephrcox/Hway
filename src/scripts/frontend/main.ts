@@ -78,7 +78,7 @@ export async function loadMain() {
 
 loadMain()
 
-async function getPostsByTopic(topic:string) {
+export async function getPostsByTopic(topic:string) {
     var posts = await apiGetPostsByTopic(topic, getPageSearchQueries(), filter_nsfw_checkbox.checked)
     
     if (posts.length > 0) {
@@ -192,7 +192,7 @@ export function loadPostOrPostObjects(posts:any) {
         post.post_type = posts[i].type
         post.link = posts[i].link
         post.nsfw = posts[i].nsfw
-        
+        console.log("posting")
         post.display()
     }
     stopLoaders()
