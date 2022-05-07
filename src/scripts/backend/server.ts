@@ -1710,14 +1710,13 @@ app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async
 			}
 		}
 	}
-	
-
-	let ctbd = ncomments[comIndex].nested_comments[ncIndex]
-	const dt = getFullDateTimeAndTimeStamp()
-	let fulldatetime = dt[0]
-	let timestampdeleted = dt[1]
 
 	try {
+		
+		let ctbd = ncomments[comIndex].nested_comments[ncIndex]
+		const dt = getFullDateTimeAndTimeStamp()
+		let fulldatetime = dt[0]
+		let timestampdeleted = dt[1]
 		const resp = await DeletedComment.create({
 			post: postid,
 			body: ctbd.body,
@@ -1735,8 +1734,8 @@ app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async
 
 			deleted_by: 'user'
 		})
-	} catch(err) {
-		
+	} catch(err:any) {
+		res.json({status:'error'})
 	}
 
 	ncomments[comIndex].nested_comments.splice(ncIndex, 1)

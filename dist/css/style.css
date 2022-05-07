@@ -332,6 +332,13 @@ a:active {
 	font-variant: all-petite-caps;
 	width: 100%;
 	cursor: pointer;
+	background-color: green;
+	border-radius: 15px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	display: flex;
+	align-items: center;
+	margin-right: 5px;
 }
 
 #header-notifs-bell {
@@ -702,4 +709,8 @@ font-size: 12px;
 
 .post-expand.expanded {
 	background-color: green;
+}
+
+#currentUser:hover {
+	background-color: #094d09;
 }
