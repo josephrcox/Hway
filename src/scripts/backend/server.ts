@@ -355,7 +355,7 @@ app.get('/post', (req:any, res:any) => {
     if (currentUser) {
         res.render('post.ejs', {topic:"- post"})
     } else {
-        res.redirect('/login')
+        res.redirect('/login/?ref=/post/')
     }
     
 })
@@ -380,7 +380,7 @@ app.get('/subscriptions', async(req:any, res:any) => {
 	if (valid) {
 		res.render('subscriptions.ejs', {topic:"- subscriptions"})
 	} else {
-		res.redirect('/login')
+		res.redirect('/login/?ref=/subscriptions/')
 	}
     
 })
@@ -393,7 +393,7 @@ app.get('/all/q', async(req:any, res:any) => {
 	if (valid || allowUsersToBrowseAsGuests) {
 		res.render('home.ejs', {topic: "- all"})
 	} else {
-		res.redirect('/login')
+		res.redirect('/login/?ref=/home/')
 	}
 	
 })
@@ -414,7 +414,7 @@ app.get('/home/q', async(req:any, res:any) => {
 	if (valid) {
 		res.render('home.ejs', {topic: "- home"})
 	} else {
-		res.redirect('/login')
+		res.redirect('/login/?ref=/home/')
 	}
 	
 })
@@ -427,7 +427,7 @@ app.get('/all/:queries', async(req:any, res:any) => {
 	if (valid || allowUsersToBrowseAsGuests) {
 		res.render('home.ejs', {topic: "- all"})
 	} else {
-		res.redirect('/login')
+		res.redirect('/login/?ref=/all/')
 	}
 })
 

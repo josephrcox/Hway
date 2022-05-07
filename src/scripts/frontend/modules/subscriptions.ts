@@ -1,4 +1,5 @@
 import { startLoaders, stopLoaders } from "../main.js"
+import { isUserLoggedIn } from "./auth.js"
 
 export let subscribedTopics:Array<string> = []
 export let subscribedUsers:Array<string> = []
@@ -38,29 +39,34 @@ export function isSubscribed(x:string) {
 }
 
 export const subscribeTo = async(x:string, type:string) => { // x is the topic or user, type is 'topic' or 'user'
-    const settings = {
-        method: 'PUT',
-    };
-    var fetchResponse:any
-    if (!isSubscribed(x)) {
-        if (type == "topic") {
-            fetchResponse =  await fetch('/api/put/subscribe/'+x, settings);
-        } else if (type == "user"){
-            fetchResponse = await fetch('/api/put/subscribe_user/'+x, settings);
-        }
+    if (!isUserLoggedIn) {
+        window.location.href = '/login/'
     } else {
-        if (type == "topic") {
-            fetchResponse =  await fetch('/api/put/unsubscribe/'+x, settings);
-        } else if (type == "user"){
-            fetchResponse = await fetch('/api/put/unsubscribe_user/'+x, settings);
+        const settings = {
+            method: 'PUT',
+        };
+        var fetchResponse:any
+        if (!isSubscribed(x)) {
+            if (type == "topic") {
+                fetchResponse =  await fetch('/api/put/subscribe/'+x, settings);
+            } else if (type == "user"){
+                fetchResponse = await fetch('/api/put/subscribe_user/'+x, settings);
+            }
+        } else {
+            if (type == "topic") {
+                fetchResponse =  await fetch('/api/put/unsubscribe/'+x, settings);
+            } else if (type == "user"){
+                fetchResponse = await fetch('/api/put/unsubscribe_user/'+x, settings);
+            }
+        }
+    
+        const data = await fetchResponse.json()
+        if (data.status = 'ok') {
+            await apiGetSubscriptions(localStorage.getItem('currentUsername')+"")
+            subscriptionToggle()
         }
     }
-
-    const data = await fetchResponse.json()
-    if (data.status = 'ok') {
-        await apiGetSubscriptions(localStorage.getItem('currentUsername')+"")
-        subscriptionToggle()
-    }
+    
 }
 
 function subscriptionToggle() {

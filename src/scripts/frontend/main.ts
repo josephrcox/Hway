@@ -16,6 +16,7 @@ export const subheader = document.getElementById("sub_header_options") as HTMLDi
 const loaders = document.getElementsByClassName("loader")
 const postsAndMore = document.getElementById('posts_and_more') as HTMLDivElement
 let filter_nsfw_checkbox = document.getElementById("filter_nsfw") as HTMLInputElement
+let header_login_button = document.getElementById('login_button') as HTMLAnchorElement
 
 
 export async function loadMain() {
@@ -31,22 +32,24 @@ export async function loadMain() {
         case "all":
             await getPostsByTopic("all")
             subheader.style.display = 'flex'
+            header_login_button.href = '/login/?ref=/all'
             break;
         case "topic":
             await getPostsByTopic(x[1])
             subheader.style.display = 'flex'
+            header_login_button.href = '/login/?ref=/h/'+x[1]
             break;
         case "post":
             await getPostByID(x[1])
-            
             subheader.style.display = 'none'
             const submit_new_comment = document.getElementById("newCom_submit") as HTMLButtonElement
             submit_new_comment.onclick = function() {
                 newComment(x[1])
             }
+            header_login_button.href = '/login/?ref=/p/'+x[1]
             break;
         case "createnewpost":
-            
+            header_login_button.href = '/login/?ref=/post/'
             break;
         case "search":
             let queries = window.location.search
@@ -65,7 +68,6 @@ export async function loadMain() {
             if (isUserLoggedIn) {
                 getPostsByTopic("home")
             }
-
             
             break;
         case "subscriptions":

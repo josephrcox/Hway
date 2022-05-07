@@ -1,3 +1,5 @@
+import { subscribeTo } from "./subscriptions.js"
+
 const login_form = document.getElementById("reg-form") as HTMLDivElement
 let login_username = document.getElementById("username") as HTMLInputElement
 let login_password = document.getElementById("password") as HTMLInputElement
