@@ -19,7 +19,6 @@ export function addSortingEvents() {
 function refreshSortingOptionStyling() {
     for (let z=0;z<sorting_options.length;z++) {
         let y = sorting_options[z] as HTMLDivElement
-        y.style.color = 'white'
     }
     if (page_queries.sort == "new") {
         (sorting_options[0] as HTMLDivElement).style.color = '#00ff58'

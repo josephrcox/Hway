@@ -28,9 +28,10 @@ body {
     /*! padding-inline-start: 5px; */
     /*! justify-content: space-around; */
     background-color: white;
-    height: fit-content;
+    height: auto;
     flex-grow: 1;
-    border-radius: 5px;
+    border-radius: 6px;
+    padding: 2px;
 }
 
 .comment-details-container  {
@@ -52,16 +53,14 @@ body {
 }
 
 .post-subtitle {
-    font-size: 11px;
-    margin-top: 5px;
-    border-top: 1px solid gray;
+    font-size: 10px;
     padding-top: 1px;
     padding-bottom: 3px;
-    background-color: #c6c3fcbf;
     padding-inline-start: 3px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    padding-left: 6px;
 }
 
 .post-vote-container, .comment-vote-container {
@@ -72,12 +71,13 @@ body {
     justify-content: center;
     align-items: center;
 
-    background-color: #ffffffbf;
+    background-color: white;
 	border-left: 1px solid #71716bbf;
 	margin-left: 5px;
 	width: 30px;
-    border-radius: 5px;
-    max-height: 100px;
+    border-radius: 6px;
+    max-height: 68px;
+    min-height: min-content;
 }
 
 .post-vote-button {
@@ -117,8 +117,8 @@ body {
 .post-subpost-element, .post-subcomment-element{
     border-right: 1px dotted black;
     padding-inline:5px;
-    color: #8c8c8c;
-    font-size: 15px;
+    color: black;
+    font-size: 13px;
 }
 .post-subpost-element:last-child, .post-subcomment-element:last-child{
     border: 0;
@@ -140,6 +140,10 @@ body {
 	font-size: 14px;
 	padding-left: 5px;
 	padding-right: 5px;
+	word-wrap: anywhere;
+	background-color: #e2e2e2;
+	border-radius: 6px;
+	margin: 6px;
 }
 
 .post-img {
@@ -428,7 +432,7 @@ font-size: 12px;
 	height: 17px;
 	cursor: pointer;
 	width: inherit;
-	scale: 1.7;
+	scale: 1.5;
 }
 
 .loader {
@@ -473,10 +477,9 @@ font-size: 12px;
 #page-number {
 	text-align: center;
 	text-decoration: none;
-	color: white;
+	color: black;
 	max-height: 15px;
 	object-fit: cover;
-	filter: brightness(0) invert(1);
 	font-size: 12px;
 	display: flex;
 	flex-direction: inherit;
@@ -657,6 +660,7 @@ font-size: 12px;
 #page_pageNumber {
 	inline-size: max-content;
 	padding-left: 3px;
+	color: white;
 }
 
 #username:invalid {

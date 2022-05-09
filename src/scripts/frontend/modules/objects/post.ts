@@ -78,7 +78,7 @@ export const postObject = {
         if (this.nsfw) {
             subtitle.innerHTML = "<span class='nsfw_post_label'>NSFW</span>"
         } 
-        subtitle.innerHTML += "<span style='text-transform: uppercase;'>"+this.poster_name + "</span> — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
+        subtitle.innerHTML += "<span>"+this.poster_name + "</span> — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
 
         var subscriptionButton = document.createElement('img')
         subscriptionButton.dataset.topic = this.topic.toLowerCase()
