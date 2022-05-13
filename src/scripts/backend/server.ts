@@ -18,7 +18,7 @@ var IDs = []
 var topicArray: any[] = []
 var topicCount: any[] = []
 var postsonpage: any[] = []
-var postsPerPage = 15;
+var postsPerPage = 2;
 let ms_in_day = 86400000;
 let currentUser: any;
 let connectedToDB = false

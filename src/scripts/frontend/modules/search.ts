@@ -10,15 +10,25 @@ export const topic = document.getElementById("search_topic") as HTMLInputElement
 
 export function init() {
     openButton.addEventListener('click', function() {
-        if (bar.classList.contains('open')) {
-            bar.classList.remove('open')
-            bar.style.margin = '0px'
+        if (bar.style.height == 'unset') {
+            bar.style.height = '0px'
+            bar.style.maxHeight = '0px'
+            openButton.style.backgroundColor = ''
         } else {
-            bar.classList.add('open')
-            bar.style.margin = ''
+            bar.style.height = 'unset'
+            bar.style.maxHeight = '500px'
+            openButton.style.backgroundColor = '#204677'
         }
     })
 }
+
+// if (header_dd.style.height == 'unset') {
+//     header_dd.style.height = '0px'
+//         header_dd.style.maxHeight = '0px'
+// } else {
+//     header_dd.style.height = 'unset'
+//     header_dd.style.maxHeight = '500px'
+// }
 
 submit.onclick = async function() {
     postsArray.innerHTML = ""

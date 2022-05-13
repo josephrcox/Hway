@@ -28,37 +28,69 @@
         <div class="header_top">
             <div class="header-title noselect">
                 <a href='/all'><div class="header-title cursor_pointer">HWay <span style="font-size:8px"><%= topic %></div></a>   </span>
+                <span id="page-number" class="noselect"></span>  
             </div>
             <div class="header_right">
-                <div class="header-notifications">
-                    <a href="/notifications"><div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;"></div></a>
-                </div>
-                <div class="user-dropdown-div" id='user-dropdown-div'>
-                    <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
-                    <div id="user-dropdown" class="user-dropdown-content">
-                        <a href='/user/' id="profile_button" class="user-dropdown-item">Profile</a>
-                        <a href='/logout' id="logout_button" class="user-dropdown-item">Logout</a>
-                        <a href='/login'  id="login_button" class="user-dropdown-item">Login</a>
-                        <a href='/register'  id="reg_button" class="user-dropdown-item">Register</a>
-                        <a href='/resetpassword' id="resetpw_button" class="user-dropdown-item">Reset password</a>
-                        <a href='/subscriptions' id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
-                        <div class="border-bottom"></div>
-                        <div id="filter_nsfw_div" style="padding-inline: 7px;">
-                                NSFW
-                            <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw"/>
-                        </div>
+                <div class="header_right_top">
+                    <div class="header-notifications">
+                        <a href="/notifications"><div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;"></div></a>
                     </div>
-        
+                    <div class="user-dropdown-div" id='user-dropdown-div'>
+                        <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
+                        <div id="user-dropdown" class="user-dropdown-content">
+                            <a href='/user/' id="profile_button" class="user-dropdown-item">Profile</a>
+                            <a href='/logout' id="logout_button" class="user-dropdown-item">Logout</a>
+                            <a href='/login'  id="login_button" class="user-dropdown-item">Login</a>
+                            <a href='/register'  id="reg_button" class="user-dropdown-item">Register</a>
+                            <a href='/resetpassword' id="resetpw_button" class="user-dropdown-item">Reset password</a>
+                            <a href='/subscriptions' id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
+                            <div class="border-bottom"></div>
+                            <div id="filter_nsfw_div" style="padding-inline: 3px;">
+                                    NSFW
+                                <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw"/>
+                            </div>
+                        </div>
+            
+                    </div>
                 </div>
+                <div class="header_right_bottom">
+                    <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg"></img>
+                    <div class="header_right_bottom" onclick="headerHamburgerClicked()" id="headerHamburger">
+                        <img src="/dist/images/hamburger.svg" class="header_hamburger" id="hamburger">
+                    </div>
+                    <div id="hamburgerDropdown" class="user-dropdown-content">
+                        <div id="sub_header_options">
+    
+                            <div id="sorting_options" class="sorting_options noselect" style="display: none;">
+                    
+                  
+                            </div>
+                        
+                            
+                        </div>
+                        
+                        <p class="hamburger_divider">Sorting</p>
+                        <a id="sorting_options_new" class="sorting_options sort_option" href="#" data-option="new">New</a>
+                        <a id="sorting_options_hot" class="sorting_options sort_option" href="#" data-option="hot">Hot</a>
+                        <a id="sorting_options_top_today" class="sorting_options sort_option" href="#" data-option="top_day">Top (day)</a>
+                        <a id="sorting_options_top_week" class="sorting_options sort_option" href="#" data-option="top_week">Top (week)</a>
+                        <a id="sorting_options_top_month" class="sorting_options sort_option" href="#" data-option="top_month">Top (month)</a>
+                        <a id="sorting_options_top_all" class="sorting_options sort_option" href="#" data-option="top_all">Top (all)</a>
+                    
+    
+                    </div>
+                </div>
+                
+
             </div>
 
         </div>
 
         
     
-         <div class="header-buttons noselect">
+         <div class="header-buttons noselect" style="display:none;">
             <a href="/home/" class="header-home cursor_pointer">Subscribed</a>
-            <span id="search-button"  class="cursor_pointer">Search</span>
+           
             <span id="subscribe-button" style='display:none;' class="cursor_pointer"></span>
             <a href="/post/" id="post-button" class="header-post cursor_pointer">Post</a>
         </div>
@@ -81,6 +113,9 @@
         const header_currentUser = document.getElementById("currentUser")
         const header_dd_profile = document.getElementById("profile_button") 
         const header_dd = document.getElementById("user-dropdown")
+        
+        const hamburgerDropdown = document.getElementById('hamburgerDropdown')
+        const hamburger = document.getElementById('hamburger')
 
         if (localStorage.getItem("currentUsername") != null) {
             header_currentUser.innerText = localStorage.getItem("currentUsername") + ""
@@ -89,15 +124,46 @@
         }
 
         function currentuserDropdownClicked() {
-            header_dd.classList.toggle("show");
+            if (header_dd.style.height == 'unset') {
+                header_dd.style.height = '0px'
+                    header_dd.style.maxHeight = '0px'
+            } else {
+                header_dd.style.height = 'unset'
+                header_dd.style.maxHeight = '500px'
+            }
+
+
+        }
+
+        function headerHamburgerClicked() {
+            if (hamburgerDropdown.style.height == 'unset') {
+                hamburgerDropdown.style.height = '0px'
+                    hamburgerDropdown.style.maxHeight = '0px'
+                    hamburger.style.backgroundColor = 'unset'
+            } else {
+                hamburgerDropdown.style.height = 'unset'
+                hamburgerDropdown.style.maxHeight = '500px'
+                hamburger.style.backgroundColor = 'burlywood'
+            }
+
         }
 
         document.onclick = function(e){
+            console.log(e)
             if(e.target.id !== 'currentUser'){
-                if (header_dd.classList.contains('show')) {
-                    header_dd.classList.remove('show');
+                if (header_dd.style.maxHeight != '0px') {
+                    header_dd.style.height = '0px'
+                    header_dd.style.maxHeight = '0px'
                 }
             }
+            if (e.target.id !== 'hamburger') {
+                if (hamburgerDropdown.style.maxHeight != '0px') {
+                    hamburgerDropdown.style.height = '0px'
+                    hamburgerDropdown.style.maxHeight = '0px'
+                    hamburger.style.backgroundColor = 'unset'
+                }
+            }
+
         };
     </script>
 

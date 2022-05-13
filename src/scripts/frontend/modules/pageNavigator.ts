@@ -17,22 +17,23 @@ export function addSortingEvents() {
 }
 
 function refreshSortingOptionStyling() {
+    let selectedColor = 'blue'
     for (let z=0;z<sorting_options.length;z++) {
         let y = sorting_options[z] as HTMLDivElement
     }
     if (page_queries.sort == "new") {
-        (sorting_options[0] as HTMLDivElement).style.color = '#00ff58'
+        (sorting_options[0] as HTMLDivElement).style.color = selectedColor
     } else if (page_queries.sort == "hot") {
-        (sorting_options[1] as HTMLDivElement).style.color = '#00ff58'
+        (sorting_options[1] as HTMLDivElement).style.color = selectedColor
     } else if (page_queries.sort == "top") {
         if (page_queries.t == "day") {
-            (sorting_options[2] as HTMLDivElement).style.color = '#00ff58'
+            (sorting_options[2] as HTMLDivElement).style.color = selectedColor
         } else if (page_queries.t == "week") {
-            (sorting_options[3] as HTMLDivElement).style.color = '#00ff58'
+            (sorting_options[3] as HTMLDivElement).style.color = selectedColor
         } else if (page_queries.t == "month") {
-            (sorting_options[4] as HTMLDivElement).style.color = '#00ff58'
+            (sorting_options[4] as HTMLDivElement).style.color = selectedColor
         } else if (page_queries.t == "all") {
-            (sorting_options[5] as HTMLDivElement).style.color = '#00ff58'
+            (sorting_options[5] as HTMLDivElement).style.color = selectedColor
         }
     } 
 
