@@ -28,10 +28,11 @@ body {
     /*! padding-inline-start: 5px; */
     /*! justify-content: space-around; */
     background-color: white;
-    height: auto;
+    height: fit-content;
     flex-grow: 1;
     border-radius: 6px;
-    padding: 2px;
+    padding: 1px;
+    justify-content: space-around;
 }
 
 .comment-details-container  {
@@ -40,7 +41,7 @@ body {
 }
 
 .post-title {
-    font-size: 21px;
+    font-size: 15px;
     font-weight: 498;
     word-wrap: anywhere;
     padding-right: 5px;
@@ -61,6 +62,7 @@ body {
     align-items: center;
     flex-wrap: wrap;
     padding-left: 6px;
+    margin-top: 5px;
 }
 
 .post-vote-container, .comment-vote-container {
@@ -117,8 +119,8 @@ body {
 .post-subpost-element, .post-subcomment-element{
     border-right: 1px dotted black;
     padding-inline:5px;
-    color: black;
-    font-size: 13px;
+    color: white;
+    font-size: 12px;
 }
 .post-subpost-element:last-child, .post-subcomment-element:last-child{
     border: 0;
@@ -717,4 +719,4 @@ font-size: 12px;
 
 #currentUser:hover {
 	background-color: #094d09;
-}
+} 

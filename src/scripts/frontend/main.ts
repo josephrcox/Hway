@@ -123,7 +123,8 @@ async function getPostByID(ID:string) {
         c.poster_name = post[0].comments[i].poster
         c.posterID = post[0].comments[i].posterID
         var d = new Date(post[0].comments[i].createdAt)
-        c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
+        c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1')
+        
         c.id = post[0].comments[i]._id
         c.parentid = post[0]._id
         c.totalVotes = post[0].comments[i].total_votes
@@ -143,7 +144,7 @@ async function getPostByID(ID:string) {
             c.body = post[0].comments[i].nested_comments[x].body
             c.poster_name = post[0].comments[i].nested_comments[x].poster
             var d = new Date(post[0].comments[i].nested_comments[x].createdAt)
-            c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
+            c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
             c.id = post[0].comments[i].nested_comments[x]._id
             c.parentid = post[0]._id
             c.posterID = post[0].comments[i].nested_comments[x].posterID
@@ -181,7 +182,7 @@ export function loadPostOrPostObjects(posts:any) {
         post.body = posts[i].body
         post.poster_name = posts[i].poster
         var d = new Date(posts[i].createdAt)
-        post.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString()
+        post.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
         post.id = posts[i]._id
         post.currentUserUpvoted = posts[i].current_user_upvoted
         post.currentUserDownvoted = posts[i].current_user_downvoted

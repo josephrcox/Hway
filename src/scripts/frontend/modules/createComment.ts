@@ -24,7 +24,7 @@ export const newComment = async (postid:string) => {
         c.body = data.body
         c.poster_name = data.poster
         var d = new Date(data.createdAt)
-        c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
+        c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
         c.id = data._id
         c.totalVotes = 0
         c.currentUserUpvoted = data.current_user_upvoted
@@ -59,7 +59,7 @@ export const newNestedComment = async (postid:string, id:string, replyElement:an
     c.body = data.body
     c.poster_name = data.poster
     var d = new Date(data.createdAt)
-    c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString()
+    c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
     c.id = data._id
     c.totalVotes = 0
     c.currentUserUpvoted = data.current_user_upvoted
