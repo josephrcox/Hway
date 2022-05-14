@@ -13,11 +13,9 @@ export function init() {
         if (bar.style.height == 'unset') {
             bar.style.height = '0px'
             bar.style.maxHeight = '0px'
-            openButton.style.backgroundColor = ''
         } else {
             bar.style.height = 'unset'
             bar.style.maxHeight = '500px'
-            openButton.style.backgroundColor = '#204677'
         }
     })
 }

@@ -54,6 +54,7 @@
                     </div>
                 </div>
                 <div class="header_right_bottom">
+                    <a href="/post/" id="post-button" class="header-post cursor_pointer"><img src="/dist/images/pencil.svg" class="post-button-pencil"></a>
                     <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg"></img>
                     <div class="header_right_bottom" onclick="headerHamburgerClicked()" id="headerHamburger">
                         <img src="/dist/images/hamburger.svg" class="header_hamburger" id="hamburger">
@@ -92,7 +93,7 @@
             <a href="/home/" class="header-home cursor_pointer">Subscribed</a>
            
             <span id="subscribe-button" style='display:none;' class="cursor_pointer"></span>
-            <a href="/post/" id="post-button" class="header-post cursor_pointer">Post</a>
+
         </div>
     </div>
     <div id="searchbar">
@@ -139,11 +140,9 @@
             if (hamburgerDropdown.style.height == 'unset') {
                 hamburgerDropdown.style.height = '0px'
                     hamburgerDropdown.style.maxHeight = '0px'
-                    hamburger.style.backgroundColor = 'unset'
             } else {
                 hamburgerDropdown.style.height = 'unset'
                 hamburgerDropdown.style.maxHeight = '500px'
-                hamburger.style.backgroundColor = 'burlywood'
             }
 
         }

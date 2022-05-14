@@ -217,6 +217,9 @@ const deletePost = async(id:string, containerE:HTMLDivElement, containerSub:HTML
         const data = await response.json()
     
         if (data.status == 'ok') {
+            setInterval(function() {
+                containerE.innerHTML = ""
+            }, 2000)
             containerE.innerHTML = "<span>The post was permanantly deleted.</span>"
             containerSub.innerHTML = ""
         } else if (data.status == 'error') {

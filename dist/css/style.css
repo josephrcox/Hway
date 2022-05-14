@@ -1,5 +1,5 @@
 :root {
-	--bg-color: #001824;
+	--bg-color: #24374c;
 	--foreground-1: #003366;
 	--foreground-2: #327da8;
 	--foreground-3: hsl(195, 77.6%, 19.2%);
@@ -8,7 +8,9 @@
 }
 
 body {
-    background-color: var(--bg-color);
+    /* background-color: var(--bg-color); */
+	background: rgb(54,54,110);
+	background: linear-gradient(104deg, rgba(54,54,110,1) 3%, rgba(38,78,124,1) 100%); 
     font-family: 'Manrope', sans-serif;
     max-width: 100vw;
 }
@@ -16,6 +18,7 @@ body {
 .post-container, .comment-container {
 	display: flex;
 	flex-direction: row;
+	margin-top: 5px;
 }
 
 .comment-container {
@@ -41,7 +44,7 @@ body {
 }
 
 .post-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 498;
     word-wrap: anywhere;
     padding-right: 5px;
@@ -54,7 +57,7 @@ body {
 }
 
 .post-subtitle {
-    font-size: 10px;
+    font-size: 11px;
     padding-top: 1px;
     padding-bottom: 3px;
     padding-inline-start: 3px;
@@ -70,7 +73,7 @@ body {
     display: flex;
     flex-direction: column;
 
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
 
     background-color: white;
@@ -117,7 +120,6 @@ body {
 
 
 .post-subpost-element, .post-subcomment-element{
-    border-right: 1px dotted black;
     padding-inline:5px;
     color: white;
     font-size: 12px;
@@ -136,6 +138,7 @@ body {
     display: flex;
     font-size: 15px;
     justify-content: flex-end;
+    margin-top: 2px;
 }
 
 .post-body {
@@ -146,6 +149,8 @@ body {
 	background-color: #e2e2e2;
 	border-radius: 6px;
 	margin: 6px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 
 .post-img {
@@ -193,12 +198,7 @@ span {
     padding-left: 2px;
     font-size: 36px;
     width: fit-content;
-}
-
-.header-home, .header-post {
-    margin-right: 21px;
-    color: white;
-    margin-left: 3px;
+    margin-top: -4px;
 }
 
 .header_top {
@@ -245,12 +245,6 @@ a:visited {
 
 a:active {
     color:white;
-}
-
-#post-button {
-	position: absolute;
-	right: 0;
-	padding-right: 5px;
 }
 
 #postsArray {
@@ -321,6 +315,7 @@ a:active {
 	padding: 3px;
 	text-decoration: none;
 	display: block;
+	width: auto;
 }
 
 .user-dropdown-content a:hover {
@@ -339,7 +334,7 @@ a:active {
 	font-variant: all-petite-caps;
 	width: 100%;
 	cursor: pointer;
-	background-color: #1e3de5;
+	background-color: #fff;
 	border-radius: 15px;
 	padding-top: 1px;
 	padding-bottom: 1px;
@@ -357,6 +352,7 @@ a:active {
     -webkit-user-select: none;
     -ms-user-select: none;
 
+	color: black;
 }
 
 #header-notifs-bell {
@@ -443,7 +439,7 @@ font-size: 12px;
 }
 
 .post-vote-button {
-	height: 17px;
+	height: 12px;
 	cursor: pointer;
 	width: inherit;
 	scale: 1.5;
@@ -553,6 +549,7 @@ font-size: 12px;
 	padding-inline: 8px;
 	border-radius: 5px;
 	font-size: 13px;
+	margin-right: 9px;
 }
 
 .notif_array {
@@ -726,7 +723,8 @@ font-size: 12px;
 }
 
 #currentUser:hover {
-	background-color: #3042a6;
+	background-color: #0dfbff;
+	color: black;
 } 
 
 
@@ -740,7 +738,7 @@ font-size: 12px;
 .header_right_bottom {
   display: flex;
   justify-content: end;
-  margin-top: 10px;
+  margin-top: 5px;
   margin-right: 6px;
 }
 .header_hamburger {
@@ -758,7 +756,7 @@ font-size: 12px;
 }
 
 #hamburger {
-	transition: all 1s;
+	transition: background-color 1s;
 	padding: 3px;
 }
 
@@ -780,4 +778,27 @@ font-size: 12px;
 	margin-inline: 17px;
 	padding: 2px;
 	border-radius: 3px;
+	transition: background-color 1s;
+	cursor: pointer;
+}
+
+
+.post-button-pencil {
+  height: fit-content;
+  margin-bottom: -14px;
+  margin-right: -1px;
+}
+
+
+.post-button-pencil:hover, #search-button:hover, #hamburger:hover {
+  filter: invert(42%) sepia(93%) saturate(1352%) hue-rotate(160deg) brightness(119%) contrast(119%);
+}
+
+
+#header-notifs-bell:hover {
+  background-color: #840303;
+}
+
+.post-subpost-element:hover, .post-subcomment-element:hover {
+	color:#0dfbff;
 }
