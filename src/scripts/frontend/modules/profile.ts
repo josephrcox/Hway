@@ -7,6 +7,8 @@ const profile_username = window.location.pathname.split('/user/')[1]
 let profile_user:any
 
 import { getPostsByTopic, loadPostOrPostObjects } from "../main.js"
+import { currentUserID } from "./auth.js"
+import { commentObject } from "./objects/comment.js"
 
 const init = async() => {
     let response = await fetch('/api/get/user/'+profile_username+'/none')
@@ -25,10 +27,36 @@ const init = async() => {
 
     response = await fetch('/api/get/posts/user/'+profile_username)  
     data = await response.json()
-    console.log("POSTS:")
-    console.log(data)
 
     loadPostOrPostObjects(data)
+
+    response = await fetch('/api/get/user/'+profile_username+'/all_comments')
+    data = await response.json()
+
+    for (let i=0;i<data.length;i++) {
+        let c = Object.create(commentObject)
+        c.body = data[i][0].body
+        c.poster = data[i][0].poster
+        c.posterID = data[i][0].posterID
+        c.totalVotes = ""
+        c.id = data[i][0]._id
+        let d = new Date(data[i][0].createdAt)
+        c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1')
+        if (data[i][0].users_voted.includes(currentUserID)) {
+            c.currentUserUpvoted = true
+        } else {
+            c.currentUserUpvoted = false
+        }
+        console.log(currentUserID, data[i][0].posterID)
+        if (data[i][0].posterID == currentUserID) {
+            c.currentUserAdmin = true
+        } else {
+            c.currentUserAdmin = false
+        }
+        c.display()
+
+    }
+
 }
 
 init()

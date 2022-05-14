@@ -170,7 +170,12 @@ export const commentObject = {
 
         comDetailsContainer.append(title, subtitle)
         voteContainer.append(voteUpButton, voteCount)
-        container.append(expand, comDetailsContainer, voteContainer)
+        if (this.totalVotes! > 0) {
+            container.append(expand, comDetailsContainer, voteContainer)
+        } else {
+            container.append(expand, comDetailsContainer)
+        }
+        
         house.append(container, subPostDetails, replyContainer)
 
         commentSection.appendChild(house)

@@ -364,6 +364,20 @@ app.get('/users', (req:any, res:any) => {
     res.render('users.ejs', {topic:"- users"})
 })
 
+app.get('/user/', (req:any, res:any) => {
+    try {
+		let token = req.cookies.token
+		let user = jwt.verify(token, process.env.JWT_SECRET)
+	
+		User.findById(user.id, function(err: any,docs:any) {
+			res.redirect('/user/'+docs.name)
+		})
+	}catch(error) {
+		res.redirect('/')
+	}
+    
+})
+
 app.get('/user/:user', (req:any, res:any) => {
     res.render('profile.ejs', {topic:"", user:req.params.user})
 })
@@ -523,15 +537,14 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
                 for (let i=0;i<posts.length;i++) {
                     for (let x=0;x<posts[i].comments.length;x++) {
                         if (posts[i].comments[x].poster == req.params.user) {
-                            posts[i].comments[x].parentPostID = posts[i].id
-                            comments.push(posts[i].comments[x])
+                            comments.push([posts[i].comments[x], posts[i].id])
                         }
                     }
                 }
                 res.json(comments)
             })
         } else {
-            User.findOne({name:req.params.user}, function(err: any, user: { password: null; _id: null; statistics: { posts: { viewed_array: null; viewed_num: null; votedOn_array: null; votedOn_num: null }; topics: { visited_array: null }; comments: { votedOn_array: null; votedOn_num: null }; misc: { login_num: null; login_array: null; logout_num: null; logout_array: null; ip_address: null; approximate_location: null } } }) {
+            User.findOne({name:req.params.user}, function(err: any, user:any) {
                 user.password = null
                 user._id = null
                 user.statistics.posts.viewed_array = null
@@ -551,6 +564,8 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
     
                 user.statistics.misc.ip_address = null
                 user.statistics.misc.approximate_location = null
+
+                user.statistics.misc.account_creation_date[0] = user.statistics.misc.account_creation_date[0].split(' at ')[0]
     
                 res.send(user)
             })

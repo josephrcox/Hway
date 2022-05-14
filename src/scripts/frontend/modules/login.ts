@@ -1,3 +1,4 @@
+import { startLoaders } from "../main.js"
 import { subscribeTo } from "./subscriptions.js"
 
 const login_form = document.getElementById("reg-form") as HTMLDivElement
@@ -13,6 +14,7 @@ if (window.location.pathname.includes("/login")) {
 
 login_password.addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
+        startLoaders()
         login_submit.click()
     }
 })
