@@ -769,10 +769,11 @@ font-size: 12px;
 	padding: 3px;
 	font-size: 13px;
 	text-align: center;
-	border: 1px dotted gray;
+	/*! border: 1px dotted gray; */
 	padding-top: 1px;
 	padding-bottom: 1px;
 	font-weight: 700;
+	border-bottom: 1px solid gray;
 }
 
 #search-button {

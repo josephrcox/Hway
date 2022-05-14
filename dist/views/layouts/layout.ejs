@@ -54,21 +54,12 @@
                     </div>
                 </div>
                 <div class="header_right_bottom">
-                    <a href="/post/" id="post-button" class="header-post cursor_pointer"><img src="/dist/images/pencil.svg" class="post-button-pencil"></a>
-                    <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg"></img>
-                    <div class="header_right_bottom" onclick="headerHamburgerClicked()" id="headerHamburger">
+                    <a href="/post/" id="post-button" class="header-post cursor_pointer" title="Create a post"><img src="/dist/images/pencil.svg" class="post-button-pencil"></a>
+                    <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg" title="Search"></img>
+                    <div class="header_right_bottom" onclick="headerHamburgerClicked()" id="headerHamburger" title="Options menu">
                         <img src="/dist/images/hamburger.svg" class="header_hamburger" id="hamburger">
                     </div>
                     <div id="hamburgerDropdown" class="user-dropdown-content">
-                        <!-- <div id="sub_header_options">
-    
-                            <div id="sorting_options" class="sorting_options noselect" style="display: none;">
-                    
-                  
-                            </div>
-                        
-                            
-                        </div> -->
                         <p class="hamburger_divider">Links</p>
                         <a class="hamburger_link" href="/home">Home</a>
                         <a class="hamburger_link" href="/all">All</a>
@@ -95,12 +86,12 @@
 
         
     
-         <div class="header-buttons noselect" style="display:none;">
+         <!-- <div class="header-buttons noselect" style="display:none;">
             <a href="/home/" class="header-home cursor_pointer">Subscribed</a>
            
             <span id="subscribe-button" style='display:none;' class="cursor_pointer"></span>
 
-        </div>
+        </div> -->
     </div>
     <div id="searchbar">
         <label class="np_input_label">Search for posts with...</label><input class="search_options general_input" id="search_phrase" type="text" maxlength="300" ><br/>
