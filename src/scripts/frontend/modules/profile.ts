@@ -42,6 +42,7 @@ const init = async() => {
         c.posterID = data[i][0].posterID
         c.totalVotes = ""
         c.id = data[i][0]._id
+        c.parentid = data[i][1]
         let d = new Date(data[i][0].createdAt)
         c.createdAt = d.toLocaleDateString() + " " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1')
         if (data[i][0].users_voted.includes(currentUserID)) {
@@ -49,7 +50,6 @@ const init = async() => {
         } else {
             c.currentUserUpvoted = false
         }
-        console.log(currentUserID, data[i][0].posterID)
         if (data[i][0].posterID == currentUserID) {
             c.currentUserAdmin = true
         } else {

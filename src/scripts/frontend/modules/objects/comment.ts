@@ -171,13 +171,15 @@ export const commentObject = {
 
         comDetailsContainer.append(title, subtitle)
         voteContainer.append(voteUpButton, voteCount)
-        console.log(this.totalVotes)
         if (this.totalVotes !== "") {
-            console.log("TEST:"+this.totalVotes)
             container.append(expand, comDetailsContainer, voteContainer)
         } else {
-            console.log("test:"+this.totalVotes)
+            container.style.cursor = 'pointer'
+            container.onclick = function() {
+                window.location.href = '/p/'+container.dataset.postid
+            }
             container.append(expand, comDetailsContainer)
+            
         }
         
         house.append(container, subPostDetails, replyContainer)
