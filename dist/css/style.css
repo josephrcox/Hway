@@ -273,7 +273,7 @@ a:active {
   }
 
 
-.sorting_options, .hamburger_link {
+.sorting_options, .hamburger_link, .user-dropdown-item, #filter_nsfw_div {
 	color: white;
 	padding-inline: 3px;
 	font-size: 12px;
@@ -281,6 +281,10 @@ a:active {
 	overflow-x: auto;
 	white-space: nowrap;
 	inline-size: max-content;
+}
+
+#filter_nsfw_div {
+	color: black;
 }
 
 #comments {
