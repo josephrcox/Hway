@@ -12,11 +12,11 @@ import { subscribe_init, subscribedTopics, subscribedUsers } from "./modules/sub
 const new_comment_login = document.getElementById("commentSection_login_button") as HTMLAnchorElement
 const new_comment_textarea = document.getElementById("newCom_body") as HTMLTextAreaElement
 const new_comment_submit = document.getElementById("newCom_submit") as HTMLInputElement
-export const subheader = document.getElementById("sub_header_options") as HTMLDivElement
 const loaders = document.getElementsByClassName("loader")
 const postsAndMore = document.getElementById('posts_and_more') as HTMLDivElement
 let filter_nsfw_checkbox = document.getElementById("filter_nsfw") as HTMLInputElement
 let header_login_button = document.getElementById('login_button') as HTMLAnchorElement
+const sorting_options = document.getElementById('hamburger_sorting') as HTMLDivElement
 
 
 export async function loadMain() {
@@ -31,17 +31,16 @@ export async function loadMain() {
     switch(x[0]) {
         case "all":
             await getPostsByTopic("all")
-            subheader.style.display = 'flex'
             header_login_button.href = '/login/?ref=/all'
+            sorting_options.style.display = 'block'
             break;
         case "topic":
             await getPostsByTopic(x[1])
-            subheader.style.display = 'flex'
             header_login_button.href = '/login/?ref=/h/'+x[1]
+            sorting_options.style.display = 'block'
             break;
         case "post":
             await getPostByID(x[1])
-            subheader.style.display = 'none'
             const submit_new_comment = document.getElementById("newCom_submit") as HTMLButtonElement
             submit_new_comment.onclick = function() {
                 newComment(x[1])
@@ -58,6 +57,7 @@ export async function loadMain() {
             topic.value = params.get("topic")+""
             bar.classList.add('open')
             bar.style.margin = ''
+            sorting_options.style.display = 'none'
             apiGetPostsBySearchQuery(params.get('query')+"", params.get("topic")+"")
             break;
         case "notifications":
@@ -83,11 +83,9 @@ export async function getPostsByTopic(topic:string) {
     
     if (posts.length > 0) {
         loadPostOrPostObjects(posts)
-        subheader.style.display = 'flex'
         addPageNavigation()
     } else {
         postsAndMore.innerHTML = "<br/><a href='/post' style='color:blue;text-decoration:none;background-color:white;padding:10px;margin-top:10px;'>Start the conversation! :) </a>"
-        subheader.style.display = 'flex'
         stopLoaders()
     }
     

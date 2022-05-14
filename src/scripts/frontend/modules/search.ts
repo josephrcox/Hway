@@ -1,6 +1,6 @@
 import { apiGetPostsBySearchQuery } from "../modules/postLoader.js"
 import { postsArray } from "../modules/objects/post.js"
-import { loadMain, subheader, startLoaders, stopLoaders } from "../main.js"
+import { loadMain, startLoaders, stopLoaders } from "../main.js"
 
 const openButton = document.getElementById('search-button') as HTMLSpanElement
 export const bar = document.getElementById('searchbar') as HTMLDivElement
@@ -30,8 +30,6 @@ export function init() {
 
 submit.onclick = async function() {
     postsArray.innerHTML = ""
-    subheader.style.display = 'none';
-
 
     startLoaders()
     await apiGetPostsBySearchQuery(phrase.value+"", topic.value+"")

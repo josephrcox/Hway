@@ -273,7 +273,7 @@ a:active {
   }
 
 
-.sorting_options {
+.sorting_options, .hamburger_link {
 	color: white;
 	padding-inline: 3px;
 	font-size: 12px;
@@ -785,7 +785,7 @@ font-size: 12px;
 
 .post-button-pencil {
   height: fit-content;
-  margin-bottom: -14px;
+  margin-bottom: -13px;
   margin-right: -1px;
 }
 
@@ -801,4 +801,8 @@ font-size: 12px;
 
 .post-subpost-element:hover, .post-subcomment-element:hover {
 	color:#0dfbff;
+}
+
+#hamburger_sorting {
+	display: none;
 }
