@@ -24,6 +24,7 @@ export const commentObject = {
         var house = document.createElement('div') as HTMLDivElement
         house.classList.add('comment-house')
         house.classList.add('animated_entry')
+        house.classList.add('menu_shadow')
         house.dataset.id = this.id
         house.classList.add('nested_under_'+this.nested_comment_parent_id)
         house.style.display = 'block'

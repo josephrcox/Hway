@@ -564,6 +564,10 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
     
                 user.statistics.misc.ip_address = null
                 user.statistics.misc.approximate_location = null
+                user.email = null
+                user.notifications = null
+                user.subscriptions = null
+                user.show_nsfw = null
 
                 user.statistics.misc.account_creation_date[0] = user.statistics.misc.account_creation_date[0].split(' at ')[0]
     

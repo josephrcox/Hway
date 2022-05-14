@@ -24,6 +24,7 @@ export const postObject = {
     display() {
         var container = document.createElement('div') as HTMLDivElement
         container.classList.add('post-container')
+        container.classList.add('menu_shadow')
         container.dataset.postid = this.id
 
         var postDetailsContainer = document.createElement('div') as HTMLDivElement

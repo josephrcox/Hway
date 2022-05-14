@@ -811,3 +811,11 @@ font-size: 12px;
 #hamburger_sorting {
 	display: none;
 }
+
+.menu_shadow {
+    filter: drop-shadow(0px 0px 5px black);
+}
+
+textarea:focus, input:focus{
+    outline: none;
+}
