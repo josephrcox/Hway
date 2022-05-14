@@ -37,7 +37,7 @@ export const newComment = async (postid:string) => {
 }
 
 
-export const newNestedComment = async (postid:string, id:string, replyElement:any ) => { 
+export const newNestedComment = async (postid:string, id:string, replyElement:any, insertAfterElement:any ) => { 
     let bodyJSON = {
         "parentID":id,
         "id":postid,
@@ -56,15 +56,19 @@ export const newNestedComment = async (postid:string, id:string, replyElement:an
     var data = await fetchResponse.json()
 
     var c = Object.create(commentObject)
-    c.body = data.body
-    c.poster_name = data.poster
-    var d = new Date(data.createdAt)
+    c.body = data[0].body
+    c.poster_name = data[0].poster
+    var d = new Date(data[0].createdAt)
     c.createdAt = d.toLocaleDateString() + " at " + d.toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
-    c.id = data._id
+    c.id = data[0]._id
     c.totalVotes = 0
-    c.currentUserUpvoted = data.current_user_upvoted
+    c.currentUserUpvoted = data[0].current_user_upvoted
     c.currentUserAdmin = true
     c.parentid = postid
-    c.display()
+    c.nested_comment_parent_id = id
+    c.is_nested = true
+    console.log(c)
+    c.display(insertAfterElement)
     
 }
+

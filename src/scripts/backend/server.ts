@@ -1439,7 +1439,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 			oldComment.nested_comments.push(newComment)
 
 			docs.comments[parentCommentIndex] = oldComment
-			docs.save()
+			await docs.save()
 
 			let pCommentWriterID = oldComment.posterID
 			let pCommentBody = oldComment.body
@@ -1464,7 +1464,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 				}
 			})
 			Post.findById(id, async function(err:any, docs:any) {
-				let nc = docs.comments[parentCommentIndex].nested_comments[docs.comments[parentCommentIndex].nested_comments.length - 1]
+				let nc = [docs.comments[parentCommentIndex].nested_comments[docs.comments[parentCommentIndex].nested_comments.length - 1], parentID]
 				
 				res.json(nc)
 			})

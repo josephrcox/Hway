@@ -20,7 +20,7 @@ export const commentObject = {
     currentUserDownvoted:false,
     currentUserAdmin:false,
 
-    display() {
+    display(appendDiv:any) {
         var house = document.createElement('div') as HTMLDivElement
         house.classList.add('comment-house')
         house.classList.add('animated_entry')
@@ -119,7 +119,7 @@ export const commentObject = {
         replySubmit.dataset.id = this.id
         replySubmit.onclick = function() {
             console.log(replyInput)
-            newNestedComment(replySubmit.dataset.postID + "", replySubmit.dataset.id + "", replyInput )
+            newNestedComment(replySubmit.dataset.postID + "", replySubmit.dataset.id + "", replyInput, house )
         }
 
         if (!this.is_nested) {
@@ -171,15 +171,23 @@ export const commentObject = {
 
         comDetailsContainer.append(title, subtitle)
         voteContainer.append(voteUpButton, voteCount)
-        if (this.totalVotes! > 0) {
+        console.log(this.totalVotes)
+        if (this.totalVotes !== "") {
+            console.log("TEST:"+this.totalVotes)
             container.append(expand, comDetailsContainer, voteContainer)
         } else {
+            console.log("test:"+this.totalVotes)
             container.append(expand, comDetailsContainer)
         }
         
         house.append(container, subPostDetails, replyContainer)
+        if (appendDiv) {
+            insertAfter(appendDiv, house)
+        } else {
+            commentSection.appendChild(house)
+        }
 
-        commentSection.appendChild(house)
+        
         // commentSection.appendChild(subPostDetails)
         // commentSection.appendChild(replyContainer)
     }
@@ -253,3 +261,8 @@ const deleteComment = async(parentID:string, commentID:string, containerElement:
 }
 
 export const newCommentInputArea = document.getElementsByClassName('newComContainer')[0] as HTMLDivElement
+
+
+function insertAfter(referenceNode:any, newNode:any) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  }
