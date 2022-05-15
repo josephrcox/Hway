@@ -720,6 +720,7 @@ font-size: 12px;
 	margin-right: 5px;
 	color: white;
 	font-size: 19px;
+	cursor: pointer;
 }
 
 .post-expand.expanded {
