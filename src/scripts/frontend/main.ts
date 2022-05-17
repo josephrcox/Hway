@@ -225,6 +225,7 @@ export function stopLoaders() {
         let l = loaders[i] as HTMLDivElement
         l.style.display = 'none'
     }
+    (document.getElementById('footer') as HTMLDivElement).style.opacity = '1'
 }
 
 export function startLoaders() {
