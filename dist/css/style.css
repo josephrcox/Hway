@@ -7,11 +7,16 @@
 	--foreground-menu-gray: #fffff0bf;
 }
 
+@font-face {
+    font-family: "localManrope";
+    src: url("/dist/fonts/Manrope.ttf");
+}
+
 body {
     /* background-color: var(--bg-color); */
 	background: rgb(54,54,110);
 	background: linear-gradient(104deg, rgba(54,54,110,1) 3%, rgba(38,78,124,1) 100%); 
-    font-family: 'Manrope', sans-serif;
+    font-family: 'localManrope', sans-serif;
     max-width: 100vw;
 }
 
