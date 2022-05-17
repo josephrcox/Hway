@@ -61,7 +61,7 @@ function modifyHeader(loggedin:Boolean, name:string) {
         dd_nsfw.style.display = 'block'
         dd_subscriptions.style.display = 'block'
     } else {
-        dd_username.innerText = 'Login / Register'
+        dd_username.innerText = 'Login / Join'
         dd_login.style.display = 'block'
         dd_reg.style.display = 'block'
         dd_subscriptions.style.display = 'none'

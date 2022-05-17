@@ -1,6 +1,6 @@
 .login-reg div {
     color:white;
-    font-size: 26px;
+    font-size: 20px;
 }
 
 .login-reg a {
@@ -19,6 +19,7 @@
 	font-family: inherit;
 	font-style: inherit;
 	font-size: 16px;
+	width: 270px;
 }
 
 #logs {
@@ -41,5 +42,6 @@
 
 
 .login-reg {
-  border-top: 1px solid white;
+	margin-top: 1px;
+	padding-left: 6px;
 }

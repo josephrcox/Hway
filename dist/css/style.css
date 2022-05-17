@@ -205,10 +205,11 @@ span {
 .header-title {
     color: white;
     padding-left: 2px;
-    font-size: 36px;
+    font-size: 43px;
     width: fit-content;
     margin-top: -4px;
     font-weight: 420;
+    margin-bottom: 0px;
 }
 
 .header_top {

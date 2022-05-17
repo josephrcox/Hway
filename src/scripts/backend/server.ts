@@ -348,7 +348,7 @@ app.post('/api/post/notif/clear/', function(req: { cookies: { token: any } },res
 })
 
 app.get('/login/', (req:any, res:any) => {
-    res.render('login.ejs', {topic:"- login"})
+    res.render('login.ejs', {topic:""})
 })
 
 app.get('/post', (req:any, res:any) => {
@@ -358,10 +358,6 @@ app.get('/post', (req:any, res:any) => {
         res.redirect('/login/?ref=/post/')
     }
     
-})
-
-app.get('/users', (req:any, res:any) => {
-    res.render('users.ejs', {topic:"- users"})
 })
 
 app.get('/user/', (req:any, res:any) => {
@@ -383,7 +379,7 @@ app.get('/user/:user', (req:any, res:any) => {
 })
 
 app.get('/register', (req:any, res:any) => {
-    res.render('register.ejs', {topic:"- register"})
+    res.render('register.ejs', {topic:""})
 })
 
 app.get('/subscriptions', async(req:any, res:any) => {
@@ -392,7 +388,7 @@ app.get('/subscriptions', async(req:any, res:any) => {
 	valid = await isloggedin(req)
 
 	if (valid) {
-		res.render('subscriptions.ejs', {topic:"- subscriptions"})
+		res.render('subscriptions.ejs', {topic:"subscriptions"})
 	} else {
 		res.redirect('/login/?ref=/subscriptions/')
 	}
@@ -405,7 +401,7 @@ app.get('/all/q', async(req:any, res:any) => {
 	valid = await isloggedin(req)
 	
 	if (valid || allowUsersToBrowseAsGuests) {
-		res.render('home.ejs', {topic: "- all"})
+		res.render('home.ejs', {topic: "/all"})
 	} else {
 		res.redirect('/login/?ref=/home/')
 	}
@@ -426,7 +422,7 @@ app.get('/home/q', async(req:any, res:any) => {
 	valid = await isloggedin(req)
 	
 	if (valid) {
-		res.render('home.ejs', {topic: "- home"})
+		res.render('home.ejs', {topic: "/home"})
 	} else {
 		res.redirect('/login/?ref=/home/')
 	}
@@ -439,7 +435,7 @@ app.get('/all/:queries', async(req:any, res:any) => {
 	valid = await isloggedin(req)
 	
 	if (valid || allowUsersToBrowseAsGuests) {
-		res.render('home.ejs', {topic: "- all"})
+		res.render('home.ejs', {topic: "/all"})
 	} else {
 		res.redirect('/login/?ref=/all/')
 	}
@@ -448,7 +444,7 @@ app.get('/all/:queries', async(req:any, res:any) => {
 
 
 app.get('/h/:topic/q', async(req: { params: { topic: string } },res: { render: (arg0: string, arg1: { topic: string }) => void }) => {
-	res.render('home.ejs', {topic:"- "+req.params.topic})
+	res.render('home.ejs', {topic:"/h/"+req.params.topic})
 })
 
 app.get('/h/:topic/', async(req: { params: { topic: string } },res: { redirect: (arg0: string) => void }) => {
@@ -1378,7 +1374,7 @@ function parseForAtMentions(x:string) {
 }
 
 app.get('/notifications', async(req: any,res: { render: (arg0: string, arg1: { topic: string }) => void })=> {
-	res.render('notifications.ejs', {topic: "- notifications"})
+	res.render('notifications.ejs', {topic: "/notifications"})
 })
 
 app.post('/api/post/comment_nested/', async(req:any, res:any) => {
@@ -1905,7 +1901,7 @@ function compare( a: { last_touched_timestamp: number }, b: { last_touched_times
 }
 
 app.get('/search/', async(req: any,res: { render: (arg0: string, arg1: { topic: string }) => void }) => {
-	res.render('home.ejs', {topic: "- search"})
+	res.render('home.ejs', {topic: "search"})
 })
 
 function getFullDateTimeAndTimeStamp() {
