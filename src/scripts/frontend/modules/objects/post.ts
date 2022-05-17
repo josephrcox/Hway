@@ -35,7 +35,7 @@ export const postObject = {
         body.innerText = this.body
         body.style.display = "none"
 
-        var title = document.createElement('div') as HTMLSpanElement
+        var title = document.createElement('h3') as HTMLSpanElement
         title.classList.add('post-title')
         title.dataset.title = this.title
         title.dataset.link = this.link
@@ -57,11 +57,11 @@ export const postObject = {
                 window.open(title.dataset.link)
             }
         } else if (this.post_type == 3) {
-            title.innerHTML = "<img src='"+title.dataset.link+"' class='post-img-thumb'> "+this.title
+            title.innerHTML = "<img src='"+title.dataset.link+"' class='post-img-thumb' alt='Post thumbnail'> "+this.title
             title.onclick = function() {
                 if (body.style.display == "none") {
                     body.style.display = "block"
-                    body.innerHTML = "<img class='post-img' src='"+title.dataset.link+"'>"
+                    body.innerHTML = "<img class='post-img' src='"+title.dataset.link+"' alt='Post media'>"
                 } else {
                     body.style.display = "none"
                     body.innerHTML = ""

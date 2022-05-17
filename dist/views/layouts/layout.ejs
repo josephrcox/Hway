@@ -27,7 +27,7 @@
     <div class="header">
         <div class="header_top">
             <div class="header-title noselect">
-                <a href='/all'><div class="header-title cursor_pointer">HWay <span style="font-size:8px"><%= topic %></div></a>   </span>
+                <a href='/all'><h1 class="header-title cursor_pointer">HWay <span style="font-size:13px"><%= topic %></h1></a>   </span>
                 <span id="page-number" class="noselect"></span>  
             </div>
             <div class="header_right">
@@ -55,9 +55,9 @@
                 </div>
                 <div class="header_right_bottom">
                     <a href="/post/" id="post-button" class="header-post cursor_pointer" title="Create a post"><img src="/dist/images/pencil.svg" class="post-button-pencil"></a>
-                    <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg" title="Search"></img>
+                    <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg" title="Search" alt="Open search"></img>
                     <div class="header_right_bottom" onclick="headerHamburgerClicked()" id="headerHamburger" title="Options menu">
-                        <img src="/dist/images/hamburger.svg" class="header_hamburger" id="hamburger">
+                        <img src="/dist/images/hamburger.svg" class="header_hamburger" id="hamburger" alt="Open dropdown menu">
                     </div>
                     <div id="hamburgerDropdown" class="user-dropdown-content">
                         <p class="hamburger_divider">Links</p>
@@ -108,6 +108,7 @@
     </div>
 
     <script> 
+    console.log("layout.ejs loaded")
         const header_currentUser = document.getElementById("currentUser")
         const header_dd_profile = document.getElementById("profile_button") 
         const header_dd = document.getElementById("user-dropdown")

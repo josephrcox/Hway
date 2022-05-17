@@ -61,7 +61,7 @@ export function addPageNavigation() {
         if (current_page > 1) {
             futurePage = current_page - 1
             let back_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
-            pageNum.innerHTML += "<a href='"+back_href+"'><img class='page_nav_arrow' src='../dist/images/page_backarrow.svg'></a>"
+            pageNum.innerHTML += "<a href='"+back_href+"'><img class='page_nav_arrow' src='../dist/images/page_backarrow.svg' alt='Previous page'></a>"
         } 
 
         futurePage = current_page + 1
@@ -69,7 +69,7 @@ export function addPageNavigation() {
         pageNum.innerHTML += "<span id='page_pageNumber'>Page "+current_page+"/"+total_pages+"</span>"
         
         if (total_pages != current_page) {
-            pageNum.innerHTML += "<a href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg'></a>"
+            pageNum.innerHTML += "<a href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg' alt='Next page'></a>"
         }
     }
 }

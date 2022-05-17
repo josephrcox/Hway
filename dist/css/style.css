@@ -50,6 +50,10 @@ body {
     padding-right: 5px;
     margin-left: 5px;
     cursor: pointer;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: flex;
+    align-items: center;
 }
 
 .comment-title {
@@ -199,6 +203,7 @@ span {
     font-size: 36px;
     width: fit-content;
     margin-top: -4px;
+    font-weight: 420;
 }
 
 .header_top {

@@ -1,12 +1,13 @@
 .login-reg div {
     color:white;
-    font-size: 36px;
+    font-size: 26px;
 }
 
 .login-reg a {
     text-decoration: none;
     color: rgb(255, 12, 12);
     font-style: italic;
+    font-size: 12px;
 }
 
 .general_input {
@@ -32,4 +33,13 @@
 
 #reg-form {
     margin-top: 6px;
+}
+
+.header_right {
+  display: none;
+}
+
+
+.login-reg {
+  border-top: 1px solid white;
 }
