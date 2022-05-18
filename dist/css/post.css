@@ -98,3 +98,7 @@
 	resize: none;
 	height: 113px;
   }
+
+  #np_poll_options {
+	text-align: center;
+}

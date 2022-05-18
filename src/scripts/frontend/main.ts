@@ -3,7 +3,7 @@ import { apiGetPostsByTopic, apiGetPostByID, apiGetPostsBySearchQuery } from "./
 import { getPageType, getPageSearchQueries } from "./modules/pageAnalyzer.js"
 import { commentObject, newCommentInputArea, commentSection } from "./modules/objects/comment.js";
 import { newComment } from "./modules/createComment.js";
-import { getUser, currentUserID, isUserLoggedIn } from "./modules/auth.js"
+import { getUser, currentUserID, isUserLoggedIn, currentUsername } from "./modules/auth.js"
 import { addSortingEvents, addPageNavigation, pageNum } from "./modules/pageNavigator.js"
 import { init, phrase, topic, bar } from "./modules/search.js"
 import { apiGetNotifications, initNotificationButtons } from "./modules/notifications.js";
@@ -191,7 +191,20 @@ export function loadPostOrPostObjects(posts:any) {
         post.post_type = posts[i].type
         post.link = posts[i].link
         post.nsfw = posts[i].nsfw
-        console.log("posting")
+        if (posts[i].type == 4) {
+            post.poll_options = posts[i].poll_data.options
+            for (let x=0;x<posts[i].poll_data.voters.length;x++) {
+                if (posts[i].poll_data.voters[x][0] == currentUsername) {
+                    post.poll_voted = posts[i].poll_data.voters[x][1]
+                    break;
+                }
+            }
+            for (let x = 0;x<post.poll_options.length;x++) {
+                let filtered = posts[i].poll_data.voters.filter((a: any) => a[1] == x);
+                post.poll_options[x].votes = filtered.length
+            }
+        }
+        
         post.display()
     }
     stopLoaders()

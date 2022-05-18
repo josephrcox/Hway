@@ -352,11 +352,19 @@ app.get('/login/', (req:any, res:any) => {
 })
 
 app.get('/post', (req:any, res:any) => {
-    if (currentUser) {
-        res.render('post.ejs', {topic:"- post"})
-    } else {
-        res.redirect('/login/?ref=/post/')
-    }
+
+	try {
+		let token = req.cookies.token
+		let user = jwt.verify(token, process.env.JWT_SECRET)
+		currentUser = user.id
+		if (currentUser) {
+			res.render('post.ejs', {topic:"- post"})
+		} else {
+			res.redirect('/login/?ref=/post/')
+		}
+	}catch(error) {
+		res.redirect('/login/?ref=/post/')
+	}
     
 })
 
@@ -1109,7 +1117,7 @@ app.post('/api/post/register', async(req:any, res:any) => {
 })
 
 app.post('/api/post/post', async(req:any, res:any) => {
-	var {title, body, link, topic, type, nsfw} = req.body
+	var {title, body, link, topic, type, nsfw, pollingOps} = req.body
 	let userID
 	let poster
     topic = topic.toLowerCase()
@@ -1144,36 +1152,55 @@ app.post('/api/post/post', async(req:any, res:any) => {
 	const dt = getFullDateTimeAndTimeStamp()
 	let fulldatetime = dt[0]
 	let timestamp = dt[1]
+	let pollOpsParsed = []
 
-	try {
-		const response = await Post.create({
-            title: title, 
-			body: body, 
-			poster: poster,
-			link: link,
-			topic: topic,
-			type: type, // 1=text, using as temporary default
-			posterID: userID,
-			date: fulldatetime,
-			timestamp:timestamp,
-			status:"active",
-			nsfw: nsfw,
-		})
-		if (body != null) {
-			if (body.indexOf('mpwknd199999999') == -1) {
-				User.findById(userID, function(err:any, docs:any) {
-					docs.statistics.posts.created_num += 1
-					docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
-					docs.save()
-				})
-			}
+	if (pollingOps.length > 1) {
+		for (let i=0;i<pollingOps.length;i++){
+			pollOpsParsed.push({
+				title: pollingOps[i]
+			})
 		}
-		
-		
-		res.json({ status:"ok", code:200, data: response})
-	} catch (error) {
-		res.json(error)
 	}
+	console.log(pollOpsParsed)
+
+	if (!pollingOps) {
+		res.json({status:'ok'})
+	} else {
+		try {
+			const response = await Post.create({
+				title: title, 
+				body: body, 
+				poster: poster,
+				link: link,
+				topic: topic,
+				type: type, // 1=text, using as temporary default
+				posterID: userID,
+				date: fulldatetime,
+				timestamp:timestamp,
+				status:"active",
+				nsfw: nsfw,
+				poll_data: {
+					options: pollOpsParsed,
+					voters: []
+				}
+			})
+			if (body != null) {
+				if (body.indexOf('mpwknd199999999') == -1) {
+					User.findById(userID, function(err:any, docs:any) {
+						docs.statistics.posts.created_num += 1
+						docs.statistics.posts.created_array.push([title, topic, response.id, fulldatetime])
+						docs.save()
+					})
+				}
+			}
+			
+			
+			res.json({ status:"ok", code:200, data: response})
+		} catch (error) {
+			res.json(error)
+		}
+	}
+	
 })
 
 
@@ -1764,7 +1791,42 @@ app.put('/api/put/comment_nested/delete/:postid/:commentid/:nested_comid', async
 })
 
 
+app.put('/api/put/poll/:postid/:answer', function(req:any, res:any) {
+	let username:string
+	let answer = parseInt(req.params.answer)
+	try {
+		let token = req.cookies.token
+		const verified = jwt.verify(token, process.env.JWT_SECRET)
+		username = verified.name
+	} catch (err) {
+		return res.json({ status:"error", code:400, error: err})
+	}
 
+	Post.findById(req.params.postid, async function(err:any,docs:any) {
+		if (err) {
+			res.json(err)
+		} else {
+			let newData = docs.poll_data
+			let alreadyvoted = false
+			for (let i=0;i<newData.voters.length;i++) {
+				if (newData.voters[i][0] == username) {
+					alreadyvoted = true
+					if (newData.voters[i][1] != answer) {
+						newData.voters[i][1] = answer
+					}
+				}
+			}
+			if (!alreadyvoted) {
+				newData.voters.push([
+					username, answer
+				])
+			}
+			console.log(newData)
+			await Post.findByIdAndUpdate(req.params.postid, {poll_data:newData})
+			res.json({status:'ok'})
+		}
+	})
+})
 
 app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', function(req: { params: { parentid: any; commentid: any; nestedboolean: any; commentParentID: any }; cookies: { token: any } },res: { json: (arg0: { status: string; code?: number; error?: unknown; newcount?: any; voted?: string }) => void }) {
 	let pID = req.params.parentid

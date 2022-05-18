@@ -1,3 +1,4 @@
+import { timeStamp } from "console"
 import { isSubscribed, subscribeTo } from "../subscriptions.js"
 
 export const supportEmail = "josephrobertcox@gmail.com"
@@ -16,6 +17,8 @@ export const postObject = {
     commentCount:0,
     topic:"",
     nsfw:"",
+    poll_options:[],
+    poll_voted:-1,
 
     currentUserUpvoted:false,
     currentUserDownvoted:false,
@@ -35,26 +38,62 @@ export const postObject = {
         body.innerText = this.body
         body.style.display = "none"
 
+        if (this.post_type == 4) {
+            let pollOps:any
+            pollOps = this.poll_options
+            console.log(pollOps)
+            body.innerHTML = ""
+
+            for (let i=0;i<pollOps.length;i++) {
+                let d = document.createElement('div')
+                d.innerHTML = pollOps[i].title
+                if (this.poll_voted != -1) {
+                    if (this.poll_voted == i) {
+                        d.style.backgroundColor = 'blue'
+                        d.style.color = 'white'
+                    }
+                    d.innerHTML += "("+pollOps[i].votes+" votes)"
+                }
+                d.style.padding = '5px'
+                d.style.border = '1px solid black'
+                d.dataset.postid = this.id
+                d.dataset.index = i+""
+
+                d.onclick = function() {
+                    voteOnPoll(d.dataset.postid+"", d.dataset.index+"")
+                }
+
+                body.append(d)
+
+            }
+        }
+
         var title = document.createElement('h3') as HTMLSpanElement
         title.classList.add('post-title')
         title.dataset.title = this.title
         title.dataset.link = this.link
 
         if (this.post_type == 1 && this.body.length > 0) {
-            title.innerHTML = this.title + " <span style='font-size:8px'> [+]</span>"
+            title.innerHTML = "<span style='font-size:10px;padding-right:5px'>[+] </span>"+this.title
             title.onclick = function() {
                 if (body.style.display == "none") {
                     body.style.display = "block"
-                    title.innerHTML = title.dataset.title + " <span style='font-size:8px'> [-]</span>"
+                    title.innerHTML = "<span style='font-size:10px;padding-right:5px'>[-] </span>"+title.dataset.title
                 } else {
                     body.style.display = "none"
-                    title.innerHTML = title.dataset.title + " <span style='font-size:8px'> [+]</span>"
+                    title.innerHTML = "<span style='font-size:10px;padding-right:5px'>[+] </span>"+title.dataset.title
                 }
             }
+            if (window.location.pathname.includes('/p/')) {
+                body.style.display = 'block'
+            }
         } else if (this.post_type == 2) {
-            title.innerHTML = this.title + " <span style='font-size:8px'> [🔗]</span>"
+            title.innerHTML = "<span style='font-size:10px;padding-right:5px'>🔗 </span>"+title.dataset.title
             title.onclick = function() {
                 window.open(title.dataset.link)
+            }
+            if (window.location.pathname.includes('/p/')) {
+                body.style.display = 'block'
             }
         } else if (this.post_type == 3) {
             title.innerHTML = "<img src='"+title.dataset.link+"' class='post-img-thumb' alt='Post thumbnail'> "+this.title
@@ -71,6 +110,20 @@ export const postObject = {
         } else if (this.post_type == 1) {
             title.innerText = this.title
             title.style.cursor = 'auto'
+        } else if (this.post_type == 4) {
+            title.innerHTML = "<span style='font-size:10px;padding-right:5px'>❓ [+] </span>"+this.title
+            title.onclick = function() {
+                if (body.style.display == "none") {
+                    body.style.display = "block"
+                    title.innerHTML = "<span style='font-size:10px;padding-right:5px'>❓ [-] </span>"+title.dataset.title
+                } else {
+                    body.style.display = "none"
+                    title.innerHTML = "<span style='font-size:10px;padding-right:5px'>❓ [+] </span>"+title.dataset.title
+                }
+            }
+            if (window.location.pathname.includes('/p/')) {
+                body.style.display = 'block'
+            }
         }
 
 
@@ -234,3 +287,18 @@ const deletePost = async(id:string, containerE:HTMLDivElement, containerSub:HTML
 
 }
 
+
+async function voteOnPoll(postid:string, answer:string) {
+    // answer is the index, so 0 is the first option
+    const settings = {
+        method: 'PUT',
+    };
+    const response = await fetch('/api/put/poll/'+postid+'/'+answer, settings)
+    const data = await response.json()
+
+    if (data.status == 'ok') {
+        window.location.reload()
+    } else {
+        console.log(data)
+    }
+}

@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
 
+
+const pollSchema = new mongoose.Schema(
+    {
+        options: { type:Array, required:true},
+        voters: { type:Array, required:false, default:[]},
+    }, {timestamps:true}
+)
+
 const nestedCommentSchema = new mongoose.Schema(
     {
         body: { type:String, required:true },
@@ -33,6 +41,7 @@ const postSchema = new mongoose.Schema(
         status: { type:String, required:true, default:"active"}, //active, deleted, removed
         title: { type:String, required:true },
         body: { type:String },
+        poll_data:pollSchema,
         poster: { type:String, required:true},
         posterID: { type:String },
         posterAvatarSrc: { type:String, default:""},

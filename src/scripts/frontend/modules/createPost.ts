@@ -10,6 +10,7 @@ const file_d = document.getElementsByClassName('np-file')[0] as HTMLDivElement
 const topic = document.getElementsByClassName('np-topic')[0].children[1] as HTMLInputElement
 const nsfw = document.getElementsByClassName('np-nsfw')[0].children[1] as HTMLInputElement
 const submit = document.getElementsByClassName('np_submit')[0] as HTMLDivElement
+const pollOptions = document.getElementById('np_poll_options') as HTMLDivElement
 
 let uploadedImageUrls:string[] = []
 
@@ -37,7 +38,8 @@ const newPost = async () => {
         logs.style.display = "none"
         logs.innerText = ""
         let templink = ""
-        
+        let pollingOps = []
+
         if (post_type == 1) {
             link.value = ""
         } else if (post_type == 2) {
@@ -46,6 +48,17 @@ const newPost = async () => {
         } else if (post_type == 3) {
             templink = localStorage.getItem("lastuploadedimage")+""
             body.value = ""
+        } else if (post_type == 4) {
+
+            for (let i=1;i<pollOptions.children.length;i++) {
+                let x = pollOptions.children[i] as HTMLInputElement
+
+                if (!onlySpaces(x.value)) {
+                    if (x.value.length > 0) {
+                        pollingOps.push(x.value)
+                    }
+                }
+            }
         }
     
         let bodyJSON = {
@@ -55,6 +68,7 @@ const newPost = async () => {
             "type": post_type,
             "nsfw": isNSFW,
             "link": templink,
+            "pollingOps": pollingOps
         };
     
         console.log(bodyJSON)
@@ -102,6 +116,24 @@ function postBouncer(post_type:number) {
         if (isValidUrl(uploadedImageUrls.pop() + "") == false) {
             msg = "Please upload a photo."
         }
+    } else if (post_type == 4) { // poll post
+        let options = []
+        for (let i=1;i<pollOptions.children.length;i++) {
+            let x = pollOptions.children[i] as HTMLInputElement
+
+            if (!onlySpaces(x.value)) {
+                if (x.value.length > 0) {
+                    options.push(x.value)
+                }
+            }
+        }
+        if (options.length < 2) {
+            msg = "Polls need to have at least 2 options."
+        } else {
+            if (hasDuplicates(options)) {
+                msg = "Polls can not have duplicate options."
+            }
+        }
     }
 
     return msg 
@@ -120,20 +152,29 @@ for (let i=0;i<np_types.length;i++) {
                 body_d.style.display = 'flex'
                 link_d.style.display = 'none'
                 file_d.style.display = 'none'
+                pollOptions.style.display = 'none'
                 break;
             case 2:
                 // link post, requires link
                 body_d.style.display = 'none'
                 link_d.style.display = 'flex'
                 file_d.style.display = 'none'
+                pollOptions.style.display = 'none'
                 break;
             case 3:
                 // photo post, requires file
                 body_d.style.display = 'none'
                 link_d.style.display = 'none'
                 file_d.style.display = 'flex'
+                pollOptions.style.display = 'none'
                 break;
-            
+            case 4:
+                // poll post, requires post options
+                body_d.style.display = 'none'
+                link_d.style.display = 'none'
+                file_d.style.display = 'none'
+                pollOptions.style.display = 'flex'
+                pollOptions.style.flexDirection = 'column'
         }
     })
 }
@@ -161,3 +202,17 @@ file.addEventListener("change", async function() {
     localStorage.setItem("lastuploadedimage", url)
     console.log(uploadedImageUrls)
 })
+
+function onlySpaces(str:String) {
+    return str.trim().length === 0;
+  }
+
+
+  function hasDuplicates(a:any) {
+    for (let i = 0; i < a.length; i++) {
+      if (a.indexOf(a[i]) !== a.lastIndexOf(a[i])) {
+        return true
+      }
+    }
+    return false
+  }
