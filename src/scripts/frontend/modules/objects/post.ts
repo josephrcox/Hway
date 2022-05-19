@@ -1,4 +1,5 @@
 import { timeStamp } from "console"
+import { isUserLoggedIn } from "../auth.js"
 import { isSubscribed, subscribeTo } from "../subscriptions.js"
 
 export const supportEmail = "josephrobertcox@gmail.com"
@@ -60,7 +61,11 @@ export const postObject = {
                 d.dataset.index = i+""
 
                 d.onclick = function() {
-                    voteOnPoll(d.dataset.postid+"", d.dataset.index+"")
+                    if (isUserLoggedIn) {
+                        voteOnPoll(d.dataset.postid+"", d.dataset.index+"")
+                    } else {
+                        window.location.href='/login/?ref=/p/'+d.dataset.postid
+                    }
                 }
 
                 body.append(d)
