@@ -19,14 +19,16 @@ let header_login_button = document.getElementById('login_button') as HTMLAnchorE
 const sorting_options = document.getElementById('hamburger_sorting') as HTMLDivElement
 
 
-export async function loadMain() {
+export async function loadMain(reset:boolean) {
     localStorage.setItem("deletepostconfirmid","")
     localStorage.setItem("deletecommentconfirmid","")
     let x:Array<any> = getPageType() || []
-    console.log(x)
     addSortingEvents()
     init()
     await getUser()
+    if (reset) {
+        postsArray.innerHTML = ""
+    }
 
     switch(x[0]) {
         case "all":
@@ -76,7 +78,7 @@ export async function loadMain() {
     }
 }
 
-loadMain()
+loadMain(false)
 
 export async function getPostsByTopic(topic:string) {
     var posts = await apiGetPostsByTopic(topic, getPageSearchQueries(), filter_nsfw_checkbox.checked)
@@ -203,6 +205,7 @@ export function loadPostOrPostObjects(posts:any) {
                 let filtered = posts[i].poll_data.voters.filter((a: any) => a[1] == x);
                 post.poll_options[x].votes = filtered.length
             }
+            post.poll_total_votes = posts[i].poll_data.voters.length
         }
         
         post.display()
@@ -225,7 +228,7 @@ filter_nsfw_checkbox.addEventListener('change', async function() {
     if (data.status == 'ok') {
         postsArray.innerHTML = ""
         startLoaders()
-        loadMain()
+        loadMain(false)
     }
     if (data.status == 'error') {
         alert(data.error)
