@@ -1,10 +1,9 @@
+
 :root {
 	--bg-color: #24374c;
-	--foreground-1: #003366;
-	--foreground-2: #327da8;
-	--foreground-3: hsl(195, 77.6%, 19.2%);
-	--foreground-4: cornflowerblue;
-	--foreground-menu-gray: #fffff0bf;
+	--foreground-1: rgb(149, 149, 255);
+	--foreground-2: rgb(61, 63, 142);
+    --button-darkblue: rgb(8, 42, 145);
 }
 
 @font-face {
@@ -739,8 +738,8 @@ font-size: 12px;
 }
 
 #currentUser:hover {
-	background-color: #0dfbff;
-	color: black;
+	background-color: var(--button-darkblue);
+	color: white;
 } 
 
 

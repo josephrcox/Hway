@@ -1,4 +1,3 @@
-
 .np_types {
 	display: flex;
 	flex-direction: column;
@@ -24,11 +23,9 @@
 }
 
 .np_type:hover[data-selected="false"] {
-    background-color: #22B279;
-	  
-/*   box-shadow: 0px 10px 15px rgba(46, 229, 157, 0.4); */
+    background-color: rgb(81, 85, 236);
   color: #fff;
-  transform: translateY(-1px);
+  transform: translateY(0px);
 
 }
 
@@ -54,13 +51,13 @@
 	flex-direction: row;
 	min-width: 200px;
 	max-width: 500px;
-	background-color: #569a87;
+	background-color: var(--foreground-1);
 	padding: 10px;
 	border-radius: 25px;
 }
 
 [data-selected="true"] {
-    background-color: #2FDE99;
+    background-color: var(--foreground-2);
 	 color: white;
 }
 
