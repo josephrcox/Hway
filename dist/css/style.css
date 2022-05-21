@@ -3,7 +3,7 @@
 	--bg-color: #24374c;
 	--foreground-1: rgb(149, 149, 255);
 	--foreground-2: rgb(61, 63, 142);
-    --button-darkblue: rgb(8, 42, 145);
+    --button-darkblue: #082a91;
 }
 
 @font-face {
