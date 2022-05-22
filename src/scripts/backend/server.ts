@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser')
 const { response } = require('express');
 const path = require('path');
 const fs = require('fs');
+const axios = require('axios')
 
 app.use(cookieParser())
 
@@ -2116,6 +2117,56 @@ app.post('/api/put/account/setpassword', async(req: { cookies: { token: any }; b
 		}
 	})
 })
+
+app.get('/api/post/fakeposts/:count', async function(req:any, res:any) {
+    Post.deleteMany({poster:'robot'}, function(err:any, docs:any) {
+        console.log(docs)
+    })
+
+    for (let c=0;c<req.params.count;c++) {
+        const response = await axios('https://www.reddit.com/r/random/top/.json')
+        for (let x=0;x<1;x++) {
+            let p = response.data.data.children[x].data
+    
+            let post_type = 1
+            let templink = ""
+            let title = p.title
+            let body = p.selftext
+            if (p.post_hint == "image") {
+                post_type = 3
+                templink = p.url_overridden_by_dest
+            } else if (p.post_hint == "link") {
+                post_type = 2
+                templink = p.url_overridden_by_dest
+            } else if (p.post_hint == "self") {
+                post_type = 1
+            }
+            let votes = parseInt(p.ups) - parseInt(p.downs)
+        
+            const postResponse = await Post.create({
+                title: title, 
+                body: body, 
+                poster: "robot",
+                link: templink,
+                topic: p.subreddit,
+                type: post_type, // 1=text, using as temporary default
+                posterID: "61be73f0acf074405646c330",
+                date: "5/14/2022 at 3:15 PM UTC",
+                timestamp:"1652541310663",
+                status:"active",
+                nsfw: p.over_18,
+                total_votes:votes
+            })
+            console.log(postResponse)
+    
+        }
+        
+    }
+    res.json({status:'ok'})
+    
+})
+
+
 
 app.get('*', async(req:any, res:any) => {
 	res.render('error.ejs', {layout: 'layouts/error.ejs', topic:"PAGE NOT FOUND", error:((req.url).replace('/',''))})

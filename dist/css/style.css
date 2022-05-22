@@ -87,10 +87,11 @@ body {
     background-color: white;
 	border-left: 1px solid #71716bbf;
 	margin-left: 5px;
-	width: 30px;
+	/*! width: 30px; */
     border-radius: 6px;
     max-height: 68px;
     min-height: min-content;
+    min-width: 30px;
 }
 
 .post-vote-button {
