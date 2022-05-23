@@ -33,6 +33,6 @@
     "path": "^0.12.7",
     "random-words": "^1.1.1",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.6.4"
   }
 }
