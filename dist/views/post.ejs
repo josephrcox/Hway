@@ -37,12 +37,15 @@
          <input type="file" autocomplete="off" accept="image/*">
       </div>
       <div id="np_poll_options" style="display: none;">
-         <label class="np_input_label">Poll options</label>
+         <label class="np_input_label">Poll options <span class='button' id="np_poll_add" style="width: 19px; height: 19px;">+</span></label>
+  
          <input type="text" class="general_input" autocomplete="off">
          <input type="text" class="general_input" autocomplete="off">
          <input type="text" class="general_input" autocomplete="off">
          <input type="text" class="general_input" autocomplete="off">
+        
       </div>
+      
 
       <div class="np-topic np_input">
          <label class="np_input_label">Topic</label>
@@ -64,7 +67,15 @@
 
 
 </div>
-
+   <script>
+      document.getElementById('np_poll_add').addEventListener('click', function() {
+         let n = document.createElement('input')
+         n.type = 'text'
+         n.classList.add('general_input')
+         n.autocomplete = 'off'
+         document.getElementById('np_poll_options').append(n)
+      })
+   </script>
 
    <script src="/dist/scripts/frontend/modules/createPost.js" type="module"></script>
 

@@ -18,7 +18,8 @@ export const newComment = async (postid:string) => {
             method: 'POST',
             body: JSON.stringify(bodyJSON)
         }); 
-        var data = await fetchResponse.json()
+        var data = await fetchResponse.json();
+        (document.getElementById("newCom_body") as HTMLInputElement).value = ""
 
         var c = Object.create(commentObject)
         c.body = data.body
