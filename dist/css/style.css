@@ -19,6 +19,10 @@ body {
     max-width: 100vw;
 }
 
+body.nm {
+	background: black;
+}
+
 .post-container, .comment-container {
 	display: flex;
 	flex-direction: row;
@@ -284,7 +288,7 @@ a:active {
   }
 
 
-.sorting_options, .hamburger_link, .user-dropdown-item, #filter_nsfw_div {
+.sorting_options, .hamburger_link, .user-dropdown-item, #filter_nsfw_div, #user-nm {
 	color: white;
 	padding-inline: 3px;
 	font-size: 12px;

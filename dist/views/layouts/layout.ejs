@@ -47,6 +47,10 @@
                                     NSFW
                                 <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw"/>
                             </div>
+                            <div id="user-nm" style="padding-inline: 3px;color: black;">
+                                Nightmode
+                            <input type="checkbox" id="nm-toggle" style='color:black'/>
+                        </div>
                         </div>
             
                     </div>
@@ -142,6 +146,24 @@
             }
 
         };
+
+        if (localStorage.getItem('nm') == 'false') {
+                document.body.classList.remove('nm')
+                document.getElementById('nm-toggle').checked = 'false'
+            } else {
+                document.body.classList.add('nm')
+                document.getElementById('nm-toggle').checked = 'true'
+            }
+
+        document.getElementById('nm-toggle').onchange = function() {
+            if (localStorage.getItem('nm') == 'true') {
+                document.body.classList.remove('nm')
+                localStorage.setItem('nm', 'false')
+            } else {
+                document.body.classList.add('nm')
+                localStorage.setItem('nm', 'true')
+            }
+        }
     </script>
 
 
