@@ -36,8 +36,16 @@ export const postObject = {
         var postDetailsContainer = document.createElement('div') as HTMLDivElement
         postDetailsContainer.classList.add('post-details-container')
 
+        let nm = localStorage.getItem('nm')
+        if (nm == "true") {
+            postDetailsContainer.classList.add('element-nm')
+        }
+
         var body = document.createElement('p') as HTMLParagraphElement
         body.classList.add('post-body')
+        if (nm == "true") {
+            body.classList.add('element-nm')
+        }
         body.innerText = this.body
         body.style.display = "none"
 

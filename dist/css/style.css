@@ -4,6 +4,7 @@
 	--foreground-1: rgb(149, 149, 255);
 	--foreground-2: rgb(61, 63, 142);
     --button-darkblue: #082a91;
+	--post-background-color: white;
 }
 
 @font-face {
@@ -38,7 +39,7 @@ body.nm {
 	flex-direction: column;
     /*! padding-inline-start: 5px; */
     /*! justify-content: space-around; */
-    background-color: white;
+    background-color: var(--post-background-color);
     height: fit-content;
     flex-grow: 1;
     border-radius: 6px;
@@ -835,6 +836,12 @@ textarea:focus, input:focus{
 
 .login-reg {
   color: white;
+}
+
+.element-nm {
+	background-color: rgb(43, 43, 50);
+	color:white;
+	border: 1px solid white;
 }
 
 .footer {

@@ -64,6 +64,10 @@ export const commentObject = {
 
         var comDetailsContainer = document.createElement('div') as HTMLDivElement
         comDetailsContainer.classList.add('comment-details-container')
+        let nm = localStorage.getItem('nm')
+        if (nm) {
+            comDetailsContainer.classList.add('element-nm')
+        }
         
         if (this.is_nested) {
             comDetailsContainer.classList.add('nested')

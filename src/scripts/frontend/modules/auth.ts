@@ -14,7 +14,7 @@ export const getUser = async () => {
         if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
             isUserLoggedIn = false;
             currentUsername = null
-            localStorage.clear()
+            //localStorage.clear()
         } else {
             apiGetNotificationCount()
             currentUserID = data.id

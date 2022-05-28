@@ -149,26 +149,54 @@
 
         if (localStorage.getItem('nm') != null) {
             if (localStorage.getItem('nm') == 'false') {
-                document.body.classList.remove('nm')
-                document.getElementById('nm-toggle').checked = false
+                disableNM()
             } else {
-                document.body.classList.add('nm')
-                document.getElementById('nm-toggle').checked = true
+                enableNM()
             }
         } else {
-            document.body.classList.remove('nm')
-            document.getElementById('nm-toggle').checked = false
+            disableNM()
+            
         }
 
 
         document.getElementById('nm-toggle').onchange = function() {
             if (localStorage.getItem('nm') == 'true') {
-                document.body.classList.remove('nm')
-                localStorage.setItem('nm', 'false')
+                disableNM()
             } else {
-                document.body.classList.add('nm')
-                localStorage.setItem('nm', 'true')
+                if (document.body.classList.contains('nm')) {
+                    disableNM()
+                } else {
+                    enableNM()
+                }
             }
+        }
+
+        function enableNM() {
+            document.body.classList.add('nm')
+            localStorage.setItem('nm', 'true')
+            document.getElementById('nm-toggle').checked = true
+            document.querySelectorAll('.post-details-container').forEach(x => {
+                x.classList.add('element-nm')
+            })
+            document.querySelectorAll('.comment-details-container').forEach(x => {
+                x.classList.add('element-nm')
+            })
+            document.querySelectorAll('.post-body').forEach(x => {
+                x.classList.add('element-nm')
+            })
+            document.querySelectorAll('#newCom_body').forEach(x => {
+                x.classList.add('element-nm')
+            })
+
+        }
+        function disableNM() {
+            document.body.classList.remove('nm')
+            localStorage.setItem('nm', 'false')
+            document.getElementById('nm-toggle').checked = false
+
+            document.querySelectorAll('.element-nm').forEach(x => {
+                x.classList.remove('element-nm')
+            })
         }
     </script>
 

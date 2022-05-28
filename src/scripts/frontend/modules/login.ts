@@ -36,7 +36,7 @@ export async function loginUser() {
     const data = await fetchResponse.json()
     
     if (data.code == 200) {
-        localStorage.clear()
+        //localStorage.clear()
         let ref = window.location.search.split('ref=')[1]
         if (ref == undefined) {
             ref = "/"

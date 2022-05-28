@@ -22,5 +22,13 @@
        <div id="comments" style="display: none;">
         <div class="loader"></div>
           <!-- comments go here from js -->
-       </div>
+   </div>
+
+   <script>
+         let nm = localStorage.getItem('nm')
+         if (nm == "true") {
+            document.getElementById('newCom_body').classList.add('element-nm')
+         }
+   </script>
+
 </body>
