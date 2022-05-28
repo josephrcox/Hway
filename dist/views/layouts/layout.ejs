@@ -49,7 +49,7 @@
                             </div>
                             <div id="user-nm" style="padding-inline: 3px;color: black;">
                                 Nightmode
-                            <input type="checkbox" id="nm-toggle" style='color:black'/>
+                            <input type="checkbox" id="nm-toggle" style='color:black' checked='false'/>
                         </div>
                         </div>
             
@@ -147,13 +147,19 @@
 
         };
 
-        if (localStorage.getItem('nm') == 'false') {
+        if (localStorage.getItem('nm') != null) {
+            if (localStorage.getItem('nm') == 'false') {
                 document.body.classList.remove('nm')
-                document.getElementById('nm-toggle').checked = 'false'
+                document.getElementById('nm-toggle').checked = false
             } else {
                 document.body.classList.add('nm')
-                document.getElementById('nm-toggle').checked = 'true'
+                document.getElementById('nm-toggle').checked = true
             }
+        } else {
+            document.body.classList.remove('nm')
+            document.getElementById('nm-toggle').checked = false
+        }
+
 
         document.getElementById('nm-toggle').onchange = function() {
             if (localStorage.getItem('nm') == 'true') {
