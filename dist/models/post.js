@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
 
+
+const pollSchema = new mongoose.Schema(
+    {
+        options: { type:Array, required:true},
+        voters: { type:Array, required:false, default:[]},
+    }, {timestamps:true}
+)
+
 const nestedCommentSchema = new mongoose.Schema(
     {
         body: { type:String, required:true },
@@ -29,10 +37,11 @@ const commentSchema = new mongoose.Schema(
 
 const postSchema = new mongoose.Schema(
     {
-        type: { type:Number, required:true }, // 1=text, 2=link, 3=media
+        type: { type:Number, required:true }, // 1=text, 2=link, 3=media 4=poll
         status: { type:String, required:true, default:"active"}, //active, deleted, removed
         title: { type:String, required:true },
         body: { type:String },
+        poll_data:pollSchema,
         poster: { type:String, required:true},
         posterID: { type:String },
         posterAvatarSrc: { type:String, default:""},
@@ -50,12 +59,12 @@ const postSchema = new mongoose.Schema(
         current_user_downvoted: { type: Boolean},
         current_user_admin: { type: Boolean},
         comments: [commentSchema],
-        special_attributes: { type: Array},
+        nsfw: { type:Boolean }
     },
     { collection: 'posts', timestamps:true}
 )
 
-const model = mongoose.model('PostSchema', postSchema)
+const Post = mongoose.model('PostSchema', postSchema)
 
 
-module.exports = model
+module.exports = Post

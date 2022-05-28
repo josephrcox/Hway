@@ -1,28 +1,88 @@
-#page-profile-name {
-	font-size:56px;
-	color:white;
+.profile_container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
-.profile {
-	display:flex;
-	flex-direction: column;
-	color:white;
-	width: 95%;
-	max-width: 1200px;
+.profile-info_avatar_img {
+	width: 75px;
+	height: 75px;
+	object-fit: cover;
+	border-radius: 18px;
+    background-color: black;
+	margin-right: 10px;
+}
+
+
+.profile-info_name {
+  color: white;
+  font-size: 56px;
+  max-width: max-content;
+}
+.profile-info_avatar_name {
+  display: flex;
+  align-items: center;
+}
+
+.profile_right {
+	/*! background-color: #177708; */
+	border-radius: 15px;
+	width: 50vw;
+	margin-top: 10px;
+}
+
+.profile-info_stats {
+    border-top: 1px solid gray;
+	color: white;
+	font-size: 23px;
+    margin-top: 5px;
+}
+
+.profile-stat {
+	color: #31de22;
+}
+
+#postsArray, #comments {
 	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
-#page-profile-info, #page-profile-posts, #page-profile-comments  {
-	padding-bottom: 25px;
-	border-bottom: 1px solid white;
-	margin-bottom:25px;
+.post-subpost-details-container {
+  color: black;
 }
 
-#page-profile-comments-header, #page-profile-posts-header {
-	font-size:45px;
+.profile_left {
+  margin-top: 10px;
 }
 
 
-#user-subscribeInlineButton, #user-unsubscribeInlineButton {
-	margin-top: 35px;
+.profile-feed_divider {
+    color: white;
+    text-align: center;
+    border-bottom: 1px solid black;
+    padding-bottom: 3px;
+  }
+
+#avatar_file_label {
+	color: white;
+	cursor: pointer;
+	border: 1px solid white;
+	width: fit-content;
+	padding: 3px;
+	margin-top: 3px;
+	background-color: black;
+	border-radius: 11px;
+	font-size: 12px;
 }
+
+@media only screen and (max-width: 600px) {
+	.profile_container {
+		flex-direction: column;
+	}
+	.profile_left, .profile_right {
+		width: unset;
+	}
+}
+

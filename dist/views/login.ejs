@@ -1,51 +1,19 @@
+<head>
+    <link rel="stylesheet" href="../dist/css/login.css">
+</head>
+
 <div class="login-reg">
-    <h1 style='color:black'>Login</h1>
+    <h1>Login</h1>
     <a href="/register">Haven't signed up? <strong> Click here! </strong> </a><br/>
-    <a href="/account/resetpw">Trouble logging in? <strong> Click here! </strong> </a>
-        <form id="reg-form">
-            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
-            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/>
-            <input type="submit" value="Login"/>
-        </form>
+    <!-- <a href="/account/resetpw">Trouble logging in? <strong> Click here! </strong> </a> -->
+        <div id="reg-form" autocomplete="off">
+            <label class="np_input_label">Username</label>
+            <input type="text" autocomplete="off" id="username" name="name" class="general_input" /><br/>
+            <label class="np_input_label">Password</label>
+            <input type="password" autocomplete="off" id="password" name="password" class="general_input"/><br/>
+            <input type="button" value="Login" id='login_submit' class="button_submit"/>
+        </div>
         <div id='logs'></div>
     
 </div>
-<script>
-
-const form = document.getElementById("reg-form")
-form.addEventListener('submit', loginUser)
-
-async function loginUser(event) {
-    event.preventDefault()
-    name = document.getElementById("username").value
-    password = document.getElementById("password").value
-
-    bodyJSON = {
-        "name":name,
-        "password":password
-    }
-
-    const fetchResponse = await fetch('/login', {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            },
-        method: 'POST',
-        body: JSON.stringify(bodyJSON)
-    });
-    const data = await fetchResponse.json()
-
-    if (data.code == 200) {
-        localStorage.clear()
-        window.location.href = "/all"
-    } 
-    if (data.code == 400) {
-        document.getElementById("logs").innerHTML = data.error
-    }
-
-    if (fetchResponse.status != '200' || fetchResponse.status != 200) {
-        document.getElementById("logs").innerHTML = fetchResponse.error;
-    }
-}
-
-</script>
+<script src="../dist/scripts/frontend/modules/login.js" type="module">

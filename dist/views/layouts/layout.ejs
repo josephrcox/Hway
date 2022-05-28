@@ -4,168 +4,210 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/dist/css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"> 
-
-    <title class="noselect">HWay 0.2.0</title>
+    <title class="noselect">Hway beta</title>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SKJ9WYC7S5"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SKJ9WYC7S5" defer></script>
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'G-SKJ9WYC7S5');
+    
     </script>
+    <!-- END OF Global site tag (gtag.js) - Google Analytics -->
 </head>
 <body>
     <div class="header">
-        <div class="flex-container">
+        <div class="header_top">
             <div class="header-title noselect">
-                    <a href='/all'><div id="title" class="cursor_pointer">HWay <span style="font-size:18px"><%= topic %></div></a>   </span>
+                <a href='/all'><h1 class="header-title cursor_pointer">Hway <span style="font-size:13px"><%= topic %></h1></a>   </span>
+                <span id="page-number" class="noselect"></span>  
             </div>
-            
-            <div class="notifs" id='header-notifs'>
-                <div class="notifs_bell cursor_pointer" id="header-notifs-bell" style="display: none;">0</div>
-            </div>
-            <div class="user-dropdown-div" id='user-dropdown-div'>
-                <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Register</div></div>
-                <div id="user-dropdown" class="user-dropdown-content">
-                    <a href='#' onclick="profile()" id="profile_button" class="user-dropdown-item">Profile</a>
-                    <a href='#' onclick="logout()" id="logout_button" class="user-dropdown-item">Logout</a>
-                    <a href='#' onclick="login()" id="login_button" class="user-dropdown-item">Login</a>
-                    <a href='#' onclick="register()" id="reg_button" class="user-dropdown-item">Register</a>
-                    <a href='#' onclick="resetPasswordPage()" id="resetpw_button" class="user-dropdown-item">Reset password</a>
-                    <a href='#' onclick="view_subscriptions()" id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
-                    <div class="border-bottom"></div>
-                    <div id="filter_nsfw_div">
-                        NSFW
-                    <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw" onchange="filter_nsfw()"/>
+            <div class="header_right">
+                <div class="header_right_top">
+                    <div class="header-notifications">
+                        <a href="/notifications"><div class="header-notififications-bell cursor_pointer" id="header-notifs-bell" style="display: block;"></div></a>
                     </div>
-                    
+                    <div class="user-dropdown-div" id='user-dropdown-div'>
+                        <div onclick="currentuserDropdownClicked()" class="user-dropdown-button cursor_pointer" id="user-dropdown-button"><div id="currentUser" class="noselect">Login / Join</div></div>
+                        <div id="user-dropdown" class="user-dropdown-content">
+                            <a href='/user/' id="profile_button" class="user-dropdown-item">Profile</a>
+                            <a href='/logout' id="logout_button" class="user-dropdown-item">Logout</a>
+                            <a href='/login'  id="login_button" class="user-dropdown-item">Login</a>
+                            <a href='/register'  id="reg_button" class="user-dropdown-item">Join (free)</a>
+                            <a href='/account/resetpw' id="resetpw_button" class="user-dropdown-item">Reset password</a>
+                            <a href='/subscriptions' id="view_subs_button" class="user-dropdown-item">Subscriptions</a>
+                            <div class="border-bottom"></div>
+                            <div id="filter_nsfw_div" style="padding-inline: 3px;">
+                                    NSFW
+                                <input type="checkbox" id="filter_nsfw" style='color:black' class="filter_nsfw"/>
+                            </div>
+                            <div id="user-nm" style="padding-inline: 3px;color: black;">
+                                Nightmode
+                            <input type="checkbox" id="nm-toggle" style='color:black' checked='false'/>
+                        </div>
+                        </div>
+            
+                    </div>
+                </div>
+                <div class="header_right_bottom">
+                    <a href="/post/" id="post-button" class="header-post cursor_pointer" title="Create a post"><img src="/dist/images/pencil.svg" class="post-button-pencil"></a>
+                    <img id="search-button"  class="cursor_pointer" src="/dist/images/spyglass.svg" title="Search" alt="Open search"></img>
+                    <div class="header_right_bottom" onclick="headerHamburgerClicked()" id="headerHamburger" title="Options menu">
+                        <img src="/dist/images/hamburger.svg" class="header_hamburger" id="hamburger" alt="Open dropdown menu">
+                    </div>
+                    <div id="hamburgerDropdown" class="user-dropdown-content">
+                        <p class="hamburger_divider">Links</p>
+                        <a class="hamburger_link" href="/home">Home</a>
+                        <a class="hamburger_link" href="/all">All</a>
+                        
+                        <div class="hamburger_sorting" id="hamburger_sorting">
+                            <p class="hamburger_divider">Sorting</p>
+                            <a id="sorting_options_new" class="sorting_options sort_option" href="#" data-option="new">New</a>
+                            <a id="sorting_options_hot" class="sorting_options sort_option" href="#" data-option="hot">Hot</a>
+                            <a id="sorting_options_top_today" class="sorting_options sort_option" href="#" data-option="top_day">Top (day)</a>
+                            <a id="sorting_options_top_week" class="sorting_options sort_option" href="#" data-option="top_week">Top (week)</a>
+                            <a id="sorting_options_top_month" class="sorting_options sort_option" href="#" data-option="top_month">Top (month)</a>
+                            <a id="sorting_options_top_all" class="sorting_options sort_option" href="#" data-option="top_all">Top (all)</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-    
-         </div>
-    
-         <div class="header-buttons noselect" id="header-buttons">
-            
-            <div id="misc_header_buttons">
-                <div id="home-button" onclick='navHome()' class="cursor_pointer">Home</div>
-                <div id="post-button" style='display:block;' onclick="ui_newPost()" class="cursor_pointer">Post</div>
-                <div id="search-button" onclick="showorhidesearch()" class="cursor_pointer">Search</div>
-                <div id="subscribe-button" style='display:none;' class="cursor_pointer"></div>
-            </div>
-            
-        </div>   
-        <div id="searchbar" style="display:none;">
-            <input class="search_options" id="search_phrase" type="text" maxlength="150" style="height:25px;font-size: 20px;" placeholder="Search for topics or posts"><br/>
-            <input class="search_options" id="search_topic" type="text" maxlength="100" style="height:25px;font-size: 20px;" placeholder="Search a specific topic (optional)"><br/>
-            <button id="search_submit" class="button">Search</button>
-            <div id="search-logs"></div>
         </div>
-    
-        <div id="sorting_options" class="sorting_options noselect">
-            <a id="sorting_options_new" class="sorting_options" href="#">New</a>
-            <a id="sorting_options_hot" class="sorting_options" href="#">Hot</a>
-            <a id="sorting_options_top_today" class="sorting_options" href="#">Top (day)</a>
-            <a id="sorting_options_top_week" class="sorting_options" href="#">Top (week)</a>
-            <a id="sorting_options_top_month" class="sorting_options" href="#">Top (month)</a>
-            <a id="sorting_options_top_all" class="sorting_options" href="#">Top (all)</a>
-            
-        </div>
-    
-        <div id="page-number" class="noselect"></div> 
+    </div>
+    <div id="searchbar">
+        <label class="np_input_label">Search for posts with...</label><input class="search_options general_input" id="search_phrase" type="text" maxlength="300" ><br/>
+        <label class="np_input_label">(optionally) in the topic...</label><input class="search_options general_input" id="search_topic" type="text" maxlength="100"><br/>
+        <button id="search_submit" class="button_submit">Search</button>
+        <div id="search-logs"></div>
     </div>
 
-    
     <div class='page-content'>
         <%- body %>
     </div>
-    
-<script>
 
-if (localStorage.getItem("currentUsername") != null) {
-    document.getElementById("currentUser").innerText = localStorage.getItem("currentUsername")
-}
+    <script> 
+    console.log("layout.ejs loaded")
+        const header_currentUser = document.getElementById("currentUser")
+        const header_dd_profile = document.getElementById("profile_button") 
+        const header_dd = document.getElementById("user-dropdown")
+        
+        const hamburgerDropdown = document.getElementById('hamburgerDropdown')
+        const hamburger = document.getElementById('hamburger')
 
-function currentuserDropdownClicked() {
-    document.getElementById("user-dropdown").classList.toggle("show");
-}
-  
-document.onclick = function(e){
-    if(e.target.id !== 'currentUser'){
-        if (document.getElementById('user-dropdown').classList.contains('show')) {
-            document.getElementById('user-dropdown').classList.remove('show');
+        if (localStorage.getItem("currentUsername") != null) {
+            header_currentUser.innerText = localStorage.getItem("currentUsername") + ""
+
+            header_dd_profile.href = "/user/"+ localStorage.getItem("currentUsername")
         }
-    }
-};
 
-async function logout() {
-    const response = await fetch('/logout')
-    window.location.replace("/");
-}
-function navHome() {
-    window.location.href = '/home'
-}
-function login() {
-    window.location.replace("/login");
-}
-function register() {
-    window.location.replace("/register");
-}
-function view_subscriptions() {
-    window.location.replace("/subscriptions")
-}
-function resetPasswordPage() {
-    window.location.replace("/account/resetpw")
-}
+        function currentuserDropdownClicked() {
+            if (header_dd.style.height == 'unset') {
+                header_dd.style.height = '0px'
+                    header_dd.style.maxHeight = '0px'
+            } else {
+                header_dd.style.height = 'unset'
+                header_dd.style.maxHeight = '500px'
+            }
 
-function profile() {
-    username = document.getElementById("currentUser").innerHTML
-    if (username == null || username == 'Account') {
-        window.location.replace('/login')
-    } else {
-        window.location.replace('/user/'+username)
-    }
-    
-}
 
-async function getUsername() {
-    const response = await fetch('/api/get/currentuser')
-    const data = await response.json()
-
-    if (data.status != "error") {
-        document.getElementById("currentUser").innerHTML = data.name
-    } else {
-        if (data.error.name == "TokenExpiredError") {
-            document.getElementById("currentUser").innerHTML = "token expired"
         }
-    }
-}
 
-function showorhidesearch() {
-    search = document.getElementById("searchbar")
-    if (search.style.display == "none") {
-        search.style.display = "flex"
-    } else {
-        search.style.display = "none"
-    }
-}
+        function headerHamburgerClicked() {
+            if (hamburgerDropdown.style.height == 'unset') {
+                hamburgerDropdown.style.height = '0px'
+                    hamburgerDropdown.style.maxHeight = '0px'
+            } else {
+                hamburgerDropdown.style.height = 'unset'
+                hamburgerDropdown.style.maxHeight = '500px'
+            }
 
-</script>
+        }
 
-<script src="https://kit.fontawesome.com/046a6861b9.js" crossorigin="anonymous"></script>
+        document.onclick = function(e){
+            console.log(e)
+            if(e.target.id !== 'currentUser'){
+                if (header_dd.style.maxHeight != '0px') {
+                    header_dd.style.height = '0px'
+                    header_dd.style.maxHeight = '0px'
+                }
+            }
+            if (e.target.id !== 'hamburger') {
+                if (hamburgerDropdown.style.maxHeight != '0px') {
+                    hamburgerDropdown.style.height = '0px'
+                    hamburgerDropdown.style.maxHeight = '0px'
+                    hamburger.style.backgroundColor = 'unset'
+                }
+            }
 
-<script src="../../header.js"></script>
-<script src="../../script.js"></script>
-<script src="../../subscriptions.js"></script>
-<script src="../../notifications.js"></script>
+        };
+
+        if (localStorage.getItem('nm') != null) {
+            if (localStorage.getItem('nm') == 'false') {
+                disableNM()
+            } else {
+                enableNM()
+            }
+        } else {
+            disableNM()
+            
+        }
 
 
+        document.getElementById('nm-toggle').onchange = function() {
+            if (localStorage.getItem('nm') == 'true') {
+                disableNM()
+            } else {
+                if (document.body.classList.contains('nm')) {
+                    disableNM()
+                } else {
+                    enableNM()
+                }
+            }
+        }
 
+        function enableNM() {
+            document.body.classList.add('nm')
+            localStorage.setItem('nm', 'true')
+            document.getElementById('nm-toggle').checked = true
+            document.querySelectorAll('.post-details-container').forEach(x => {
+                x.classList.add('element-nm')
+            })
+            document.querySelectorAll('.comment-details-container').forEach(x => {
+                x.classList.add('element-nm')
+            })
+            document.querySelectorAll('.post-body').forEach(x => {
+                x.classList.add('element-nm')
+            })
+            document.querySelectorAll('#newCom_body').forEach(x => {
+                x.classList.add('element-nm')
+            })
+
+        }
+        function disableNM() {
+            document.body.classList.remove('nm')
+            localStorage.setItem('nm', 'false')
+            document.getElementById('nm-toggle').checked = false
+
+            document.querySelectorAll('.element-nm').forEach(x => {
+                x.classList.remove('element-nm')
+            })
+        }
+    </script>
+
+
+    <footer>
+        <div class="footer" id="footer">
+            made with ❤️ in new hampshire, usa  ‧  <a href="https://github.com/mapleweekend/hway">github</a>
+        </div>
+    </footer>
+
+
+    <script src="/dist/scripts/frontend/main.js" type="module"></script>
 </body>
 </html>
