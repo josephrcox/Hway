@@ -404,6 +404,7 @@ font-size: 12px;
 	width: 80%;
 	padding-bottom: 4px;
 	border-radius: 19px;
+	padding-inline: 10px;
 }
 
 #newCom_body_label {
@@ -828,12 +829,12 @@ font-size: 12px;
 	display: none;
 }
 
-.menu_shadow {
-/*     filter: drop-shadow(0px 0px 5px black); */
-}
-
 textarea:focus, input:focus{
     outline: none;
+}
+
+.login-reg {
+  color: white;
 }
 
 .footer {

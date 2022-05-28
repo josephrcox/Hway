@@ -1997,8 +1997,8 @@ function getFullDateTimeAndTimeStamp() {
 const mailjet = require ('node-mailjet')
 .connect('b7943ff95bd7bb85ad51a7c9e0f46a82', 'd7a10ff44ee87ff43aba8a503ba4339b')
 
-app.get('/account/resetpw', (req: any,res: { render: (arg0: string, arg1: { layout: string }) => void }) => {
-	res.render('resetpassword.ejs', {layout: 'layouts/account.ejs'})
+app.get('/account/resetpw', (req:any, res:any) => {
+	res.render('resetpassword.ejs', {topic:""})
 })
 
 app.post('/api/post/resetpassword/sendcode', async (req: { body: { username: string; email: string } },res: { send: (arg0: { status: string; data?: unknown }) => void }) => {
@@ -2007,7 +2007,7 @@ app.post('/api/post/resetpassword/sendcode', async (req: { body: { username: str
 	try {
 		User.findOne({name:req.body.username}, function(err: any,docs: { email: any } | null) {
 			if (err || docs == null) {
-				res.send({status:'error', data:'Error'})
+				res.send({status:'error', data:'Does not match user account'})
 			} else {
 				// User is active, let's check their email against the email submitted
 				let userEmail = docs.email
@@ -2055,7 +2055,7 @@ app.post('/api/post/resetpassword/sendcode', async (req: { body: { username: str
 					})
 				} else {
 					console.log(docs.email, req.body.email + " dont match")
-					res.send({status:'error', data:'email not valid'})
+					res.send({status:'error', data:'Does not match the user account'})
 				}
 			}
 		})

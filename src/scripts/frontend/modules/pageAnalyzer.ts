@@ -30,8 +30,10 @@ export function getPageType() {
         return ['createnewpost']
     } else if (pathname.includes('/search/')) {
         return ['search', search]
-    } else if ('/home') {
+    } else if (pathname.includes('/home')) {
         return ['home']
+    } else if (pathname.includes('/account/resetpw')) {
+        return ['resetpw']
     }
 }
 

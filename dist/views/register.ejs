@@ -3,14 +3,15 @@
 </head>
 
 <div class="login-reg">
-    <div>Sign up</div>
+    <h1>Sign up</h1>
     <a href="/login">Already signed up? <strong>Click here!</strong></a>
         <div id="reg-form" autocomplete="off">
-            <!-- <input type="text" autocomplete="off" id="username" name="name" placeholder="username" /><br/>
-            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" /><br/> -->
-            <input type="text" autocomplete="off" id="username" name="name" placeholder="username" class="general_input" pattern="[a-zA-Z0-9,_-]*" minlength="3" maxlength="30" /><br/>
-            <input type="password" autocomplete="off" id="password" name="password" placeholder="password" class="general_input" minlength="8" maxlength="50"/><br/>
-            <input type="email" autocomplete="off" id="email" name="email" placeholder="email (optional for password resets)" class="general_input"/><br/>
+            <label class="np_input_label">Username</label>
+            <input type="text" autocomplete="off" id="username" name="name" class="general_input" pattern="[a-zA-Z0-9,_-]*" minlength="3" maxlength="30" /><br/>
+            <label class="np_input_label">Password</label>
+            <input type="password" autocomplete="off" id="password" name="password" class="general_input" minlength="8" maxlength="50"/><br/>
+            <label class="np_input_label">Email (optional, for password resets)</label>
+            <input type="email" autocomplete="off" id="email" name="email" class="general_input"/><br/>
             <input type="button" value="Register" id='register_submit' class="button_submit"/>
         </div>
         <div id='logs'></div>

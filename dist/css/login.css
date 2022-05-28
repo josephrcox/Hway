@@ -45,3 +45,9 @@
 	margin-top: 1px;
 	padding-left: 6px;
 }
+
+#reg-form {
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+}

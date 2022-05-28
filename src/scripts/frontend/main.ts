@@ -29,6 +29,7 @@ export async function loadMain(reset:boolean) {
     if (reset) {
         postsArray.innerHTML = ""
     }
+    console.log(x)
 
     switch(x[0]) {
         case "all":
@@ -74,6 +75,9 @@ export async function loadMain(reset:boolean) {
             break;
         case "subscriptions":
             subscribe_init()
+            break;
+        case "resetpw":
+
             break;
     }
 }
