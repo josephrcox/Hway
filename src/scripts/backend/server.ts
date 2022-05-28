@@ -2119,7 +2119,7 @@ app.post('/api/put/account/setpassword', async(req: { cookies: { token: any }; b
 })
 
 app.get('/api/post/fakeposts/:count', async function(req:any, res:any) {
-    Post.deleteMany({poster:'robot'}, function(err:any, docs:any) {
+    Post.deleteMany({poster:'REDDITBOT'}, function(err:any, docs:any) {
         console.log(docs)
     })
 
