@@ -65,7 +65,7 @@ export const commentObject = {
         var comDetailsContainer = document.createElement('div') as HTMLDivElement
         comDetailsContainer.classList.add('comment-details-container')
         let nm = localStorage.getItem('nm')
-        if (nm) {
+        if (nm == "true") {
             comDetailsContainer.classList.add('element-nm')
         }
         
