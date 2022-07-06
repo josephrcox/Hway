@@ -320,7 +320,7 @@ a:active {
 	z-index: 1;
 	right: 15px;
 	max-height: 0px;
-	transition: max-height 1s;
+	/* transition: max-height 0.25s; */
 	top: 34px;
 	overflow-y: hidden;
 }
@@ -539,12 +539,6 @@ font-size: 12px;
   height: 0px;
 	overflow: hidden;
 	margin: 0px;
-
-	-webkit-transition: height 0.2s linear;
-	-moz-transition: height 0.2s linear;
-	 -ms-transition: height 0.2s linear;
-	  -o-transition: height 0.2s linear;
-		 transition: all 1s;
 	align-items: center;
 }
 
