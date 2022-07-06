@@ -34,20 +34,15 @@ export async function loginUser() {
         body: JSON.stringify(bodyJSON)
     });
     const data = await fetchResponse.json()
-    
-    if (data.code == 200) {
+
+    if (fetchResponse.status == 200) {
         //localStorage.clear()
         let ref = window.location.search.split('ref=')[1]
         if (ref == undefined) {
             ref = "/"
         } 
         window.location.href = ref
-    } 
-    if (data.code == 400) {
+    } else {
         login_logs.innerHTML = data.error
-    }
-
-    if (fetchResponse.status != 200) {
-        login_logs.innerHTML = fetchResponse.error;
     }
 }

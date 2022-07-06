@@ -182,7 +182,10 @@
                 x.classList.add('element-nm')
             })
             document.querySelectorAll('.post-body').forEach(x => {
-                x.classList.add('element-nm')
+                if (x.dataset.poll != "true") {
+                    x.classList.add('element-nm')
+                }
+
             })
             document.querySelectorAll('#newCom_body').forEach(x => {
                 x.classList.add('element-nm')

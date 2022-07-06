@@ -43,11 +43,15 @@ export const postObject = {
 
         var body = document.createElement('p') as HTMLParagraphElement
         body.classList.add('post-body')
-        if (nm == "true") {
+        if (nm == "true" && this.post_type != 4) {
             body.classList.add('element-nm')
         }
         body.innerText = this.body
         body.style.display = "none"
+        if (this.post_type == 4) {
+            body.dataset.poll = "true"
+            body.style.color = "black"
+        }
 
         if (this.post_type == 4) {
             let pollOps:any

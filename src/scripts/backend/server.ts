@@ -349,7 +349,7 @@ app.post('/api/post/notif/clear/', function(req: { cookies: { token: any } },res
 })
 
 app.get('/login/', (req:any, res:any) => {
-    res.render('login.ejs', {topic:""})
+    res.render('logreg.ejs', {page:"login", topic:""})
 })
 
 app.get('/post', (req:any, res:any) => {
@@ -388,11 +388,11 @@ app.get('/user/:user', (req:any, res:any) => {
 })
 
 app.get('/register', (req:any, res:any) => {
-    res.render('register.ejs', {topic:""})
+    res.render('logreg.ejs', {page:"register", topic:""})
 })
 
 app.get('/subscriptions', async(req:any, res:any) => {
-	let valid = false
+	let valid = false 
 	// Commenting out below allows users to view the home without being logged in
 	valid = await isloggedin(req)
 
@@ -1061,7 +1061,7 @@ app.post('/login', async(req:any, res:any) => {
 	const user = await User.findOne({ name }).lean()
 
 	if (!user) {
-		return res.status(500).json({ status: 'error', error: 'Invalid username/password' })
+		return res.status(400).json({ status: 'error', error: 'Invalid username/password' })
 	}
 
 	if (await bcrypt.compare(password, user.password)) {
