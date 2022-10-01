@@ -100,7 +100,8 @@ export const postObject = {
         title.dataset.link = this.link
 
         if (this.post_type == 1 && this.body.length > 0) {
-            title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>[+] </span>"+this.title
+            let text_text = "<span style='color:red;'>TEXT</span>"
+            title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'> [+] </span>"+this.title
             title.onclick = function() {
                 if (body.style.display == "none") {
                     body.style.display = "block"
@@ -137,14 +138,15 @@ export const postObject = {
             title.innerText = this.title
             title.style.cursor = 'auto'
         } else if (this.post_type == 4) {
-            title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>❓ [+] </span>"+this.title
+            let poll_text = "<span style='color:red;'>POLL</span> "
+            title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>"+poll_text+" [+] </span>"+this.title
             title.onclick = function() {
                 if (body.style.display == "none") {
                     body.style.display = "block"
-                    title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>❓ [-] </span>"+title.dataset.title
+                    title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>"+poll_text+" [-] </span>"+title.dataset.title
                 } else {
                     body.style.display = "none"
-                    title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>❓ [+] </span>"+title.dataset.title
+                    title.innerHTML = "<span style='font-size:10px;padding-right:5px;word-wrap:break-word;'>"+poll_text+" [+] </span>"+title.dataset.title
                 }
             }
             if (window.location.pathname.includes('/p/')) {
@@ -159,8 +161,6 @@ export const postObject = {
         if (this.nsfw) {
             subtitle.innerHTML = "<span class='nsfw_post_label'>NSFW</span>"
         } 
-        subtitle.innerHTML += "<span>"+this.poster_name + "</span> — " + this.createdAt + " — <a href='/h/"+this.topic+"'>" + this.topic + "</a>"
-
         var subscriptionButton = document.createElement('img')
         subscriptionButton.dataset.topic = this.topic.toLowerCase()
         subscriptionButton.setAttribute('id','post-subscribe-button_'+this.id)
@@ -176,6 +176,7 @@ export const postObject = {
         }
         subscriptionButton.classList.add('post-subscription-button')
         subtitle.append(subscriptionButton)
+        subtitle.innerHTML += "<span><a href='/h/"+this.topic+"'>" + this.topic + "</a> ∙ "+this.createdAt + "  ∙  "+"<a href='/user/"+this.poster_name+"'>" + this.poster_name + "</a> </span> "
 
         var voteContainer = document.createElement('div')
         voteContainer.classList.add('post-vote-container')
@@ -301,7 +302,7 @@ const deletePost = async(id:string, containerE:HTMLDivElement, containerSub:HTML
             setInterval(function() {
                 containerE.innerHTML = ""
             }, 2000)
-            containerE.innerHTML = "<span>The post was permanantly deleted.</span>"
+            containerE.innerHTML = "<span class='text_white'>The post was permanantly deleted.</span>"
             containerSub.innerHTML = ""
         } else if (data.status == 'error') {
             alert(data.error)

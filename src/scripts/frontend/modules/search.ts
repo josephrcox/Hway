@@ -16,6 +16,7 @@ export function init() {
         } else {
             bar.style.height = 'unset'
             bar.style.maxHeight = '500px'
+            phrase.focus()
         }
     })
 }

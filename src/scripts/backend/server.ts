@@ -524,7 +524,7 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
         if (req.params.options == "show_nsfw") {
             try {
                 User.findOne({name:req.params.user}, function(err: any, user: { show_nsfw: any }) {
-					if (user.show_nsfw == undefined) return res.json({status:'error'})
+					if (user.show_nsfw == undefined || user === null) return res.json({status:'error'})
                     return res.send({show_nsfw: user.show_nsfw})
                 })
             } catch(err) {
@@ -2122,13 +2122,13 @@ app.post('/api/put/account/setpassword', async(req: { cookies: { token: any }; b
 })
 
 app.get('/api/post/fakeposts/:count', async function(req:any, res:any) {
-    Post.deleteMany({poster:'REDDITBOT'}, function(err:any, docs:any) {
+    Post.deleteMany({poster:'robot'}, function(err:any, docs:any) {
         console.log(docs)
     })
 
     for (let c=0;c<req.params.count;c++) {
-        const response = await axios('https://www.reddit.com/r/random/top/.json')
-        for (let x=0;x<1;x++) {
+        const response = await axios('https://www.reddit.com/r/random/.json')
+        for (let x=0;x<response.data.data.children.length;x++) {
             let p = response.data.data.children[x].data
     
             let post_type = 1
@@ -2143,25 +2143,29 @@ app.get('/api/post/fakeposts/:count', async function(req:any, res:any) {
                 templink = p.url_overridden_by_dest
             } else if (p.post_hint == "self") {
                 post_type = 1
-            }
+            } else {
+				post_type = -1
+			}
             let votes = parseInt(p.ups) - parseInt(p.downs)
-        
-            const postResponse = await Post.create({
-                title: title, 
-                body: body, 
-                poster: "robot",
-                link: templink,
-                topic: p.subreddit,
-                type: post_type, // 1=text, using as temporary default
-                posterID: "61be73f0acf074405646c330",
-                date: "5/14/2022 at 3:15 PM UTC",
-                timestamp:"1652541310663",
-                status:"active",
-                nsfw: p.over_18,
-                total_votes:votes
-            })
-            console.log(postResponse)
-    
+			if (post_type != -1) {
+				const postResponse = await Post.create({
+					title: title, 
+					body: body, 
+					poster: "robot",
+					link: templink,
+					topic: p.subreddit,
+					type: post_type, 
+					posterID: "61be73f0acf074405646c330",
+					date: "5/14/2022 at 3:15 PM UTC",
+					timestamp:"1652541310663",
+					status:"active",
+					nsfw: p.over_18,
+					total_votes:votes
+				})
+				console.log(postResponse.title)
+		
+			}
+            
         }
         
     }

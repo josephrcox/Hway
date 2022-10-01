@@ -55,21 +55,41 @@ export function addPageNavigation() {
     let total_pages = parseInt(localStorage.getItem("total_pages")+"")
     let current_page = parseInt(page_queries.page)
     let futurePage:number
+    let back_href = ""
+    let forward_href = ""
     console.log(current_page, total_pages)
 
     if (total_pages >= current_page) {
         if (current_page > 1) {
             futurePage = current_page - 1
-            let back_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
-            pageNum.innerHTML += "<a href='"+back_href+"'><img class='page_nav_arrow' src='../dist/images/page_backarrow.svg' alt='Previous page'></a>"
+            back_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
+            pageNum.innerHTML += "<a id='page_nav_forward' href='"+back_href+"'><img class='page_nav_arrow' src='../dist/images/page_backarrow.svg' alt='Previous page'></a>"
         } 
 
         futurePage = current_page + 1
-        let forward_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
+        forward_href = window.location.origin + window.location.pathname + "?sort="+page_queries.sort+"&t="+page_queries.t+"&page="+futurePage
         pageNum.innerHTML += "<span id='page_pageNumber'>Page "+current_page+"/"+total_pages+"</span>"
         
         if (total_pages != current_page) {
-            pageNum.innerHTML += "<a href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg' alt='Next page'></a>"
+            pageNum.innerHTML += "<a id='page_nav_back' href='"+forward_href+"'><img class='page_nav_arrow rotate180' src='../dist/images/page_backarrow.svg' alt='Next page'></a>"
         }
+        addKeySupport(back_href, forward_href)
     }
 }
+
+function addKeySupport(back:String, forward:String) {
+    (document.getElementsByClassName("header_top")[0] as HTMLDivElement).click()
+    document.addEventListener('keydown', function(e) {
+        console.log(e)
+        // right key
+        if (e.key == "ArrowRight") {
+            console.log("forward")
+            window.location.replace(forward as string)
+        } else if (e.key == "ArrowLeft") {
+            console.log("back")
+            window.location.replace(back as string)
+        }
+    })
+}
+
+
