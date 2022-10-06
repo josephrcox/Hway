@@ -12,7 +12,6 @@ export async function apiGetSubscriptions(x:string) {
     const response = await fetch('/api/get/user/'+x+"/subscriptions")
     const data = await response.json()
 
-    console.log(data)
     for (let i=0;i<data.topics.length;i++) {
         if (!subscribedTopics.includes(data.topics[i][0].toLowerCase())) {
             subscribedTopics.push(data.topics[i][0].toLowerCase())
@@ -90,7 +89,7 @@ function subscriptionToggle() {
 function showSubscriptions() {
     (document.getElementById("subscriptions_page_container") as HTMLDivElement).innerHTML = ""
     startLoaders()
-    console.log(subscribedTopics, subscribedUsers)
+    //console.log(subscribedTopics, subscribedUsers)
     for (let i=0;i<subscribedTopics.length;i++) {
         let t = Object.create(topicObject)
         t.name = subscribedTopics[i]

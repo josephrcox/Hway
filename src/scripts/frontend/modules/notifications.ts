@@ -13,7 +13,7 @@ export async function apiGetNotificationCount() {
     setBell(data.count)
 }
 
-function setBell(x:number) {
+export function setBell(x:number) {
     if (x > 0) {
         notifsBell.innerText = x+""
         notifsBell.classList.add('active')
@@ -87,7 +87,7 @@ export function initNotificationButtons() {
 
 function displayNotifs(n:Array<any>, sorting:string) {
     let s = parseInt(sorting)
-    console.log(n)
+    //console.log(n)
 
     if (sorting == '0') {
         n.sort(function(a, b){return a.timestamp - b.timestamp}); 

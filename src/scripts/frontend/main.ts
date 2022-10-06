@@ -29,7 +29,7 @@ export async function loadMain(reset:boolean) {
     if (reset) {
         postsArray.innerHTML = ""
     }
-    console.log(x)
+    //console.log(x)
 
     switch(x[0]) {
         case "all":
@@ -100,7 +100,7 @@ export async function getPostsByTopic(topic:string) {
 async function getPostByID(ID:string) {
     var post = []
     post[0] = await apiGetPostByID(ID)
-    console.log(post)
+    //console.log(post)
     
     loadPostOrPostObjects(post)
 
@@ -159,10 +159,10 @@ async function getPostByID(ID:string) {
             } else {
                 c.currentUserUpvoted = false
             }
-            console.log(post[0].comments[i].nested_comments[x].posterID, currentUserID)
+            //console.log(post[0].comments[i].nested_comments[x].posterID, currentUserID)
             if (post[0].comments[i].nested_comments[x].posterID == currentUserID) {
                 c.currentUserAdmin = true
-                console.log("true")
+                //console.log("true")
             } else {
                 c.currentUserAdmin = false
             }
@@ -240,7 +240,7 @@ filter_nsfw_checkbox.addEventListener('change', async function() {
 })
 
 export function stopLoaders() {
-    console.info("finished loading")
+    //console.info("finished loading")
     for (let i=0;i<loaders.length;i++) {
         let l = loaders[i] as HTMLDivElement
         l.style.display = 'none'
@@ -249,7 +249,7 @@ export function stopLoaders() {
 }
 
 export function startLoaders() {
-    console.info("loading")
+    //console.info("loading")
     for (let i=0;i<loaders.length;i++) {
         let l = loaders[i] as HTMLDivElement
         l.style.display = 'block'

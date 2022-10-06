@@ -20,7 +20,7 @@ export async function apiGetPostsBySearchQuery(query:string, topic:string) {
     window.history.replaceState("Search", "Search HWay", '/search/?query='+query+"&topic="+topic )
     const response = await fetch('/api/get/search/q?query='+query+"&topic="+topic)
     const data = await response.json()
-    console.log(data)
+    //console.log(data)
 
     loadPostOrPostObjects(data.data)
 }

@@ -19,7 +19,7 @@ username.addEventListener('change', function() {
 })
 
 password.addEventListener('change', function() {
-    console.log(password.validity)
+    //console.log(password.validity)
     if (!password.validity.valid) {
         
         register_logs.innerHTML = "Please make sure your password: <br/>- Is 8-50 characters"

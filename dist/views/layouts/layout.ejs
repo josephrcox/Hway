@@ -92,7 +92,7 @@
     </div>
 
     <script> 
-    console.log("layout.ejs loaded")
+    //console.log("layout.ejs loaded")
         const header_currentUser = document.getElementById("currentUser")
         const header_dd_profile = document.getElementById("profile_button") 
         const header_dd = document.getElementById("user-dropdown")
@@ -130,7 +130,7 @@
         }
 
         document.onclick = function(e){
-            console.log(e)
+            //console.log(e)
             if(e.target.id !== 'currentUser'){
                 if (header_dd.style.maxHeight != '0px') {
                     header_dd.style.height = '0px'

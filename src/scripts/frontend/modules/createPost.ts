@@ -71,7 +71,7 @@ const newPost = async () => {
             "pollingOps": pollingOps
         };
     
-        console.log(bodyJSON)
+        //console.log(bodyJSON)
 
         const fetchResponse = await fetch('/api/post/post', {
             headers: {
@@ -200,7 +200,7 @@ file.addEventListener("change", async function() {
 
     uploadedImageUrls.push(url)
     localStorage.setItem("lastuploadedimage", url)
-    console.log(uploadedImageUrls)
+    //console.log(uploadedImageUrls)
 })
 
 function onlySpaces(str:String) {

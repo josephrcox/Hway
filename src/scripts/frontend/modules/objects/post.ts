@@ -56,7 +56,7 @@ export const postObject = {
         if (this.post_type == 4) {
             let pollOps:any
             pollOps = this.poll_options
-            console.log(pollOps)
+            //console.log(pollOps)
             body.innerHTML = ""
             let pollTotalVotes = 0
 

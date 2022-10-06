@@ -1,4 +1,4 @@
-console.log("pageNavigator.js loaded")
+//console.log("pageNavigator.js loaded")
 
 export const sorting_options = document.getElementsByClassName("sorting_options sort_option")
 import { page_queries  } from "../modules/pageAnalyzer.js"
@@ -7,7 +7,7 @@ export let pageNum:any
 export function addSortingEvents() {
     for (let i=0;i<sorting_options?.length;i++) {
         sorting_options[i].addEventListener('click', function() {
-            console.log(sorting_options[i])
+            //console.log(sorting_options[i])
             let x = sorting_options[i] as HTMLAnchorElement
             changeSortingOption(x.dataset.option + "")
             refreshSortingOptionStyling()
@@ -57,7 +57,7 @@ export function addPageNavigation() {
     let futurePage:number
     let back_href = ""
     let forward_href = ""
-    console.log(current_page, total_pages)
+    //console.log(current_page, total_pages)
 
     if (total_pages >= current_page) {
         if (current_page > 1) {
@@ -80,13 +80,13 @@ export function addPageNavigation() {
 function addKeySupport(back:String, forward:String) {
     (document.getElementsByClassName("header_top")[0] as HTMLDivElement).click()
     document.addEventListener('keydown', function(e) {
-        console.log(e)
+        //console.log(e)
         // right key
         if (e.key == "ArrowRight") {
-            console.log("forward")
+            //console.log("forward")
             window.location.replace(forward as string)
         } else if (e.key == "ArrowLeft") {
-            console.log("back")
+            //console.log("back")
             window.location.replace(back as string)
         }
     })

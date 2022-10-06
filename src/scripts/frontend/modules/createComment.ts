@@ -31,7 +31,7 @@ export const newComment = async (postid:string) => {
         c.currentUserUpvoted = data.current_user_upvoted
         c.currentUserAdmin = true
         c.parentid = postid
-        console.log(c)
+        //console.log(c)
         c.display()
     }
     
@@ -44,7 +44,7 @@ export const newNestedComment = async (postid:string, id:string, replyElement:an
         "id":postid,
         "body":replyElement.value,
     }
-    console.log(bodyJSON)
+    //console.log(bodyJSON)
 
     const fetchResponse = await fetch('/api/post/comment_nested/', {
         headers: {
@@ -68,7 +68,7 @@ export const newNestedComment = async (postid:string, id:string, replyElement:an
     c.parentid = postid
     c.nested_comment_parent_id = id
     c.is_nested = true
-    console.log(c)
+    //console.log(c)
     c.display(insertAfterElement)
     
 }

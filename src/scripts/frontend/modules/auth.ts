@@ -3,7 +3,7 @@ export let currentUsername = null
 export let currentUserID = null
 export let currentUserSubscriptions = []
 
-import { apiGetNotificationCount } from "../modules/notifications.js";
+import { apiGetNotificationCount, setBell } from "../modules/notifications.js";
 import { apiGetSubscriptions } from "./subscriptions.js";
 
 export const getUser = async () => {
@@ -16,23 +16,29 @@ export const getUser = async () => {
             currentUsername = null
             //localStorage.clear()
         } else {
-            apiGetNotificationCount()
+            setBell(data.bell_count)
             currentUserID = data.id
             currentUsername = data.name
             isUserLoggedIn = true
             localStorage.setItem("currentUsername", currentUsername!)
             
-            const response = await fetch('/api/get/user/'+data.name+'/show_nsfw');
-            const data2 = await response.json();
             let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement;
-            if (data2.show_nsfw == true) {
-                filter_nsfw.checked = true;
+            filter_nsfw.checked = data.show_nsfw;
+
+            let subscribedTopics:any = []
+            let subscribedUsers:any = []
+
+            for (let i=0;i<data.subscriptions.topics.length;i++) {
+                if (!subscribedTopics.includes(data.subscriptions.topics[i][0].toLowerCase())) {
+                    subscribedTopics.push(data.subscriptions.topics[i][0].toLowerCase())
+                }
+                
             }
-            else {
-                filter_nsfw.checked = false;
+            for (let i=0;i<data.subscriptions.users.length;i++) {
+                if (!subscribedUsers.includes(data.subscriptions.users[i][0].toLowerCase())) {
+                    subscribedUsers.push(data.subscriptions.users[i][0].toLowerCase())
+                }
             }
-            await apiGetSubscriptions(currentUsername+"")
-            
         }    
     } catch(err) {
         console.error(err)

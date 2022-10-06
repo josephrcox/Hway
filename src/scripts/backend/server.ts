@@ -1,8 +1,8 @@
 if (process.env.NODE_ENV !== 'production') {
-	console.log("Running in development mode")
+	//console.log("Running in development mode")
     require('dotenv').config()
 } else {
-	console.log("Running in production mode")
+	//console.log("Running in production mode")
 }
 
 const express = require('express')
@@ -45,7 +45,7 @@ mongoose.connect(process.env.DATEBASE_URL, {
 const connection = mongoose.connection;
 
 connection.once("open", function(res: any) {
-	console.log("Connected to Mongoose!")
+	//console.log("Connected to Mongoose!")
 	connectedToDB = true
 }); 
 
@@ -62,7 +62,7 @@ const bp = require('body-parser')
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
 
-var allowUsersToBrowseAsGuests = true
+const allowUsersToBrowseAsGuests = true
 var geoip = require('geoip-lite');
 let usersArr: { Name?: any; Score?: any; Account_creation_date?: any; Location?: any; name?: any; color?: any }[] = []
 
@@ -75,7 +75,7 @@ async function deleteTestingPosts() {
 	Post.find({poster:'joey'}, function(err:any,docs:any) {
 		for (let i=0;i<docs.length;i++) {
 			Post.findByIdAndDelete(docs[i]._id, function(e:any,d:any) {
-				console.log(e, d)
+				//console.log(e, d)
 			})
 		}
 	})
@@ -86,7 +86,7 @@ async function deleteTestingPosts() {
 
 async function wait(x:number) {
 	waitInterval = setInterval(function() {
-		console.log("waiting for "+x+" seconds")
+		//console.log("waiting for "+x+" seconds")
 	}, x * 1000)
 }
 
@@ -171,33 +171,38 @@ app.get('/logout', (req:any, res:any) => {
 	res.redirect('/all')
 })
 
-app.get('/api/get/currentuser', function (req:any, res:any) {
+app.get('/api/get/currentuser', async function (req:any, res:any) {
 	try {
 		let token = req.cookies.token
 		let verified = jwt.verify(token, process.env.JWT_SECRET)
 		currentUser = verified.id
-		
+		let user = await User.findById(verified.id)
+		verified.show_nsfw = user.show_nsfw
+		verified.subscriptions = user.subscriptions
+		let notifs = (user.notifications.filter(function(x: { status: string }){
+			return x.status == "active";         
+		}))
+		verified.bell_count = notifs.length
 		var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-			if (ip.includes("ffff")) {
-			} else {
-				User.findById(verified.id, function(err:any, docs:any) {
-					if (docs != null) {
-						var geo = geoip.lookup(ip);
-						try {
-							if (!docs.statistics.misc.ip_address.includes(ip)) {
-								docs.statistics.misc.ip_address.push(ip)
-							}
-							if (!docs.statistics.misc.approximate_location.includes(geo)) {
-								docs.statistics.misc.approximate_location.push(geo)
-							}
-							docs.save()
-						} catch(err) {
-							
-						}
+		if (ip.includes("ffff")) {
+		} else {
+			if (user != null) {
+
+				var geo = geoip.lookup(ip);
+				try {
+					if (!user.statistics.misc.ip_address.includes(ip)) {
+						user.statistics.misc.ip_address.push(ip)
 					}
-					
-				})
+					if (!user.statistics.misc.approximate_location.includes(geo)) {
+						user.statistics.misc.approximate_location.push(geo)
+					}
+					user.save()
+				} catch(err) {
+					//console.log(err)
+				}
 			}
+		}
+		
 		res.json(verified)
 
 	} catch (err) {
@@ -234,7 +239,7 @@ app.get('/api/get/currentuser', function (req:any, res:any) {
 
 })
 
-app.get('/api/get/notification_count', async(req: { cookies: { token: any } },res: { send: (arg0: { status?: string; count?: any; data?: string }) => void }) => {
+app.get('/api/get/notification_count', async(req:any, res:any) => {
 	if (currentUser) {
 		User.findById(currentUser, function(err: any,docs: { notifications: any[] } | null) {
 			if (err || docs == null) {
@@ -249,6 +254,7 @@ app.get('/api/get/notification_count', async(req: { cookies: { token: any } },re
 		})
 	} else {
 		try {
+			//console.log("obtaining token")
 			let token = req.cookies.token
 			let user = jwt.verify(token, process.env.JWT_SECRET)
 		
@@ -310,7 +316,7 @@ app.put('/api/put/notif/remove/:timestamp', function(req:any, res:any) {
 	try {
         User.findById(currentUser, async function (err:any, docs:any) {
             try {
-                console.log(docs.name)
+                //console.log(docs.name)
                 for (let i=0;i<docs.notifications.length;i++) {
                     if (docs.notifications[i].timestamp == req.params.timestamp) {
                         docs.notifications.splice(i,1)
@@ -519,28 +525,9 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
 		clearInterval(waitInterval)
 	}
 	let comments: any[] = []
-	console.log(req.params)
+	//console.log(req.params)
     if (req.params.user != null && req.params.user != "undefined") {
-        if (req.params.options == "show_nsfw") {
-            try {
-                User.findOne({name:req.params.user}, function(err: any, user: { show_nsfw: any }) {
-					if (user.show_nsfw == undefined || user === null) return res.json({status:'error'})
-                    return res.send({show_nsfw: user.show_nsfw})
-                })
-            } catch(err) {
-                res.json({status:'error', data:err})
-            }
-    
-        } else if(req.params.options == "subscriptions") {
-            try {
-                User.findOne({name:req.params.user}, function(err: any, user: { subscriptions: any }) {
-                    return res.json(user.subscriptions)
-                })
-            } catch(err) {
-                res.json({status:'error', data:err})
-            }
-    
-        } else if (req.params.options == "all_comments") {
+        if (req.params.options == "all_comments") {
             Post.find({status:'active'}, function(err: any, posts: string | any[]) {
                 for (let i=0;i<posts.length;i++) {
                     for (let x=0;x<posts[i].comments.length;x++) {
@@ -552,7 +539,7 @@ app.get('/api/get/user/:user/:options', async(req:any, res:any) =>{
                 res.json(comments)
             })
         } else {
-            User.findOne({name:req.params.user}, function(err: any, user:any) {
+            User.findOne({name:req.params.user, id:req.params.options}, function(err: any, user:any) {
                 user.password = null
                 user._id = null
                 user.statistics.posts.viewed_array = null
@@ -636,9 +623,9 @@ app.get('/api/get/post/:postid', async(req:any, res:any) => {
 			
 			for (let i=0;i<post.comments.length;i++) {
                 if (post.comments[i].users_voted.includes(currentUser)) {
-                    console.log("user upvoted")
+                    //console.log("user upvoted")
                     postModified.comments[i].current_user_voted = true
-                    console.log(postModified)
+                    //console.log(postModified)
                 }
 			}
 
@@ -846,7 +833,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 		let token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
 		userID = verified.id
-		console.log(verified)
+		//console.log(verified)
 	} catch (err) {
 		if (!allowUsersToBrowseAsGuests) {
 			return res.json({ status:"ok", code:400, error: "Not logged in"})
@@ -863,7 +850,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 	let timestamp24hoursago: number = 0
 	let timestamp1weekago: number = 0
 	let timestamp1monthago: number = 0
-	console.log("sorting:"+sorting, " duration:"+duration)
+	//console.log("sorting:"+sorting, " duration:"+duration)
 
 	if (sorting == "top") {
 		if (duration == "day") {
@@ -904,7 +891,7 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 		for (let i=0;i<temp_user.subscriptions.topics.length;i++) {
 			user_subscribed_topics.push(temp_user.subscriptions.topics[i][0])
 		}
-		// console.log(user_subscribed_topics)
+		// //console.log(user_subscribed_topics)
 		
 
 		if (queries.nsfw == "false") {
@@ -919,8 +906,8 @@ app.get('/api/get/:topic/q', async(req:any, res:any) => { // Main endpoint for l
 			}
 		}
 		
-		// console.log(posts.length)
-		// console.log(filteredPosts)
+		// //console.log(posts.length)
+		// //console.log(filteredPosts)
 
 	} else {
 		if (queries.nsfw == "false") {
@@ -1165,7 +1152,7 @@ app.post('/api/post/post', async(req:any, res:any) => {
 			})
 		}
 	}
-	console.log(pollOpsParsed)
+	//console.log(pollOpsParsed)
 
 	if (!pollingOps) {
 		res.json({status:'ok'})
@@ -1210,11 +1197,11 @@ app.post('/api/post/post', async(req:any, res:any) => {
 
 app.post('/api/post/comment/', async(req:any, res:any) => {
 	var {body:reqbody, id, localtoken} = req.body
-    console.log(req.body)
+    //console.log(req.body)
 	let token
 	let userID: any
 	let username: any
-    console.log(reqbody, id)
+    //console.log(reqbody, id)
 	reqbody = sanitize(reqbody)
 
 	try {
@@ -1414,7 +1401,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 	const id = req.body.id
 	const parentID = req.body.parentID
 
-	console.log(id, parentID, body)
+	//console.log(id, parentID, body)
 
 	let token
 	let userID: any
@@ -1434,7 +1421,7 @@ app.post('/api/post/comment_nested/', async(req:any, res:any) => {
 	let fulldatetime = dt[0]
 	try {
 		Post.findById(id, async function(err:any, docs:any) {
-			console.log(docs)
+			//console.log(docs)
 			let strArr:string[] = body.split(' ')
 			let words:number = strArr.length
 			let usersMentioned: string[] = []
@@ -1825,7 +1812,7 @@ app.put('/api/put/poll/:postid/:answer', function(req:any, res:any) {
 					username, answer
 				])
 			}
-			console.log(newData)
+			//console.log(newData)
 			await Post.findByIdAndUpdate(req.params.postid, {poll_data:newData})
 			res.json({status:'ok'})
 		}
@@ -1841,7 +1828,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	let token
 	let userID: any
 	//
-    console.log("TEST")
+    //console.log("TEST")
 	try {
 		token = req.cookies.token
 		const verified = jwt.verify(token, process.env.JWT_SECRET)
@@ -1906,7 +1893,7 @@ app.put('/voteComment/:parentid/:commentid/:nestedboolean/:commentParentID', fun
 	if (nestedBoolean == "false" || nestedBoolean == null) {
 		try {
 			Post.findById(pID, function(err:any, docs:any) {
-                console.log(docs)
+                //console.log(docs)
 				let oldComArray = docs.comments
 				let index: number = -1
 	
@@ -2017,7 +2004,7 @@ app.post('/api/post/resetpassword/sendcode', async (req: { body: { username: str
 				let enteredEmail = req.body.email
 
 				if (userEmail == enteredEmail) {
-					console.log("Emails match, emailing")
+					//console.log("Emails match, emailing")
 
 					var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 					let code = '';
@@ -2054,10 +2041,10 @@ app.post('/api/post/resetpassword/sendcode', async (req: { body: { username: str
 						res.send({status:'ok'})
 					})
 					.catch((err: { statusCode: any }) => {
-						console.log(err.statusCode)
+						//console.log(err.statusCode)
 					})
 				} else {
-					console.log(docs.email, req.body.email + " dont match")
+					//console.log(docs.email, req.body.email + " dont match")
 					res.send({status:'error', data:'Does not match the user account'})
 				}
 			}
@@ -2077,7 +2064,7 @@ app.get('/api/get/resetpassword/checkcode/:u/:code', async(req: { params: { u: a
 		} else {
 			let index = resetPasswordArray.findIndex(x => x[0] == u) 
 			if (code == resetPasswordArray[index][1] || code == "123") {
-				console.log("Success! Code is correct!")
+				//console.log("Success! Code is correct!")
 				const token = jwt.sign(
 					{
 						id: docs._id,
@@ -2110,7 +2097,7 @@ app.post('/api/put/account/setpassword', async(req: { cookies: { token: any }; b
 	}
 
 	const password = await bcrypt.hash(req.body.password, 10)
-	console.log(userID, req.body.password, password)
+	//console.log(userID, req.body.password, password)
 
 	User.findByIdAndUpdate(userID, {$set:{password:password}}, function(err: any,response: null) {
 		if (err || response == null) {
@@ -2123,7 +2110,7 @@ app.post('/api/put/account/setpassword', async(req: { cookies: { token: any }; b
 
 app.get('/api/post/fakeposts/:count', async function(req:any, res:any) {
     Post.deleteMany({poster:'robot'}, function(err:any, docs:any) {
-        console.log(docs)
+        //console.log(docs)
     })
 
     for (let c=0;c<req.params.count;c++) {
@@ -2162,7 +2149,7 @@ app.get('/api/post/fakeposts/:count', async function(req:any, res:any) {
 					nsfw: p.over_18,
 					total_votes:votes
 				})
-				console.log(postResponse.title)
+				//console.log(postResponse.title)
 		
 			}
             
@@ -2181,5 +2168,5 @@ app.get('*', async(req:any, res:any) => {
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
-  console.log('Listening on port', port);
+  //console.log('Listening on port', port);
 });

@@ -122,7 +122,7 @@ export const commentObject = {
         replySubmit.dataset.postID = this.parentid
         replySubmit.dataset.id = this.id
         replySubmit.onclick = function() {
-            console.log(replyInput)
+            //console.log(replyInput)
             newNestedComment(replySubmit.dataset.postID + "", replySubmit.dataset.id + "", replyInput, house )
         }
 
