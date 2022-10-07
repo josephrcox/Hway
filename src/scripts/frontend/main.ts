@@ -48,6 +48,16 @@ export async function loadMain(reset:boolean) {
             submit_new_comment.onclick = function() {
                 newComment(x[1])
             }
+            const newCom_body = document.getElementById('newCom_body') as HTMLTextAreaElement
+
+            newCom_body.addEventListener('keydown', function(e) {
+
+                if (e.keyCode == 13 && e.ctrlKey == false && newCom_body.value != "") {
+                    e.preventDefault()
+                    newComment(x[1])
+                }
+            })
+
             header_login_button.href = '/login/?ref=/p/'+x[1]
             break;
         case "createnewpost":

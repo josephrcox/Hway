@@ -1,5 +1,5 @@
 import { supportEmail } from "./post.js"
-import { newNestedComment } from "../createComment.js"
+import { newNestedComment, newComment } from "../createComment.js"
 
 const postsArray = document.getElementById('postsArray') as HTMLDivElement
 export const commentSection = document.getElementById('comments') as HTMLDivElement
@@ -124,6 +124,8 @@ export const commentObject = {
         replySubmit.onclick = function() {
             //console.log(replyInput)
             newNestedComment(replySubmit.dataset.postID + "", replySubmit.dataset.id + "", replyInput, house )
+            replyContainer.style.display = 'none'
+            replyContainer.dataset.open = 'false'
         }
 
         if (!this.is_nested) {
@@ -228,13 +230,14 @@ const voteComment = async (id:any, parentID:any, nested:string, commentParentID:
     }
 }
 
-const deleteComment = async(parentID:string, commentID:string, containerElement:HTMLDivElement, deleteSpan:HTMLAnchorElement, nested:string, nestedID:any, nested_comment_parent_id:string) => {
+const deleteComment = async(parentID:string, commentID:string, containerElement:HTMLDivElement, deleteSpan:HTMLAnchorElement, nested:any, nestedID:any, nested_comment_parent_id:string) => {
     if (localStorage.getItem("deletecommentconfirmid") == commentID) {
         const settings = {
             method: 'PUT',
         };
         var response, data
-        if (nested == "true") {
+        console.log(nested)
+        if (nested != "true" && nested != true) {
             response = await fetch('/api/put/comment/delete/'+parentID+"/"+commentID, settings)
             data = await response.json()
         } else {
@@ -268,7 +271,7 @@ const deleteComment = async(parentID:string, commentID:string, containerElement:
 
 export const newCommentInputArea = document.getElementsByClassName('newComContainer')[0] as HTMLDivElement
 
-
 function insertAfter(referenceNode:any, newNode:any) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
   }
+

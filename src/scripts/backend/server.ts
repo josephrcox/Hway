@@ -350,7 +350,16 @@ app.post('/api/post/notif/clear/', function(req: { cookies: { token: any } },res
 			}
 		
 			docs.save()
-			res.send({status:'ok'})
+			let notifs = (docs.notifications.filter(function(x: { status: string }){
+				return x.status == "active";         
+			}))
+			let response = {
+				status:'ok',
+				bell_count:notifs.length
+			}
+
+			res.send(response)
+			
 		})
 	}catch(error) {
 		res.send({status:'error', data:'nojwt'})

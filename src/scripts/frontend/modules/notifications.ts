@@ -81,6 +81,11 @@ export function initNotificationButtons() {
                 },
             method: 'POST'
         }); 
+        const data = await fetchResponse.json()
+        if (data.status == 'ok') {
+            notifsBell.innerText = data.bell_count
+            notifsBell.classList.remove('active')
+        }
     })
 }
 
