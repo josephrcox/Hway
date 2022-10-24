@@ -194,15 +194,10 @@ export const commentObject = {
         } else {
             commentSection.appendChild(house)
         }
-
-        
-        // commentSection.appendChild(subPostDetails)
-        // commentSection.appendChild(replyContainer)
     }
 }
 
 const voteComment = async (id:any, parentID:any, nested:string, commentParentID:string, voteCountElement:HTMLSpanElement, voteUpImg:HTMLImageElement) => { 
-   
     if (commentParentID == null || commentParentID == "") {
         commentParentID = "0"
     }
@@ -244,8 +239,6 @@ const deleteComment = async(parentID:string, commentID:string, containerElement:
             response = await fetch('/api/put/comment_nested/delete/'+parentID+"/"+nested_comment_parent_id+"/"+nestedID, settings)
             data = await response.json()
         }
-        
-        
     
         if (data.status == 'ok') {
             containerElement.innerHTML = ""

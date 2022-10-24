@@ -14,7 +14,6 @@ export const getUser = async () => {
         if (data.code == 400) { // Error code for 'no user logged in' or 'invalid JWT token'
             isUserLoggedIn = false;
             currentUsername = null
-            //localStorage.clear()
         } else {
             setBell(data.bell_count)
             currentUserID = data.id
@@ -23,7 +22,7 @@ export const getUser = async () => {
             localStorage.setItem("currentUsername", currentUsername!)
             
             let filter_nsfw = document.getElementById('filter_nsfw') as HTMLInputElement;
-            filter_nsfw.checked = data.show_nsfw;
+            filter_nsfw.checked = data.show_nsfw; 
 
             let subscribedTopics:any = []
             let subscribedUsers:any = []
@@ -76,4 +75,3 @@ function modifyHeader(loggedin:Boolean, name:string) {
         dd_nsfw.style.display = 'none'
     }
 }
-
